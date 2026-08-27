@@ -1,0 +1,110 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Setting a Value for the Hold-max-cost Timer">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0051.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0055.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0057.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001338195250">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Setting a Value for the Hold-max-cost Timer</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001338195250"></a><a name="EN-US_TASK_0000001338195250"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Setting a Value for the Hold-max-cost Timer</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001338195250__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>After LDP-IGP synchronization is enabled, if the LDP session and LDP adjacency on the primary link fail but the IGP protocol is normal, the IGP on the local node advertises the maximum route cost over Link State Announcements (LSAs) to ensure that the IGP and LDP simultaneously switch traffic to the backup link. You can set a value for the Hold-max-cost timer to adjust the interval at which an IGP advertises the maximum route cost.</p>
+<div class="p">You can set a value for the Hold-max-cost timer in either of the following ways:<ul><li>Set a value for the Hold-max-cost timer in the interface view.<p>This method is recommended if a Hold-max-cost timer value needs to be set only on a few interfaces.</p>
+</li><li>Set a value for the Hold-max-cost timer in the IGP process.<p>If a Hold-max-cost timer value is set in an IGP process, the value takes effect for all interfaces in the process. This method is recommended if a Hold-max-cost timer value needs to be set on many interfaces on the same node.</p>
+</li></ul>
+</div>
+<div class="p">Select parameters based on networking requirements:<ul><li>If an IGP carries only LDP services, specify the <strong><span>infinite</span></strong> parameter to ensure that the behavior for IGP routes is always consistent with that for an LDP LSP.</li><li>If an IGP carries multiple types of services including LDP services, set the <i><span class="varname">value</span></i> parameter to ensure that an LDP session or adjacency teardown does not affect IGP route selection or other services.</li></ul>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001338195250__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Set a value for the Hold-max-cost timer in the interface view.</span><p><p>If OSPF is used, perform the following configuration on the local and remote interfaces of the link between the node where the primary and backup links diverge from each other and the LDP peer on the primary link.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the OSPF interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Switch the interface working mode to Layer 3.</span><p><pre class="screen"><b><span class="cmdqueryname">undo portswitch</span></b></pre>
+<p>Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li class="substepexpand"><span>Set a value for the Hold-max-cost timer.</span><p><ul><li>OSPF single-area<pre class="screen"><b><span class="cmdqueryname">ospf timer ldp-sync hold-max-cost</span></b> { <i><span class="varname">value</span></i> | <strong><span>infinite</span></strong> }</pre>
+</li></ul>
+</p><p><p>The Hold-max-cost timer value determines the interval at which the node advertises the maximum route cost in local LSAs. By default, OSPF always advertises the maximum cost in LSAs on the local device.</p>
+</p></li></ol>
+<p><p>If IS-IS is used, perform the following configuration on the local and remote interfaces of the link between the node where the primary and backup links diverge from each other and the LDP peer on the primary link.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Switch the interface working mode to Layer 3.</span><p><pre class="screen"><b><span class="cmdqueryname">undo portswitch</span></b></pre>
+<p>Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li class="substepexpand"><span>Set a value for the Hold-max-cost timer.</span><p><pre class="screen"><b><span class="cmdqueryname">isis timer ldp-sync hold-max-cost</span></b> { <i><span class="varname">value</span></i> | <strong><span>infinite</span></strong> }</pre>
+<p>The Hold-max-cost timer value determines the interval at which the node advertises the maximum route cost in local LSAs. By default, IS-IS permanently advertises the maximum route cost in LSAs sent by the local device.</p>
+</p></li></ol>
+</li><li><span>Set a value for the Hold-max-cost timer in the IGP process.</span><p><p>If OSPF is used, perform the following configuration on the node where the primary and backup links diverge from each other.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_screen1321833113530"><b><span class="cmdqueryname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_cmdname1521810312538">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Start a specified OSPF process and enter the OSPF view.</span><p><pre class="screen" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_screen1218113195310"><b><span class="cmdqueryname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_cmdname20739174065314">ospf</span></b> [ <i><span class="varname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_varname147398406535">process-id</span></i> ]</pre>
+<p id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_p1569145017533"><i><span class="varname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_varname19162125314531">process-id</span></i> specifies an OSPF process. If <i><span class="varname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_varname12162653175310">process-id</span></i> is not specified, the default process ID 1 is used. To associate an OSPF process with a VPN instance, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_cmdname191621153185318">ospf</span></b> [ <i><span class="varname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_varname71621853125314">process-id</span></i> | <strong><span id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_cmdparmname316214530534">vpn-instance</span></strong> <i><span class="varname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_varname11162115315530">vpn-instance-name</span></i> ]<sup id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_sup8162175314533">*</sup> command. If a VPN instance is specified, the OSPF process belongs to the specified VPN instance. If no VPN instance is specified, the OSPF process belongs to the global instance.</p>
+</p></li><li class="substepexpand"><span>Enter the OSPF area view.</span><p><pre class="screen" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_screen2219143113535"><b><span class="cmdqueryname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_cmdname1513884465513">area</span></b> <i><span class="varname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_varname121381944155514">area-id</span></i></pre>
+<p id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_p4219731165320"><i><span class="varname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_varname317892816548">area-id</span></i> specifies an OSPF area ID. If <i><span class="varname" id="EN-US_TASK_0000001338195250__en-us_task_0000001362991886_varname208145255510">area-id</span></i> is not specified, the default area ID 0 is used. Determine whether to perform this step based on the current interface configuration.</p>
+</p></li><li class="substepexpand"><span>Set an interval at which all interfaces in the OSPF area advertise the maximum route cost in local LSAs.</span><p><pre class="screen"><b><span class="cmdqueryname">timer ldp-sync hold-max-cost</span></b> { <strong><span>infinite</span></strong> | <i><span class="varname">interval</span></i> }</pre>
+</p></li></ol>
+<p><p>If IS-IS is used, perform the following configuration on the node where the primary and backup links diverge from each other.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Start a specified IS-IS process and enter the IS-IS view.</span><p><pre class="screen"><b><span class="cmdqueryname">isis</span></b> [ <i><span class="varname">process-id</span></i> ]</pre>
+</p></li><li class="substepexpand"><span>Set an interval at which all interfaces in the IS-IS process advertise the maximum route cost in local LSPs.</span><p><pre class="screen"><b><span class="cmdqueryname">timer ldp-sync hold-max-cost</span></b> { <strong><span>infinite</span></strong> | <i><span class="varname">interval</span></i> }</pre>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0051.html">Configuring LDP-IGP Synchronization
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0055.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0057.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

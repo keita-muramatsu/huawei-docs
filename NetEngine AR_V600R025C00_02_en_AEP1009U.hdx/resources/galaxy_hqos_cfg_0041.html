@@ -1,0 +1,73 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Intelligent Traffic Policing">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0029.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0017.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002246778896">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Intelligent Traffic Policing</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002246778896"></a><a name="EN-US_CONCEPT_0000002246778896"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Intelligent Traffic Policing</h1>
+<div><p></p>
+<p>Intelligent traffic policing (ITP) is a technology that dynamically adjusts the rate limit. It moves the congestion bottleneck to an enterprise gateway and uses the WAN available bandwidth evaluation technology and dynamic rate limit adjustment algorithm to automatically optimize the rate limiting policy on the enterprise gateway. In this way, backpressure can be performed on low-priority services, and high-priority services are preferentially guaranteed.</p>
+<p>Intelligent traffic policing is an enhanced function based on hierarchical CAR HQoS. Hierarchical CAR performs traffic policing based on the subscribed bandwidth. When the network fluctuates, hierarchical CAR becomes invalid, and the bandwidth of high-priority services cannot be guaranteed. Intelligent traffic policing can continuously evaluate network quality and guarantee the bandwidth of high-priority services during peak hours.</p>
+<div class="section"><h4 class="sectiontitle">Scenario Model</h4><p>In <a href="#EN-US_CONCEPT_0000002246778896__fig934819104294">Figure 1</a>, after hierarchical CAR HQoS is applied to the inbound interface of CPE1, multi-level traffic policing can be implemented in the inbound direction of CPE1. For details, see <a href="galaxy_hqos_cfg_0029.html">HQoS Hierarchical CAR</a>. However, during peak hours, the actual available bandwidth fluctuates within a certain range. As a result, rate limiting in the inbound direction of CPE1 becomes invalid, affecting the experience of high-priority applications on CPE2 and CPE3. Therefore, after hierarchical CAR HQoS is applied, you can configure intelligent traffic policing. When the incoming traffic rate of CPE1 reaches the configured bandwidth threshold, intelligent traffic policing is enabled to preferentially guarantee the bandwidth of high-priority service traffic and allocate the remaining bandwidth to low-priority service traffic.</p>
+<ul><li>Create an intelligent traffic policing policy on CPE1.</li><li>Apply the intelligent traffic policing policy to the traffic behavior of the parent traffic policy on CPE1.</li></ul>
+<div class="fignone" id="EN-US_CONCEPT_0000002246778896__fig934819104294"><a name="EN-US_CONCEPT_0000002246778896__fig934819104294"></a><a name="fig934819104294"></a><span class="figcap"><b>Figure 1 </b>Network diagram of the hierarchical CAR scenario model</span><br><span><img class="vsd" src="figure/en-us_image_0000002281961813.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Model</h4><p>The intelligent traffic policing function is implemented based on the parent and child traffic policies of hierarchical CAR. After creating an intelligent traffic policing policy, you need to apply it to the traffic behavior of the parent traffic policy to implement this function. <a href="#EN-US_CONCEPT_0000002246778896__fig1420595915417">Figure 2</a> shows the configuration model of intelligent traffic policing.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002246778896__fig1420595915417"><a name="EN-US_CONCEPT_0000002246778896__fig1420595915417"></a><a name="fig1420595915417"></a><span class="figcap"><b>Figure 2 </b>Configuration model of intelligent traffic policing</span><br><span><img src="figure/en-us_image_0000002247029900.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Working Process of Intelligent Traffic Policing</h4><p>After intelligent traffic policing is enabled on the device, the system evaluates the available bandwidth and dynamically adjusts the available bandwidth of an interface to preferentially guarantee the bandwidth of high-priority service traffic. <a href="#EN-US_CONCEPT_0000002246778896__fig2084853922414">Figure 3</a> shows the working process of intelligent traffic policing.</p>
+<ol><li><strong>Configuring hierarchical CAR HQoS</strong>: You can configure application classification and rate limiting through hierarchical CAR HQoS and apply an intelligent traffic policing policy, specify high-priority and low-priority application queues in hierarchical CAR, and configure the bandwidth threshold and interval for intelligent traffic policing.</li><li><strong>Traffic identification and classification</strong>: Incoming traffic enters different queues based on the priority after application identification.</li><li><strong>Bandwidth evaluation</strong>: The device periodically collects traffic statistics on the inbound interface, determines whether packet loss occurs on the interface, and evaluates the available bandwidth.</li><li><strong>Dynamic adjustment</strong>: If packet loss occurs on the inbound interface, the link bottleneck is on the local device. In this case, the device increases the rate limit and detects more available bandwidth. If no packet loss occurs on the inbound interface, the link bottleneck is not on the local device. In this case, the local device limits the bandwidth of low-priority services through the backpressure mechanism and periodically detects the available bandwidth.</li><li><strong>Function disabled</strong>: When the incoming traffic rate on the inbound interface is lower than the threshold and no packet loss occurs for low-priority applications, intelligent traffic policing is disabled.</li></ol>
+<div class="fignone" id="EN-US_CONCEPT_0000002246778896__fig2084853922414"><a name="EN-US_CONCEPT_0000002246778896__fig2084853922414"></a><a name="fig2084853922414"></a><span class="figcap"><b>Figure 3 </b>Working process of intelligent traffic policing</span><br><span><img src="figure/en-us_image_0000002450808416.png" width="NaN" height="NaN"></span></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_hqos_cfg_0003.html">Understanding HQoS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_hqos_cfg_0029.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_hqos_cfg_0017.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

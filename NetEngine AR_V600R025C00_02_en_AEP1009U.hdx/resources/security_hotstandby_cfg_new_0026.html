@@ -1,0 +1,272 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Hot Standby in an SD-WAN EVPN Dual-Gateway Site Scenario">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_hotstandby_cfg_new_0076.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Hot Standby">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Hot Standby">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512673342">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Hot Standby in an SD-WAN EVPN Dual-Gateway Site Scenario</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512673342"></a><a name="EN-US_TASK_0000001512673342"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Hot Standby in an SD-WAN EVPN Dual-Gateway Site Scenario</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512673342__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001512673342__fig1">Figure 1</a>, <span><span class="eudemon">DeviceA</span></span> and <span><span class="eudemon">DeviceB</span></span> form an SD-WAN EVPN branch site, which runs in dual-gateway mode. To transmit the information that must be synchronized and the status entry information required by dual-gateway, the two devices need to establish a hot standby channel. In addition, the devices need to support application identification if packets are sent and received over different paths.</p>
+<p>This section describes only the hot standby configuration. For details about the SD-WAN EVPN service configuration, see the corresponding scenario example.</p>
+<div class="fignone" id="EN-US_TASK_0000001512673342__fig1"><a name="EN-US_TASK_0000001512673342__fig1"></a><a name="fig1"></a><span class="figcap"><b>Figure 1 </b>Network diagram of an SD-WAN EVPN dual-gateway site</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, interface3, and interface4 represent <span>10GE</span> <span>0/0/1</span>, <span>10GE</span> <span>0/0/2</span>, <span>10GE</span> <span>0/0/3</span>, and <span>10GE</span> <span>0/0/4</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001512833118.png"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512673342__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IP addresses for heartbeat interfaces.</span><p>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.1.2.1.1.3.1.1" liSelected="liSelected"><p><span><span class="eudemon">DeviceA</span></span></p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.1.2.1.1.3.1.2" liSelected="liSelected"><p><span><span class="eudemon">DeviceB</span></span></p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.1.2.1.1.3.1.1 "><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span><span class="eudemon">DeviceA</span></span></strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/4</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/4</span>] <strong>ip address 10.10.0.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/4</span>] <strong>quit</strong> </pre>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.1.2.1.1.3.1.2 "><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span><span class="eudemon">DeviceB</span></span></strong>
+[<span><span class="eudemon">DeviceB</span></span>] <strong>interface <span>10ge</span> <span>0/0/4</span></strong>
+[<span><span class="eudemon">DeviceB</span></span>-<span>10GE</span><span>0/0/4</span>] <strong>ip address 10.10.0.2 24</strong>
+[<span><span class="eudemon">DeviceB</span></span>-<span>10GE</span><span>0/0/4</span>] <strong>quit</strong> </pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li><li><span>Specify the heartbeat interface, configure the authentication key, and enable hot standby.</span><p>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.2.2.1.1.3.1.1" liSelected="liSelected"><p><span><span class="eudemon">DeviceA</span></span></p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.2.2.1.1.3.1.2" liSelected="liSelected"><p><span><span class="eudemon">DeviceB</span></span></p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.2.1.1.3.1.1 "><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>hrp interface <span>10ge</span> <span>0/0/4</span> remote 10.10.0.2</strong> 
+[<span><span class="eudemon">DeviceA</span></span>] <strong>hrp </strong><strong>authentication-key YsHsjx_202206</strong>
+[<span><span>DeviceA</span></span>] <strong>hrp enable</strong> </pre>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.2.1.1.3.1.2 "><pre class="screen">[<span><span class="eudemon">DeviceB</span></span>] <strong>hrp interface <span>10ge</span> <span>0/0/4</span> remote 10.10.0.1</strong> 
+[<span><span class="eudemon">DeviceB</span></span>] <strong>hrp </strong><strong>authentication-key YsHsjx_202206</strong>
+[<span><span class="eudemon">DeviceB</span></span>] <strong>hrp enable</strong> </pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li><li><span>Set the gateway type of the site to dual-gateway. Assume that the site system ID is <strong>1.1.1.1</strong> for DeviceA and <strong>2.2.2.2</strong> for DeviceB.</span><p>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.3.2.1.1.3.1.1" liSelected="liSelected"><p><span><span class="eudemon">DeviceA</span></span></p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.3.2.1.1.3.1.2" liSelected="liSelected"><p><span><span class="eudemon">DeviceB</span></span></p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.3.2.1.1.3.1.1 "><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>evpn site 1</strong> 
+[<span><span class="eudemon">DeviceA</span>-site-1</span>] <strong>gateway dua</strong><strong>l</strong> <strong>peer-system-id</strong> <strong>2.2.2.2</strong>
+[<span><span class="eudemon">DeviceA</span>-site-1</span>] <strong>quit</strong></pre>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.3.2.1.1.3.1.2 "><pre class="screen">[<span><span class="eudemon">DeviceB</span></span>] <strong>evpn site 1</strong> 
+[<span><span class="eudemon">DeviceB</span>-site-1</span>] <strong>gateway dua</strong><strong>l</strong> <strong>peer-system-id</strong> <strong>1.1.1.1</strong>
+[<span><span class="eudemon">DeviceB</span>-site-1</span>] <strong>quit</strong></pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li><li><span>Configure an interface type.</span><p>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.4.2.1.1.3.1.1" liSelected="liSelected"><p><span>DeviceA</span></p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.4.2.1.1.3.1.2" liSelected="liSelected"><p><span>DeviceB</span></p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.4.2.1.1.3.1.1 "><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>port-type nni</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong> 
+[<span><span class="eudemon">DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>port-type ini</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/3</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/3</span>] <strong>port-type uni</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong></pre>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.4.2.1.1.3.1.2 "><pre class="screen">[<span><span class="eudemon">DeviceB</span></span>] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span><span class="eudemon">DeviceB</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>port-type nni</strong>
+[<span><span class="eudemon">DeviceB</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong> 
+[<span><span class="eudemon">DeviceB</span></span>] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[<span><span class="eudemon">DeviceB</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>port-type ini</strong>
+[<span><span class="eudemon">DeviceB</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span><span class="eudemon">DeviceB</span></span>] <strong>interface <span>10ge</span> <span>0/0/3</span></strong>
+[<span><span class="eudemon">DeviceB</span></span>-<span>10GE</span><span>0/0/3</span>] <strong>port-type uni</strong>
+[<span><span class="eudemon">DeviceB</span></span>-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong></pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001512673342__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <strong>display hrp state verbose</strong> command on <span><span class="eudemon">DeviceA</span></span> and <span><span class="eudemon">DeviceB</span></span> to check the hot standby status.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.3.1.3.1.1" liSelected="liSelected"><p><span>DeviceA</span></p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.3.1.3.1.2" liSelected="liSelected"><p><span>DeviceB</span></p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.3.1.3.1.1 "><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>display hrp state verbose</strong>
+ Local role:  Load Sharing (<strong>Primary</strong>), Peer role:  Load Sharing (<strong>Secondary</strong>)      
+ Local priority: <strong>0:2</strong>, Peer priority: <strong>0:2</strong>                                        
+ Connection state: <strong>succeed</strong>                                                      
+ Stable time: 0 days, 0 hours,  6 minutes                                       
+ Last state change information: 2020-11-27 16:19:29 The HRP link changes to up. 
+Local device ID is 00-**-**-**-45-22. Peer device ID is 00-**-**-**-2e-44.      
+
+ Configuration:                                                                 
+ Hello interval                  1000ms                                         
+ Preempt                         on                                             
+ Track trunk member              on                                             
+ Auto-Sync connection status     on                                             
+
+ Module                          Fault           Robust                         
+ Total                           0               <strong>2</strong>                              
+ Manual                          0               0                              
+ BFD                             0               0                              
+ Tracked interface               0               0                              
+ VRRP                            0               0                              
+ CPU                             0               2                              </pre>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.3.1.3.1.2 "><pre class="screen">[<span><span class="eudemon">DeviceB</span></span>] <strong>display hrp state verbose</strong>
+ Local role:  Load Sharing (<strong>Secondary</strong>), Peer role:  Load Sharing (<strong>Primary</strong>)     
+ Local priority: <strong>0:2</strong>, Peer priority: <strong>0:2</strong>                                        
+ Connection state: <strong>succeed</strong>                                                      
+ Stable time: 0 days, 0 hours,  6 minutes                                       
+ Last state change information: 2020-11-27 16:19:29 The HRP link changes to up. 
+Local device ID is 00-**-**-**-2e-44. Peer device ID is 00-**-**-**-45-22.      
+
+ Configuration:                                                                 
+ Hello interval                  1000ms                                         
+ Preempt                         on                                             
+ Track trunk member              on                                             
+ Auto-Sync connection status     on                                             
+
+ Module                          Fault           Robust                         
+ Total                           0               <strong>2</strong>                              
+ Manual                          0               0                              
+ BFD                             0               0                              
+ Tracked interface               0               0                              
+ VRRP                            0               0                              
+ CPU                             0               2                              </pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001512673342__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.4.2.1.3.1.1" liSelected="liSelected"><p><span><span class="eudemon">DeviceA</span></span></p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.4.2.1.3.1.2" liSelected="liSelected"><p><span><span class="eudemon">DeviceB</span></span></p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.2.1.3.1.1 "><pre class="screen">#
+sysname <span><span class="eudemon"><strong>Device</strong></span></span><strong>A</strong>
+#
+ hrp enable
+ hrp interface <span>10GE</span><span>0/0/4</span> remote <strong>10.10.0.2</strong>
+ <span>hrp authentication-key %+%##!!!!!!!!!"!!!!"!!!!*!!!!J6+;U#&gt;V\!_e1NY[iGLXjT%k=rKkg,Z)CI0!!!!!!!!!!!!!!!:!!!!Ec&amp;0;Y9kF<font style="font-size:8pt" Face="Courier New" >~</font>"+*IM&gt;Io(Sm{&amp;9' 5y$6'L:2@-!!!!!%+%#</span>
+#
+interface <span>10GE</span><span>0/0/1</span>
+ port-type nni
+interface <span>10GE</span><span>0/0/2</span>
+ port-type ini
+interface <span>10GE</span><span>0/0/3</span>
+ port-type uni
+interface <span>10GE</span><span>0/0/4</span>
+ ip address <strong>10.10.0.1</strong> 255.255.255.0
+#
+evpn site 1
+ gateway dual<strong> </strong>peer-system-id 2.2.2.2
+#
+return</pre>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.2.1.3.1.2 "><pre class="screen">#
+sysname <span><span class="eudemon"><strong>Device</strong></span></span><strong>B</strong>
+#
+ hrp enable
+ hrp interface <span>10GE</span><span>0/0/4</span> remote <strong>10.10.0.1</strong>
+ <span>hrp authentication-key %+%##!!!!!!!!!"!!!!"!!!!*!!!!\FR0@B|5m51t2(SLB$(Yzq_KUB|V43Td3,.!!!!!!!!!!!!!!!:!!!!&gt;$P4S-0S{KqT&gt;VWoG2!K9t\i4 t;1e+vR$$U!!!!!%+%#</span>
+#
+interface <span>10GE</span><span>0/0/1</span>
+ port-type nni
+interface <span>10GE</span><span>0/0/2</span>
+ port-type ini
+interface <span>10GE</span><span>0/0/3</span>
+ port-type uni
+interface <span>10GE</span><span>0/0/4</span>
+ ip address <strong>10.10.0.2</strong> 255.255.255.0
+#
+evpn site 1
+ gateway dual peer-system-id 1.1.1.1
+#
+return</pre>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_hotstandby_cfg_new_0076.html">Configuration Examples for Hot Standby
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

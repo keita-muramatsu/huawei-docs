@@ -1,0 +1,94 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring a Security Zone">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_zone_cfg_0000.html">
+<meta name="DC.Relation" scheme="URI" content="security_zone_cfg_0004.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Security Zone">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Security Zone">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564128549">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring a Security Zone</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564128549"></a><a name="EN-US_TASK_0000001564128549"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring a Security Zone</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564128549__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Security zones on devices are classified into predefined security zones and customized security zones. To assign a security level that is not specified by predefined security zones to a network, you can customize a security zone on a device and set the priority for the security zone. After the security zone is created, you need to add interfaces to it. Then the packets sent or received by the interfaces are considered to be sent or received by the security zone.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564128549__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create a security zone and enter the security zone view.</span><p><pre class="screen"><b><span class="cmdqueryname">firewall zone</span></b> [ <strong><span>name</span></strong> ] <i><span class="varname">zone-name</span></i></pre>
+</p><p><p>Determine whether to configure the <strong>name</strong> parameter as follows:</p>
+<ul><li><p>If the security zone already exists, you do not need to specify the <strong>name</strong> parameter.</p>
+</li><li><p>If the security zone does not exist, specify the <strong>name</strong> parameter in the command to create the security zone and enter the security zone view. In addition, you can run the <b><span class="cmdqueryname">firewall zone</span></b> <strong><span>name</span></strong> <i><span class="varname">zone-name</span></i> <strong><span>id</span></strong> <i><span class="varname">id</span></i> command to specify the ID of the security zone. If no ID is specified, the system automatically assigns an available ID to the created security zone.</p>
+</li></ul>
+<p>For a predefined security zone (which cannot be deleted), you can run the <b><span class="cmdqueryname">firewall zone</span></b> <i><span class="varname">zone-name</span></i> command to enter the security zone view.</p>
+</p></li><li><span>Configure the description of the security zone.</span><p><pre class="screen"><b><span class="cmdqueryname">description</span></b> <i><span class="varname">description-text</span></i></pre>
+<p>To facilitate identification and maintenance of a customized security zone, you can configure a description for it.</p>
+</p></li><li><span>(Optional) Configure the priority for the security zone.</span><p><pre class="screen"><b><span class="cmdqueryname">set priority</span></b> <i><span class="varname">security-priority</span></i></pre>
+<p>By default, a customized security zone does not have a priority.</p>
+<p>A larger value indicates a higher priority.</p>
+</p></li><li><span>Add interfaces to the security zone.</span><p><pre class="screen"><b><span class="cmdqueryname">add interface</span></b> <i><span class="varname">interface-type</span></i> { <i><span class="varname">interface-number</span></i> | <i><span class="varname">interface-number.subinterface-number</span></i> }</pre>
+<p>The MEth management interface does not belong to any security zone and cannot be added to any security zone. An interface can be added to only one security zone. You can run this command multiple times in a security zone to add multiple interfaces to the security zone.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The Local zone defines a device itself, including the interfaces on the device.</p>
+<ul><li>No interface can be added to the Local zone.</li><li>Adding an interface to a security zone except the Local zone means configuring the network connected to the interface to be part of the security zone, but the interface still belongs to the Local zone.</li></ul>
+</div></div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564128549__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Zone Configuration</h4><p>Run the <b><span class="cmdqueryname">display zone</span></b> [ <i><span class="varname">zone-name</span></i> ] [ <strong><span>interface</span></strong> | <strong><span>priority</span></strong> ] command to check configuration information about the security zone.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001564128549__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>Configure security zone-based policies to control the traffic transmitted between different security zones.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_zone_cfg_0000.html">Security Zone Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_zone_cfg_0004.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

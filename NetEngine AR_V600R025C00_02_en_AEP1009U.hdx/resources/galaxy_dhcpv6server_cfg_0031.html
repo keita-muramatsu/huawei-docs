@@ -1,0 +1,81 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Binding an IPv6 Address Pool to a VPN">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_dhcpv6server_cfg_0011.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_dhcpv6server_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_dhcpv6server_cfg_0017.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DHCPv6">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002085789969">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Binding an IPv6 Address Pool to a VPN</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002085789969"></a><a name="EN-US_TASK_0000002085789969"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Binding an IPv6 Address Pool to a VPN</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000002085789969__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_context1677625172748"><p id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_p184211811373">If a DHCPv6 server and client are located on different VPNs or the DHCPv6 server needs to assign IPv6 addresses to clients on different VPNs, bind IPv6 address pools to VPNs. The same network segment can be configured for IPv6 address pools belonging to different VPNs. This improves IPv6 address utilization, prevents IPv6 address conflicts, and allows DHCPv6 clients in different VPNs to be assigned the same IPv6 address.</p>
+<p id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_p10792151781716">After receiving a request message from a DHCPv6 client, the DHCPv6 server selects an IPv6 address pool in the following sequence:</p>
+<ol id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_ol13904201820172"><li id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_li528810321174">The server preferentially checks the IPv6 address pool bound to the corresponding interface. If the VPN information of this address pool is the same as that of the client, the server uses the IPv6 address pool to assign IPv6 addresses.</li><li id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_li1590421814176">If the VPN information is different, the server globally selects an IPv6 address pool that belongs to the same link scope and VPN based on the link scope and VPN information of the client.</li><li id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_li52881438131917">If no IPv6 address pool with the same VPN information can be found globally, the server selects an IPv6 address from the IPv6 address pool for which VPN check is disabled using the <b><span class="cmdqueryname" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmdname427513910202">vpn-instance match disable</span></b> command based on the link scope of the client.</li></ol>
+<div class="note" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_note7347829152812"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_ul4522942193514"><li id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_li73001013365">The VPN information of the DHCPv6 client is carried in Option 68. If the request message does not carry this option, the VPN configuration of the DHCPv6 server's interface that receives the request message is used.</li><li id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_li1052274213514">The VPN instance bound to an IPv6 address pool must be the same as that bound to a DHCPv6 relay agent. Specifically, the VPN instance must be the same as the VPN instance configured using the <strong id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_b743912509303"><b><span class="cmdqueryname" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmdname159315172314">dhcpv6 relay</span></b></strong> <strong id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_b164401050103014">destination</strong> <em id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_i1944015093020">ipv6-address</em> <strong id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_b14440115053020">vpn-instance</strong> <em id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_i2440155013013">vpn-instance-name</em> command in the interface view or the VPN instance configured using the <strong id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_b12781811143211"><b><span class="cmdqueryname" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmdname19890619123214">vpn-instance</span></b></strong> <em id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_i17231130103217">vpn-instance-name</em> command in the DHCPv6 server group view on the DHCPv6 relay agent.</li></ul>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002085789969__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_steps10132325172748"><li id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_step19735559812"><span id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmd473519515814">Enter the system view.</span><p><pre class="screen" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_screen442753141415"><b><span class="cmdqueryname" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmdname174345321419">system-view</span></b></pre>
+</p></li><li id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_step459665093180211"><span id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmd1092539792180211">Create an IPv6 address pool and enter its view.</span><p><pre class="screen" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_screen151621636123813"><b><span class="cmdqueryname" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmdname1499104459180211">dhcpv6 pool</span></b> <i><span class="varname" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_varname1603538878180211">pool-name</span></i></pre>
+<p id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_p247109774180211">By default, no IPv6 address pool is created on a device.</p>
+</p></li><li id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_step5253145172748"><span id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmd7907968172748">Enable VPN check for the IPv6 address pool.</span><p><pre class="screen" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_screen12151730174415"><b><span class="cmdqueryname" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmdname617685484416">undo vpn-instance match disable</span></b></pre>
+<p id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_p21012025144413">By default, VPN check is enabled for an IPv6 address pool.</p>
+</p></li><li id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_step698675874513"><span id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmd16986458174513">Bind a VPN instance to the IPv6 address pool.</span><p><pre class="screen" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_screen15503337463"><b><span class="cmdqueryname" id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_cmdname229616911477">vpn-instance</span></b> <em id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_i123401916154719">vpn-name</em></pre>
+<p id="EN-US_TASK_0000002085789969__en-us_task_0000002049710650_p105003334611">By default, no VPN instance is bound to any IPv6 address pool.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_dhcpv6server_cfg_0011.html">Configuring a DHCPv6 PD Server
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_dhcpv6server_cfg_0016.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_dhcpv6server_cfg_0017.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,135 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding FTP ASPF/ALG">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_aspf_cfg_0006.html">
+<meta name="DC.Relation" scheme="URI" content="security_aspf_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="security_aspf_cfg_0009.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="ALG">
+<meta name="featurename" content="ASPF">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="ALG">
+<meta name="featurename" content="ASPF">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featurename" content="ALG">
+<meta name="featurename" content="ASPF">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563770085">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Understanding FTP ASPF/ALG</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563770085"></a><a name="EN-US_CONCEPT_0000001563770085"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding FTP ASPF/ALG</h1>
+<div><div class="section"><h4 class="sectiontitle">ASPF in FTP active mode</h4><p>In FTP active mode, the client uses the random port (xxxx) to send a connection request to port 21 on the server to set up a control channel. The client then uses the <strong>PORT</strong> command to negotiate the port number for the data channel. The negotiated port number is yyyy. After that, the server initiates a data channel request to port yyyy of the client. The server sends data to the client after the data channel is established.</p>
+<p>During the security policy configuration, if you permit only the traffic from the client to port 21 of the server, the control connection can be set up. However, after the packet destined from the server to port yyyy on the client arrives at the <span><span class="eudemon">Device</span></span>, the packet is not the subsequent packet of the previous connection but of a new connection. To enable the packet to arrive at the client, you must configure a security policy on the <span><span class="eudemon">Device</span></span> to permit the packet. Otherwise, the packet cannot pass through the <span><span class="eudemon">Device</span></span>, and the data channel fails to be established. As a result, the user can access the server but cannot request data.</p>
+<div class="p">However, the port of the data channel is randomly selected during the negotiation. To permit the data on the data channel, you must enable all ports, posing a security risk. The ASPF function is used to resolve the issue, as shown in <a href="#EN-US_CONCEPT_0000001563770085__fig03">Figure 1</a>.<div class="fignone" id="EN-US_CONCEPT_0000001563770085__fig03"><a name="EN-US_CONCEPT_0000001563770085__fig03"></a><a name="fig03"></a><span class="figcap"><b>Figure 1 </b>ASPF in FTP active mode</span><br><span><img class="imgResize" src="figure/en-us_image_0000001563889833.png" width="523.6875" height="323.552159" title="Click to enlarge"></span></div>
+</div>
+<p>The application-layer information of the <strong>PORT</strong> command carries the IP address and randomly-opened port of the client. By analyzing the application-layer information of the <strong>PORT</strong> command, the <span><span class="eudemon">Device</span></span> can predict the behavior of subsequent packets and create a server map based on the IP address and port in the application-layer information. After the packet for the server to initiate the data connection to the client reaches the <span><span class="eudemon">Device</span></span>, the packet matches the server map entry and is no longer controlled by the security policy.</p>
+<div class="p">Check the server map generated on the <span><span class="eudemon">Device</span></span>.<pre class="screen">&lt;HUAWEI&gt; <strong>display firewall server-map</strong>
+Type: ASPF, 2.2.2.2 -&gt; 1.1.1.1:yyyy, Zone: ---
+   Protocol: tcp(Appro: ftp-data), Left-Time: 00:00:57
+   VPN: public -&gt; public</pre>
+Port yyyy is the data port opened by the client to the server through the control channel. The data packet for the server (2.2.2.2) to proactively access port yyyy of the client (1.1.1.1) matches the server map and is permitted.</div>
+</div>
+<div class="section"><h4 class="sectiontitle">ASPF in FTP passive mode</h4><p>In FTP passive mode, the client uses the random port (xxxx) to send a connection request to port 21 on the server to set up a control channel. The client then uses the <strong>PASV</strong> command to negotiate the port number for the data channel. The negotiated port number is yyyy. After that, the client initiates a data channel request to port yyyy of the server. The server sends data to the client after the data channel is established.</p>
+<p>During the security policy configuration, if you permit only the traffic from the client to port 21 of the server, the control connection can be set up. However, after the packet destined from the client to port yyyy on the server arrives at the <span><span class="eudemon">Device</span></span>, the packet is not the subsequent packet of the previous connection but of a new connection. To enable the packet to arrive at the server, you must configure a security policy on the <span><span class="eudemon">Device</span></span> to permit the packet. Otherwise, the packet cannot pass through the <span><span class="eudemon">Device</span></span>, and the data channel fails to be established. As a result, the user can access the server but cannot request data.</p>
+<div class="p">However, the port of the data channel is randomly selected during the negotiation. To permit the data on the data channel, you must enable all ports, posing a security risk. The ASPF function is used to resolve the issue, as shown in <a href="#EN-US_CONCEPT_0000001563770085__fig04">Figure 2</a>.<div class="fignone" id="EN-US_CONCEPT_0000001563770085__fig04"><a name="EN-US_CONCEPT_0000001563770085__fig04"></a><a name="fig04"></a><span class="figcap"><b>Figure 2 </b>ASPF in FTP passive mode</span><br><span><img class="imgResize" src="figure/en-us_image_0000001563770101.png" width="523.6875" height="287.803754" title="Click to enlarge"></span></div>
+</div>
+<p>The application-layer information of the <strong>PASV Command OK</strong> command carries the IP address and randomly-opened port of the server. By analyzing the application-layer information of the <strong>PASV Command OK</strong> command, the <span><span class="eudemon">Device</span></span> can predict the behavior of subsequent packets and create a server map based on the IP address and port in the application-layer information. After the packet for the client to initiate the data connection to the server reaches the <span><span class="eudemon">Device</span></span>, the packet matches the server map entry and is no longer controlled by the security policy.</p>
+<div class="p">Check the server map generated on the <span><span class="eudemon">Device</span></span>.<pre class="screen">&lt;sysname&gt; <strong>display firewall server-map</strong>
+Type: ASPF, 1.1.1.1 -&gt; 2.2.2.2:yyyy, Zone: ---
+   Protocol: tcp(Appro: ftp-data), Left-Time: 00:00:57
+   VPN: public -&gt; public
+</pre>
+Port yyyy is the data port opened by the server to the client through the control channel. The data packet for the client (1.1.1.1) to proactively access port yyyy of the server (2.2.2.2) matches the server map and is permitted.</div>
+</div>
+<div class="section"><h4 class="sectiontitle">ALG in FTP active mode</h4><div class="p">As shown in <a href="#EN-US_CONCEPT_0000001563770085__fig05">Figure 3</a>, a client resides on the intranet, and a server on the Internet. To enable the client to properly access the server, configure a source NAT policy on the <span><span class="eudemon">Device</span></span> to translate the private address of the client into a public address and allow port translation. After the client and server establish a control channel through TCP three-way handshake, the client sends a private address and an open private network port to the server through the <strong>PORT</strong> command to establish a data channel.<div class="fignone" id="EN-US_CONCEPT_0000001563770085__fig05"><a name="EN-US_CONCEPT_0000001563770085__fig05"></a><a name="fig05"></a><span class="figcap"><b>Figure 3 </b>ALG in FTP active mode</span><br><span><img class="imgResize" src="figure/en-us_image_0000001563889733.png" width="523.6875" height="282.829953" title="Click to enlarge"></span></div>
+</div>
+<p>Before ALG is configured, the device translates only the IP address and port information in the packet header when performing source NAT. However, the IP address and port information carried in the packet payload remain unchanged. If the IP addresses and port numbers of both sides are different, FTP cannot work properly.</p>
+<p>After ALG is configured, the <span><span class="eudemon">Device</span></span> analyzes the application-layer information of the <strong>PORT</strong> command, translates the private address and private network port carried in the command into the public address and public network port, forwards them to the server, and creates a server map. The server initiates a data connection to the translated public address and public network port. After the packet reaches the <span><span class="eudemon">Device</span></span>, the packet matches the server map entry, automatically translates the destination address and port into the actual private address, and is no longer controlled by the security policy.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Common NAT translates only transport-layer information of packets, and ALG can also translate application-layer information of packets.</p>
+<p>If ALG is configured, you need only to configure the security policy from any port of the client to port 21 of the server on the <span><span class="eudemon">Device</span></span>.</p>
+</div></div>
+<div class="p">Check the server map generated on the <span><span class="eudemon">Device</span></span>.<pre class="screen">&lt;sysname&gt; <strong>display firewall server-map</strong>
+Type: ASPF, 1.1.1.1 -&gt; 1.1.1.2:zzzz[192.168.0.1:yyyy], Zone: ---
+   Protocol: tcp(Appro: ftp-data), Left-Time: 00:00:57
+   VPN: public -&gt; public</pre>
+The data packet for the server (1.1.1.1) to proactively access the public address and public port of the client matches the server map and is permitted. In addition, the destination public address and public port are translated into the actual private address (192.168.0.1) and private port (yyyy).</div>
+</div>
+<div class="section"><h4 class="sectiontitle">ALG in FTP passive mode</h4><div class="p">As shown in <a href="#EN-US_CONCEPT_0000001563770085__fig06">Figure 4</a>, a client resides on the Internet, and a server on the intranet. To enable the client to properly access the server, configure NAT Server on the <span><span class="eudemon">Device</span></span> to translate the public address of the server into a private address and allow port translation. After the client and server establish a control channel through TCP three-way handshake, the server sends a private address and an open private network port to the client through the <strong>PASV Command OK</strong> command to establish a data channel.<div class="fignone" id="EN-US_CONCEPT_0000001563770085__fig06"><a name="EN-US_CONCEPT_0000001563770085__fig06"></a><a name="fig06"></a><span class="figcap"><b>Figure 4 </b>ALG in FTP passive mode</span><br><span><img class="imgResize" src="figure/en-us_image_0000001564010005.png" width="523.6875" height="271.472684" title="Click to enlarge"></span></div>
+</div>
+<p>Before ALG is configured, the device translates only the IP address and port information in the packet header when performing destination NAT. However, the IP address and port information carried in the packet payload remain unchanged. If the IP addresses and port numbers of both sides are different, FTP cannot work properly.</p>
+<p>After ALG is configured, the <span><span class="eudemon">Device</span></span> analyzes the application-layer information of the <strong>PASV Command OK</strong> command, translates the private address and private network port carried in the command into the public address and public network port, forwards them to the client, and creates a server map. The client initiates a data connection to the translated public address and public network port. After the packet reaches the <span><span class="eudemon">Device</span></span>, the packet matches the server map entry, automatically translates the destination address and port into the actual private address, and is no longer controlled by the security policy.</p>
+<p>If ALG is configured, you need only to configure the security policy from any port of the client to port 21 of the server on the <span><span class="eudemon">Device</span></span>.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Common NAT translates only transport-layer information of packets, and ALG can also translate application-layer information of packets.</p>
+<p>If ALG is configured, you need only to configure the security policy from any port of the client to port 21 of the server on the <span><span class="eudemon">Device</span></span>.</p>
+</div></div>
+<div class="p">Check the server map generated on the <span><span class="eudemon">Device</span></span>.<pre class="screen">&lt;HUAWEI&gt; <strong>display firewall server-map</strong>
+Type: ASPF, 1.1.1.1 -&gt; 2.2.2.2:zzzz[192.168.0.1:yyyy], Zone: ---
+   Protocol: tcp(Appro: ftp-data), Left-Time: 00:00:57
+   VPN: public -&gt; public
+</pre>
+The data packet for the client (1.1.1.1) to proactively access the public address and public port of the server matches the server map and is permitted. In addition, the destination public address and public port are translated into the actual private address (192.168.0.1) and private port (yyyy).</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_aspf_cfg_0006.html">Configuring ASPF/ALG for Well-Known Protocols
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_aspf_cfg_0007.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_aspf_cfg_0009.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

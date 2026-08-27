@@ -1,0 +1,124 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring AI Roaming">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_roaming_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_roaming_cfg_0009.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_roaming_cfg_0014.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Roaming">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Roaming">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002209520417">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring AI Roaming</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002209520417"></a><a name="EN-US_TASK_0000002209520417"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring AI Roaming</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000002209520417__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring AI roaming, complete the following tasks:</p>
+<ul><li><a href="galaxy_roaming_cfg_0008.html">Configure intra-WAC roaming</a>.</li><li><a href="galaxy_roaming_cfg_0011.html">Configuring Smart Roaming</a></li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002209520417__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The AI roaming function depends on neighbor scanning. If the Mesh service is configured on a radio, the AI roaming function does not take effect on the radio. If the radio supports independent radio scanning, this function on the radio is not affected.</p>
+<p>If the PMF function is enabled, the AI roaming function does not take effect.</p>
+<p><span>The roaming steering function based on coordinated measurement requires Layer 2 network connectivity between APs.</span></p>
+<p><span>APs must support independent radio scanning to perform roaming steering based on coordinated measurement. For APs that do not support independent radio scanning, after the AI roaming function is enabled, the STA profiling mechanism is used to perform personalized roaming steering for STAs based on the triggering logic of smart roaming.</span></p>
+<p>To reduce roaming latency and improve roaming efficiency for 802.1X users, it is recommended that you also configure the 802.11r roaming function when enabling AI roaming.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002209520417__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen" id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_screen51345165129"><b><span class="cmdqueryname" id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_cmdname15136141631217">system-view</span></b></pre>
+</p></li><li><span>Enter the WLAN view.</span><p><pre class="screen" id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_screen220544818420"><b><span class="cmdqueryname" id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_cmdname3591105918428">wlan</span></b></pre>
+</p></li><li><span>(Optional) Enable independent radio scanning on APs. This step is required only for APs that support independent radio scanning.</span><ol type="a"><li class="substepexpand"><span>Create an AP system profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">ap-system-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the AP system profile <strong>default</strong> exists on the device.</p>
+</p></li><li class="substepexpand"><span>Enable independent radio scanning on APs.</span><p><pre class="screen"><b><span class="cmdqueryname">radio-mode</span></b> { <strong><span>2radio-independent-scan</span></strong> | <strong><span>4radio-independent-scan</span></strong> }</pre>
+</p><p><p>By default, no radio mode is configured in an AP system profile, and the default radio mode of the specific AP is used.</p>
+<p>This command is valid only for APs that support independent radio scanning.</p>
+</p></li><li class="substepexpand"><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Bind the AP system profile.</span><p><p>The configuration takes effect only after the AP system profile is applied to APs or AP groups. For details, see <a href="galaxy_wlan_service_cfg_0028.html">AP System Profile</a>.</p>
+</p></li></ol>
+</li><li><span>Configure the air scan function.</span><ol type="a"><li class="substepexpand"><span>Create an air scan profile and enter its view.</span><p><pre class="screen"><strong>air-scan-profile</strong> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the air scan profile <strong>default</strong> exists in the system.</p>
+</p></li><li class="substepexpand"><span>Enable the air scan function.</span><p><pre class="screen"><b><span class="cmdqueryname">undo scan-disable</span></b></pre>
+</p><p><p>By default, the air scan function is enabled.</p>
+</p></li><li class="substepexpand"><span>Configure an air scan channel set that contains all channels supported by the country code of an AP.</span><p><pre class="screen"><b><span class="cmdqueryname">scan-channel-set</span></b> <strong><span>country-channel</span></strong></pre>
+<p>By default, an air scan channel set contains all channels supported by the country code of an AP.</p>
+<p>In AI roaming scenarios, APs perform air scan on these channels (switched at an interval of 200 ms) to implement coordinated measurement.</p>
+</p></li><li class="substepexpand"><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Create an RRM profile and enter its view.</span><p><pre class="screen" id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_screen14631130151913"><b><span class="cmdqueryname" id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_cmdname540519549238">rrm-profile</span></b> <strong><span id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_cmdparmname11536076248">name</span></strong> <i><span class="varname" id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_varname18142816132418">profile-name</span></i></pre>
+<p id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_p86531263192">By default, the RRM profile <strong id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_b74951579245046">default</strong> exists on the device.</p>
+</p></li><li><span>Enable AI roaming.</span><p><pre class="screen"><strong><span>undo</span></strong> <b><span class="cmdqueryname">smart-roam ai-mode disable</span></b> </pre>
+<p>By default, AI roaming is enabled.</p>
+</p></li><li><span>(Optional) Configure the RSSI difference thresholds for triggering STA roaming steering.</span><p><pre class="screen"><b><span class="cmdqueryname">smart-roam snr-margin</span></b> <strong><span>high-level-margin</span></strong> <i><span class="varname">high-level-margin</span></i> <strong><span>low-level-margin</span></strong> <i><span class="varname">low-level-margin</span></i></pre>
+<p>By default, the upper and lower RSSI difference thresholds for triggering STA roaming steering are 12 dB and 10 dB, respectively.</p>
+<p>In AI roaming scenarios based on coordinated measurement, only <strong><span>high-level-margin</span></strong> is used to determine whether to steer STAs to neighboring APs.</p>
+</p></li><li><span>Return to the WLAN view.</span><p><pre class="screen" id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_screen1948817516275"><b><span class="cmdqueryname" id="EN-US_TASK_0000002209520417__en-us_task_0000001563755317_cmdname1364101316273">quit</span></b></pre>
+</p></li><li><span>Apply the air scan profile and RRM profile.</span><p><p>The configuration in an air scan profile can take effect only after the profile is bound to a radio profile and then the radio profile is bound to an AP group or a specific AP. For details, see <a href="galaxy_wlan_service_cfg_0008.html">Air Scan Profile</a>.</p>
+<p>The configuration in an RRM profile can take effect only after the profile is bound to a radio profile and then the radio profile is bound to an AP group or a specific AP. For details, see <a href="galaxy_wlan_service_cfg_0015.html">RRM Profile</a>.</p>
+</p></li><li><span>(Optional) Configure 802.11k and 802.11v functions.</span><p><ol type="a"><li>Create an SSID profile and enter its view.<pre class="screen"><b><span class="cmdqueryname">ssid-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the SSID profile <strong>default</strong> exists on the device.</p>
+</li><li>Enable the 802.11k protocol.<pre class="screen"><b><span class="cmdqueryname">undo dot11k disable</span></b></pre>
+<p>By default, the 802.11k protocol is enabled.</p>
+<p>Do not disable the 802.11k protocol unless necessary. If some outdated STAs on the network do not support the 802.11k protocol, you can disable this function.</p>
+</li><li>Enable the 802.11v BSS transition function.<pre class="screen"><b><span class="cmdqueryname">undo dot11v bss-transition disable</span></b></pre>
+<p>By default, the 802.11v BSS transition function is enabled.</p>
+<p>Do not disable the 802.11v BSS transition function unless necessary. If some outdated STAs on the network do not support 802.11v BSS transition, you can disable this function.</p>
+</li><li>Return to the WLAN view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Bind the SSID profile.<p>The configuration in an SSID profile can take effect only after the profile is bound to a VAP profile and then the VAP profile is bound to an AP group or a specific AP. For details, see <a href="galaxy_wlan_service_cfg_0011.html">SSID Profile</a>.</p>
+</li></ol>
+</p></li><li><span>(Optional) Configure interconnection between APs and CampusInsight to implement the AI roaming data reporting function.</span><p><p>For details, see <a href="galaxy_WLAN_Operation_and_Maintenance_Monitoring_cfg_0004.html">Configuring APs to Directly Report KPI Information</a>. The reported collected information includes terminal data (<strong>terminal-data</strong>) and AI roaming data (<strong>ai-roam-data</strong>).</p>
+</p></li><li><span>(Optional) Configure MAC addresses of unsteerable STAs in smart roaming, AI roaming, band steering, and load balancing algorithms.</span><p><pre class="screen"><b><span class="cmdqueryname">station-unsteerable sta-mac</span></b> <i><span class="varname">sta-mac</span></i></pre>
+<p>By default, no MAC addresses of unsteerable STAs are configured.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002209520417__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display rrm-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i> command to check the settings of smart roaming parameters.</li><li>Run the <b><span class="cmdqueryname">display radio-2g-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i> command to check the RRM profile bound to a 2.4 GHz radio profile.</li><li>Run the <b><span class="cmdqueryname">display radio-5g-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i> command to check the RRM profile bound to a 5 GHz radio profile.</li><li>Run the <b><span class="cmdqueryname">display station neighbor</span></b> <strong><span>sta-mac</span></strong> <i><span class="varname">mac-address</span></i> command to check the neighbor list of a STA.</li><li>Run the <b><span class="cmdqueryname">display station steer-history</span></b> command to check historical STA steering information.</li><li>Run the <b><span class="cmdqueryname">display station steer-statistics</span></b> command to check STA steering statistics.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_roaming_cfg_0001.html">Roaming Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_roaming_cfg_0009.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_roaming_cfg_0014.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

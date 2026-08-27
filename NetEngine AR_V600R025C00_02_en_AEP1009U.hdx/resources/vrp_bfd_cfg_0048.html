@@ -1,0 +1,67 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding BFD for Link-Bundle">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_bfd_cfg_0047.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bfd_cfg_0049.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BFD">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BFD">
+<meta name="featuretype" content="High Availability">
+<meta name="featurename" content="BFD">
+<meta name="featuretype" content="High Availability">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001176661901">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding BFD for Link-Bundle</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001176661901"></a><a name="EN-US_CONCEPT_0000001176661901"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding BFD for Link-Bundle</h1>
+<div><p>If two devices are connected through Layer 3 Eth-Trunk interfaces or a Layer 2 transmission device is deployed on the link between the two devices, you can configure BFD for link-bundle to detect link faults.</p>
+<p>If common single-hop BFD is used to monitor a Layer 3 Eth-Trunk link with multiple member links, only one BFD session can be created. BFD then selects a board where an Eth-Trunk member interface resides as the state machine board, and monitors this member link only. If the member interface, member link, or the state machine board fails, the BFD session considers the entire Eth-Trunk link to have failed. However, the other Eth-Trunk member links are actually still available, and the Eth-Trunk interface is still up.</p>
+<p>BFD for link-bundle resolves this problem. After a BFD for link-bundle session is bound to an Eth-Trunk interface, BFD creates a dynamic unicast BFD sub-session for each Eth-Trunk member interface, with each sub-session performing negotiation and detection independently. BFD also creates a main session to manage the link status reported by the sub-sessions, and this main session goes down only after all sub-sessions have gone down.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176661901__fig_dc_vrp_bfd_feature_200301"><a name="EN-US_CONCEPT_0000001176661901__fig_dc_vrp_bfd_feature_200301"></a><a name="fig_dc_vrp_bfd_feature_200301"></a><span class="figcap"><b>Figure 1 </b>Network diagram of BFD for link-bundle</span><br><span><img class="vsd" src="figure/en-us_image_0000001176741843.png"></span></div>
+<div class="p">In <a href="#EN-US_CONCEPT_0000001176661901__fig_dc_vrp_bfd_feature_200301">Figure 1</a>, a BFD for link-bundle session consists of one main session and multiple sub-sessions.<ul><li>The main session creates a BFD sub-session for each Eth-Trunk member interface.</li><li>Each sub-session independently monitors an Eth-Trunk member link and reports the detection result to the main session. In addition, each sub-session uses the same detection parameters as the main session.</li><li>The main session summarizes the detection results from sub-sessions and determines the Eth-Trunk link status. Specifically:<ul><li>The main session and the Eth-Trunk interface are up as long as one sub-session remains up.</li><li>If the Eth-Trunk interface has no member interface, no sub-session is created. In this case, if the main session goes down, BFD reports the Unknown state without determining the Eth-Trunk interface status.</li><li>If the Eth-Trunk interface has only one member interface and the corresponding sub-session is up, the main session goes down after the member interface exits the Eth-Trunk interface. In this case, the Eth-Trunk interface is up.</li></ul>
+</li></ul>
+</div>
+<p>The local discriminator of a main session is allocated from a special range (0x00100000 to 0x00103fff) without consuming the discriminator resources reserved for BFD sessions. The main session does not learn the remote discriminator as it does not send or receive packets. A sub-session's local discriminator is allocated from the discriminator range reserved for dynamic BFD sessions using the same algorithm as a dynamic BFD session.</p>
+<p>Only sub-sessions consume BFD session resources per board, and each sub-session must select the board where the physical member interface bound to this sub-session resides as a state machine board. If no BFD session resources are available on the board, board selection fails, and the sub-session's status is not reported to the main session.</p>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_bfd_cfg_0047.html">Configuring BFD for Link-Bundle
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bfd_cfg_0049.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

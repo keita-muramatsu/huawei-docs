@@ -1,0 +1,89 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="LDP NSR">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0004.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001338359954">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>LDP NSR</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001338359954"></a><a name="EN-US_CONCEPT_0000001338359954"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">LDP NSR</h1>
+<div><p>LDP non-stop routing (NSR) ensures that connections in the control plane and traffic in the forwarding plane are not interrupted if a fault (caused by a main control board failure) occurs in the LDP control plane of the local node, even without the help of neighboring nodes.</p>
+<div class="section"><h4 class="sectiontitle">Context</h4><p>As their networks rapidly develop, carriers have growing demand for IP network reliability. Conventional non-stop forwarding (NSF) and graceful restart (GR) techniques cannot prevent traffic interruptions if a peer does not support GR or multiple peers fail simultaneously during a GR process. In addition, during the GR switchover, the control flow is interrupted for a short time, during which the topology change cannot be responded to. To solve this issue, NSR is introduced. NSR is an innovation of, but essentially different from, NSF. NSR can be used to ensure uninterrupted traffic transmission and retain connections in the control plane if a software or hardware fault occurs in the control plane of a router. In addition, the fault is transparent to the control planes of its peers.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Related Concepts</h4><ul><li>High availability (HA): supports a backup channel between the active main board (AMB) and slave main board (SMB).</li><li>NSR: allows a standby control plane to take over traffic from an active control plane if the active control plane fails, while preventing the control planes of neighbor nodes from detecting the fault.</li><li>NSF: enables a device to use the GR mechanism to ensure uninterrupted service forwarding during an AMB/SMB switchover.</li><li>AMB and SMB: implement control plane processes.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Implementation</h4><div class="p">LDP NSR implements LDP data synchronization between the AMB and SMB. The AMB backs up the following LDP data to the SMB:<ul><li><p>LSP forwarding entries</p>
+</li><li><p>Key resources, such as labels and cross connection (XC) entries</p>
+</li><li><p>LDP control blocks</p>
+</li></ul>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The active and standby control planes of an NSR-capable device must run on the AMB and SMB, respectively.</p>
+</div></div>
+</div>
+<div class="p">Synchronous backup and switchover processing are as follows:<ol><li><p>Batch backup</p>
+<p>The AMB backs up LDP data in a batch to the SMB immediately after the SMB starts.</p>
+</li><li><p>Real-time backup</p>
+<p>The SMB backs up data and LDP packets sent by the AMB in real time, implementing real-time data synchronization.</p>
+</li><li><p>Switchover</p>
+<p>If the AMB fails, the SMB takes over services. Because data is synchronized between the AMB and SMB, services in the control plane and forwarding plane are not interrupted.</p>
+</li></ol>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Other Functions</h4><p>An NSR device can function as a GR Helper. The GR Helper communicates with NSR-disabled devices and responds to neighbor nodes' GR requests during an AMB/SMB switchover.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Application Scenario</h4><ul><li>When a single node (such as PE3 in <a href="#EN-US_CONCEPT_0000001338359954__fig_dc_vrp_ldp-p2p_feature_002601">Figure 1</a>) is connected to multiple links, load balancing is implemented among the links to protect services. However, if the main control board on the node fails, services are interrupted. To address this issue, NSR needs to be configured on the node to enhance reliability. <a href="#EN-US_CONCEPT_0000001338359954__fig_dc_vrp_ldp-p2p_feature_002601">Figure 1</a> shows a typical LDP NSR application.<div class="fignone" id="EN-US_CONCEPT_0000001338359954__fig_dc_vrp_ldp-p2p_feature_002601"><a name="EN-US_CONCEPT_0000001338359954__fig_dc_vrp_ldp-p2p_feature_002601"></a><a name="fig_dc_vrp_ldp-p2p_feature_002601"></a><span class="figcap"><b>Figure 1 </b>Typical LDP NSR application</span><br><span><img class="vsd" src="figure/en-us_image_0000001395695661.png"></span></div>
+</li><li>NSR can be deployed on a high-capacity and heavily loaded network to minimize the impact of a device's control-plane protocol fault on the entire network, thereby preventing route flapping.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Benefits</h4><ul><li>If a fault occurs in the LDP control plane, services in the control plane and forwarding plane are not interrupted.</li><li>A node can implement NSR independently, without the assistance of neighboring nodes. When a multi-point fault occurs in the control plane of an MPLS network, the active/standby switchover can still be performed on each node.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0003.html">Understanding MPLS LDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0004.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0010.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

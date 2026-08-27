@@ -1,0 +1,98 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="After the AP's Uplink Wired Interface Is Configured to Work in Endpoint Mode, the AP Cannot Go Online After a Restart">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0103.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001666110570">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>After the AP's Uplink Wired Interface Is Configured to Work in Endpoint Mode, the AP Cannot Go Online After a Restart</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001666110570"></a><a name="EN-US_TASK_0000001666110570"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">After the AP's Uplink Wired Interface Is Configured to Work in Endpoint Mode, the AP Cannot Go Online After a Restart</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001666110570__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Symptom</h4><p>After the AP's uplink wired interface is configured to work in endpoint mode, the AP cannot go online after a restart.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001666110570__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Possible Causes</h4><p>The AP's uplink wired interface is configured to work in endpoint mode.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001666110570__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Check whether the AP's uplink wired interface is configured to work in endpoint mode.</span><p><p><strong>Error-prone configuration:</strong></p>
+<p>When working as an uplink interface to connect to an AC, an AP's wired interface must work in root mode. In root mode, the AP's wired interface automatically joins service VLANs and user-specific VLANs (for example, VLANs assigned by the RADIUS server).</p>
+<p>When working as a downlink interface to connect to a wired terminal, the AP's wired interface must work in endpoint mode. In endpoint mode, the AP's wired interface does not join any VLAN by default.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This configuration takes effect only after the AP is restarted.</p>
+</div></div>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>wlan</strong>
+[HUAWEI-wlan] <strong>wired-port-profile name wired</strong>
+[HUAWEI-wlan-wired-port-wired] <strong>mode endpoint</strong>
+Warning: If the AP goes online through a wired port, the incorrect port mode configuration will cause the AP to go out of management. 
+This fault can be recovered only by modifying the configuration on the AP. Continue? [Y/N]:y
+[HUAWEI-wlan-wired-port-wired] <strong>return</strong></pre>
+<p><strong>Handling suggestion:</strong></p>
+</p><ul><li>Hold down the <strong>Default</strong> button to restore factory settings of the AP.</li><li>Log in to the AP and perform the following operations:<ol type="a"><li>Configure a static ARP entry on the access switch.<pre class="screen">&lt;Switch&gt; <strong>system-view</strong>
+[Switch] <strong>arp static 169.254.1.1 00e0-fc76-e360</strong>  //The default IP address of the AP is 169.254.1.1. The MAC address of the AP is specified because devices on the network may have the same IP address.</pre>
+</li><li>Configure an IP address on the same network segment as that of the AP for the switch.<pre class="screen">[Switch] <strong>interface Vlanif 1</strong>
+[Switch-Vlanif1] <strong>ip address 169.254.1.100 255.255.255.0</strong>
+[Switch-Vlanif1] <strong>quit</strong></pre>
+</li><li>Configure the PVID for the port connecting the switch directly to the AP.<pre class="screen">[Switch] <strong>interface GE 1/0/1</strong>
+[Switch-GE1/0/1] <strong>port trunk pvid vlan 1</strong></pre>
+</li><li>Log in to the AP from the access switch through STelnet.</li><li>Run the <strong>work-mode root</strong> command in the interface view of the AP to set the working mode of the interface to root. Alternatively, run the <strong>reset factory-configuration</strong> command in the user view to restore factory settings of the AP.<pre class="screen">&lt;Huawei&gt; <strong>system-view</strong>
+[Huawei] <strong>interface GigabitEthernet 0/0/0</strong>
+[Huawei-GigabitEthernet0/0/0] <strong>work-mode root</strong></pre>
+</li><li>Restart the AP.<pre class="screen">&lt;Huawei&gt; <strong>reboot</strong></pre>
+</li></ol>
+</li></ul>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ap_management_cfg_0103.html">Troubleshooting AP Management
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

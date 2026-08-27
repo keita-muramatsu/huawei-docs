@@ -1,0 +1,109 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring a Child Traffic Policy">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0021.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0023.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513040590">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring a Child Traffic Policy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513040590"></a><a name="EN-US_TASK_0000001513040590"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring a Child Traffic Policy</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513040590__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>A traffic policy configured for an FQ through MQC is a child traffic policy. For details about a child traffic policy, see <a href="galaxy_hqos_cfg_0017.html">Parent and Child Traffic Policy Configuration Model</a></p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513040590__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Configure a traffic classifier to differentiate services.</span><ol type="a"><li class="substepexpand"><span>Create a traffic classifier and enter the traffic classifier view.</span><p><pre class="screen"><b><span class="cmdqueryname">traffic classifier</span></b> <i><span class="varname">classifier-name</span></i> [ <strong><span>type</span></strong> { <strong><span>and</span></strong> | <strong><span>or</span></strong> } ]</pre>
+</p></li><li class="substepexpand"><span>Select proper traffic classification rules as required. For details, see "<a href="galaxy_mqc_cfg_0005.html">Configuring a Traffic Classifier</a>" in MQC Configuration.</span></li><li class="substepexpand"><span>Exit the traffic classifier view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">quit</span></b></strong></pre>
+</p></li></ol>
+</li><li><span>Configure a traffic behavior.</span><p><ol type="a"><li>Create a traffic behavior and enter the traffic behavior view.<pre class="screen"><b><span class="cmdqueryname">traffic behavior</span></b> <i><span class="varname">behavior-name</span></i></pre>
+</li><li>Reference an FQ profile in the traffic behavior.<pre class="screen"><b><span class="cmdqueryname">flow-queue</span></b> <i><span class="varname">flow-queue-name</span></i> <strong><span>queue</span></strong> <i><span class="varname">queue-name</span></i>   </pre>
+<p>When configuring this command, set <i><span class="varname">flow-queue-name</span></i> and <i><span class="varname">queue-name</span></i> to the names of the FQ profile and FQ configured in <a href="galaxy_hqos_cfg_0019.html">Configuring an FQ or SQ Profile</a>, respectively.</p>
+</li><li>(Optional) Configure the CAR action of the child traffic policy.<div class="p">The CIR and PIR of the CAR action can be set to absolute values or values in percentage, but only one value format can be configured. Use either of the following methods to perform the configuration:<ul><li>Set the absolute values of the CIR and PIR.<pre class="screen"><b><span class="cmdqueryname">car</span></b> { <strong><span>cir</span></strong> <i><span class="varname">cir-value</span></i> [ <strong><span>kbps</span></strong> | <strong><span>mbps</span></strong> | <strong><span>gbps</span></strong> ] [ <strong><span>pir</span></strong> <i><span class="varname">pir-value</span></i> [ <strong><span>kbps</span></strong> | <strong><span>mbps</span></strong> | <strong><span>gbps</span></strong> ] ] } [ <strong><span>cbs</span></strong> <i><span class="varname">cbs-value</span></i> [ <strong><span>bytes</span></strong> | <strong><span>kbytes</span></strong> | <strong><span>mbytes</span></strong> ] <strong><span>pbs</span></strong> <i><span class="varname">pbs-value</span></i> [ <strong><span>bytes</span></strong> | <strong><span>kbytes</span></strong> | <strong><span>mbytes</span></strong> ] ] [ <strong><span>share</span></strong> ] [ <strong><span>mode</span></strong> <strong><span>color-blind</span></strong> ] [ <strong><span>green pass</span></strong> [ <strong><span>remark-8021p</span></strong> <i><span class="varname">8021p-value</span></i> | <strong><span>remark-dscp</span></strong> <i><span class="varname">dscp-value</span></i> ] | <strong><span>yellow</span></strong> { <strong><span>discard</span></strong> | <strong><span>pass</span></strong> [ <strong><span>remark-8021p</span></strong> <i><span class="varname">8021p-value</span></i> | <strong><span>remark-dscp</span></strong> <i><span class="varname">dscp-value</span></i> ] } | <strong><span>red</span></strong> { <strong><span>discard</span></strong> | <strong><span>pass</span></strong> [ <strong><span>remark-8021p</span></strong> <i><span class="varname">8021p-value</span></i> | <strong><span>remark-dscp</span></strong> <i><span class="varname">dscp-value</span></i> ] } ]<sup>*</sup></pre>
+</li><li>Set the values of the CIR and PIR in percentage.<pre class="screen" id="EN-US_TASK_0000001513040590__screen19985185185814"><strong id="EN-US_TASK_0000001513040590__b1046113116597"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513040590__cmdname968121875916">car cir pct</span></b> </strong><em id="EN-US_TASK_0000001513040590__i646171195919">cir-percentage</em> [ <strong id="EN-US_TASK_0000001513040590__b946161113596">pir</strong><strong id="EN-US_TASK_0000001513040590__b15461161165917"> pct</strong><em id="EN-US_TASK_0000001513040590__i104611911195910"> <i><span class="varname" id="EN-US_TASK_0000001513040590__varname3672513017">pir-percentage</span></i></em> ] <strong id="EN-US_TASK_0000001513040590__b646111155913">hierarchical-bandwidth</strong> [ <strong id="EN-US_TASK_0000001513040590__b4461171175916">cbs</strong><em id="EN-US_TASK_0000001513040590__i1246191115599"> <i><span class="varname" id="EN-US_TASK_0000001513040590__varname199417221106">cbs-value</span></i></em><strong id="EN-US_TASK_0000001513040590__b146121119591"> <strong><span id="EN-US_TASK_0000001513040590__cmdparmname147153420015">pbs</span></strong></strong><em id="EN-US_TASK_0000001513040590__i8461111113595"> <i><span class="varname" id="EN-US_TASK_0000001513040590__varname978414422013">pbs-value</span></i></em> | <strong id="EN-US_TASK_0000001513040590__b8461151165916">share</strong> | <strong id="EN-US_TASK_0000001513040590__b446161175910">mode</strong> <strong id="EN-US_TASK_0000001513040590__b6461411185915">color-blind</strong> ]<sup id="EN-US_TASK_0000001513040590__sup16181436152411">*</sup></pre>
+<p><em>cir-percentage</em> and <em>pir-percentage</em> specify the CIR bandwidth percentage and PIR bandwidth percentage, respectively. Their base values are the SQ bandwidth values defined in the upper-level parent traffic policy, that is, the values of <strong><span>cir</span></strong> <i><span class="varname">cir-value</span></i> and <strong><span>pir</span></strong> <i><span class="varname">pir-value</span></i> configured in the SQ profile of the parent traffic policy using the <b><span class="cmdqueryname">user-queue</span></b> command.</p>
+</li></ul>
+</div>
+</li><li>Exit the traffic behavior view.<pre class="screen"><strong><b><span class="cmdqueryname">quit</span></b></strong></pre>
+</li></ol>
+</p></li><li><span>Configure an FQ traffic policy.</span><ol type="a"><li class="substepexpand"><span>Create a traffic policy and enter the traffic policy view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">traffic policy</span></b> </strong><i><span class="varname">policy-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Bind a traffic classifier to a traffic behavior in the traffic policy.</span><p><pre class="screen"><b><span class="cmdqueryname">classifier</span></b> <i><span class="varname">classifier-name</span></i> <strong><span>behavior</span></strong> <i><span class="varname">behavior-name</span></i><span> [ <strong>precedence</strong> <em>precedence-value</em> ]</span></pre>
+</p></li></ol>
+</li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513040590__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Example</h4><p># Configure an FQ traffic policy.</p>
+<ol><li>Create traffic classifiers <strong>data</strong> and <strong>voice</strong> to classify services based on DSCP values (DSCP values 15 and 46 for data and voice services, respectively).<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>traffic classifier data</strong>
+[HUAWEI-classifier-data] <strong>if-match</strong><strong> dscp 15</strong>
+[HUAWEI-classifier-data] <strong>quit</strong>
+[HUAWEI] <strong>traffic classifier voice</strong>
+[HUAWEI-classifier-voice]<strong> if-match</strong> <strong>dscp 46</strong>
+[HUAWEI-classifier-voice] <strong>quit</strong></pre>
+</li><li>Create traffic behaviors <strong>data</strong> and <strong>voice</strong> and reference the FQ profile <strong>fq1</strong> in the traffic behaviors.<pre class="screen">[HUAWEI] <strong>traffic behavior</strong> <strong>data</strong>
+[HUAWEI-behavior-data] <strong>flow-queue </strong><strong>fq1</strong><strong> queue </strong><strong>data</strong>
+[HUAWEI-behavior-data] <strong>quit</strong>
+[HUAWEI] <strong>traffic behavior</strong> <strong>voice</strong>
+[HUAWEI-behavior-voice] <strong>flow-queue </strong><strong>fq1</strong><strong> queue </strong><strong>voice</strong>
+[HUAWEI-behavior-voice] <strong>quit</strong></pre>
+</li><li>Create a traffic policy named <strong>sub-</strong><strong>policy</strong><strong>1</strong> and bind traffic classifiers to traffic behaviors in the traffic policy.<pre class="screen">[HUAWEI] <strong>traffic policy</strong> <strong>sub-</strong><strong>policy</strong><strong>1</strong>
+[HUAWEI-trafficpolicy-sub-policy1] <strong>classifier data behavior data</strong>
+[HUAWEI-trafficpolicy-sub-policy1] <strong>classifier voice behavior voice</strong></pre>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_hqos_cfg_0021.html">Configuring the Parent and Child Traffic Policy Mode
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_hqos_cfg_0023.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

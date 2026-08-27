@@ -1,0 +1,95 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an Eth-Trunk on AP Wired Interfaces">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0057.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0059.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0060.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513045550">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an Eth-Trunk on AP Wired Interfaces</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513045550"></a><a name="EN-US_TASK_0000001513045550"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an Eth-Trunk on AP Wired Interfaces</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513045550__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>To improve connection reliability and increase bandwidth, you can bind multiple interfaces into an Eth-Trunk. As shown in <a href="#EN-US_TASK_0000001513045550__fig_01">Figure 1</a>, the AP wired interfaces GE0/0/0 and GE0/0/1 are connected to GE0/0/1 and GE0/0/2 of the switch, respectively. The Eth-Trunk configuration is required on both the AP and switch. For details about Eth-Trunk implementation, see "Eth-Trunk Configuration" in <span>CLI Configuration Guide</span> &gt; Ethernet Switching Configuration.</p>
+<div class="fignone" id="EN-US_TASK_0000001513045550__fig_01"><a name="EN-US_TASK_0000001513045550__fig_01"></a><a name="fig_01"></a><span class="figcap"><b>Figure 1 </b>Network diagram of the Eth-Trunk configuration on AP wired interfaces</span><br><span><img class="vsd" src="figure/en-us_image_0000001564125713.png" width="NaN" height="NaN"></span></div>
+<p>When configuring Eth-Trunk on AP wired interfaces, pay attention to the following:</p>
+<ul><li>Physical interfaces to be added to an Eth-Trunk cannot have other configurations. If there are any configurations, clear them first. The configurations to be cleared do not include the interface status, description, LLDP function, or CRC alarm configuration.</li><li><p>After the configuration, you need to restart the AP to make the Eth-Trunk configuration on the AP's wired interfaces take effect.</p>
+</li><li><p>This configuration is not supported by APs with only one uplink network port.</p>
+</li><li><p>Downlink interfaces on an AP do not support the Eth-Trunk function.</p>
+</li><li>Eth-Trunk member interfaces do not support the PVID or user isolation configuration.</li><li id="EN-US_TASK_0000001513045550__li1847317241217">For an AP that has gone online, configure the Eth-Trunk function before connecting physical cables. Otherwise, loops may occur, causing the APs to go offline.</li><li id="EN-US_TASK_0000001513045550__li61714303210">For an AP that has not gone online, connect physical cables and then configure the Eth-Trunk function in the following sequence:<ol id="EN-US_TASK_0000001513045550__ol512225212213"><li id="EN-US_TASK_0000001513045550__li912295217211">Before the AP goes online, connect multiple physical cables between the AP and a switch. By default, the switch interfaces are enabled and are not configured with the Eth-Trunk function.</li><li id="EN-US_TASK_0000001513045550__li1912214522023">Run the <strong id="EN-US_TASK_0000001513045550__b3348896484">shutdown</strong> command in the interface view on the switch to shut down interfaces. Among the interfaces connected to the same AP, reserve only one enabled for the AP to go online.</li><li id="EN-US_TASK_0000001513045550__li1112213521028">Configure the AP to go online, and configure the Eth-Trunk function on AP wired interfaces. Restart the AP so that the Eth-Trunk configuration takes effect.</li><li id="EN-US_TASK_0000001513045550__li171225524211">Configure an Eth-Trunk on the switch and run the <strong id="EN-US_TASK_0000001513045550__b151090483504">undo shutdown</strong> command in the interface view to enable the interfaces that have been shut down.</li></ol>
+</li><li>For an AP that supports only one Eth-Trunk, the configuration takes effect only when the Eth-Trunk ID is set to 0.</li><li>If a member interface of an Eth-Trunk is connected to a peer end, the peer interface directly connected to the local interface must also be a member interface of an Eth-Trunk.</li><li>An Eth-Trunk cannot be added to another Eth-Trunk as a member interface.</li><li>Do not configure any member interface of an Eth-Trunk as an observing port. If this cannot be avoided, ensure that the bandwidth of service traffic on the member interface and the bandwidth of the mirrored traffic do not exceed the bandwidth limit of the interface.</li><li>An Ethernet interface can be added to only one Eth-Trunk. To add the Ethernet interface in an Eth-Trunk to another Eth-Trunk, delete it from the original Eth-Trunk first.</li><li>After an interface is added to an Eth-Trunk, MAC address entries and ARP entries are learned based on the Eth-Trunk but not based on member interfaces.</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513045550__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">wlan</span></b></pre>
+</p></li><li><span>Create an AP wired port profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">wired-port-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">wired-port-profile-name</span></i></pre>
+<p>By default, the AP wired port profile <strong>default</strong> exists on the device.</p>
+</p></li><li><span>Add an AP's wired interface to an Eth-Trunk.</span><p><pre class="screen"><b><span class="cmdqueryname">eth-trunk</span></b> <i><span class="varname">trunk-id</span></i></pre>
+<p>By default, an AP's interface is not added to any Eth-Trunk.</p>
+</p></li><li><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Enter the AP group view or AP view.</span><ul><li>Enter the AP group view.<pre class="screen"><b><span class="cmdqueryname">ap-group</span></b> <strong><span>name</span></strong> <i><span class="varname">group-name</span></i></pre>
+</li><li>Enter the AP view.<pre class="screen"><b><span class="cmdqueryname">ap-id</span></b> <i><span class="varname">ap-id</span></i></pre>
+</li></ul>
+</li><li><span>Bind the AP wired port profile to an AP group or a single AP. Repeat this step to bind all Eth-Trunk member interfaces to the AP wired port profile.</span><p><pre class="screen"><b><span class="cmdqueryname">wired-port-profile</span></b><strong><em> </em></strong><i><span class="varname">profile-name</span></i> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+<p>By default, the AP wired port profile <strong>default</strong> is bound to an AP group, but no AP wired port profile is bound to an AP.</p>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001513045550__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>After adding member interfaces to an Eth-Trunk, you need to configure attributes for the Eth-Trunk interface. For details, see <a href="galaxy_ap_management_cfg_0059.html">Configuring the Working Mode and VLANs for an AP's Wired Interface</a>. After the configuration is complete, run the <b><span class="cmdqueryname">wired-port-profile</span></b> <i><span class="varname">profile-name</span></i> <i><span class="varname">eth-trunk</span></i> <i><span class="varname">interface-number</span></i> command in the AP group or AP view to apply the configuration in the AP wired port profile to the Eth-Trunk. For details, see <a href="galaxy_ap_management_cfg_0063.html">Binding an AP Wired Port Profile</a>.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ap_management_cfg_0057.html">Configuring AP Wired Interfaces
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ap_management_cfg_0059.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ap_management_cfg_0060.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,475 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring IFIT Application-Level Quality Measurement">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ifit_cfg_0025.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ifit_cfg_0024.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001909815297">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring IFIT Application-Level Quality Measurement</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001909815297"></a><a name="EN-US_TASK_0000001909815297"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring IFIT Application-Level Quality Measurement</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001909815297__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001909815297__fig_dc_vrp_evpn_cfg_015101">Figure 1</a>, PE1, P, and PE2 are in the same autonomous system (AS). IS-IS must be configured on these devices to achieve IPv6 network connectivity. In addition, a bidirectional SRv6 TE Policy needs to be deployed between PE1 and PE2 to carry EVPN L3VPNv4 services. IFIT is also required on the network to monitor the packet loss rate and delay on links between PEs in real time. This allows users to promptly adjust services when service quality deteriorates.</p>
+<div class="fignone" id="EN-US_TASK_0000001909815297__fig_dc_vrp_evpn_cfg_015101"><a name="EN-US_TASK_0000001909815297__fig_dc_vrp_evpn_cfg_015101"></a><a name="fig_dc_vrp_evpn_cfg_015101"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring IFIT application-level quality measurement in an EVPN L3VPNv4 over SRv6 TE Policy</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="imgResize" src="figure/en-us_image_0000001863736076.png" width="523.6875" height="247.24274400000004" title="Click to enlarge"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001909815297__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li>Configure an EVPN L3VPNv4 over SRv6 network on each PE and the P, including:<ol type="a"><li><p>Enable IPv6 forwarding and configure an IPv6 address for each interface on PE1, P, and PE2.</p>
+</li><li><p>Enable IS-IS, configure an IS-IS level, and specify a network entity on PE1, P, and PE2.</p>
+</li><li><p>Configure an IPv4 L3VPN instance on each PE and bind it to an access-side interface.</p>
+</li><li><p>Establish an EBGP peer relationship between each PE and its connected CE.</p>
+</li><li><p>Establish a BGP EVPN peer relationship between PEs.</p>
+</li><li>Configure SRv6 SIDs and enable IS-IS SRv6 on PE1, P, and PE2. In addition, configure PE1 and PE2 to advertise VPN routes carrying SIDs.</li><li><p>Configure an SRv6 TE Policy between PE1 and PE2.</p>
+</li><li>Configure a tunnel policy on PE1 and PE2 to import private network traffic.</li></ol>
+</li><li>Configure packet loss and delay measurement on PEs to collect packet loss rate and delay statistics at intervals.</li><li>Configure the devices to send measurement data to the controller through telemetry.<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Before performing IFIT measurement, ensure that:</p>
+<ul><li>NTP has been configured on the devices to implement clock synchronization between the devices. For details, see <em>NTP Configuration</em>.</li><li>The devices have been connected to the controller.</li></ul>
+</div></div>
+</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001909815297__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Data Plan</h4><p>To complete the configuration, prepare the following data:</p>
+<ul><li><p>IPv6 address of each interface as listed in <a href="#EN-US_TASK_0000001909815297__fig_dc_vrp_evpn_cfg_015101">Figure 1</a></p>
+</li><li><p>Area ID of each PE and the P</p>
+</li><li>Level of each PE and the P</li><li>Name, RD, and RT of the VPN instance on each PE</li><li><p>Static flow measurement: IFIT measurement instance ID (1), target flow's source IP address (10.55.1.1), and target flow's destination IP address (10.88.1.1)</p>
+</li><li>Dynamic flow measurement: whitelist group (1) for IFIT measurement, source IP address (10.55.2.2) and destination IP address (10.88.2.2) of dynamic flows automatically learned by IFIT</li><li>Controller's IP address (2001:DB8:101::1) and port number (30003), and reachable routes between the controller and devices</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001909815297__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an EVPN L3VPNv4 over SRv6 TE Policy on each PE and the P. For configuration details, see <a href="#EN-US_TASK_0000001909815297__postreq1145115812314">Configuration Scripts</a>.</span></li><li><span>Configure IFIT for links between PE1 and PE2.</span><p><div class="p"># Configure static flow measurement on PE1.<pre class="screen">&lt;PE1&gt; <strong>system-view</strong>
+[PE1] <strong>ifit</strong>
+[PE1-ifit]<strong> node-id 1</strong>
+[PE1-ifit]<strong> instance 1</strong>
+[PE1-ifit-instance-1] <strong>measure-mode trace</strong>
+[PE1-ifit-instance-1] <strong>flow unidirectional source 10.55.1.1 destination 10.88.1.1 dscp 63 vpn-instance vpna</strong>
+[PE1-ifit-instance-1] <strong>binding interface <span>10GE</span> <span>0/0/2</span></strong>
+[PE1-ifit-instance-1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure dynamic flow measurement on PE1.<pre class="screen">[PE1-ifit] <strong>whitelist-group</strong><strong> 1</strong>
+[PE1-ifit-whitelist-group-1] <strong>rule rule1 ipv4 source 10.55.2.2 32 destination 10.88.2.2 32</strong>
+[PE1-ifit-whitelist-group-1] <strong>quit</strong>
+[PE1-ifit] <strong>flow-learning vpn-instance vpna</strong>
+[PE1-ifit-vpn-instance-vpna] <strong>flow-learning </strong><strong>interface <span>10GE</span> <span>0/0/2</span></strong> <strong>whitelist-group 1</strong>
+[PE1-ifit-vpn-instance-vpna] <strong>quit</strong>
+[PE1-ifit] <strong>quit</strong></pre>
+</div>
+<div class="p"># Enable IFIT on P and PE2. The configuration on P is used as an example.<pre class="screen">&lt;P&gt; <strong>system-view</strong>
+[P] <strong>ifit</strong>
+[P-ifit] <strong>node-id 3</strong>
+[P-ifit] <strong>quit</strong></pre>
+</div>
+</p></li><li><span>Configure the devices to send measurement data to the controller through telemetry. The following uses PE1 as an example.</span><p><pre class="screen">[PE1] <strong>telemetry</strong>
+[PE1-telemetry] <strong>destination-group ifit</strong>
+[PE1-telemetry-destination-group-ifit] <strong>ipv6-address 2001:DB8:101::1 port 30003 protocol grpc</strong>
+[PE1-telemetry-destination-group-ifit] <strong>quit</strong>
+[PE1-telemetry] <strong>sensor-group ifit</strong>
+[PE1-telemetry-sensor-group-ifit] <strong>sensor-path huawei-ifit:ifit/huawei-ifit-statistics:flow-hop-statistics/flow-hop-statistic</strong>
+[PE1-telemetry-sensor-group-ifit-path] <strong>quit</strong>
+[PE1-telemetry-sensor-group-ifit] <strong>sensor-path huawei-ifit:ifit/huawei-ifit-statistics:flow-statistics/flow-statistic</strong>
+[PE1-telemetry-sensor-group-ifit-path] <strong>quit</strong>
+[PE1-telemetry-sensor-group-ifit] <strong>quit</strong>
+[PE1-telemetry] <strong>subscription ifit</strong>
+[PE1-telemetry-subscription-ifit] <strong>sensor-group ifit</strong>
+[PE1-telemetry-subscription-ifit] <strong>destination-group ifit</strong>
+[PE1-telemetry-subscription-ifit] <strong>quit</strong>
+[PE1-telemetry] <strong>quit</strong></pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You are advised to configure devices to send data using secure TLS encryption. For details, see "Creating a Static Subscription" in <em>Telemetry Configuration</em>.</p>
+</div></div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001909815297__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><div class="p"># Check the configuration and status of static flows on PE1.<pre class="screen">[PE1] <strong>display ifit static instance 1</strong>
+-------------------------------------------------------------------------
+Flow Classification                     : static
+Instance Id                             : 1
+Instance Name                           : 1
+Flow Id                                 : 1048577
+Flow Type                               : unidirectional
+Source IP Address/Mask Length           : 10.55.1.1/32
+Destination IP Address/Mask Length      : 10.88.1.1/32
+Protocol                                : any
+Source Port                             : any
+Destination Port                        : any
+Dscp                                    : 63
+Interface                               : <span>10GE</span><span>0/0/2</span>
+vpn-instance                            : vpna
+Loss Measure                            : enable
+Delay Measure                           : enable
+Measure Mode                            : trace
+Interval                                : 30(s)</pre>
+</div>
+<div class="p"># Check the configuration and status of the dynamic flow transit node on PE1.<pre class="screen">[PE1] <strong>display ifit dynamic-hop</strong>
+-------------------------------------------------------------------------
+Flow Classification                     : dynamic-hop
+Instance Id                             : 4
+Instance Type                           : instance
+Flow Id                                 : 1048577
+Flow Type                               : unidirectional
+Interface                               : <span>10GE</span><span>0/0/1</span>
+Direction                               : egress
+Loss Measure                            : enable
+Delay Measure                           : enable
+Interval                                : 30(s)</pre>
+</div>
+<div class="p"># Check the configuration and status of the dynamic flow ingress node on PE1.<pre class="screen">[PE1] <strong>display ifit dynamic</strong>
+-------------------------------------------------------------------------
+Flow Classification                     : dynamic
+Instance Id                             : 10
+Flow Id                                 : 1572874
+Flow Type                               : unidirectional
+Source IP Address/Mask Length           : 10.55.2.2/32
+Destination IP Address/Mask Length      : 10.88.2.2/32
+Protocol                                : any
+Source Port                             : any
+Destination Port                        : any
+Dscp                                    : --
+Interface                               : <span>10GE</span><span>0/0/2</span>
+vpn-instance                            : vpna
+Loss Measure                            : enable
+Delay Measure                           : enable
+Measure Mode                            : e2e
+Interval                                : 60(s)</pre>
+</div>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001909815297__postreq1145115812314"></a><a name="postreq1145115812314"></a><a name="EN-US_TASK_0000001909815297__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li>PE1<pre class="screen">#
+sysname PE1
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 100:1
+  vpn-target 1:1 export-extcommunity evpn
+  vpn-target 1:1 import-extcommunity evpn
+  tnl-policy p1 evpn
+#
+segment-routing ipv6
+ encapsulation source-address 2001:DB8:1::1
+ locator PE1 ipv6-prefix 2001:DB8:100:: 64 static 32
+  opcode ::10 end psp
+ srv6-te-policy locator PE1
+ segment-list list1
+  index 5 sid ipv6 2001:DB8:120::20
+  index 10 sid ipv6 2001:DB8:130::30
+ srv6-te policy policy1 endpoint 2001:DB8:3::3 color 101
+  binding-sid 2001:DB8:100::450
+  candidate-path preference 100
+   segment-list list1 
+#
+isis 1
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0001.00
+ #
+ ipv6 enable topology ipv6
+ segment-routing ipv6 locator PE1 auto-sid-disable
+ #
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:10::1/64
+ isis ipv6 enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpna
+ ip address 10.11.1.1 255.255.255.0
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:1::1/128
+ isis ipv6 enable 1
+#
+bgp 100
+ router-id 1.1.1.1
+ peer 2001:DB8:3::3 as-number 100
+ peer 2001:DB8:3::3 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  undo synchronization
+ #
+ ipv4-family vpn-instance vpna
+  import-route direct
+  advertise l2vpn evpn
+  segment-routing ipv6 locator PE1 evpn
+  segment-routing ipv6 traffic-engineer best-effort evpn
+  peer 10.11.1.2 as-number 65410
+ #
+ l2vpn-family evpn
+  undo policy vpn-target
+  peer 2001:DB8:3::3 enable
+  peer 2001:DB8:3::3 route-policy p1 import
+  peer 2001:DB8:3::3 advertise encap-type srv6
+#                                                                               
+ifit 
+ node-id 1
+ instance 1
+  measure-mode trace
+  flow unidirectional source 10.55.1.1 destination 10.88.1.1 dscp 63 vpn-instance vpna
+  binding interface <span>10GE</span><span>0/0/2</span>
+ whitelist-group 1
+  rule rule1 ipv4 source 10.55.2.2 32 destination 10.88.2.2 32
+ flow-learning vpn-instance vpna
+  flow-learning interface <span>10GE</span><span>0/0/2</span> whitelist-group 1
+#
+route-policy p1 permit node 10
+ apply extcommunity color 0:101
+#               
+tunnel-policy p1
+ tunnel select-seq ipv6 srv6-te-policy load-balance-number 1
+#
+telemetry
+ #
+ sensor-group ifit
+  sensor-path huawei-ifit:ifit/huawei-ifit-statistics:flow-hop-statistics/flow-hop-statistic
+  sensor-path huawei-ifit:ifit/huawei-ifit-statistics:flow-statistics/flow-statistic
+ #
+ destination-group ifit
+  ipv6-address 2001:DB8:101::1 port 30003 protocol grpc
+ #
+ subscription ifit
+  sensor-group ifit
+  destination-group ifit
+#
+return</pre>
+</li><li>P<pre class="screen">#
+sysname P
+#               
+segment-routing ipv6
+ encapsulation source-address 2001:DB8:2::2
+ locator P ipv6-prefix 2001:DB8:120:: 64 static 32
+  opcode ::20 end psp
+#
+isis 1
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0002.00
+ #
+ ipv6 enable topology ipv6
+ segment-routing ipv6 locator P auto-sid-disable
+ #
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:10::2/64
+ isis ipv6 enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:20::1/64
+ isis ipv6 enable 1
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:2::2/128
+ isis ipv6 enable 1
+#
+ifit
+ node-id 3
+#
+telemetry
+ #
+ sensor-group ifit
+  sensor-path huawei-ifit:ifit/huawei-ifit-statistics:flow-hop-statistics/flow-hop-statistic
+  sensor-path huawei-ifit:ifit/huawei-ifit-statistics:flow-statistics/flow-statistic
+ #
+ destination-group ifit
+  ipv6-address 2001:DB8:101::1 port 30003 protocol grpc
+ #
+ subscription ifit
+  sensor-group ifit
+  destination-group ifit
+#
+return</pre>
+</li><li>PE2<pre class="screen">#
+sysname PE2
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 200:1
+  vpn-target 1:1 export-extcommunity evpn
+  vpn-target 1:1 import-extcommunity evpn
+  tnl-policy p1 evpn
+#
+segment-routing ipv6
+ encapsulation source-address 2001:DB8:3::3
+ locator PE2 ipv6-prefix 2001:DB8:130:: 64 static 32
+  opcode ::30 end psp
+ srv6-te-policy locator PE2
+ segment-list list1
+  index 5 sid ipv6 2001:DB8:120::20
+  index 10 sid ipv6 2001:DB8:100::10
+ srv6-te policy policy1 endpoint 2001:DB8:1::1 color 101
+  binding-sid 2001:DB8:130::350
+  candidate-path preference 100
+   segment-list list1
+#
+isis 1
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0003.00
+ #
+ ipv6 enable topology ipv6
+ segment-routing ipv6 locator PE2 auto-sid-disable
+ #
+#
+interface <span>10GE</span><span>0/0/1</span>
+  
+ ipv6 enable
+ ipv6 address 2001:DB8:20::2/64
+ isis ipv6 enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpna
+ ip address 10.22.1.1 255.255.255.0
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:3::3/128
+ isis ipv6 enable 1
+#
+bgp 100
+ router-id 3.3.3.3
+ peer 2001:DB8:1::1 as-number 100
+ peer 2001:DB8:1::1 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  undo synchronization
+ #
+ ipv4-family vpn-instance vpna
+  import-route direct
+  advertise l2vpn evpn
+  segment-routing ipv6 locator PE2 evpn
+  segment-routing ipv6 traffic-engineer best-effort evpn
+  peer 10.22.1.2 as-number 65420
+ #
+ l2vpn-family evpn
+  undo policy vpn-target
+  peer 2001:DB8:1::1 enable
+  peer 2001:DB8:1::1 route-policy p1 import
+  peer 2001:DB8:1::1 advertise encap-type srv6
+#
+ifit
+ node-id 2
+#
+route-policy p1 permit node 10
+ apply extcommunity color 0:101
+#
+tunnel-policy p1
+ tunnel select-seq ipv6 srv6-te-policy load-balance-number 1
+#
+telemetry
+ #
+ sensor-group ifit
+  sensor-path huawei-ifit:ifit/huawei-ifit-statistics:flow-hop-statistics/flow-hop-statistic
+  sensor-path huawei-ifit:ifit/huawei-ifit-statistics:flow-statistics/flow-statistic
+ #
+ destination-group ifit
+  ipv6-address 2001:DB8:101::1 port 30003 protocol grpc
+ #
+ subscription ifit
+  sensor-group ifit
+  destination-group ifit
+#
+return</pre>
+</li><li>CE1<pre class="screen">#
+sysname CE1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ 
+ ip address 10.11.1.2 255.255.255.0
+#
+interface LoopBack1
+ ip address 11.1.1.1 255.255.255.255
+#
+bgp 65410
+ router-id 11.1.1.1
+ peer 10.11.1.1 as-number 100
+ #
+ ipv4-family unicast
+  undo synchronization
+  import-route direct
+  peer 10.11.1.1 enable
+#
+return </pre>
+</li><li>CE2<pre class="screen">#
+sysname CE2
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.22.1.2 255.255.255.0
+#
+interface LoopBack1
+ ip address 22.2.2.2 255.255.255.255
+#
+bgp 65420
+ router-id 22.2.2.2
+ peer 10.22.1.1 as-number 100
+#
+ ipv4-family unicast
+  undo synchronization
+  import-route direct
+  peer 10.22.1.1 enable
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_ifit_cfg_0025.html">Configuration Examples for IFIT
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_ifit_cfg_0024.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

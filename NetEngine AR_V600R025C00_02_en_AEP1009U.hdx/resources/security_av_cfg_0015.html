@@ -1,0 +1,199 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Antivirus">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_av_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="security_av_cfg_0012.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Antivirus">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Antivirus">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564005001">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring  Antivirus</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564005001"></a><a name="EN-US_TASK_0000001564005001"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring  Antivirus</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564005001__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001564005001__fig1860110553321">Figure 1</a>, DeviceA is deployed at the border of an enterprise network. Intranet users can download files and emails through the web server and POP3 server. The intranet FTP server needs to receive files uploaded by Internet users. The enterprise uses the antivirus function provided by the device to prevent virus files from entering the protected network, ensuring the security of intranet users and servers. Intranet users fail to download important software from the web server. It is found that the software (virus name: EICAR.Test.FILE.1) is blocked because it is identified as a virus by the device. Having confirmed the importance of the software and the trustworthiness of the software source, the administrator temporarily permits the virus file to ensure that users can successfully download the software.</p>
+<div class="fignone" id="EN-US_TASK_0000001564005001__fig1860110553321"><a name="EN-US_TASK_0000001564005001__fig1860110553321"></a><a name="fig1860110553321"></a><span class="figcap"><b>Figure 1 </b>Antivirus network diagram</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001563884741.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564005001__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure an IP address for each interface, assign interfaces to security zones, and complete basic parameter settings.</li><li>Configure antivirus profiles.<ul><li>Configure the antivirus profile <strong>profile_http_pop3</strong>, set matching conditions and response actions for HTTP and POP3, set the file types for detection to all, and configure virus exception with virus name EICAR.Test.FILE.1 in the profile.</li><li>Configure the antivirus profile <strong>profile_ftp</strong>, set matching conditions and response actions for FTP, and set the file types for detection to all.</li></ul>
+</li><li>Configure a security policy for the traffic from the Trust zone to the Untrust zone, and from the Untrust zone to the DMZ, respectively. Then, reference the antivirus profiles in the policies respectively.<ul><li>Configure the security policy <strong>policy_sec_1</strong> for the traffic from the Trust zone to the Untrust zone and reference the antivirus profile <strong>profile_http_pop3</strong> in the policy to detect and defend against viruses in files and mails downloaded by intranet users from the Internet.</li><li>Configure the security policy <strong>policy_sec_2</strong> for the traffic from the DMZ to the Untrust zone and reference the antivirus profile <strong>profile_ftp</strong> in the policy to detect and defend against viruses in files received by the intranet FTP server from the Internet.</li></ul>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564005001__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an IP address for each interface, assign interfaces to security zones, and complete basic parameter settings.</span><ol type="a"><li class="substepexpand"><span>Configure an IP address for <span>10GE</span><span>0/0/1</span>, and add the interface to the Untrust zone.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ip address 1.1.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>firewall zone untrust</strong>
+[DeviceA-zone-untrust] <strong>add interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-zone-untrust] <strong>quit</strong></pre>
+</p></li><li class="substepexpand"><span>Configure an IP address for <span>10GE</span><span>0/0/2</span>, and add the interface to the DMZ.</span><p><pre class="screen">[DeviceA] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.2.0.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[DeviceA] <strong>firewall zone dmz</strong>
+[DeviceA-zone-dmz] <strong>add interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-zone-dmz] <strong>quit</strong></pre>
+</p></li><li class="substepexpand"><span>Configure an IP address for <span>10GE</span><span>0/0/3</span>, and add the interface to the Trust zone.</span><p><pre class="screen">[DeviceA] <strong>interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>ip address 10.3.0.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[DeviceA] <strong>firewall zone trust</strong>
+[DeviceA-zone-trust] <strong>add interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceA-zone-trust] <strong>quit</strong></pre>
+</p></li></ol>
+</li><li><span>Configure antivirus profiles.</span><p><ol type="a"><li>Configure the antivirus profile for HTTP and POP3 and add virus name EICAR.Test.FILE.1 as an exception in the profile. The antivirus profile applies only to HTTP and POP3. Therefore, disable virus detection for other protocols.<pre class="screen">[DeviceA] <strong>profile type av name profile_http_pop3</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>http-detect direction download action block</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>pop3-detect enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>exception av-signature-name EICAR.Test.FILE.1</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo ftp-detect</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo smtp-detect</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo imap-detect</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo nfs-detec</strong><strong>t</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo smb-detect</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>quit</strong></pre>
+</li><li>Configure the antivirus profile for FTP. The antivirus profile applies only to FTP. Therefore, disable virus detection for other protocols.<pre class="screen">[DeviceA] <strong>profile type av name profile_ftp</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>ftp-detect direction upload action block</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo http-detect</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo smtp-detect</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo pop3</strong><strong>-detect</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo imap-detect</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo nfs-detec</strong><strong>t</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>undo smb-detect</strong><strong> enable</strong>
+[DeviceA-profile-av-profile_http_pop3] <strong>quit</strong></pre>
+</li></ol>
+</p></li><li><span>Configure security policies.</span><p><ol type="a"><li>Configure a security policy for the traffic from the Trust zone to the Untrust zone, and reference the default antivirus profile <strong>default</strong>.<pre class="screen">[DeviceA] <strong>security-policy</strong>
+[DeviceA-policy-security] <strong>rule name policy_sec_1</strong>
+[DeviceA-policy-security-rule-policy_sec_1] <strong>source-zone trust</strong>
+[DeviceA-policy-security-rule-policy_sec_1] <strong>destination-zone untrust</strong>
+[DeviceA-policy-security-rule-policy_sec_1] <strong>source-address 10.3.0.0 24</strong>
+[DeviceA-policy-security-rule-policy_sec_1] <strong>action permit</strong>
+[DeviceA-policy-security-rule-policy_sec_1] <strong>profile av profile_http_pop3</strong>
+[DeviceA-policy-security-rule-policy_sec_1] <strong>quit</strong></pre>
+</li><li>Configure a security policy for traffic from the DMZ to the Untrust zone, and reference the default antivirus profile <strong>default</strong>.<pre class="screen">[DeviceA-policy-security] <strong>rule name policy_sec_2</strong>
+[DeviceA-policy-security-rule-policy_sec_2] <strong>source-zone </strong><strong>dmz</strong>
+[DeviceA-policy-security-rule-policy_sec_2] <strong>destination-zone </strong><strong>untrust</strong>
+[DeviceA-policy-security-rule-policy_sec_2] <strong>source-address 10.2.0.0 24</strong>
+[DeviceA-policy-security-rule-policy_sec_2] <strong>action permit</strong>
+[DeviceA-policy-security-rule-policy_sec_2] <strong>profile av profile_ftp</strong>
+[DeviceA-policy-security-rule-policy_sec_2] <strong>quit</strong>
+[DeviceA-policy-security] <strong>quit</strong></pre>
+</li></ol>
+</p></li><li><span>Commit the configuration in the system view.</span><p><pre class="screen">[<span class="keyword">DeviceA</span><span class="keyword"></span>] <strong>engine configuration commit</strong>
+Info: The operation may last for several minutes, please wait. Try "display engine information" for detail.
+[<span class="keyword">DeviceA</span>] 
+Info: AV submitted configurations successfully.
+Info: Engine configuration is complied successfully.</pre>
+</p></li><li><span>Save the configuration, so it can be automatically loaded during the next startup of the device.</span><p><pre class="screen">[DeviceA] <strong>quit</strong> 
+&lt;DeviceA&gt; <strong>save</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564005001__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>When an intranet user downloads an infected mail using POP3, the device generates a virus threat log.</li><li>When an Internet user uploads an infected file using FTP, the upload connection is blocked and the device generates a virus threat log.</li><li>Intranet users can download important software infected with virus EICAR.Test.FILE.1.</li><li>To view antivirus statistics, run the <b><span class="cmdqueryname">display file-frame statistics</span></b>  [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] command.</li></ul>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001564005001__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen"># 
+sysname DeviceA 
+# 
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.1.1 255.255.255.0 
+# 
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.2.0.1 255.255.255.0 
+# 
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.3.0.1 255.255.255.0 
+# 
+firewall zone trust 
+ add interface <span>10GE</span><span>0/0/3</span> 
+# 
+firewall zone untrust 
+ add interface <span>10GE</span><span>0/0/1</span> 
+# 
+firewall zone dmz 
+ add interface <span>10GE</span><span>0/0/2</span> 
+# 
+profile type av name profile_http_pop3
+ http-detect direction download action block
+ undo ftp-detect enable
+ undo smtp-detect enable
+ undo imap-detect enable
+ undo nfs-detect enable
+ undo smb-detect enable
+ exception av-signature-name EICAR.Test.FILE.1 action allow
+profile type av name profile_ftp
+ undo http-detect enable
+ ftp-detect direction upload action block
+ undo smtp-detect enable
+ undo pop3-detect enable
+ undo imap-detect enable
+ undo nfs-detect enable
+ undo smb-detect enable
+# 
+security-policy 
+ rule name policy_sec_1 
+  source-zone trust 
+  destination-zone untrust 
+  source-address 10.3.0.0 mask 255.255.255.0 
+  profile av profile_http_pop3 
+  action permit 
+ rule name policy_sec_2 
+  source-zone dmz 
+  destination-zone untrust
+  source-address 10.2.0.0 mask 255.255.255.0 
+  profile av profile_ftp 
+  action permit  </pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_av_cfg_0001.html">Antivirus Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_av_cfg_0012.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

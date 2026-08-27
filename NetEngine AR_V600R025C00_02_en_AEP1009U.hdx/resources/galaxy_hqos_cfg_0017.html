@@ -1,0 +1,80 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Parent and Child Traffic Policy Configuration Model">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0041.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0018.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563880533">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Parent and Child Traffic Policy Configuration Model</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563880533"></a><a name="EN-US_CONCEPT_0000001563880533"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Parent and Child Traffic Policy Configuration Model</h1>
+<div><p>HQoS supports two configuration models: parent and child traffic policy configuration model and class-based queuing (CBQ) configuration model. In the parent and child traffic policy configuration model, users and services are defined through the Modular QoS Command-Line Interface (MQC). QoS parameters are defined for FQs and SQs in child traffic policies and the parent traffic policy, respectively. In addition, child traffic policies are defined in traffic behaviors of the parent traffic policy to associate the FQs and SQs. <a href="#EN-US_CONCEPT_0000001563880533__fig18151982080">Figure 1</a> shows the parent and child traffic policy configuration model.</p>
+<p>The parent and child traffic policy configuration model can be used for queue scheduling HQoS and hierarchical CAR HQoS.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880533__fig18151982080"><a name="EN-US_CONCEPT_0000001563880533__fig18151982080"></a><a name="fig18151982080"></a><span class="figcap"><b>Figure 1 </b>Parent and child traffic policy configuration model</span><br><span><img class="vsd" src="figure/en-us_image_0000001563880585.png" width="NaN" height="NaN"></span></div>
+<p>The configuration logic of the parent and child traffic policy configuration model is as follows:</p>
+<ol><li>Configure child traffic policies.<ol type="a"><li>Configure traffic classifiers for FQs to differentiate services.</li><li>Configure traffic behaviors for FQs and define QoS parameters in the traffic behaviors.</li><li>Configure an FQ traffic policy and bind the traffic classifiers to the traffic behaviors in the traffic policy.</li></ol>
+</li><li>Configure the parent traffic policy.<ol type="a"><li>Configure traffic classifiers for SQs to differentiate users.</li><li>Configure traffic behaviors for SQs and define QoS parameters in the traffic behaviors.</li><li>Reference the child traffic policies configured in the previous step in the traffic behaviors of the parent traffic policy.</li><li>Configure an SQ traffic policy and bind the traffic classifiers to the traffic behaviors in the traffic policy.</li></ol>
+</li><li>Apply the parent traffic policy to an interface.</li></ol>
+<div class="section"><h4 class="sectiontitle">Process of Matching Packets Against the Parent Traffic Policy and Child Traffic Policies</h4><p>After a traffic policy containing a parent traffic policy and child traffic policies is applied to an outbound interface, the system matches the packets to be forwarded on the interface against rules in the parent traffic policy and child traffic policies, according to which it then determines the subsequent actions for the packets. <a href="#EN-US_CONCEPT_0000001563880533__fig88661832184311">Figure 2</a> shows the process of matching packets against the parent traffic policy and child traffic policies.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880533__fig88661832184311"><a name="EN-US_CONCEPT_0000001563880533__fig88661832184311"></a><a name="fig88661832184311"></a><span class="figcap"><b>Figure 2 </b>Process of matching packets against the parent traffic policy and child traffic policies</span><br><span><img class="vsd" src="figure/en-us_image_0000001512681458.png" width="NaN" height="NaN"></span></div>
+<p>The device first matches packets against rules in the parent traffic policy, and then against rules in child traffic policies. In this way, it determines the FQ that packets are to be placed into. The device then performs HQoS scheduling based on the queue association relationship, scheduling parameters, and shaping parameters.</p>
+<p>To ensure packets that do not match the parent traffic policy or child traffic policies can be forwarded normally, the device automatically generates the default parent and child traffic policies after the traffic policy containing the parent and child traffic policies is applied to an interface. <a href="#EN-US_CONCEPT_0000001563880533__fig766115214352">Figure 3</a> shows the three types of queue association relationships.</p>
+<p>Based on the policy matching result, the device places packets into queues as follows:</p>
+<ul><li>Queue association relationship 1: association between the FQ and SQ<p>A packet that matches both the parent traffic policy and a child traffic policy is placed into the FQ and then the SQ.</p>
+</li><li>Queue association relationship 2: association between default FQ Y and the SQ<p>A packet that matches the parent traffic policy but not child traffic policies is placed into default FQ Y and then the SQ.</p>
+</li><li>Queue association relationship 3: association between default FQ X and the default SQ<p>A packet that matches neither the parent traffic policy nor child traffic policies is placed into default FQ X and then the default SQ.</p>
+</li></ul>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880533__fig766115214352"><a name="EN-US_CONCEPT_0000001563880533__fig766115214352"></a><a name="fig766115214352"></a><span class="figcap"><b>Figure 3 </b>Parent and child traffic policy configuration model - three types of queue association relationships</span><br><span><img class="vsd" src="figure/en-us_image_0000001512681454.png" width="NaN" height="NaN"></span></div>
+<p><a href="#EN-US_CONCEPT_0000001563880533__fig8619134385319">Figure 4</a> shows the queue association relationships between multiple FQs and SQs in actual applications.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880533__fig8619134385319"><a name="EN-US_CONCEPT_0000001563880533__fig8619134385319"></a><a name="fig8619134385319"></a><span class="figcap"><b>Figure 4 </b>Parent and child traffic policy configuration model - queue association relationships between multiple FQs and SQs</span><br><span><img class="vsd" src="figure/en-us_image_0000001512841046.png" width="NaN" height="NaN"></span></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_hqos_cfg_0003.html">Understanding HQoS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_hqos_cfg_0041.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_hqos_cfg_0018.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

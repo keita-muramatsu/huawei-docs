@@ -1,0 +1,282 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a WPA3-802.1X Security Policy (Fat AP)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_security_cfg_fatap_0036.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_security_cfg_fatap_0032.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_security_cfg_fatap_0034.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="WLAN Security">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002193152362">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a WPA3-802.1X Security Policy (Fat AP)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002193152362"></a><a name="EN-US_TASK_0000002193152362"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a WPA3-802.1X Security Policy (Fat AP)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002193152362__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>Without a proper security policy deployed, a WLAN may be exposed to security risks due to its openness. To meet the enterprise's high security requirements, you can configure a WPA3 security policy, 802.1X authentication, and AES encryption, and use an RADIUS server to authenticate identities of STAs. The AC must be configured to work in EAP relay mode, so the AC can support various 802.1X authentication protocols. For details about the basic networking example, see <a href="galaxy_wlan_sta_management_cfg_0001_fatap.html">WLAN STA Management Configuration</a>.</p>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Network diagram of the WPA3-802.1X security policy configuration</span><br><span><img src="figure/en-us_image_0000002202661382.png" width="NaN" height="NaN"></span></div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 represents MultiGE0/0/0.</p>
+</div></div>
+<p><a href="#EN-US_TASK_0000002193152362__table332665030190921">Table 1</a> provides an example of data planning.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000002193152362__table332665030190921"></a><a name="table332665030190921"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000002193152362__table332665030190921" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Data planning</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="18.89%" id="mcps1.3.1.6.2.3.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="81.11%" id="mcps1.3.1.6.2.3.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.3.1.6.2.3.1.1 "><p>RADIUS server</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.3.1.6.2.3.1.2 "><p>Name of the RADIUS server template: <strong>radius1</strong>; server address: 10.23.200.1; authentication port number: 1812; accounting port number: 1813; shared key: <strong>YsHsjx_202206</strong>; authentication scheme: RADIUS; accounting scheme: RADIUS</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.3.1.6.2.3.1.1 "><p>Service VLAN for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.3.1.6.2.3.1.2 "><p>VLAN 100</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.3.1.6.2.3.1.1 "><p>DHCP server</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.3.1.6.2.3.1.2 "><p>Fat AP functioning as a DHCP server to assign IP addresses to STAs</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.3.1.6.2.3.1.1 "><p>IP address pool for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.3.1.6.2.3.1.2 "><p>VLANIF 100: 192.168.100.2–192.168.100.254/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.3.1.6.2.3.1.1 "><p>AP management information</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.3.1.6.2.3.1.2 "><ul><li>AP ID: 0, which is fixed at 0 for a Fat AP</li><li>Referenced profiles: VAP profile <strong>wlan-vap</strong> and regulatory domain profile <strong>default</strong></li><li>AP group: <strong>built_in_ap</strong>, which a Fat AP joins by default</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.3.1.6.2.3.1.1 "><p>Regulatory domain profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.3.1.6.2.3.1.2 "><ul><li>Name: <strong>default</strong></li><li>Country code: CN</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.3.1.6.2.3.1.1 "><p>SSID profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.3.1.6.2.3.1.2 "><ul><li>Name: <strong>wlan-ssid</strong></li><li>SSID name: <strong>wlan-net</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.3.1.6.2.3.1.1 "><p>Security profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.3.1.6.2.3.1.2 "><ul><li>Name: <strong>wlan-security</strong></li><li>Security policy: WPA3-802.1X</li><li>Password: <span><strong>YsHsjx_202206</strong></span></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.3.1.6.2.3.1.1 "><p>VAP profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.3.1.6.2.3.1.2 "><ul><li>Name: <strong>wlan-vap</strong></li><li>Service VLAN: VLAN 100</li><li>Referenced profiles: SSID profile <strong>wlan-ssid</strong> and security profile <strong>wlan-security</strong></li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002193152362__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure RADIUS authentication parameters and bind them to an authentication domain.</li><li>Configure an 802.1X access profile to manage 802.1X access control parameters.</li><li>Configure an authentication profile and bind it to an 802.1X access profile and the authentication domain.</li><li>Configure STA access services so that STAs can access the WLAN properly.</li><li>Configure a WPA3 security policy using 802.1X authentication and AES-GCM encryption in a security profile.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002193152362__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure RADIUS authentication parameters.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Ensure that the RADIUS server address, port number, and shared key are correctly configured and are the same as those on the RADIUS server.</p>
+</div></div>
+<p># Create a RADIUS server template.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname FAT AP</strong>
+[FAT AP] <strong>radius-server template radius1</strong>
+[FAT AP-radius-radius1] <strong>radius-server authentication 10.23.200.1 1812</strong>
+[FAT AP-radius-radius1] <strong>radius-server accounting 10.23.200.1 1813</strong>
+[FAT AP-radius-radius1] <strong>radius-server shared-key cipher YsHsjx_202206</strong>
+Warning: The shared-key complexity is low. It is recommended that the password contain at least sixteen characters and be a combination of at least two of the following categories: Uppercase letters &lt;A-Z&gt;; Lowercase letters &lt;a-z&gt;; Numerals &lt;0-9&gt;; Symbols (all characters not defined as letters or numerals), such as !, $, #, and %. Continue? [Y/N]:<strong>y</strong>
+Info: The shared key is not automatically negotiated by the two communication parties, please update the shared key periodically to prevent key leakage.
+[FAT AP-radius-radius1] <strong>quit</strong></pre>
+</p><p><div class="p"># Configure an authentication scheme that uses RADIUS authentication.<pre class="screen">[FAT AP] <strong>aaa</strong>
+[FAT AP-aaa] <strong>authentication-scheme scheme1</strong>
+[FAT AP-aaa-authen-scheme1] <strong>authentication-mode radius</strong>
+[FAT AP-aaa-authen-scheme1] <strong>quit</strong></pre>
+</div>
+<p># Configure an accounting scheme that uses RADIUS accounting.</p>
+<pre class="screen">[FAT AP-aaa] <strong>accounting-scheme scheme2</strong>
+[FAT AP-aaa-accounting-scheme2] <strong>accounting-mode radius</strong>
+[FAT AP-aaa-accounting-scheme2] <strong>accounting realtime 15</strong>
+[FAT AP-aaa-accounting-scheme2] <strong>quit</strong></pre>
+<p># Create the authentication domain <strong>example.com</strong> and bind the authentication scheme, the accounting scheme, and the RADIUS server template to the authentication domain.</p>
+<pre class="screen">[FAT AP-aaa] <strong>domain example.com</strong>
+[FAT AP-aaa-domain-example.com] <strong>authentication-scheme scheme1</strong>
+[FAT AP-aaa-domain-example.com]<strong> accounting-scheme scheme2</strong>
+[FAT AP-aaa-domain-example.com] <strong>radius-server radius1</strong>
+[FAT AP-aaa-domain-example.com] <strong>quit</strong>
+[FAT AP-aaa] <strong>quit</strong></pre>
+</p></li><li><span>Configure a route from the Fat AP to the server (assume that the IP address of the upstream device connected to the Fat AP is 1.1.1.2).</span><p><pre class="screen">[FAT AP] <strong>ip route-static 10.23.200.0 255.255.255.0 1.1.1.2</strong></pre>
+</p></li><li><span>Configure the 802.1X access profile <strong>d1</strong>.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>By default, an 802.1X access profile uses EAP authentication. Ensure that the RADIUS server supports the EAP protocol. Otherwise, the RADIUS server cannot process 802.1X authentication requests.</p>
+</div></div>
+<pre class="screen">[FAT AP] <strong>dot1x-access-profile name d1</strong>
+[FAT AP-dot1x-access-profile-d1] <strong>quit</strong></pre>
+</p></li><li><span>Configure the authentication profile <strong>p1</strong>, bind the 802.1X access profile to the authentication profile, and specify a forcible authentication domain.</span><p><pre class="screen">[FAT AP] <strong>authentication-profile name p1</strong>
+[FAT AP-authentication-profile-p1] <strong>dot1x-access-profile d1</strong>
+[FAT AP-authentication-profile-p1] <strong>access-domain example.com force</strong>
+[FAT AP-authentication-profile-p1] <strong>quit</strong></pre>
+</p></li><li><span>Configure WLAN service parameters.</span><p><p># Create the security profile <span class="parmvalue"><b>wlan-security</b></span> and set the security policy to WPA3-802.1X.</p>
+<pre class="screen">[FAT AP] <strong>wlan</strong>
+[FAT AP-wlan] <strong>security-profile name wlan-security</strong>
+[FAT AP-wlan-sec-prof-wlan-security] <strong>security wpa3 dot1x gcmp256</strong>
+Warning: This action may cause service interruption. Continue? [Y/N]:<strong>y</strong>
+Info: PMF must be mandatory when security policy is WPA3-SAE, WPA3-802.1x, OWE or SEW-CERT.
+[FAT AP-wlan-sec-prof-wlan-security] <strong>quit</strong></pre>
+<p># Create the SSID profile <span class="parmvalue"><b>wlan-ssid</b></span> and set the SSID name to <span class="parmvalue"><b>wlan-net</b></span>.</p>
+<pre class="screen">[FAT AP-wlan] <strong>ssid-profile name wlan-ssid</strong>
+[FAT AP-wlan-ssid-prof-wlan-ssid] <strong>ssid wlan-net</strong>
+[FAT AP-wlan-ssid-prof-wlan-ssid] <strong>quit</strong></pre>
+<p># Create the VAP profile <span class="parmvalue"><b>wlan-vap</b></span>, set the service VLAN, and bind the security profile and SSID profile to the VAP profile.</p>
+<pre class="screen">[FAT AP-wlan] <strong>vap-profile name wlan-vap</strong>
+[FAT AP-wlan-vap-prof-wlan-vap] <strong>service-vlan vlan-id 100</strong>
+Warning: This action may cause service interruption. Continue? [Y/N]:<strong>y</strong>
+[FAT AP-wlan-vap-prof-wlan-vap] <strong>security-profile wlan-security</strong>
+Warning: This action may cause service interruption. Continue? [Y/N]:<strong>y</strong>
+[FAT AP-wlan-vap-prof-wlan-vap] <strong>authentication-profile p1</strong>
+Warning: This action may cause service interruption. Continue? [Y/N]:<strong>y</strong>
+[FAT AP-wlan-vap-prof-wlan-vap] <strong>ssid-profile wlan-ssid</strong>
+Warning: This action may cause service interruption. Continue? [Y/N]:<strong>y</strong>
+[FAT AP-wlan-vap-prof-wlan-vap] <strong>quit</strong></pre>
+<p># Bind the VAP profile <span class="parmvalue"><b>wlan-vap</b></span> to radios 0 and 1 of the AP with the ID of 0.</p>
+<pre class="screen">[FAT AP-wlan] <strong>ap-id 0</strong>
+[FAT AP-wlan-ap-0] <strong>vap-profile wlan-vap wlan 1 radio 0</strong>
+Warning: This operation will delete radio0's VAP in active state and make users offline, continue? [Y/N]:<strong>y</strong>
+[FAT AP-wlan-ap-0] <strong>vap-profile wlan-vap wlan 1 radio 1</strong>
+Warning: This operation will delete radio1's VAP in active state and make users offline, continue? [Y/N]:<strong>y</strong>
+[FAT AP-wlan-ap-0] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002193152362__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Run the <b><span class="cmdqueryname">display security-profile</span></b> command to check information about a security profile.</p>
+<pre class="screen">[FAT AP] <strong>display security-profile name </strong><strong>wlan-security</strong>
+------------------------------------------------------------  
+Security policy               : WPA3 802.1x                      
+Encryption                    : GCMP256                           
+PMF                           : mandatory                       
+------------------------------------------------------------
+WPA's configuration
+PTK update                    : disable
+PTK update interval(s)        : 43200
+Group key negotiation         : enable
+------------------------------------------------------------
+WAPI's configuration
+PKI realm                     : -
+Authentication server IP      : -
+WAI timeout(s)                : 60
+BK update interval(s)         : 43200
+BK lifetime threshold(%)      : 70
+USK update method             : Time-based
+USK update interval(s)        : 86400
+MSK update method             : Time-based
+MSK update interval(s)        : 86400
+Cert auth retrans count       : 3
+USK negotiate retrans count   : 3
+MSK negotiate retrans count   : 3
+------------------------------------------------------------</pre>
+<p># Run the <b><span class="display vap">display vap all</span></b> command to check the VAP authentication mode based on the <strong>Auth type</strong> field.</p>
+<p># Connect STAs to the WLAN with the SSID <strong>wlan-net</strong>. After the correct user name and password are entered on an 802.1X client, the STA is authenticated successfully and can access the WLAN.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002193152362__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li>FAT AP<pre class="screen">#
+sysname FAT AP
+#
+vlan batch 100
+#
+interface Vlanif100
+ ip address 192.168.100.1 255.255.255.0
+ dhcp select interface
+<sup>#</sup>
+<sup>interface VGE0/0/0                                                                                                                  </sup>
+<sup> portswitch                                                                                                                         </sup>
+<sup> description Connected to built_in_ap                                                                                               </sup>
+<sup> port hybrid pvid vlan 4094                                                                                                         </sup>
+<sup> port hybrid tagged vlan 1 100                                                                                                      </sup>
+<sup> port hybrid untagged vlan 4094</sup>
+<sup>#</sup>
+authentication-profile name p1
+ dot1x-access-profile d1
+ access-domain example.com force
+#
+dot1x-access-profile name d1
+#
+radius-server template radius1
+ radius-server shared-key cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!Cd/`W03KjAwAqn64E&lt;\TxGC_SOri&lt;2BP\A+!!!!!2jp5!!!!!!B!!!!Oe2HMc-&gt;XMa#TLDZUaJBFJtm#XVj*E:S*|(N7`J1B:3QY!!!!!!!!!!!!!!!%+%# 
+ radius-server authentication 10.23.200.1 1812 weight 80
+ radius-server accounting 10.23.200.1 1813 weight 80
+#
+aaa
+ authentication-scheme scheme1
+  authentication-mode radius
+ accounting-scheme scheme2
+  accounting-mode radius
+  accounting realtime 15
+ domain example.com
+  authentication-scheme scheme1
+  accounting-scheme scheme2
+  radius-server radius1
+#
+ip route-static 10.23.200.0 255.255.255.0 1.1.1.2 
+#
+wlan
+ security-profile name wlan-security
+  security wpa3 dot1x gcmp256
+ ssid-profile name wlan-ssid
+  ssid wlan-net
+ vap-profile name wlan-vap
+  service-vlan vlan-id 100
+  ssid-profile wlan-ssid
+  security-profile wlan-security
+  authentication-profile p1
+ ap-id 0
+   vap-profile wlan-vap wlan 1 radio 0
+   vap-profile wlan-vap wlan 1 radio 1
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_security_cfg_fatap_0036.html">Configuration Examples for WLAN Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_wlan_security_cfg_fatap_0032.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_wlan_security_cfg_fatap_0034.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

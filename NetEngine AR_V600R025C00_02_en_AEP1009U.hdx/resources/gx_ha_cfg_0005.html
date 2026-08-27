@@ -1,0 +1,89 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Manual Active/Standby Switchover">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="gx_ha_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="gx_ha_cfg_0004.html">
+<meta name="DC.Relation" scheme="URI" content="gx_ha_cfg_0007.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Intra-chassis High Availability">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Intra-chassis High Availability">
+<meta name="featuretype" content="High Availability">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512849858">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Manual Active/Standby Switchover</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512849858"></a><a name="EN-US_TASK_0000001512849858"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Manual Active/Standby Switchover</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512849858__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p">
+<p>If an automatic active/standby main control board switchover fails to be performed because the triggering conditions are not met (for example, the CPU usage is high) and <strong>Ready</strong> is displayed in the <strong>Switchover State</strong> field, you can manually perform an active/standby main control board switchover.</p>
+<div class="p">Before performing an active/standby main control board switchover, check whether the switchover conditions are met. Do not perform an active/standby switchover on a device in any of the following situations:<ul><li><p>The file system is being operated. For example, a file or directory in the CF card is being created, deleted, or saved.</p>
+</li><li>The active and standby main control boards have different models.</li></ul>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>During a device's active/standby main control board switchover, do not insert, remove, or reset active and standby main control boards, service interface boards, power modules, or fan modules. Otherwise, the device may restart or fail.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512849858__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Check whether the conditions for an active/standby main control board switchover are met.</span><p><pre class="screen"><b><span class="cmdqueryname">display switchover state </span></b></pre>
+<p>You can perform an active/standby device switchover only when <strong>Ready</strong> is displayed in the <strong>Switchover State</strong> field.</p>
+</p></li><li><span>Enter the system view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">system-view</span></b></strong></pre>
+</p></li><li><span>Enable the active/standby main control board switchover function.</span><p><pre class="screen"><b><span class="cmdqueryname">slave switchover enable</span></b></pre>
+<p>By default, this function is enabled.</p>
+</p></li><li><span>Manually perform an active/standby main control board switchover.</span><p><pre class="screen"><b><span class="cmdqueryname">slave switchover</span></b> [ <strong>slot</strong> <i><span class="varname">slot-id</span></i> ]</pre>
+<p>In a scenario where two main control boards are used, you can choose any of the following methods to ensure a fast service switchover after an active/standby switchover:</p>
+<ol type="a"><li id="EN-US_TASK_0000001512849858__li208195101810"><a name="EN-US_TASK_0000001512849858__li208195101810"></a><a name="li208195101810"></a>You can add an interface card to connect GE1/0/1 on Device1 to GE0/0/1 on Device2. <a href="#EN-US_TASK_0000001512849858__fig173977405292">Figure 1</a> shows the solution in scenario 1.<div class="fignone" id="EN-US_TASK_0000001512849858__fig173977405292"><a name="EN-US_TASK_0000001512849858__fig173977405292"></a><a name="fig173977405292"></a><span class="figcap"><b>Figure 1 </b>Active/Standby switchover scenario 1</span><br><span><img src="figure/en-us_image_0000002058663225.png"></span></div>
+</li><li>The AR8700 can also connect to GE0/0/1 of the peer device through a panel port.<p>For the AR6700-H, the panel ports are the outbound interfaces of the two main control boards. The interfaces are physically isolated. When an active/standby switchover is performed, service traffic is switched over. Connecting to GE0/0/1 of the peer device according to the <a href="#EN-US_TASK_0000001512849858__li208195101810">solution a</a> is recommended. To use panel ports as active/standby service ports, deploy Device3 (switch) between Device1 (AR) and Device2 and add the ports of the AR device and Device2 to the same VLAN through the switch. In addition, the two panel ports must be added to the same switch. <a href="#EN-US_TASK_0000001512849858__fig76801144195613">Figure 2</a> shows the solution in scenario 2.</p>
+<div class="fignone" id="EN-US_TASK_0000001512849858__fig76801144195613"><a name="EN-US_TASK_0000001512849858__fig76801144195613"></a><a name="fig76801144195613"></a><span class="figcap"><b>Figure 2 </b>Active/Standby switchover scenario 2</span><br><span><img src="figure/en-us_image_0000002357670320.png"></span></div>
+<ol class="substepthirdol"><li>Connect GE0/0/1 interfaces on Device1's main control boards 1 and 2 to GE0/0/1 and GE0/0/2 on Device3, respectively.</li><li>Connect GE0/0/3 on Device3 to GE0/0/1 on Device2.</li><li>Add GE0/0/1, GE0/0/2, and GE0/0/3 on Device3 to the same VLAN.</li></ol>
+</li></ol>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="gx_ha_cfg_0001.html">Intra-chassis High Availability Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="gx_ha_cfg_0004.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="gx_ha_cfg_0007.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

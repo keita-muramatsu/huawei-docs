@@ -1,0 +1,165 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Configuring Signatures">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ips_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="security_ips_cfg_0014.html">
+<meta name="DC.Relation" scheme="URI" content="security_ips_cfg_0016.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_XTASK_0000001512834214">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Configuring Signatures</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_XTASK_0000001512834214"></a><a name="EN-US_XTASK_0000001512834214"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Configuring Signatures</h1>
+<div><div class="section"><h4 class="sectiontitle">Configuring the States of Predefined Signatures</h4>
+<div class="p"><p>The state of a predefined signature can be enabled or disabled. You can change their state either in batches or individually. </p>
+<p>If you find that some attacks are falsely reported when viewing threat logs, you can change the state of the corresponding signature to disabled.</p>
+</div>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Set the states of predefined signatures as required.</span><p><ul><li>Set the states of all predefined signatures.<pre class="screen"><b><span class="cmdqueryname">ips signature-state</span></b> { <strong><span>enabled</span></strong> | <strong><span>disabled</span></strong> }</pre>
+</li><li>Set the state of a specific predefined signature.<pre class="screen"><b><span class="cmdqueryname">ips signature-state</span></b> <strong><span>signature-id</span></strong> <i><span class="varname">signature-id</span></i> { <strong><span>enabled</span></strong> | <strong><span>disabled</span></strong> }</pre>
+</li></ul>
+</p></li><li><span>Commit the configuration.</span><p><pre class="screen"><b><span class="cmdqueryname">engine configuration commit</span></b></pre>
+</p></li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuring Actions for Predefined Signatures</h4>
+<div class="p"><p>Each predefined signature has a default action, which can be <strong>allow</strong>, <strong>alert</strong>, or <strong>block</strong>. If you want to customize the actions of predefined signatures, you can perform this configuration to modify the action for a single predefined signature or for all predefined signatures.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You can change the action to <strong>alert</strong> for all predefined signatures. However, the action cannot be set to <strong>allow</strong> or <strong>block</strong> for all pre-defined signatures. You can run the <b><span class="cmdqueryname">ips signature-state</span></b> <strong><span>disabled</span></strong> command to disable all IPS signatures.</p>
+<p>The priorities of the actions set for predefined signatures are as follows: action set for a single predefined signature &gt; action set in a batch &gt; default action.</p>
+</div></div>
+</div>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Set the predefined signature action as required.</span><p><ul><li>Set the action to <strong>alert</strong> for all predefined signatures.<pre class="screen"><b><span class="cmdqueryname">ips signature-action</span></b> <strong><span>alert</span></strong></pre>
+</li><li>Set the action of a specified predefined signature.<pre class="screen"><b><span class="cmdqueryname">ips signature-action</span></b> <strong><span>signature-id</span></strong> <i><span class="varname">signature-id</span></i> { <strong><span>allow</span></strong> | <strong><span>alert</span></strong> | <strong><span>block</span></strong> }</pre>
+</li></ul>
+</p></li><li><span>Commit the configuration.</span><p><pre class="screen"><b><span class="cmdqueryname">engine configuration commit</span></b></pre>
+</p></li></ol>
+</div>
+<div class="section" id="EN-US_XTASK_0000001512834214__xsection634109831184800"><a name="EN-US_XTASK_0000001512834214__xsection634109831184800"></a><a name="xsection634109831184800"></a><h4 class="sectiontitle">Modifying a Predefined Correlation Signature</h4>
+<div class="p"><p>Some attack behaviors are complex and cannot be accurately detected based on single-packet signature matching. In this manner, you need to perform correlation detection on packets of one or multiple data flows to detect the attacks. Correlation signatures are used to implement correlation detection. The device collects statistics on the number of times that traffic matches a correlation signature based on certain conditions. Only when the number of times that traffic matches the correlation signature exceeds the preset threshold, the device considers that an attack corresponding to this signature is detected.</p>
+<p>The device already provides predefined correlation signatures. By default, signature information contains parameters such as the threshold for the number of times that the signature is matched, time range for collecting statistics on the matching times, and whether the statistics collection is performed based on the source or destination address. If the parameter values cannot meet actual requirements, you can modify them.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You can modify a correlation signature only when you are well aware of network attacks. Incorrect correlation signatures cannot help to defend against attacks or even will interrupt normal services. Therefore, you are advised not to modify correlation signatures in most cases.</p>
+</div></div>
+</div>
+<ol><li><span>View the predefined correlation signatures provided by the device by default. The administrator can modify only the predefined correlation signatures provided by the device.</span><p><pre class="screen"><b><span class="cmdqueryname"><span>display ips-signature pre-defined associated</span></span></b> </pre>
+</p></li><li><span>In the system view, modify a predefined correlation signature based on the signature ID obtained in the previous step.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">ips associated pre-defined</span></b> <strong><span>signature-id</span></strong> <i><span class="varname">signature-id</span></i> { <strong><span>threshold</span></strong> <i><span class="varname">threshold-value</span></i> | <strong><span>interval</span></strong> <i><span class="varname">interval-value</span></i> | <span><strong><span>block-time</span></strong> <i><span class="varname">block-time</span></i> | </span><strong><span>correlateby</span></strong> { <strong><span>source</span></strong> | <strong><span>destination</span></strong> | <strong><span>source-destination</span></strong> } } *</pre>
+</p></li><li><span>Commit the configuration.</span><p><pre class="screen"><b><span class="cmdqueryname">engine configuration commit</span></b></pre>
+</p></li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuring a User-Defined Signature</h4>
+<div class="p"><p>A user-defined signature consists of basic characteristics and rules. The basic characteristics reflect the characteristics of the signature, and the basic rules reflect the matching rules of the signature.</p>
+</div>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create a user-defined signature.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">ips signature-id</span></b> </strong><em><i><span class="varname">signature-id</span></i></em></pre>
+</p></li><li><strong>Optional: </strong><span>Set the name of the user-defined signature.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">name</span></b></strong><em> <i><span class="varname">name</span></i></em></pre>
+</p></li><li><span>Configure the basic characteristics of the user-defined signature.</span><p><p>Basic characteristics describe the characteristics of the signature instead of defining the signature. These characteristics are used by the signature filter to filter signatures in batches. When matching a data flow against the signature, the system matches the data flow against signature rules instead of basic characteristic items. Therefore, basic characteristic items do not need to fully match actual intrusion information corresponding to the signature.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="20.72%" id="mcps1.3.4.3.4.2.2.1.3.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="79.28%" id="mcps1.3.4.3.4.2.2.1.3.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="20.72%" headers="mcps1.3.4.3.4.2.2.1.3.1.1 "><p>Configure a detection target for the user-defined signature.</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.28%" headers="mcps1.3.4.3.4.2.2.1.3.1.2 "><p><strong><b><span class="cmdqueryname">target</span></b></strong> { <strong><strong><span>both</span></strong></strong> | <strong><strong><span>client</span></strong></strong> | <strong><strong><span>server</span></strong></strong> }</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.72%" headers="mcps1.3.4.3.4.2.2.1.3.1.1 "><p>Configure a protocol for the user-defined signature.</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.28%" headers="mcps1.3.4.3.4.2.2.1.3.1.2 "><p><strong><b><span class="cmdqueryname">protocol</span></b></strong><em> <i><span class="varname">protocol-name</span></i></em></p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.72%" headers="mcps1.3.4.3.4.2.2.1.3.1.1 "><p>Configure a severity for the user-defined signature.</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.28%" headers="mcps1.3.4.3.4.2.2.1.3.1.2 "><p><strong><b><span class="cmdqueryname">severity</span></b></strong> { <strong><strong><span>high</span></strong></strong> | <strong><strong><span>medium</span></strong></strong> | <strong><strong><span>low</span></strong></strong> | <strong><strong><span>information</span></strong></strong> }</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.72%" headers="mcps1.3.4.3.4.2.2.1.3.1.1 "><p>Configure an action for the user-defined signature.</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.28%" headers="mcps1.3.4.3.4.2.2.1.3.1.2 "><p><strong><b><span class="cmdqueryname">action</span></b></strong> { <strong><strong><span>alert</span></strong></strong> | <strong><strong><span>block</span></strong></strong> | <strong><strong><span>allow</span></strong></strong> }</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li><li><span>Create a rule for the user-defined signature.</span><p><div class="p"><pre class="screen"><strong><b><span class="cmdqueryname">rule name</span></b></strong><em> <i><span class="varname">name</span></i></em></pre>
+</div>
+<p>Multiple rules can be configured for a user-defined signature. These rules do not affect each other and are not listed in sequence. If a packet matches at least one rule, the packet matches the signature.</p>
+</p></li><li><span>Configure check items for the user-defined signature rule.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">condition value</span></b> </strong><em>text</em></pre>
+<p>Only one check item can be configured for each rule. The IPS third-generation engine syntax provides more diversified configurations for check items.</p>
+<p>The check items for user-defined signature rules are configured in accordance with the IPS third-generation engine syntax. The IPS third-generation engine syntax greatly improves the processing efficiency while maintaining the detection accuracy of the existing syntax. It is also compatible with common syntax in the industry for better openness. For details about the IPS third-generation engine syntax, see <a href="https://isecurity.huawei.com/sec/web/ipsmanual.do" target="_blank" rel="noopener noreferrer">IPS Syntax Manual</a>.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the protocol to be detected is HTTP, you must specify both the signature string and protocol field (for example, <strong>condition value content:"abc";http_uri;</strong>). Otherwise, the detection will fail.</p>
+</div></div>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">quit</span></b></strong>
+<strong><b><span class="cmdqueryname">quit</span></b></strong></pre>
+</p></li><li><span>Commit the configuration in the system view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">engine configuration commit</span></b></strong></pre>
+<p>A new or modified user-defined signature takes effect only after you commit the configuration. To save time, you can commit the configuration after completing all operations on required user-defined signatures.</p>
+</p></li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Viewing Signature Information</h4><ul><li><span>Check information about predefined or user-defined signatures.</span><p><pre class="screen"><b><span class="cmdqueryname">display ips-signature</span></b> [ { <strong><span>pre-defined</span></strong> | <strong><span>user-defined</span></strong> } [ <strong><span>associated</span></strong> ] ] [  <strong><span>category</span></strong> { <i><span class="varname">category-name</span></i> | <strong><span>all</span></strong> } | <strong><span>os</span></strong> { <strong><span>all</span></strong> | <strong><span>android</span></strong> | <strong><span>ios</span></strong> | <strong><span>unix-like</span></strong> | <strong><span>windows</span></strong> | <strong><span>other</span></strong> } <sup>*</sup> | <strong><span>protocol</span></strong> { <i><span class="varname">protocol-name</span></i> | <strong><span>all</span></strong> } | <strong><span>severity</span></strong> { <strong><span>information</span></strong> | <strong><span>low</span></strong> | <strong><span>medium</span></strong> | <strong><span>high</span></strong> } <sup>*</sup> | <strong><span>state</span></strong> { <strong><span>disabled</span></strong> | <strong><span>enabled</span></strong> } | <strong><span>target</span></strong> { <strong><span>server</span></strong> | <strong><span>client</span></strong> | <strong><span>both</span></strong> } ] <sup>*</sup></pre>
+</p></li><li><span>Check information about a specific signature.</span><p><pre class="screen"><b><span class="cmdqueryname">display ips-signature</span></b> <i><span class="varname">ips-signature-id</span></i></pre>
+</p></li><li><span>Check the user-defined signature rule with the specified name.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">display ips signature-id</span></b></strong> <i><span class="varname">signature-id</span></i> <strong><span>rule</span></strong> { <strong><span>name</span></strong> <i><span class="varname">rule-name</span></i> | <strong><span>all</span></strong> }</pre>
+</p></li><li><span>Check the action configuration of predefined signatures.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">display ips signature-action</span></b></strong></pre>
+</p></li><li><span>Check the status of predefined signatures.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">display ips signature-state</span></b></strong></pre>
+</p></li><li><span>View the signatures that are not in the current signature database but have been configured.</span><p><pre class="screen"><b><span class="cmdqueryname">display ips-signature not-in-current-library</span></b></pre>
+</p></li><li><span>Check statistics about the top-number signatures that are most frequently matched.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">display ips-signature statistics</span></b> </strong><em>top-number</em> [ <strong>slot</strong><em> slot-id</em><strong> cpu</strong><em> cpu-id</em> ]</pre>
+</p></li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ips_cfg_0001.html">Intrusion Prevention Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ips_cfg_0014.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ips_cfg_0016.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

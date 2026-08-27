@@ -1,0 +1,106 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring DTLS">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0121.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0008.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001130623238">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring DTLS</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001130623238"></a><a name="EN-US_TASK_0000001130623238"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring DTLS</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001130623238__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In an SD-WAN EVPN scenario, a DTLS connection needs to be established between a CPE and an RR so that a management channel can be established for their information exchange. In <a href="#EN-US_TASK_0000001130623238__fig34701620151718">Figure 1</a>, the RR functions as the DTLS server, and the CPEs functions as DTLS clients.</p>
+<div class="fignone" id="EN-US_TASK_0000001130623238__fig34701620151718"><a name="EN-US_TASK_0000001130623238__fig34701620151718"></a><a name="fig34701620151718"></a><span class="figcap"><b>Figure 1 </b>DTLS management channel</span><br><span><img class="vsd" src="figure/en-us_image_0000001176742735.png" width="NaN" height="NaN"></span></div>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>For security purpose,you are not advised to use the weak security algorithm or weak security protocols provided by this feature. If you need to use the weak security algorithm or protocols, run the <strong id="EN-US_TASK_0000001130623238__en-us_topic_0198441389_b7309427153513">install feature-software WEAKEA</strong> command to install the weak security algorithm or protocol feature package WEAKEA. By default, the device provides the weak security algorithm or protocol feature package WEAKEA. For details about how to install or uninstall the feature package, see "Upgrade Maintenance Configuration" in <span>CLI Configuration Guide</span> &gt; System Management Configuration.</p>
+</div></div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001130623238__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure the RR as the DTLS server.</span><p><ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the DTLS server view.<pre class="screen"><b><span class="cmdqueryname">dtls server</span></b></pre>
+</li><li>Enable the DTLS server function.<pre class="screen"><b><span class="cmdqueryname">dtls server enable</span></b></pre>
+<p>By default, the DTLS server function is disabled.</p>
+</li><li>Configure an IP address checked by the DTLS server.<pre class="screen"><b><span class="cmdqueryname">listening-ip </span></b><i><span class="varname">ip-address</span></i> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ]
+<b><span class="cmdqueryname">listening-ipv6 </span></b><i><span class="varname">ipv6-address</span></i> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ]</pre>
+<p>By default, no IP address is checked by the DTLS server.</p>
+</li><li>Configure a port number checked by the DTLS server.<pre class="screen"><b><span class="cmdqueryname">listening-port </span></b><i><span class="varname">port</span></i></pre>
+<p>By default, no port number is checked by the DTLS server.</p>
+</li><li>(Optional) Configure a PKI realm for the DTLS server.<pre class="screen"><b><span class="cmdqueryname">pki-realm</span></b> <i><span class="varname">pki-realm-name</span></i></pre>
+<p>By default, there is a PKI realm named <strong>default</strong> on the device. This realm can be modified, but not deleted.</p>
+</li><li>(Optional) Configure the cipher suite used by the DTLS server.<pre class="screen"><b><span class="cmdqueryname">cipher-suite</span></b> { <i><span class="varname">ecdhe_rsa_aes128_gcm_sha256</span></i> | <i><span class="varname">ecdhe_rsa_aes256_gcm_sha384</span></i> | <i><span class="varname">rsa_aes_128_sha256</span></i> } *</pre>
+<p>By default, the DTLS server uses cipher suites of ecdhe_rsa_aes128_gcm_sha256 and ecdhe_rsa_aes256_gcm_sha384.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The rsa_aes_128_sha256 parameter can be used only after the weak security algorithm or protocol plug-in is installed.</p>
+</div></div>
+</li><li>(Optional) Configure the packet fragment size of the DTLS server.<pre class="screen"><b><span class="cmdqueryname">packet-length </span></b><i><span class="varname">length</span></i></pre>
+<p>By default, the packet fragment size of the DTLS server is not configured.</p>
+</li></ol>
+</p></li><li><span>Configure the CPEs as DTLS clients.</span><p><ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the DTLS client view.<pre class="screen"><b><span class="cmdqueryname">dtls client</span></b></pre>
+</li><li>Configure a connection between the DTLS client and DTLS server.<pre class="screen"><b><span class="cmdqueryname">peer system-id</span></b> <i><span class="varname">system-id</span></i> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ] { <strong><span>ip</span></strong> <i><span class="varname">ip-address</span></i> | <strong><span>ipv6</span></strong> <i><span class="varname">ipv6-address</span></i> } <strong><span>port</span></strong> <i><span class="varname">port</span></i></pre>
+<p>By default, no connection is configured between the DTLS client and DTLS server.</p>
+</li><li>(Optional) Configure a PKI realm for the DTLS client.<pre class="screen"><b><span class="cmdqueryname">pki-realm</span></b> <i><span class="varname">pki-realm-name</span></i></pre>
+<p>By default, there is a PKI realm named <strong>default</strong> on the device. This realm can be modified, but not deleted.</p>
+</li><li>(Optional) Configure the cipher suite used by the DTLS client.<pre class="screen"><b><span class="cmdqueryname">cipher-suite</span></b> { <i><span class="varname">ecdhe_rsa_aes128_gcm_sha256</span></i> | <i><span class="varname">ecdhe_rsa_aes256_gcm_sha384</span></i> | <i><span class="varname">rsa_aes_128_sha256</span></i> } *</pre>
+<p>By default, the DTLS client uses cipher suites of ecdhe_rsa_aes128_gcm_sha256 and ecdhe_rsa_aes256_gcm_sha384.</p>
+</li><li>(Optional) Configure the packet fragment size of the DTLS client.<pre class="screen"><b><span class="cmdqueryname">packet-length </span></b><i><span class="varname">length</span></i></pre>
+<p>By default, the packet fragment size of the DTLS client is not configured.</p>
+</li></ol>
+</p></li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0007.html">Configuring SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0121.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0008.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

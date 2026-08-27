@@ -1,0 +1,92 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding SA Establishment Through IKEv1 Negotiation">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0014.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0015.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0017.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001564114017">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Understanding SA Establishment Through IKEv1 Negotiation</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001564114017"></a><a name="EN-US_CONCEPT_0000001564114017"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding SA Establishment Through IKEv1 Negotiation</h1>
+<div><p>IKEv1 goes through two phases to establish SAs.</p>
+<ul><li>In phase 1, two peers negotiate and establish a secure tunnel, which is an IKE SA.</li><li>In phase 2, the two peers establish a pair of IPsec SAs for secure data transmission through the secure tunnel established in phase 1.</li></ul>
+<div class="section"><h4 class="sectiontitle">IKEv1 Phase 1</h4><p>In IKEv1 phase 1, an IKE SA needs to be established. After an IKE SA is established, all the ISAKMP messages transmitted between two IPsec peers are encrypted and authenticated. The secure tunnel established in phase 1 enables IPsec peers to communicate securely in phase 2.</p>
+<p>IKEv1 phase 1 can use either main mode or aggressive mode, as shown in <a href="#EN-US_CONCEPT_0000001564114017__fig016611203512">Figure 1</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001564114017__fig016611203512"><a name="EN-US_CONCEPT_0000001564114017__fig016611203512"></a><a name="fig016611203512"></a><span class="figcap"><b>Figure 1 </b>IKEv1 phase 1</span><br><span><img class="vsd" src="figure/en-us_image_0000001563754389.png"></span></div>
+<ul><li>The main mode requires three exchanges between the peers, totaling six ISAKMP messages. The three exchanges are described as follows:<ol><li><p>Messages 1 and 2 are used for IKE proposal exchange.</p>
+<p>An IKE proposal is a set of algorithms used to secure IKE negotiation, including encryption algorithm, authentication algorithm, DH group, and authentication method. The initiator sends one or more IKE proposals to the responder. The responder then searches for IKE proposals and sends the first matched proposal to the initiator. IKE proposals of the initiator and responder match if they have the same encryption algorithm, authentication algorithm, DH group, and authentication method.</p>
+</li><li><p>Messages 3 and 4 are used for key information exchange.</p>
+<p>The initiator and responder exchange the DH public value and nonce value to generate the IKE SA authentication key and encryption key. A nonce value is a random number that guarantees IKE SA liveness and protects against replay attacks.</p>
+</li><li>Messages 5 and 6 are used for exchanging identity and authentication information.<p>The initiator and responder use the generated keys to authenticate each other and the information exchanged in main mode.</p>
+</li></ol>
+</li><li>The aggressive mode requires only two exchanges, totaling three ISAKMP messages.<p>Messages 1 and 2 are used to negotiate an IKE proposal and exchange the DH public value, mandatory auxiliary information, and identity information. Message 2 also contains the identity information sent by the responder to the initiator for authentication. Message 3 is used by the responder to authenticate the initiator. Compared with the main mode, the aggressive mode reduces the number of exchanged messages and speeds up the negotiation. However, the aggressive mode does not encrypt identity information.</p>
+</li></ul>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001564114017__section6527163763414"><a name="EN-US_CONCEPT_0000001564114017__section6527163763414"></a><a name="section6527163763414"></a><h4 class="sectiontitle">IKEv1 Phase 2</h4><p>In IKEv1 phase 2, IPsec SAs need to be established and keys needs to be generated for securely transmitting data. This phase uses the quick mode. This mode uses the keys generated in phase 1 to verify the integrity of ISAKMP messages and identities of the initiator and responder, and to encrypt ISAKMP messages, ensuring exchange security. <a href="#EN-US_CONCEPT_0000001564114017__fig17904181612190">Figure 2</a> shows IKEv1 phase 2.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001564114017__fig17904181612190"><a name="EN-US_CONCEPT_0000001564114017__fig17904181612190"></a><a name="fig17904181612190"></a><span class="figcap"><b>Figure 2 </b>IKEv1 phase 2</span><br><span><img class="imgResize" src="figure/en-us_image_0000001564114125.png" width="270.316515" height="237.40194100000002" title="Click to enlarge"></span></div>
+<p>In IKEv1 phase 2, two IPsec SAs are established through three ISAKMP messages:</p>
+<ol><li><p>Message 1 is used by the initiator to send local security parameters and identity authentication information to the responder.</p>
+<p>Security parameters include protected data flows and parameters to be negotiated, such as an IPsec proposal. Identity authentication information includes the keys generated in phase 1 and keying materials generated in phase 2, and can be used to authenticate the peer again. An IPsec proposal is a set of protocols and algorithms used for negotiation, including the security protocol, encryption algorithm, and authentication algorithm.</p>
+</li><li><p>Message 2 is used by the responder to send acknowledged security parameters and identity authentication information, and to generate new keys.</p>
+<p>The encryption key and authentication key used for secure data transmission over IPsec SAs are generated based on the keys generated in phase 1 and parameters such as the SPI and protocol. This ensures that each IPsec SA has unique encryption and authentication keys. If PFS is enabled, the DH algorithm is used again to generate shared keys, based on which the encryption key and authentication key are calculated. Therefore, during parameter negotiation, a DH key group needs to be negotiated for PFS.</p>
+</li><li>Message 3 is used by the initiator to send acknowledged information to communicate with the responder. IKEv1 negotiation then ends and IPsec SAs are established.</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0014.html">Configuring IKE Negotiation
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0015.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0017.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

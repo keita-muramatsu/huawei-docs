@@ -1,0 +1,266 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring BGP Load Balancing">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002230426533.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0064.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0072.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001176743599">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring BGP Load Balancing</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001176743599"></a><a name="EN-US_TASK_0000001176743599"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring BGP Load Balancing</h1>
+<div class="taskbody" id="taskbody1581421392415"><div class="context"><a name="EN-US_TASK_0000001176743599__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001176743599__section_dc_vrp_bgp_cfg_308101"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001176743599__p1107619312214038">On the network shown in <a href="#EN-US_TASK_0000001176743599__fig_dc_vrp_bgp_cfg_308101">Figure 1</a>, all devices run BGP. DeviceA resides in AS 100. DeviceB and DeviceC reside in AS 300. DeviceD resides in AS 200. EBGP connections are established between DeviceA and DeviceB, between DeviceA and DeviceC, between DeviceD and DeviceB, and between DeviceD and DeviceC. On DeviceA, there are two BGP routes to 172.16.1.0/24. This means that traffic destined for 172.16.1.0/24 can be forwarded through DeviceB and DeviceC. It is required that BGP load balancing be configured to fully utilize network resources and reduce network congestion.</p>
+<div class="fignone" id="EN-US_TASK_0000001176743599__fig_dc_vrp_bgp_cfg_308101"><a name="EN-US_TASK_0000001176743599__fig_dc_vrp_bgp_cfg_308101"></a><a name="fig_dc_vrp_bgp_cfg_308101"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring BGP load balancing</span><div class="note" id="EN-US_TASK_0000001176743599__note726381156214038"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001176743599__p1991039344214038">In this example, interface 1, interface 2, and interface 3 represent <span>10GE</span> <span>0/0/1</span>, <span>10GE</span> <span>0/0/2</span>, and <span>10GE</span> <span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001176743599__image1124744235214038" src="figure/en-us_image_0000001130783986.png"></span></div>
+<p id="EN-US_TASK_0000001176743599__p1617706739214038">To complete the configuration, you need the following data:</p>
+<ul id="EN-US_TASK_0000001176743599__ul670775809214038"><li id="EN-US_TASK_0000001176743599__li549332639214038"><p id="EN-US_TASK_0000001176743599__p601465220214038"><a name="EN-US_TASK_0000001176743599__li549332639214038"></a><a name="li549332639214038"></a>Router IDs and AS numbers of DeviceA, DeviceB, DeviceC, and DeviceD</p>
+</li><li id="EN-US_TASK_0000001176743599__li621668584214038"><p id="EN-US_TASK_0000001176743599__p875948633214038"><a name="EN-US_TASK_0000001176743599__li621668584214038"></a><a name="li621668584214038"></a>Number of allowed BGP routes for load balancing</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001176743599__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001176743599__context159302845214038"><h4 class="sectiontitle">Precautions</h4><p id="EN-US_TASK_0000001176743599__p1122726866214038">During the configuration, note the following:</p>
+<ul id="EN-US_TASK_0000001176743599__ul1379863458214038"><li id="EN-US_TASK_0000001176743599__li440021053214038"><p id="EN-US_TASK_0000001176743599__p1647641150214038"><a name="EN-US_TASK_0000001176743599__li440021053214038"></a><a name="li440021053214038"></a>Route load balancing can be implemented by configuring BGP attributes, for example, configuring the device to ignore the comparison of IGP metrics. Ensure that no routing loops occur when configuring BGP attributes to implement load balancing.</p>
+</li><li id="EN-US_TASK_0000001176743599__li825119613192">To improve security, you are advised to deploy BGP security measures. For details, see "Configuring BGP Authentication." Keychain authentication is used as an example. For details, see Example for Configuring Keychain Authentication for BGP.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001176743599__1.3.3"></a><a name="1.3.3"></a>
+<div class="p" id="EN-US_TASK_0000001176743599__section_dc_vrp_bgp_cfg_308102"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001176743599__p1204619285214038">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001176743599__ol651766433214038"><li id="EN-US_TASK_0000001176743599__li2110506459214038"><p id="EN-US_TASK_0000001176743599__p1294658914214038"><a name="EN-US_TASK_0000001176743599__li2110506459214038"></a><a name="li2110506459214038"></a>Establish an EBGP connection between DeviceA and DeviceB and between DeviceA and DeviceC.</p>
+</li><li id="EN-US_TASK_0000001176743599__li343093359214038"><p id="EN-US_TASK_0000001176743599__p376492518214038"><a name="EN-US_TASK_0000001176743599__li343093359214038"></a><a name="li343093359214038"></a>Establish an EBGP connection between DeviceD and DeviceB and between DeviceD and DeviceC.</p>
+</li><li id="EN-US_TASK_0000001176743599__li1744590606214038"><p id="EN-US_TASK_0000001176743599__p1740082551214038"><a name="EN-US_TASK_0000001176743599__li1744590606214038"></a><a name="li1744590606214038"></a>Configure route load balancing on DeviceA.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001176743599__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001176743599__section_dc_vrp_bgp_cfg_308104"><li id="EN-US_TASK_0000001176743599__step2033415823214038"><span id="EN-US_TASK_0000001176743599__cmd564978803214038">Assign an IP address to each involved interface. For detailed configurations, see <a href="#EN-US_TASK_0000001176743599__postreq8773112313451">Configuration Scripts</a>.</span></li><li id="EN-US_TASK_0000001176743599__step1018292089214038"><span id="EN-US_TASK_0000001176743599__cmd1137956880214038">Configure BGP connections.</span><p><p id="EN-US_TASK_0000001176743599__p290332809214038"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen33981140193019">[DeviceA]<strong id="EN-US_TASK_0000001176743599__b1645617403306"> bgp 100</strong>
+[DeviceA-bgp]<strong id="EN-US_TASK_0000001176743599__b74561640143018"> router-id 1.1.1.1</strong>
+[DeviceA-bgp] <strong id="EN-US_TASK_0000001176743599__b1745710403307">peer 10.1.1.2 as-number 300</strong>
+[DeviceA-bgp]<strong id="EN-US_TASK_0000001176743599__b184578407308"> peer 10.1.2.2 as-number 300</strong>
+[DeviceA-bgp]<strong id="EN-US_TASK_0000001176743599__b84571640193014"> quit</strong></pre>
+<p id="EN-US_TASK_0000001176743599__p1226490593214038"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen8524175663017">[DeviceB]<strong id="EN-US_TASK_0000001176743599__b55308563303"> bgp 300</strong>
+[DeviceB-bgp]<strong id="EN-US_TASK_0000001176743599__b16531135610308"> router-id 2.2.2.2</strong>
+[DeviceB-bgp] <strong id="EN-US_TASK_0000001176743599__b14531356113014">peer 10.1.1.1 as-number 100</strong>
+[DeviceB-bgp] <strong id="EN-US_TASK_0000001176743599__b1053125616300">peer 10.1.3.1 as-number 200</strong>
+[DeviceB-bgp] <strong id="EN-US_TASK_0000001176743599__b4531256123014">quit</strong></pre>
+<p id="EN-US_TASK_0000001176743599__p1461209288214038"># Configure DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen158381469316">[DeviceC]<strong id="EN-US_TASK_0000001176743599__b188472603111"> bgp 300</strong>
+[DeviceC-bgp]<strong id="EN-US_TASK_0000001176743599__b18477673113"> router-id 3.3.3.3</strong>
+[DeviceC-bgp] <strong id="EN-US_TASK_0000001176743599__b6847366314">peer 10.1.2.1 as-number 100</strong>
+[DeviceC-bgp] <strong id="EN-US_TASK_0000001176743599__b1484713617313">peer 10.1.4.1 as-number 200</strong>
+[DeviceC-bgp] <strong id="EN-US_TASK_0000001176743599__b198487623119">quit</strong></pre>
+<p id="EN-US_TASK_0000001176743599__p582097871214038"># Configure DeviceD.</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen84911323153110">[DeviceD]<strong id="EN-US_TASK_0000001176743599__b1451112363114"> bgp 200</strong>
+[DeviceD-bgp]<strong id="EN-US_TASK_0000001176743599__b1751142393119"> router-id 4.4.4.4</strong>
+[DeviceD-bgp] <strong id="EN-US_TASK_0000001176743599__b151262383113">peer 10.1.3.2 as-number 300</strong>
+[DeviceD-bgp] <strong id="EN-US_TASK_0000001176743599__b45122230319">peer 10.1.4.2 as-number 300</strong>
+[DeviceD-bgp] <strong id="EN-US_TASK_0000001176743599__b851262313112">ipv4-family unicast</strong>
+[DeviceD-bgp-af-ipv4] <strong id="EN-US_TASK_0000001176743599__b1151217237313">network 172.16.1.0 255.255.255.0</strong>
+[DeviceD-bgp-af-ipv4] <strong id="EN-US_TASK_0000001176743599__b135128236316">quit</strong>
+[DeviceD-bgp]<strong id="EN-US_TASK_0000001176743599__b1051216231313"> quit</strong></pre>
+<p id="EN-US_TASK_0000001176743599__p70395270214038"># Check the routing table of DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen1873221707214038">[DeviceA] <strong id="EN-US_TASK_0000001176743599__b1930368519214038">display bgp routing-table 172.16.1.0 24</strong>
+
+ BGP local router ID : 1.1.1.1
+ Local AS number : 100
+ Paths : 2 available, <strong id="EN-US_TASK_0000001176743599__b1933215077214038">1 best</strong>, <strong id="EN-US_TASK_0000001176743599__b276769774214038">1 select</strong>
+ BGP routing table entry information of 172.16.1.0/24:
+ From: 10.1.1.2 (2.2.2.2)
+ Route Duration: 0d00h00m50s
+ Direct Out-interface:<span>10GE</span><span>0/0/1</span>
+ Original nexthop: 10.1.1.2
+ Qos information : 0x0
+ AS-path 200 300, origin igp, pref-val 0, valid, external, <strong id="EN-US_TASK_0000001176743599__b1712833087214038">best</strong>, <strong id="EN-US_TASK_0000001176743599__b1221807339214038">select</strong>, pre 255
+ Advertised to such 2 peers:
+    10.1.1.2
+    10.1.2.2
+
+ BGP routing table entry information of 172.16.1.0/24:
+ From: 10.1.2.2 (3.3.3.3)
+ Route Duration: 0d00h00m51s
+ Direct Out-interface: <span>10GE</span><span>0/0/2</span>
+ Original nexthop: 10.1.2.2
+ Qos information : 0x0
+ AS-path 200 300, origin igp, pref-val 0, valid, external, pre 255, not preferred for router ID
+ Not advertised to any peers yet</pre>
+<p id="EN-US_TASK_0000001176743599__p16095799214038">The command output shows that there are two valid routes from DeviceA to 172.16.1.0/24. The route with the next-hop IP address of 10.1.1.2 is the optimal route because DeviceB's router ID is smaller.</p>
+</p></li><li id="EN-US_TASK_0000001176743599__step66366632214038"><span id="EN-US_TASK_0000001176743599__cmd879971231214038">Configure load balancing.</span><p><p id="EN-US_TASK_0000001176743599__p401558111214038"># Configure load balancing on DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen18664163733112">[DeviceA] <strong id="EN-US_TASK_0000001176743599__b146661237123114">bgp 100</strong>
+[DeviceA-bgp] <strong id="EN-US_TASK_0000001176743599__b26661037103111">ipv4-family unicast</strong>
+[DeviceA-bgp-af-ipv4] <strong id="EN-US_TASK_0000001176743599__b1766783713312">maximum load-balancing 2</strong>
+[DeviceA-bgp-af-ipv4] <strong id="EN-US_TASK_0000001176743599__b176671437123114">quit</strong>
+[DeviceA-bgp] <strong id="EN-US_TASK_0000001176743599__b196672377314">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001176743599__section_dc_vrp_bgp_cfg_308105"><a name="EN-US_TASK_0000001176743599__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001176743599__p928079544214038"># Check the routing table of DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen625035117214038">[DeviceA] <strong id="EN-US_TASK_0000001176743599__b1223382706214038">display bgp routing-table 172.16.1.0 24</strong>
+
+ BGP local router ID : 1.1.1.1
+ Local AS number : 100
+ Paths : 2 available, <strong id="EN-US_TASK_0000001176743599__b1073240115214038">1 best</strong>, <strong id="EN-US_TASK_0000001176743599__b1905267921214038">2 select</strong>
+ BGP routing table entry information of 172.16.1.0/24:
+ From: 10.1.1.2 (2.2.2.2)
+ Route Duration: 0d00h03m55s
+ Direct Out-interface: <span>10GE</span><span>0/0/1</span>
+ Original nexthop: 10.1.1.2
+ Qos information : 0x0
+ AS-path 200 300, origin igp, pref-val 0, valid, external, <strong id="EN-US_TASK_0000001176743599__b277491118214038">best</strong>, <strong id="EN-US_TASK_0000001176743599__b1337130659214038">select</strong>, pre 255
+ Advertised to such 2 peers
+    10.1.1.2
+    10.1.2.2
+
+ BGP routing table entry information of 172.16.1.0/24:
+ From: 10.1.2.2 (3.3.3.3)
+ Route Duration: 0d00h03m56s
+ Direct Out-interface: <span>10GE</span><span>0/0/2</span>
+ Original nexthop: 10.1.2.2
+ Qos information : 0x0
+ AS-path 200 300, origin igp, pref-val 0, valid, external,<strong id="EN-US_TASK_0000001176743599__b1702182907214038"> select</strong>, pre 255, not preferred for router ID
+ Not advertised to any peers yet</pre>
+<p id="EN-US_TASK_0000001176743599__p139181112164614">The preceding command output shows that a BGP route to 172.16.1.0/24 contains two next-hop IP addresses: 10.1.1.2 and 10.1.2.2.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001176743599__postreq8773112313451"></a><a name="postreq8773112313451"></a><a name="EN-US_TASK_0000001176743599__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001176743599__ul219533473214038"><li id="EN-US_TASK_0000001176743599__li991724068214038"><p id="EN-US_TASK_0000001176743599__p1285826509214038"><a name="EN-US_TASK_0000001176743599__li991724068214038"></a><a name="li991724068214038"></a>DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen75951259173215">#
+sysname DeviceA
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.1 255.255.255.0
+#
+bgp 100
+ router-id 1.1.1.1
+ peer 10.1.1.2 as-number 300
+ peer 10.1.2.2 as-number 300
+ #
+ ipv4-family unicast
+  maximum load-balancing 2
+  peer 10.1.1.2 enable
+  peer 10.1.2.2 enable
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001176743599__li1362315828214038"><p id="EN-US_TASK_0000001176743599__p2118960529214038"><a name="EN-US_TASK_0000001176743599__li1362315828214038"></a><a name="li1362315828214038"></a>DeviceB</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen919011131335">#
+sysname DeviceB
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.3.2 255.255.255.0
+#
+bgp 300
+ router-id 2.2.2.2
+ peer 10.1.1.1 as-number 100
+ peer 10.1.3.1 as-number 200
+ #
+ ipv4-family unicast
+  peer 10.1.1.1 enable
+  peer 10.1.3.1 enable
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001176743599__li9135069214038"><p id="EN-US_TASK_0000001176743599__p1061765746214038"><a name="EN-US_TASK_0000001176743599__li9135069214038"></a><a name="li9135069214038"></a>DeviceC</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen828122713316">#
+sysname DeviceC
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.4.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.2 255.255.255.0
+#
+bgp 300
+ router-id 3.3.3.3
+ peer 10.1.2.1 as-number 100
+ peer 10.1.4.1 as-number 200
+ #
+ ipv4-family unicast
+  peer 10.1.2.1 enable
+  peer 10.1.4.1 enable
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001176743599__li1367538093214038"><p id="EN-US_TASK_0000001176743599__p1842738857214038"><a name="EN-US_TASK_0000001176743599__li1367538093214038"></a><a name="li1367538093214038"></a>DeviceD</p>
+<pre class="screen" id="EN-US_TASK_0000001176743599__screen4769194273310">#
+sysname DeviceD
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.4.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.3.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ undo portswitch
+ ip address 172.16.1.1 255.255.255.0
+#
+bgp 200
+ router-id 4.4.4.4
+ peer 10.1.3.2 as-number 300
+ peer 10.1.4.2 as-number 300
+ #
+ ipv4-family unicast
+  network 172.16.1.0 255.255.255.0
+  peer 10.1.3.2 enable
+  peer 10.1.4.2 enable
+#
+return</pre>
+</li></ul>
+<p id="EN-US_TASK_0000001176743599__p2742183824517"></p>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002230426533.html">Configuration Examples for BGP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bgp_cfg_0064.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_bgp_cfg_0072.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

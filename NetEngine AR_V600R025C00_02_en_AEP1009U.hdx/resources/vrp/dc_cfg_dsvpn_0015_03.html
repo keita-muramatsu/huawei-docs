@@ -1,0 +1,444 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring DSVPN in Non-Shortcut Mode (BGP)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_cfg_dsvpn_1043_1.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_cfg_dsvpn_0015_02.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_cfg_dsvpn_0016_02.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001897190553">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring DSVPN in Non-Shortcut Mode (BGP)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001897190553"></a><a name="EN-US_TASK_0000001897190553"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring DSVPN in Non-Shortcut Mode (BGP)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001897190553__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>The HQ (Hub) and branches (Spoke1 and Spoke2) of an SME are located in different areas. They belong to different autonomous systems (ASs), and their subnet environments change frequently. The branches connect to the HQ and to each other over the public network, and use dynamic addresses to access the public network. The enterprise wants to use a VPN for communication between spokes. To meet this requirement, configure a dynamic routing protocol (OSPF) for intra-AS routing and EBGP for inter-AS routing based on enterprise network planning and deploy DSVPN in non-shortcut mode to achieve direct communication between Spoke1 and Spoke2. <a href="#EN-US_TASK_0000001897190553__fig_dc_cfg_dsvpn_001503">Figure 1</a> shows the related networking.</p>
+<div class="fignone" id="EN-US_TASK_0000001897190553__fig_dc_cfg_dsvpn_001503"><a name="EN-US_TASK_0000001897190553__fig_dc_cfg_dsvpn_001503"></a><a name="fig_dc_cfg_dsvpn_001503"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring DSVPN in non-shortcut mode</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="imgResize" src="figure/en-us_image_0000002141595320.png" width="NaN" height="NaN" title="Click to enlarge"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001897190553__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="p">The configuration roadmap is as follows:<ol><li><p>Configure DSVPN to enable communication between branches. This is because branches access the public network using dynamic addresses and are unaware of each other's public address.</p>
+</li><li><p>Considering the small number of branches, configure DSVPN in non-shortcut mode.</p>
+</li><li><p>Due to frequent changes in subnet environments of the HQ and branches, deploy BGP based on enterprise network planning for communication between the HQ and branches, which simplifies maintenance.</p>
+</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001897190553__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure interface IP addresses.</span><p><p>Configure interface IP addresses on each device.</p>
+<div class="p"># Configure interface IP addresses on Hub.<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname Hub</strong>
+[Hub] <strong>interface <span>10ge</span><span>0/0/1</span></strong>
+[Hub-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.1.1.10 255.255.255.0</strong>
+[Hub-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[Hub] <strong>interface tunnel 0</strong>
+[Hub-Tunnel<span>0</span>] <strong>ip address 172.16.1.1 255.255.255.0</strong>
+[Hub-Tunnel<span>0</span>] <strong>quit</strong>
+[Hub] <strong>interface loopback 0</strong>
+[Hub-LoopBack0] <strong>ip address 192.168.0.1 255.255.255.255</strong>
+[Hub-LoopBack0] <strong>quit</strong></pre>
+</div>
+<p>Assign an IP address to each interface on Spoke1 and Spoke2 according to <a href="#EN-US_TASK_0000001897190553__fig_dc_cfg_dsvpn_001503">Figure 1</a>. The configurations of the spokes are similar to the configuration of Hub.</p>
+</p></li><li><span>Configure devices to be reachable through public network routes.</span><p><p>Configure OSPF on each device to ensure that public network routes are available.</p>
+<p># Configure OSPF on Hub.</p>
+<pre class="screen">[Hub] <strong>ospf 2 router-id 10.1.1.10 </strong>
+[Hub-ospf-2] <strong>area 0.0.0.1</strong>
+[Hub-ospf-2-area-0.0.0.1] <strong>network 10.1.1.0 0.0.0.255</strong>
+[Hub-ospf-2-area-0.0.0.1] <strong>quit</strong>
+[Hub-ospf-2] <strong>quit</strong></pre>
+<p># Configure OSPF on Spoke1.</p>
+<pre class="screen">[Spoke1] <strong>ospf 2 router-id 10.1.2.10 </strong>
+[Spoke1-ospf-2] <strong>area 0.0.0.1</strong>
+[Spoke1-ospf-2-area-0.0.0.1] <strong>network 10.1.2.0 0.0.0.255</strong>
+[Spoke1-ospf-2-area-0.0.0.1] <strong>quit</strong>
+[Spoke1-ospf-2] <strong>quit</strong></pre>
+<p># Configure OSPF on Spoke2.</p>
+<pre class="screen">[Spoke2] <strong>ospf 2 router-id 10.1.3.10 </strong>
+[Spoke2-ospf-2] <strong>area 0.0.0.1</strong>
+[Spoke2-ospf-2-area-0.0.0.1] <strong>network 10.1.3.0 0.0.0.255</strong>
+[Spoke2-ospf-2-area-0.0.0.1] <strong>quit</strong>
+[Spoke2-ospf-2] <strong>quit</strong></pre>
+</p></li><li><span>Configure routes in ASs.</span><p><p>Configure OSPF on the hub and spokes in different ASs to implement reachability in ASs.</p>
+<p># Configure Hub.</p>
+<pre class="screen">[Hub] <strong>ospf 1 router-id 172.16.1.1</strong>
+[Hub-ospf-1] <strong>area 0.0.0.0</strong>
+[Hub-ospf-1-area-0.0.0.0] <strong>network 192.168.0.0 0.0.0.255</strong>
+[Hub-ospf-1-area-0.0.0.0] <strong>quit</strong>
+[Hub-ospf-1] <strong>quit</strong></pre>
+<p># Configure Spoke1.</p>
+<pre class="screen">[Spoke1] <strong>ospf 1 router-id 172.16.1.2</strong>
+[Spoke1-ospf-1] <strong>area 0.0.0.0</strong>
+[Spoke1-ospf-1-area-0.0.0.0] <strong>network 192.168.1.0 0.0.0.255</strong>
+[Spoke1-ospf-1-area-0.0.0.0] <strong>quit</strong>
+[Spoke1-ospf-1] <strong>quit</strong></pre>
+<p># Configure Spoke2.</p>
+<pre class="screen">[Spoke2] <strong>ospf 1 router-id 172.16.1.3</strong>
+[Spoke2-ospf-1] <strong>area 0.0.0.0</strong>
+[Spoke2-ospf-1-area-0.0.0.0] <strong>network 192.168.2.0 0.0.0.255</strong>
+[Spoke2-ospf-1-area-0.0.0.0] <strong>quit</strong>
+[Spoke2-ospf-1] <strong>quit</strong></pre>
+</p></li><li><span>Configure basic EBGP functions.</span><p><p># Configure Hub.</p>
+<pre class="screen">[Hub] <strong>bgp 100</strong>
+[Hub-bgp] <strong>router-id 172.16.1.1</strong>
+[Hub-bgp] <strong>import-route ospf 1</strong>
+[Hub-bgp] <strong>peer 172.16.1.2 as-number 200</strong>
+[Hub-bgp] <strong>peer 172.16.1.3 as-number 300</strong>
+[Hub-bgp] <strong>quit</strong></pre>
+<p># Configure Spoke1.</p>
+<pre class="screen">[Spoke1] <strong>bgp 200</strong>
+[Spoke1-bgp] <strong>router-id 172.16.1.2</strong>
+[Spoke1-bgp] <strong>import-route ospf 1</strong>
+[Spoke1-bgp] <strong>peer 172.16.1.1 as-number 100</strong>
+[Spoke1-bgp] <strong>peer 172.16.1.3 as-number 300</strong>
+[Spoke1-bgp] <strong>quit</strong></pre>
+<p># Configure Spoke2.</p>
+<pre class="screen">[Spoke2] <strong>bgp 300</strong>
+[Spoke2-bgp] <strong>router-id 172.16.1.3</strong>
+[Spoke2-bgp] <strong>import-route ospf 1</strong>
+[Spoke2-bgp] <strong>peer 172.16.1.1 as-number 100</strong>
+[Spoke2-bgp] <strong>peer 172.16.1.2 as-number 200</strong>
+[Spoke2-bgp] <strong>quit</strong></pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The configuration on one spoke subnet is given as an example. Configure other spoke subnets similarly. If a spoke's subnet changes, you only need to configure dynamic routing attributes at that spoke.</p>
+</div></div>
+</p></li><li><span>Enable NHRP globally.</span><p><p># Configure Hub.</p>
+<pre class="screen">[Hub] <strong>nhrp enable</strong></pre>
+<p>The configurations of the spokes are similar to the configuration of Hub.</p>
+</p></li><li><span>Configure tunnel interfaces.</span><p><p>Configure a tunnel interface on the hub and each spoke, and configure a static NHRP mapping entry for Hub on Spoke1 and Spoke2.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When a DSVPN network in non-shortcut mode uses BGP, related route attributes need to be configured in the BGP view.</p>
+</div></div>
+<div class="p"># Configure a tunnel interface on Hub.<pre class="screen">[Hub] <strong>interface tunnel 0</strong>
+[Hub-Tunnel0] <strong>tunnel-protocol gre p2mp</strong>
+[Hub-Tunnel0] <strong>nhrp enable</strong>
+[Hub-Tunnel0] <strong>nhrp entry multicast dynamic</strong>
+[Hub-Tunnel0] <strong>source <span>10ge</span><span>0/0/1</span></strong>
+[Hub-Tunnel0] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a tunnel interface and a static NHRP mapping entry for Hub on Spoke1.<pre class="screen">[Spoke1] <strong>interface tunnel 0</strong>
+[Spoke1-Tunnel0] <strong>tunnel-protocol gre p2mp</strong>
+[Spoke1-Tunnel0] <strong>nhrp enable</strong>
+[Spoke1-Tunnel0] <strong>source <span>10ge</span><span>0/0/1</span></strong>
+[Spoke1-Tunnel0] <strong>nhrp entry 172.16.1.1 10.1.1.10 register</strong>
+[Spoke1-Tunnel0] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a tunnel interface and a static NHRP mapping entry for Hub on Spoke2.<pre class="screen">[Spoke2] <strong>interface tunnel 0</strong>
+[Spoke2-Tunnel0] <strong>tunnel-protocol gre p2mp</strong>
+[Spoke2-Tunnel0] <strong>nhrp enable</strong>
+[Spoke2-Tunnel0] <strong>source <span>10ge</span><span>0/0/1</span></strong>
+[Spoke2-Tunnel0] <strong>nhrp entry 172.16.1.1 10.1.1.10 register</strong>
+[Spoke2-Tunnel0] <strong>quit</strong></pre>
+</div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001897190553__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Verify the DSVPN configuration.</p>
+<p>After completing the configuration, check the NHRP mapping table information on the spokes.</p>
+<p># Run the <strong>display nhrp peer all</strong> command on Spoke1. The command output is as follows.</p>
+<pre class="screen">[Spoke1] <strong>display nhrp peer all</strong>
+------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type         Flag
+------------------------------------------------------------------------------------
+172.16.1.1      255.255.255.255    10.1.1.10      172.16.1.1       hub          up
+------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_) 
+Created time    : 00:10:58
+Expire time     : --
+Ipsec state     : --
+--------------------------
+Number of nhrp peers: 1</pre>
+<p># Run the <strong>display nhrp peer all</strong> command on Spoke2. The command output is as follows.</p>
+<pre class="screen">[Spoke2] <strong>display nhrp peer all</strong>
+------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type         Flag
+------------------------------------------------------------------------------------
+172.16.1.1      255.255.255.255    10.1.1.10      172.16.1.1       hub          up
+------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_)
+Created time    : 00:07:55
+Expire time     : --
+Ipsec state     : --
+--------------------------
+Number of nhrp peers: 1</pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>After completing the preceding configurations, run the <strong>display nhrp peer all</strong> command on Spoke1 and Spoke2. On each of them, you can view the static NHRP mapping entry configured for Hub and the dynamic NHRP mapping entry of the peer spoke. This is because the BGP interaction triggers the interaction of NHRP modules between spokes to establish dynamic tunnels.</p>
+</div></div>
+<p>On Hub, verify the registration information of Spoke1 and Spoke2.</p>
+<p># Run the <strong>display nhrp peer all</strong> command on Hub. The command output is as follows.</p>
+<pre class="screen">[Hub] <strong>display nhrp peer all</strong>
+-----------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type         Flag
+-----------------------------------------------------------------------------------------
+172.16.1.2      255.255.255.255    10.1.2.10      172.16.1.2      registered   up|unique
+-----------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_)
+Created time    : 00:02:02
+Expire time     : 01:57:58
+Ipsec state     : --
+-----------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type         Flag
+-----------------------------------------------------------------------------------------
+172.16.1.3      255.255.255.255    10.1.3.10      172.16.1.3      registered   up|unique
+-----------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_)
+Created time    : 00:01:53
+Expire time     : 01:59:35
+Ipsec state     : --
+--------------------------
+Number of nhrp peers: 2</pre>
+<p>Run the <strong>ping</strong> command and check the configuration result.</p>
+<p>On Spoke1, ping the subnet address 192.168.2.1 of Spoke2. Then, check whether Spoke1 and Spoke2 have each other's dynamic NHRP mapping entry.</p>
+<p># Run the <strong>ping -a 192.168.1.1 192.168.2.1</strong> command on Spoke1. The command output is as follows.</p>
+<pre class="screen">[Spoke1] <strong>ping -a 192.168.1.1 192.168.2.1</strong>
+  PING 192.168.2.1: 56  data bytes, press CTRL_C to break
+    Reply from 192.168.2.1: bytes=56 Sequence=1 ttl=254 time=3 ms
+    Reply from 192.168.2.1: bytes=56 Sequence=2 ttl=255 time=2 ms
+    Reply from 192.168.2.1: bytes=56 Sequence=3 ttl=255 time=2 ms
+    Reply from 192.168.2.1: bytes=56 Sequence=4 ttl=255 time=2 ms
+    Reply from 192.168.2.1: bytes=56 Sequence=5 ttl=255 time=2 ms
+
+  --- 192.168.2.1 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 2/2/3 ms</pre>
+<div class="p"># Run the <strong>display nhrp peer all</strong> command on Spoke1. The command output is as follows.<pre class="screen">[Spoke1] <strong>display nhrp peer all</strong>
+-----------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type            Flag
+-----------------------------------------------------------------------------------------
+172.16.1.1      255.255.255.255    10.1.1.10      172.16.1.1      hub              up
+-----------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_)
+Created time    : 00:46:35
+Expire time     : --
+Ipsec state     : --
+-----------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type            Flag
+-----------------------------------------------------------------------------------------
+172.16.1.3      255.255.255.255    10.1.3.10      172.16.1.3      remote          up
+-----------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_)
+Created time    : 00:00:28
+Expire time     : 01:59:32
+Ipsec state     : --
+-----------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type            Flag
+-----------------------------------------------------------------------------------------
+172.16.1.2      255.255.255.255    10.1.2.10      172.16.1.2      local           up
+-----------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_)
+Created time    : 00:00:28
+Expire time     : 01:59:32
+Ipsec state     : --
+Number of nhrp peers: 3</pre>
+</div>
+<div class="p"># Run the <strong>display nhrp peer all</strong> command on Spoke2. The command output is as follows.<pre class="screen">[Spoke2] <strong>display nhrp peer all</strong>
+-----------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type            Flag
+-----------------------------------------------------------------------------------------
+172.16.1.1      255.255.255.255    10.1.1.10      172.16.1.1      hub              up
+-----------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_)
+Created time    : 00:43:32
+Expire time     : --
+Ipsec state     : --
+-----------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type            Flag
+-----------------------------------------------------------------------------------------
+172.16.1.2      255.255.255.255    10.1.2.10      172.16.1.2      remote          up
+-----------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_)
+Created time    : 00:00:47
+Expire time     : 01:59:13
+Ipsec state     : --
+-----------------------------------------------------------------------------------------
+Protocol-addr   Mask               NBMA-addr      NextHop-addr    Type            Flag
+-----------------------------------------------------------------------------------------
+172.16.1.3      255.255.255.255    10.1.3.10      172.16.1.3      local           up
+------------------------------------------------------------------------------------
+Tunnel interface: Tunnel0 (VPN instance: _public_)
+Created time    : 00:00:47
+Expire time     : 01:59:13
+Ipsec state     : --
+--------------------------
+Number of nhrp peers: 3</pre>
+</div>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001897190553__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>Hub</p>
+<pre class="screen">#
+sysname Hub
+# 
+nhrp enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.10 255.255.255.0
+#
+interface LoopBack0
+ ip address 192.168.0.1 255.255.255.255
+# 
+interface Tunnel0
+ ip address 172.16.1.1 255.255.255.0
+ tunnel-protocol gre p2mp
+ source <span>10GE</span><span>0/0/1</span>
+ nhrp enable
+ nhrp entry multicast dynamic
+# 
+bgp 100
+ router-id 172.16.1.1
+ peer 172.16.1.2 as-number 200
+ peer 172.16.1.3 as-number 300
+ # 
+ ipv4-family unicast
+  undo synchronization
+  import-route ospf 1
+  peer 172.16.1.2 enable
+  peer 172.16.1.3 enable
+# 
+ospf 1 router-id 172.16.1.1
+ area 0.0.0.0
+  network 192.168.0.0 0.0.0.255
+# 
+ospf 2 router-id 10.1.1.10
+ area 0.0.0.1
+  network 10.1.1.0 0.0.0.255
+# 
+return</pre>
+</li><li><p>Spoke1</p>
+<pre class="screen">#
+sysname Spoke1
+# 
+nhrp enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.2.10 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.1.1 255.255.255.0
+# 
+interface Tunnel0
+ ip address 172.16.1.2 255.255.255.0
+ tunnel-protocol gre p2mp
+ source <span>10GE</span><span>0/0/1</span>
+ nhrp enable
+ nhrp entry 172.16.1.1 10.1.1.10 register
+# 
+bgp 200
+ router-id 172.16.1.2
+ peer 172.16.1.1 as-number 100
+ peer 172.16.1.3 as-number 300
+ # 
+ ipv4-family unicast
+  undo synchronization
+  import-route ospf 1
+  peer 172.16.1.1 enable
+  peer 172.16.1.3 enable
+# 
+ospf 1 router-id 172.16.1.2
+ area 0.0.0.0
+  network 192.168.1.0 0.0.0.255
+# 
+ospf 2 router-id 10.1.2.10
+ area 0.0.0.1
+  network 10.1.2.0 0.0.0.255
+# 
+return</pre>
+</li><li><p>Spoke2</p>
+<pre class="screen">#
+sysname Spoke2
+# 
+nhrp enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.3.10 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.2.1 255.255.255.0
+# 
+interface Tunnel0
+ ip address 172.16.1.3 255.255.255.0
+ tunnel-protocol gre p2mp
+ source <span>10GE</span><span>0/0/1</span>
+ nhrp enable
+ nhrp entry 172.16.1.1 10.1.1.10 register
+# 
+bgp 300
+ router-id 172.16.1.3
+ peer 172.16.1.1 as-number 100
+ peer 172.16.1.2 as-number 200
+ # 
+ ipv4-family unicast
+  undo synchronization
+  import-route ospf 1
+  peer 172.16.1.1 enable
+  peer 172.16.1.2 enable
+# 
+ospf 1 router-id 172.16.1.3
+ area 0.0.0.0
+  network 192.168.2.0 0.0.0.255
+# 
+ospf 2 router-id 10.1.3.10
+ area 0.0.0.1
+  network 10.1.3.0 0.0.0.255
+#
+return</pre>
+</li></ul>
+<p></p>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/dc_cfg_dsvpn_1043_1.html">Configuration Examples for DSVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/dc_cfg_dsvpn_0015_02.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/dc_cfg_dsvpn_0016_02.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

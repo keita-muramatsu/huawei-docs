@@ -1,0 +1,94 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring the PPPoE Client as the Authentication Peer">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_PPPoE_0008.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_PPPoE_0009.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_PPPoE_0011.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512830190">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring the PPPoE Client as the Authentication Peer</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512830190"></a><a name="EN-US_TASK_0000001512830190"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring the PPPoE Client as the Authentication Peer</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512830190__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>After PPP authentication is configured on the PPPoE server, you need to configure the user name and password corresponding to the authentication mode of the PPPoE server on the PPPoE client.</p>
+<p>When the PAP authentication mode is configured on the PPPoE server, the PPPoE client sends the user name and password for authentication. The authentication succeeds only when the user name and password sent by the PPPoE client are the same as those configured on the PPPoE server.</p>
+<p>When the CHAP authentication mode is configured on the PPPoE server, there are two scenarios:</p>
+<ul><li>A user name is configured on the PPPoE server: In this case, the PPPoE client matches the user name received from the PPPoE server against that configured on itself. If they match, the PPPoE client sends a packet containing its authentication user name and password to the PPPoE server. The PPPoE server then compares the user name and password in the received packet with the local access user name and password. The authentication succeeds if they are consistent.</li><li>No user name is configured on the PPPoE server: In this case, the PPPoE client sends a packet containing its authentication user name and password to the PPPoE server. The PPPoE server then compares the user name and password in the received packet with the local access user name and password. The authentication succeeds if they are consistent.</li></ul>
+<p>A PPPoE client can send the configured user name and password to the PPPoE server for CHAP authentication whether or not a user name is configured on the PPPoE server.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512830190__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">system-view</span></b></strong></pre>
+</p></li><li><span>Enter the dialer interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <strong><span>dialer</span></strong> <em><i><span class="varname">number</span></i></em></pre>
+</p></li><li><span>Configure the authentication user name and password on the PPPoE client based on the authentication mode configured on the PPPoE server.</span><p><ul><li>When the authentication mode on the PPPoE server is PAP:<div class="p">Configure the user name and password sent by the PPPoE client for PAP authentication.<pre class="screen"><strong><b><span class="cmdqueryname">ppp pap local-user</span></b></strong> <em><i><span class="varname">user-name</span></i></em> <strong><strong><span>password</span></strong></strong> { <strong><strong><span>simple</span></strong></strong> <em><i><span class="varname">password</span></i></em> | <strong><strong><span>cipher</span></strong></strong> { <em><i><span class="varname">password1</span></i></em> | <em><i><span class="varname">password2</span></i></em> } }</pre>
+</div>
+<p>The user name and password for PAP authentication configured on the PPPoE client must be the same as the local access user name and password on the PPPoE server.</p>
+<p>By default, the local device sends a request without the user name and password to the remote device for PAP authentication.</p>
+</li></ul>
+</p><p><ul><li>When the authentication mode on the PPPoE server is CHAP and a user name is configured on the PPPoE server:<ol type="a"><li>Configure the CHAP user name used by the PPPoE client during CHAP authentication by the PPPoE server.<pre class="screen"><strong><b><span class="cmdqueryname">ppp chap user</span></b></strong> <em><i><span class="varname">user-name</span></i></em></pre>
+<p>The CHAP user name configured on the PPPoE client must be the same as the CHAP user name configured on the PPPoE server.</p>
+</li><li>Return to the system view.<pre class="screen"><strong><b><span class="cmdqueryname">quit</span></b></strong></pre>
+</li><li>Enter the AAA view.<pre class="screen"><b><span class="cmdqueryname">aaa</span></b></pre>
+</li><li>Create a local access user and configure the local access user name.<pre class="screen"><b><span class="cmdqueryname">local-access-user</span></b> <i><span class="varname">user-name</span></i> </pre>
+</li><li>Configure the password for the local access user.<pre class="screen"><strong><b><span class="cmdqueryname">password</span></b> <strong><span>cipher</span></strong> </strong><em>password</em></pre>
+<p>The local access user name configured on the PPPoE client must be the same as the local access user name and CHAP user name configured on the PPPoE server.</p>
+<p>The local access user password configured on the PPPoE client must be the same as that configured on the PPPoE server.</p>
+</li><li>Configure PPP as the access type of the local access user.<pre class="screen"><b><span class="cmdqueryname">service-type</span></b> <strong><span>ppp</span></strong></pre>
+</li></ol>
+</li><li>When the authentication mode on the PPPoE server is CHAP and no user name is configured on the PPPoE server:<ol type="a"><li>Configure the user name used by the PPPoE client during CHAP authentication by the PPPoE server.<pre class="screen"><strong><b><span class="cmdqueryname">ppp chap user</span></b></strong> <em><i><span class="varname">user-name</span></i></em></pre>
+</li><li>Configure the password used by the PPPoE client during CHAP authentication by the PPPoE server.<pre class="screen"><strong><b><span class="cmdqueryname">ppp chap password</span></b></strong> { <strong><strong><span>simple</span></strong></strong> <em><i><span class="varname">password</span></i></em> | <strong><strong><span>cipher</span></strong></strong> { <em><i><span class="varname">password1</span></i></em> | <em><i><span class="varname">password2</span></i></em> } }</pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If <strong>simple</strong> is specified, the password is saved in plain text in the configuration file. This presents potential security risks. You are advised to specify <strong>cipher</strong> so that the password is saved in cipher text in the configuration file.</p>
+</div></div>
+</li></ol>
+</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the authentication mode on the PPPoE server is unknown, you can configure both CHAP authentication and PAP authentication. The authentication mode on the PPPoE server will be used.</p>
+</div></div>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_PPPoE_0008.html">Configuring the Device as a PPPoE Client
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_PPPoE_0009.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_PPPoE_0011.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

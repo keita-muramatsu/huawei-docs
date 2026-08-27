@@ -1,0 +1,92 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="MSTP Security">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0021.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0054.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0056.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564012057">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>MSTP Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564012057"></a><a name="EN-US_TASK_0000001564012057"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">MSTP Security</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564012057__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><ul><li><p>Root protection</p>
+<p>Root protection can be configured to prevent attacks launched using malicious packets from making a valid root device that receives BPDUs with a higher priority be no longer a root device and falsely changing the network topology.</p>
+</li><li><p>BPDU protection</p>
+<p>When the edge interface directly connected to a user device receives BPDUs sent for malicious attacks, the edge interface changes to a non-edge one. As a result, the network topology is recomputed, and network flapping occurs. BPDU protection can be configured to prevent this problem.</p>
+</li><li><p>TC protection</p>
+<p>TC protection is used to suppress TC-BPDUs. The number of times that TC-BPDUs are processed by a device within a given time period is configurable. If the number of TC-BPDUs that the device receives within a given time period exceeds the specified threshold, the device handles TC-BPDUs only for the specified number of times. Excess TC-BPDUs are processed by the device as a whole for once after the timer (that is, the specified time period) expires. This protects the device from frequently deleting MAC and ARP entries, avoiding overburden.</p>
+</li><li><p>Loop prevention</p>
+<p>After loop prevention is enabled, if a root or alternate port on a device does not receive RST BPDUs from the upstream device for a long time, a notification is sent to the NMS. (The root port will enter the Discarding state.) The alternate port remains in the blocked state and does not forward packets, avoiding loops. The root port restores the Forwarding state until it receives RST BPDUs.</p>
+</li></ul>
+<h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001564012057__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Root protection</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the Ethernet interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure root protection on the device.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">stp root-protection</span></b></strong></pre>
+</p></li></ol>
+</li><li><span>BPDU protection</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure BPDU protection on the edge port of the device.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">stp bpdu-protection</span></b></strong></pre>
+</p></li></ol>
+</li><li><span>TC protection</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure TC protection.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">stp tc-protection</span></b></strong></pre>
+</p></li></ol>
+</li><li><span>Loop prevention</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the view of the root port or alternate port.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure loop prevention on the interface.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">stp loop-protection</span></b></strong></pre>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001564012057__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Checking the Security Hardening Result</h4><ul><li>Run the <b><span class="cmdqueryname">display stp</span></b> [ <strong><span>process</span></strong> <i><span class="varname">process-id</span></i> ] [ <strong><span>instance</span></strong> <i><span class="varname">instance-id</span></i> ] [ <strong><span>interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> ] command to check the configurations of BPDU protection, root protection, and loop prevention based on the <strong>BPDU-Protection</strong> and <strong>Protection Type</strong> fields.</li><li>Run the <b><span class="cmdqueryname">display stp global</span></b> command to check the TC protection configuration based on the <strong>Tc-protection</strong>, <strong>Tc-protection threshold</strong>, and <strong>Tc-protection interval</strong> fields.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0021.html">Control Plane Security (Level-1)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0054.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0056.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

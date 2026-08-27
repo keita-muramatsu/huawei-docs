@@ -1,0 +1,306 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Dynamic BFD for IS-IS">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000149.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000103.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000113.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IS-IS">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IS-IS">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001759114896">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Dynamic BFD for IS-IS</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001759114896"></a><a name="EN-US_TASK_0000001759114896"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Dynamic BFD for IS-IS</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001759114896__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001759114896__fig_dc_vrp_isis_cfg_008701">Figure 1</a>, IS-IS runs on DeviceA, DeviceB, and DeviceC. BFD for IS-IS is enabled on DeviceA, DeviceB, and DeviceC. Service traffic is transmitted over the primary link DeviceA -&gt; DeviceB. The link DeviceA -&gt; DeviceC -&gt; DeviceB serves as the backup link. BFD is configured for the interfaces on the link between DeviceA and DeviceB. If the link fails, BFD can fast detect the failure and notify IS-IS of the failure so that service traffic can be transmitted through the backup link.</p>
+<div class="fignone" id="EN-US_TASK_0000001759114896__fig_dc_vrp_isis_cfg_008701"><a name="EN-US_TASK_0000001759114896__fig_dc_vrp_isis_cfg_008701"></a><a name="fig_dc_vrp_isis_cfg_008701"></a><span class="figcap"><b>Figure 1 </b>Network diagram of dynamic BFD for IS-IS</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001759114916.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001759114896__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>To improve security, you are advised to configure IS-IS authentication. For details, see "Configuring IS-IS Authentication." IS-IS interface authentication is used as an example. For details, see "Example for Configuring Basic IS-IS Functions."</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001759114896__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Enable basic IS-IS functions on each device for interworking.</p>
+</li><li><p>Configure an IS-IS cost for each interface.</p>
+</li><li><p>Enable BFD globally.</p>
+</li><li><p>Enable BFD for IS-IS on DeviceA, DeviceB, and DeviceC.</p>
+</li><li><p>Enable BFD for the interfaces on DeviceA and DeviceB.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001759114896__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IPv4 addresses for interfaces on each device.</span><p><p># Configure DeviceA.</p>
+</p><p><pre class="screen"><span class="keyword">&lt;HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>undo </strong><strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.1.1.1 255.255.255.0</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface </strong><strong><span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>undo </strong><strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.1.3.1 255.255.255.0</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p>The configurations of DeviceB and DeviceC are similar to the configuration of DeviceA. For detailed configurations, see Configuration Scripts.</p>
+</p></li><li><span>Configure basic IS-IS functions.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>isis</strong>
+[DeviceA-isis-1] <strong>is-level level-2</strong>
+[DeviceA-isis-1] <strong>network-entity 10.0000.0000.0001.00</strong>
+[DeviceA-isis-1] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>isis enable 1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>isis peer hold-max-cost timer 100000</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>isis enable 1</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>isis peer hold-max-cost timer 100000</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</p><p><p>The configurations of DeviceB and DeviceC are similar to the configuration of DeviceA. For detailed configurations, see Configuration Scripts.</p>
+<p># Run the <b><span class="cmdqueryname">display isis peer</span></b> command. The command output shows that an IS-IS neighbor relationship has been established between DeviceA and DeviceB, and between DeviceA and DeviceC. DeviceA is used as an example.</p>
+<pre class="screen">[DeviceA] <strong>display isis peer</strong>
+Peer information for ISIS(1)
+----------------------------------------------------------------------------------
+                                                                
+System ID        Interface        Circuit ID          State HoldTime Type      PR
+----------------------------------------------------------------------------------
+0000.0000.0002  <span>10GE</span><span>0/0/2</span>            0000.0000.0002.01 Up   9s       L2       64
+0000.0000.0003  <span>10GE</span><span>0/0/1</span>            0000.0000.0001.02 Up   21s      L2       64
+Total Peer(s): 2</pre>
+<p># Check the routing tables of the devices. It turns out that they have learned routes from each other. The following example uses the command output on DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>display ip routing-table</strong>
+<span class="keyword">Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route</span>
+------------------------------------------------------------------------------
+Routing Table: _public_
+         Destinations : 12        Routes : 13
+Destination/Mask      Proto     Pre  Cost      Flags NextHop          Interface
+        10.1.1.0/24    Direct   0    0           D   10.1.1.1         <span>10GE</span><span>0/0/1</span>
+        10.1.1.1/32    Direct   0    0           D   127.0.0.1        <span>10GE</span><span>0/0/1</span>
+      10.1.1.255/32    Direct   0    0           D   127.0.0.1        <span>10GE</span><span>0/0/1</span>
+        10.1.2.0/24    ISIS-L2  15   20          D   10.1.3.2         <span>10GE</span><span>0/0/2</span>
+                       ISIS-L2  15   20          D   10.1.1.2         <span>10GE</span><span>0/0/1</span>
+        10.1.3.0/24    Direct   0    0           D   10.1.3.1         <span>10GE</span><span>0/0/2</span>
+        10.1.3.1/32    Direct   0    0           D   127.0.0.1        <span>10GE</span><span>0/0/2</span>
+      10.1.3.255/32    Direct   0    0           D   127.0.0.1        <span>10GE</span><span>0/0/2</span>
+       127.0.0.0/8     Direct   0    0           D   127.0.0.1        InLoopBack0
+       127.0.0.1/32    Direct   0    0           D   127.0.0.1        InLoopBack0
+     127.0.0.255/32    Direct   0    0           D   127.0.0.1        InLoopBack0
+     <strong>172.16.1.0/24</strong> <strong>  ISIS</strong>    <strong>15</strong>   <strong>20</strong>          <strong>D</strong>   <strong>10.1.3.2</strong>        <strong><span>10GE</span></strong><strong><span>0/0/2</span></strong>
+  255.255.255.255/32   Direct   0    0           D   127.0.0.1        InLoopBack0</pre>
+<p>According to the preceding command output, the next hop address of the route to 172.16.1.0/24 is 10.1.3.2, and traffic is transmitted on the primary link DeviceA -&gt; DeviceB.</p>
+</p></li><li><span>Configure a cost for each interface.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>isis cost 5</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p>The configuration of DeviceB is similar to the configuration of DeviceA. For detailed configurations, see Configuration Scripts.</p>
+</p></li><li><span>Enable BFD for IS-IS.</span><p><p># Enable BFD for IS-IS on DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>bfd</strong>
+[DeviceA-bfd] <strong>quit</strong>
+[DeviceA] <strong>isis</strong>
+[DeviceA-isis-1] <strong>bfd all-interfaces enable</strong>
+[DeviceA-isis-1] <strong>quit</strong></pre>
+<p>The configurations of DeviceB and DeviceC are similar to the configuration of DeviceA. For detailed configurations, see Configuration Scripts.</p>
+<p># Run the <b><span class="cmdqueryname">display isis bfd</span></b> <strong><span>session</span></strong> <strong><span>all</span></strong> command on DeviceA, DeviceB, or DeviceC. The command output shows that the BFD session is up. The following example uses the command output on DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>display isis bfd session all</strong>
+BFD session information for ISIS(1)                    
+-----------------------------------------------------------------
+Peer System ID : 0000.0000.0002        Interface : <span>10GE</span><span>0/0/2</span>
+TX : 10            BFD State : up      Peer IP Address : 10.1.3.2
+RX : 10            LocDis : 16385      Local IP Address: 10.1.3.1
+Multiplier : 3     RemDis : 16388      Type : L2
+Diag : No diagnostic information
+
+Peer System ID : 0000.0000.0003        Interface : <span>10GE</span><span>0/0/1</span>
+TX : 10            BFD State : up      Peer IP Address : 10.1.1.2
+RX : 10            LocDis : 16386      Local IP Address: 10.1.1.1
+Multiplier : 3     RemDis : 16387      Type : L2
+Diag : No diagnostic information
+Total BFD session(s): 2                       </pre>
+<p>According to the preceding command output, the BFD sessions between DeviceA and DeviceB and between DeviceA and DeviceC are up.</p>
+</p></li><li><span>Configure BFD for interfaces.</span><p><p># Configure BFD on <span>10GE</span><span>0/0/2</span> of DeviceA, set the minimum interval at which BFD packets are sent to 100 ms, the minimum interval at which BFD packets are received to 100 ms, and the local detection multiplier to 4.</p>
+<pre class="screen">[DeviceA] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>isis bfd enable</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>isis bfd min-tx-interval 100 min-rx-interval 100 detect-multiplier 4</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Configure BFD on <span>10GE</span><span>0/0/2</span> of DeviceB, set the minimum interval at which BFD packets are sent to 100 ms, the minimum interval at which BFD packets are received to 100 ms, and the local detection multiplier to 4.</p>
+<pre class="screen">[DeviceB] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>isis bfd enable</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>isis bfd min-tx-interval 100 min-rx-interval 100 detect-multiplier 4</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001759114896__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Run the <b><span class="cmdqueryname">display isis bfd</span></b> <strong><span>session</span></strong> <strong><span>all</span></strong> command on DeviceB. The command output shows that BFD parameters have taken effect.</p>
+<pre class="screen">[DeviceB] <strong>display isis bfd session all</strong>
+BFD session information for ISIS(1)                    
+-----------------------------------------------------------------
+Peer System ID : 0000.0000.0001        Interface : <span>10GE</span><span>0/0/2</span>
+TX : 100           BFD State : up      Peer IP Address : 10.1.3.1
+RX : 100           LocDis : 16385      Local IP Address: 10.1.3.2
+Multiplier : 4     RemDis : 16385      Type : L2
+Diag : No diagnostic information
+
+Peer System ID : 0000.0000.0003        Interface : <span>10GE</span><span>0/0/1</span>
+TX : 10            BFD State : up      Peer IP Address : 10.1.2.1
+RX : 10            LocDis : 16385      Local IP Address: 10.1.2.2
+Multiplier : 4     RemDis : 16385      Type : L2
+Diag : No diagnostic information
+Total BFD session (s):2                    </pre>
+<p># Run the <b><span class="cmdqueryname">shutdown</span></b> command on <span>10GE</span><span>0/0/2</span> of DeviceB to simulate a failure of the primary link.</p>
+<pre class="screen">[DeviceB] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>shutdown</strong></pre>
+<p># Check the IP routing table of DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>display ip routing-table</strong>
+<span class="keyword">Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route</span>
+------------------------------------------------------------------------------
+Routing Table : _public_
+         Destinations : 12        Routes : 12
+
+Destination/Mask      Proto     Pre  Cost      Flags NextHop         Interface
+
+        10.1.1.0/24    Direct   0    0           D   10.1.1.1        <span>10GE</span><span>0/0/1</span>
+        10.1.1.1/32    Direct   0    0           D   127.0.0.1       <span>10GE</span><span>0/0/1</span>
+      10.1.1.255/32    Direct   0    0           D   127.0.0.1       <span>10GE</span><span>0/0/1</span>
+        10.1.2.0/24    ISIS-L2  15   20          D   10.1.1.2        <span>10GE</span><span>0/0/1</span>
+        10.1.3.0/24    Direct   0    0           D   10.1.3.1        <span>10GE</span><span>0/0/2</span>
+        10.1.3.1/32    Direct   0    0           D   127.0.0.1       <span>10GE</span><span>0/0/2</span>
+      10.1.3.255/32    Direct   0    0           D   127.0.0.1       <span>10GE</span><span>0/0/2</span>
+       127.0.0.0/8     Direct   0    0           D   127.0.0.1       InLoopBack0
+       127.0.0.1/32    Direct   0    0           D   127.0.0.1       InLoopBack0
+     127.0.0.255/32    Direct   0    0           D   127.0.0.1       InLoopBack0
+     <strong>172.16.1.0/24</strong> <strong>  ISIS-L2</strong> <strong>15</strong>   <strong>30</strong>         <strong>D</strong>   <strong>10.1.1.2</strong>       <strong><span>10GE</span></strong><strong><span>0/0/2</span></strong>
+  255.255.255.255/32   Direct   0    0           D   127.0.0.1       InLoopBack0</pre>
+<p>According to the routing table, the backup link DeviceA -&gt; DeviceC -&gt; DeviceB takes effect after the primary link fails, and the next hop address of the route to 172.16.1.0/24 becomes 10.1.1.2.</p>
+<p># Run the <b><span class="cmdqueryname">display isis bfd</span></b> <strong><span>session</span></strong> <strong><span>all</span></strong> command on DeviceA. The command output shows that only the BFD session between DeviceA and DeviceC is up.</p>
+<pre class="screen">[DeviceA] <strong>display isis bfd session all</strong>
+BFD session information for ISIS(1)                    
+-----------------------------------------------------------------
+Peer System ID : 0000.0000.0003        Interface : <span>10GE</span><span>0/0/1</span>
+TX : 10            BFD State : <strong>up </strong>     Peer IP Address : 10.1.1.2
+RX : 10            LocDis : 16385      Local IP Address: 10.1.1.1
+Multiplier : 3     RemDis : 16388      Type : L2
+Diag : No diagnostic information
+Total BFD session (s):1                       </pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001759114896__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+bfd
+#
+isis 1
+ is-level level-2
+ bfd all-interfaces enable
+ network-entity 10.0000.0000.0001.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+ isis enable 1
+ isis peer hold-max-cost timer 100000
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.3.1 255.255.255.0
+ isis enable 1
+ isis peer hold-max-cost timer 100000
+ isis cost 5
+ isis bfd enable
+ isis bfd min-tx-interval 100 min-rx-interval 100 detect-multiplier 4
+#
+return</pre>
+</li><li><p>DeviceB</p>
+<pre class="screen">#
+sysname DeviceB
+#
+bfd
+#
+isis 1
+ is-level level-2
+ bfd all-interfaces enable
+ network-entity 10.0000.0000.0002.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.2.2 255.255.255.0
+ isis enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.3.2 255.255.255.0
+ isis enable 1
+ isis cost 5
+ isis bfd enable
+ isis bfd min-tx-interval 100 min-rx-interval 100 detect-multiplier 4
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 172.16.1.1 255.255.255.0
+ isis enable 1
+#
+return</pre>
+</li><li><p>DeviceC</p>
+<pre class="screen">#
+sysname DeviceC
+#
+bfd
+#
+isis 1
+ is-level level-2
+ bfd all-interfaces enable
+ network-entity 10.0000.0000.0003.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.2 255.255.255.0
+ isis enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.1 255.255.255.0
+ isis enable 1
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_isis_ipv4_cfg_000149.html">Configuration Examples for IS-IS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_isis_ipv4_cfg_000103.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_isis_ipv4_cfg_000113.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,245 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring SPT Switchover Conditions in a PIM-SM Domain">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_1089.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_0029.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_0043.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001893011357">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring SPT Switchover Conditions in a PIM-SM Domain</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001893011357"></a><a name="EN-US_TASK_0000001893011357"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring SPT Switchover Conditions in a PIM-SM Domain</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001893011357__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>Receivers can receive multicast Video On Demand (VOD) information. The PIM-SM single-BSR administrative domain is adopted in the entire PIM network. By default, the receiver DR and the RP perform the SPT switchover immediately after receiving the first multicast data packet, and choose the optimal path to receive information from the source. If the receiver expects an SPT switchover to be performed after the traffic rate reaches a threshold, configure conditions for the switchover.</p>
+<p>On the network shown in <a href="#EN-US_TASK_0000001893011357__fig_dc_vrp_multicast_cfg_004101">Figure 1</a>, HostA on the leaf network needs to receive multicast data from the RP (GE1/0/0 of DeviceA). When the transmission rate of multicast packets reaches 1024 kbit/s, the SPT switchover is performed. After the SPT switchover, HostA receives multicast packets through the path Source -&gt; DeviceB -&gt; DeviceC -&gt; HostA.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<div class="fignone" id="EN-US_TASK_0000001893011357__fig_dc_vrp_multicast_cfg_004101"><a name="EN-US_TASK_0000001893011357__fig_dc_vrp_multicast_cfg_004101"></a><a name="fig_dc_vrp_multicast_cfg_004101"></a><span class="figcap"><b>Figure 1 </b>Networking diagram for SPT switchover in a PIM-SM domain</span><br><span><img class="vsd" src="figure/en-us_image_0000001892891865.png" width="NaN" height="NaN"></span></div>
+<p>To complete the configuration, you need the following data:</p>
+<ul><li><p>Multicast source (S) address: 10.110.5.100/24</p>
+</li><li><p>Multicast group (G) address: 225.1.1.1/24</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001893011357__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Configure IP addresses and a unicast routing protocol for interfaces on each <span class="keyword">device</span>.</p>
+</li><li><p>Enable multicast on all devices that provide multicast services, enable PIM-SM on each interface, and enable IGMP on the interface connected to the host.</p>
+</li><li><p>Configure the same static RP on each device.</p>
+</li><li>Configure SPT switchover conditions on DeviceC.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001893011357__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IP address to each <span class="keyword">device</span> interface and configure a unicast routing protocol. For detailed configurations, see Configuration Scripts.</span></li><li><span># Enable multicast on each device, PIM-SM on each interface, and IGMP on the interfaces that connect DeviceC to the leaf network.</span><p><p># Configure DeviceC. The configurations of DeviceA and DeviceB are similar to the configuration of DeviceC. For detailed configurations, see Configuration Scripts.</p>
+<pre class="screen">[<span class="keyword">Device</span>C] <strong>multicast routing-enable</strong>
+[<span class="keyword">Device</span>C] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/2</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/2</span>] <strong>igmp enable</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>C] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/1</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>C] <strong>interface <span>10GE</span> <span>0/0/3</span></strong>
+[<span class="keyword">Device</span>C-<span>10GE</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure a static RP.</span><p><p># Configure a static RP on DeviceA, DeviceB, and DeviceC. The configurations of DeviceB and DeviceC are similar to the configuration of DeviceA. For detailed configurations, see Configuration Scripts.</p>
+<pre class="screen">[<span class="keyword">Device</span>A] <strong>pim</strong>
+[<span class="keyword">Device</span>A-pim] <strong>static-rp 192.168.1.1</strong>
+[<span class="keyword">Device</span>A-pim] <strong>quit</strong></pre>
+</p></li><li><span>Set the threshold for an SPT switchover.</span><p><p># Configure a threshold of 1024 kbit/s for performing an SPT switchover on DeviceC.</p>
+<pre class="screen">[<span class="keyword">Device</span>C] <strong>pim</strong>
+[<span class="keyword">Device</span>C-pim] <strong>spt-switch-threshold 102</strong><strong>4</strong>
+[<span class="keyword">Device</span>C-pim] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001893011357__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># The multicast source starts to send data to the group, and HostA can receive the data from the source. When the rate is smaller than 1024 kbit/s, run the <strong>display pim routing-table</strong> command on DeviceC to view the PIM multicast routing table. The command output shows that the upstream neighbor is DeviceA. The command output is as follows:</p>
+<pre class="screen">&lt;DeviceC&gt; <strong>display pim routing-table</strong>
+VPN-Instance: public net
+ Total 1 (*, G) entry; 1 (S, G) entry
+ 
+(*, 225.1.1.1)
+     RP: 192.168.1.1
+     Protocol: pim-sm, Flag: WC
+     UpTime: 00:13:46
+     Upstream interface: <span>10GE</span><span>0/0/1</span>, Refresh time: 00:02:13
+         Upstream neighbor: 192.168.1.1
+         RPF prime neighbor: 192.168.1.1
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: igmp, UpTime: 00:02:13, Expires:-
+(10.110.5.100, 225.1.1.1)
+     RP: 192.168.1.1
+     Protocol: pim-sm, Flag: ACT
+     UpTime: 00:00:42
+     Upstream interface: <span>10GE</span><span>0/0/1</span>, Refresh time: 00:01:16
+         <strong>Upstream neighbor: 192.168.1.1</strong>
+         RPF prime neighbor: 192.168.1.1
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: pim-sm, UpTime: 00:01:16, Expires:-</pre>
+<p># When the rate is higher than 1024 kbit/s, run the <strong>display pim routing-table</strong> command on DeviceC to check the PIM routing table. The command output shows that the upstream neighbor is DeviceB. A command output example is as follows:</p>
+<pre class="screen">&lt;DeviceC&gt; <strong>display pim routing-table</strong>
+VPN-Instance: public net
+ Total 1 (*, G) entry; 1 (S, G) entry
+ 
+(*, 225.1.1.1)
+     RP: 192.168.1.1
+     Protocol: pim-sm, Flag: WC
+     UpTime: 00:13:46
+     Upstream interface: <span>10GE</span><span>0/0/3</span>, Refresh time: 00:02:13
+         Upstream neighbor: 192.168.1.1
+         RPF prime neighbor: 192.168.1.1
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: igmp, UpTime: 00:02:13, Expires:-
+(10.110.5.100, 225.1.1.1)
+     RP: 192.168.1.1
+     Protocol: pim-sm, Flag: ACT
+     UpTime: 00:00:42
+     Upstream interface: <span>10GE</span><span>0/0/3</span>, Refresh time: 00:01:16
+         <strong>Upstream neighbor: 192.168.1.1</strong>
+         RPF prime neighbor: 192.168.1.1
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: pim-sm, UpTime: 00:01:16, Expires:-</pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p><span class="keyword">Device</span>A</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>A
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.1.1 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.3.1 255.255.255.0
+ pim sm
+#
+pim
+ static-rp 192.168.1.1
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.1.0 0.0.0.255
+  network 192.168.3.0 0.0.0.255
+#
+return</pre>
+</li><li><p><span class="keyword">Device</span>B</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>B
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.2.1 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.3.2 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.110.5.1 255.255.255.0
+ pim sm
+#
+pim
+ static-rp 192.168.1.1
+#
+ospf 1
+ area 0.0.0.0
+  network 10.110.5.0 0.0.0.255
+  network 192.168.2.0 0.0.0.255
+  network 192.168.3.0 0.0.0.255 
+#
+return</pre>
+</li><li><p><span class="keyword">Device</span>C</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>C
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.1.2 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.110.2.1 255.255.255.0
+ pim sm
+ igmp enable
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 192.168.2.2 255.255.255.0
+ pim sm
+#
+pim
+ spt-switch-threshold 1024
+ static-rp 192.168.1.1
+#
+ospf 1
+ area 0.0.0.0
+  network 10.110.2.0 0.0.0.255
+  network 192.168.1.0 0.0.0.255
+  network 192.168.2.0 0.0.0.255 
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_pim_cfg_1089.html">Configuration Examples for PIM
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_pim_cfg_0029.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_pim_cfg_0043.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

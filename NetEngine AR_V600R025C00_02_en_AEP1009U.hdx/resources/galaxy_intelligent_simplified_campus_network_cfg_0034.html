@@ -1,0 +1,184 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="RU Traffic Forwarding Exception">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0033.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0035.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001619314253">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>RU Traffic Forwarding Exception</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001619314253"></a><a name="EN-US_TOPIC_0000001619314253"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">RU Traffic Forwarding Exception</h1>
+<div><div class="section"><h4 class="sectiontitle">Symptom</h4><p>RU traffic is not forwarded as expected. For example, the central device cannot receive traffic from terminals connected to the RU, or terminals connected to the RU cannot receive traffic.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Possible Causes</h4><ul><li>The traffic forwarding path fails, or an uplink or downlink interface of the RU fails.</li><li>The PHY chip on the RU is faulty.</li><li>The forwarding chip of the RU does not work properly.</li><li>The upstream link of the RU is incorrectly connected.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li><span>Check the status and packet statistics of the downlink interface, uplink interface, and interconnection interface based on the traffic forwarding path to locate the failure point.</span><p><ol type="a"><li>For example, if traffic is forwarded from the central device to the RU, check the status of the interface connecting the central device and RU and check the statistics of incoming and outgoing packets on this interface. The following example uses Eth-Trunk 1 as the interconnection interface.<pre class="screen">&lt;HUAWEI&gt; <strong>display interface Eth-Trunk 1</strong> 
+<strong>Eth-Trunk1 current state : UP (ifindex: 146)</strong>                                                                                        
+Line protocol current state : UP                                                                                                    
+Last line protocol up time : 2025-03-29 10:20:58+08:00                                                                              
+Description:                                                                                                                        
+Switch Port, PVID :    1, TPID : 8100(Hex), Hash Arithmetic : src-mac, Maximal BW : 20Gbps, Current BW : 20Gbps, The Maximum Frame L
+ength is 9216                                                                                                                       
+Internet protocol processing : disabled                                                                                             
+IP Sending Frames' Format is PKTFMT_ETHNT_2, Hardware address is 4812-58d1-6aa1                                                     
+Current system time: 2025-03-29 10:41:51+08:00                                                                                      
+Physical is ETH_TRUNK                                                                                                               
+    Last 300 seconds input rate 22679195 bits/sec, 18171 packets/sec                                                                
+    Last 300 seconds output rate 914 bits/sec, 0 packets/sec                                                                        
+    <strong>Input: 4987982 packets,778201001 bytes</strong>                                                                                          
+           4987591 unicast,68 broadcast,352 multicast                                                                               
+           0 errors,0 drops                                                                                                         
+    <strong>Output:6391670 packets,971551002 bytes</strong>                                                                                          
+           6390498 unicast,598 broadcast,574 multicast                                                                              
+           0 errors,0 drops                                                                                                         
+    Last 300 seconds input utility rate:  0.11%                                                                                     
+    Last 300 seconds output utility rate: 0.01%                                                                                     
+----------------------------------------------------------                                                                          
+PortName                      Status              Weight                                                                            
+----------------------------------------------------------                                                                          
+10GE1/1/3                     UP                  1                                                                                 
+10GE1/0/1                     UP                  1                                                                                 
+----------------------------------------------------------                                                                          
+The Number of Ports in Trunk : 2                                                                                                    
+The Number of Up Ports in Trunk : 2</pre>
+</li><li>Check the status and packet statistics of the RU's uplink interface and downlink interface to locate the fault. As shown in the following example, uplink interfaces of the RU are port 5 and port 6, and the downlink interface is port 3.<div class="p"># Display information brief about the RU interfaces and confirm the uplink and downlink interfaces.<pre class="screen">&lt;HUAWEI&gt; <strong>display remote-unit port brief</strong>
+ESN                :219801176801XXXXXXXX 
+Name               :runame-012345678901234567890000 
+Device type        :S5731-L4T2ST-RUA 
+Connect interface  :Eth-Trunk1 
+-------------------------------------------------------------------------------------------- 
+Interface     PHY       Negotiation     Duplex    Mode      Speed(Mbps)   NeighborInterface 
+-------------------------------------------------------------------------------------------- 
+GE1           Down      Enable          Full      Copper    1000          - 
+GE2           Down      Enable          Full      Copper    1000          - 
+GE3           Up        Enable          Full      Copper    1000          - 
+GE4           Down      Enable          Full      Copper    1000          - 
+<strong>GE5           Up        Enable          Full      Copper    1000          GE0/0/26 </strong>
+<strong>GE6           Up        Enable          Full      Fiber     1000          GE0/0/27 </strong>
+-------------------------------------------------------------------------------------------- </pre>
+</div>
+<div class="p"># Display traffic statistics about an RU interface. Port 5 is used as an example. The methods for checking traffic statistics about port 6 and port 3 are the same.<pre class="screen">&lt;HUAWEI&gt; <strong>display remote-unit port 5 statistics connect-interface Eth-Trunk 1</strong> 
+ESN                :219801176801XXXXXXXX 
+Name               :runame-012345678901234567890000 
+Device type        :S5731-L4T2ST-RUA 
+Connect interface  :Eth-Trunk1 
+-----------------------------------------------------------------------------------  
+<strong>GE5 current state : UP </strong>
+Speed: 1000,  Duplex: Full,  Negotiation: Enable,  Mode: Copper,  Congestion: No 
+Input rate 0 bits/sec, 0 packets/sec 
+Output rate 0 bits/sec, 0 packets/sec 
+
+Input: 0 packets, 0 bytes 
+  Unicast:                          0,  Multicast:                           0 
+  Broadcast:                        0,  Jumbo:                               0 
+  Discard:                          0,  Pause:                               0 
+  Frames:                           0 
+
+  Total Error:                      0 
+  CRC:                              0,  Giants:                              0 
+  Runts:                            0,  DropEvents:                          0 
+  Alignments:                       0,  Symbols:                             0 
+  Ignoreds:                         0 
+
+<strong>Output : 168571 packets, 24951014 bytes </strong>
+  Unicast:                     168453,  Multicast:                          81 
+  Broadcast:                       37,  Jumbo:                               0 
+  Discard:                          0,  Pause:                               0 
+
+  Total Error:                      0 
+  Collisions:                       0,  Late Collisions:                     0 
+  Deferreds:                        0 
+
+    Input bandwidth utilization threshold : 80.00% 
+    Output bandwidth utilization threshold: 80.00% 
+    Last 60 seconds input utility rate : 0.00% 
+    Last 60 seconds output utility rate: 0.00% 
+
+----------------------------------------------------------------------------------</pre>
+</div>
+</li></ol>
+<p>Determine the interface with abnormal traffic based on the command output. For example, in normal cases, the incoming traffic volume of the central device's interconnection interface is equal to the outgoing traffic volume of the RU's uplink interface. If not, find out where packets are lost based on the traffic statistics in the command output and determine the faulty interface.</p>
+</p></li><li><span>View FMEA-related alarms on the central device to check whether the RU's PHY chip is faulty.</span><p><p><strong>RUMNG/2/RuPhyStatAbnormal:OID [oid] Remote unit PHY chip is abnormal. (RemoteUnitEsn=[OCTET])</strong> indicates that the RU's PHY chip is abnormal. For details about the alarm information, see hwRuPhyStatAbnormal.</p>
+<ol type="a"><li>If the interface that uses the abnormal PHY chip is in Up state, the device automatically restarts. After the restart, check whether the interface can send and receive packets properly. If not, the PHY chip is faulty. In this case, replace the device.<div class="p"># Display information brief about the RU interface and check the PHY status of the interface. As shown in the following example, port 3 is connected to a terminal and its PHY status is Up. If the alarm hwRuPhyStatAbnormal is generated on the central device, the central device automatically restarts. After the restart, check whether the interface can send and receive packets properly.<pre class="screen">&lt;HUAWEI&gt; <strong>display remote-unit port brief</strong>
+ESN                :219801176801XXXXXXXX 
+Name               :runame-012345678901234567890000 
+Device type        :S5731-L4T2ST-RUA 
+Connect interface  :Eth-Trunk1 
+-------------------------------------------------------------------------------------------- 
+Interface     PHY       Negotiation     Duplex    Mode      Speed(Mbps)   NeighborInterface 
+-------------------------------------------------------------------------------------------- 
+GE1           Down      Enable          Full      Copper    1000          - 
+GE2           Down      Enable          Full      Copper    1000          - 
+GE3           <strong>Up</strong>        Enable          Full      Copper    1000          - 
+GE4           Down      Enable          Full      Copper    1000          - 
+GE5           Up        Enable          Full      Copper    1000          GE0/0/26 
+GE6           Up        Enable          Full      Fiber     1000          GE0/0/27 
+-------------------------------------------------------------------------------------------- </pre>
+</div>
+</li><li>If the interface that uses the abnormal PHY chip is in Down state, the device will not automatically restart. If this interface is not used, no further action is required. If this interface needs to be used, run the <strong>reboot</strong> command to restart the device. After the restart, check whether the interface can send and receive packets properly.</li></ol>
+</p></li><li><span>Perform internal loopback on the RU's downlink interface, and restart the interface to rectify the fault.</span><p><ol type="a"><li>Perform an internal loopback test on the RU interfaces.<div class="p"># Perform an internal loopback test on port 2 of RU 0 to check whether the internal forwarding chip of the RU works properly. If "Error: Failed to set loopback test, error message:***" is displayed after the <b><span class="cmdqueryname">loopbacktest internal port</span></b> command is delivered, the internal loopback test failed and the interface is faulty. In this case, information needs to be collected for fault locating. If "Info: Setting the internal loopback test on the port of the remote unit succeeded." is displayed, the internal loopback test is successful and the internal forwarding chip works properly.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>remote-unit 0</strong> 
+[HUAWEI-remote-unit-0] <strong>loopbacktest internal port 2</strong>
+</pre>
+</div>
+</li><li>Restart interfaces on the RU.<p># If the status or statistics of port 1 on RU 0 is abnormal, restart the port to rectify the fault.</p>
+<pre class="screen">[HUAWEI-remote-unit-0] <strong>restart port 1</strong> 
+[HUAWEI-remote-unit-0]<strong> quit</strong></pre>
+</li></ol>
+</p></li><li><span>Check whether the uplink interfaces are correctly connected.</span><p><ol type="a"><li>The uplink interfaces of an RU are added to the Eth-Trunk by default. Check whether the uplink interfaces are connected to the same central device. If they are connected to two central devices, traffic forwarding will be abnormal.</li><li>An RU is connected to the central device through two uplinks. Check whether the two downlink interfaces of the central device are added to the same Eth-Trunk interface. If not, a link exception alarm is generated and the interfaces go Error-Down.</li></ol>
+<p>In dual-link scenarios, the central device may not set up an Eth-Trunk or the two links may connect to different central devices. In these cases, the central device will automatically detect the fault, triggering an alarm and Error-Down event.</p>
+<p># If an interface is in Error-Down state, run the <strong>restart</strong> command to restart the interface or set the automatic recovery time of the interface. Run the <b><span class="cmdqueryname">error-down auto-recovery cause remote-unit-link interval</span></b> command to set the automatic recovery time for the interfaces connecting the central device to RUs if the interfaces go Error-Down due to link faults. Run the <b><span class="cmdqueryname">error-down auto-recovery cause remote-unit-misconfig interval</span></b> command to set the automatic recovery time for the interfaces connecting the central device to RUs if the interfaces go Error-Down due to incorrect configuration.</p>
+<pre class="screen">[HUAWEI] <strong>error-down auto-recovery cause remote-unit-link interval 30</strong>
+[HUAWEI] <strong>error-down auto-recovery cause remote-unit-misconfig interval 30</strong> </pre>
+</p></li><li><span><span class="keyword">Collect log and configuration information and contact technical support personnel. </span><span><span>You can run the <strong>display diagnostic-information</strong> command to collect diagnostic information.</span></span></span></li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">Common Configuration Errors for Intelligent Simplified Campus Networks
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0033.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0035.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

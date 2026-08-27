@@ -1,0 +1,414 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Digital Signature Management">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0011.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0010_1.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0012.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513051858">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Digital Signature Management</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513051858"></a><a name="EN-US_TASK_0000001513051858"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Digital Signature Management</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513051858__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Overview</h4><p>Digital certificates are used to secure communication between services on a device and between the device and external devices, by preventing communication data from being tampered with during transmission, improving system security.</p>
+<p>A device supports certification authority (CA) certificates and device certificates.</p>
+<ul><li>CA certificate<p>It is also called the root certificate and is used to verify whether a device certificate is issued through the root certificate when an attempt is made to access the device.</p>
+</li><li>Device certificate<ul><li>It is also called a local certificate, which is a public key file. It appears in a pair with a private key file. The device certificate is issued by the root certificate and usually used to encrypt sessions or data to ensure the security of requests to access a service.</li><li>A private key file must be used together with a device certificate and is used to decrypt the data that has been encrypted by the device certificate.</li><li>A private-key password is used to encrypt a private key file.</li></ul>
+</li></ul>
+<p>The following table lists the initial digital certificates provided by a device. If a new certificate needs to be configured based on service requirements, you can run commands to configure and update the certificate.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Using the default certificate may pose security risks. To improve system security, you are advised to replace the initial certificates with your own digital certificates and periodically update the certificates and keys.</p>
+</div></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Initial digital certificates</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="15%" id="mcps1.3.1.7.2.5.1.1" liSelected="liSelected"><p>Certificate Name</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="15%" id="mcps1.3.1.7.2.5.1.2" liSelected="liSelected"><p>Certificate File Name</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="34.97%" id="mcps1.3.1.7.2.5.1.3" liSelected="liSelected"><p>Certificate Function</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="35.03%" id="mcps1.3.1.7.2.5.1.4" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.1.7.2.5.1.1 "><p>default_ca</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.1.7.2.5.1.2 "><p>CA certificate: default_ca.cer</p>
+</td>
+<td class="cellrowborder" valign="top" width="34.97%" headers="mcps1.3.1.7.2.5.1.3 "><p>Used to verify the identities of peer Huawei devices.</p>
+</td>
+<td class="cellrowborder" valign="top" width="35.03%" headers="mcps1.3.1.7.2.5.1.4 "><p>The initial CA certificate is stored in the NVRAM on a device before device delivery. To use the initial CA certificate, run the <strong>pki import-certificate default_ca realm default</strong> command to import the certificate to the <strong>default</strong> realm.</p>
+<p>To use another CA certificate, remove the initial CA certificate from the <strong>default</strong> realm and import a new CA certificate. The newly imported CA certificate cannot be named <strong>default_ca.cer</strong> because it is the name of the initial CA certificate reserved by the system.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.1.7.2.5.1.1 "><p>default_local</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.1.7.2.5.1.2 "><p>Device certificate: default_local.cer</p>
+</td>
+<td class="cellrowborder" valign="top" width="34.97%" headers="mcps1.3.1.7.2.5.1.3 "><p>Used to verify the identity of a local device.</p>
+</td>
+<td class="cellrowborder" valign="top" width="35.03%" headers="mcps1.3.1.7.2.5.1.4 "><p>You can determine whether to use this certificate for identity verification based on service requirements.</p>
+<p>By default, the initial device certificate is automatically imported to the <strong>default</strong> realm. To use another device certificate, remove the initial device certificate from the <strong>default</strong> realm and import a new device certificate. The newly imported device certificate cannot be named <strong>default_local.cer</strong> because it is the name of the initial device certificate reserved by the system.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 2 </b>Certificate usage</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="8.62%" id="mcps1.3.1.8.2.8.1.1" liSelected="liSelected"><p>Feature/Module Using Certificates</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="24.08%" id="mcps1.3.1.8.2.8.1.2" liSelected="liSelected"><p>Certificate Function</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="5.800000000000001%" id="mcps1.3.1.8.2.8.1.3" liSelected="liSelected"><p>Use Initial Device Certificate by Default (Yes/No)</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="12.11%" id="mcps1.3.1.8.2.8.1.4" liSelected="liSelected"><p>Users Can Replace Certificates with Their Own Ones (Yes/No) </p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="17.150000000000002%" id="mcps1.3.1.8.2.8.1.5" liSelected="liSelected"><p>Whether Multiple Certificates Need to Be Obtained; Whether There Are Loading Sequence Requirements</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="14.49%" id="mcps1.3.1.8.2.8.1.6" liSelected="liSelected"><p>Requirements on the Certificate Format and Name When Applying for a Certificate</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="17.75%" id="mcps1.3.1.8.2.8.1.7" liSelected="liSelected"><p>Requirements on the Fields Such as Common Name When Applying for a Certificate</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>IPsec</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><ul><li>The RSA digital signature certificate is used for identity authentication.</li></ul>
+<ul><li>The certificate is used for digital envelope authentication (SM series cryptographic algorithms).</li></ul>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>No</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>The format is x509, and the name contains 1 to 127 characters.</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>The common name of a device certificate is identified by the ESN.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>Signature database update</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>The device must use the initial CA certificate for communication with the Huawei security center through HTTPS.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>No</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Not supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>Web UI-based login</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>When the client logs in to the server through HTTPS, mutual authentication can be implemented between the client and server through certificates.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>Yes</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>CAPWAP</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>DTLS encryption scenario: used for deployment of an AP that will be connected to the AC through certificate authentication.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>Yes</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Not supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>The common name of a device certificate is identified by the ESN.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>SSH</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>Assign a PKI certificate to the SSH server and bind the PKI realm used for authentication with the SSH server to the SSH client to ensure that the server certificate is valid during the first connection.</p>
+<p>In a scenario where the controller manages devices or ZTP scenario, the controller connects to the device in Call Home mode and uses the certificate for mutual authentication.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>Yes</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>SSL</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>When an SSL policy is applied to a device for SSL-encrypted data transmission, the device certificate is used for the authentication by the peer device, and the CA certificate is used to authenticate the peer device.</p>
+<p>The SSL policy can be used for encrypted transmission of syslogs, gRPC data, and HTTPS data.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>No</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>SD-WAN EVPN</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>In SD-WAN scenarios, DTLS is used to transmit TNP and SA information. The device certificate is used for authentication by the peer end, and the CA certificate is used to authenticate the peer end.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>Yes</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>SYSLOG</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>If the transport network is insecure, you can specify the <strong>ssl-policy</strong> parameter to enable syslogs to use the SSL encrypted transmission mode.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>No</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>HTTPS client</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>If the transport network is insecure, you can specify the <strong>ssl-policy</strong> parameter to enable file transfer commands (<strong>download</strong> or <strong>upload</strong>) to use the SSL encrypted transmission mode.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>No</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>gRPC service</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>If the transport network is insecure, you can specify the <strong>ssl-policy</strong> parameter to enable the gRPC service to use the SSL encrypted transmission mode.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>No</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>RESTCONF service (HTTPS)</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>If the transport network is insecure, you can specify the <strong>ssl-policy</strong> parameter to enable the RESTCONF service to use the SSL encrypted transmission mode.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>No</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>SZTP</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>If the transport network is insecure, you can specify the <strong>ssl-policy</strong> parameter to enable the SZTP service to use the SSL encrypted transmission mode.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>Yes</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>BGP</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>If the transport network is insecure, configure BGP peers as SSL clients or servers, so that the data encryption, authentication, and message integrity check mechanisms of SSL can be used to ensure secure data transmission on the network.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>No</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>HOUP</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>During smart upgrade, the device connects to the HOUP using HTTPS. To improve connection security, a certificate is used to bind an SSL policy for smart upgrade.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>Yes</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.62%" headers="mcps1.3.1.8.2.8.1.1 "><p>URL remote query</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.08%" headers="mcps1.3.1.8.2.8.1.2 "><p>The initial CA certificate is needed when a device communicates with Huawei security center through HTTPS to query URL categories.</p>
+</td>
+<td class="cellrowborder" valign="top" width="5.800000000000001%" headers="mcps1.3.1.8.2.8.1.3 "><p>No</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.1.8.2.8.1.4 "><p>Not supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.150000000000002%" headers="mcps1.3.1.8.2.8.1.5 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.49%" headers="mcps1.3.1.8.2.8.1.6 "><p>None</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.75%" headers="mcps1.3.1.8.2.8.1.7 "><p>None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>You can upload or update certificates used for external communication in the following scenarios:</p>
+<ul><li><p>If both communication parties need to use digital certificates for identity verification, you can run commands to upload the digital certificates.</p>
+</li><li><p>You can run commands to update digital certificates in the following scenarios:</p>
+<ul><li><p>For the sake of device security, the initial certificates of the device need to be replaced.</p>
+</li><li><p>During routine maintenance, an existing digital certificate is considered insecure and needs to be replaced.</p>
+</li><li><p>The system reports the <strong>hwPKICACertNearlyExpired</strong> or <strong>hwPKILocalCertNearlyExpired</strong> alarm if the number of remaining days of a certificate is less than the number of warning days before the certificate expires (90 days by default, which can be configured using the <b><span class="cmdqueryname">pki set-certificate expire-prewarning</span></b> command). The system reports the <strong>hwPKICACertInvalid</strong> or <strong>hwPKILocalCertInvalid</strong> alarm if a certificate expires.</p>
+</li><li><p>Before an upgrade, you must replace the initial certificates. If the certificates are not replaced, service modules may fail to communicate with each other or with external systems after the upgrade.</p>
+</li></ul>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513051858__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513051858__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Pre-configuration Tasks</h4><ul><li><p>Before uploading or updating a CA certificate, you have obtained the CA certificate, for example, ca.crt.</p>
+</li><li><p>Before uploading or updating a device certificate, you have obtained the device certificate (for example, certfile.cer), private key file (for example, ca.key), and private-key password.</p>
+</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513051858__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Upload the obtained certificates and private key file into the <strong>flash:/pki/public</strong> directory.</span></li><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create a PKI realm and enter the PKI realm view.</span><p><pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <i><span class="varname">realm-name</span></i></pre>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Import the CA certificate to the device memory.</span><p><pre class="screen"><b><span class="cmdqueryname">pki import-certificate</span></b> <strong><span>ca</span></strong> <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> [ <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> ] <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i><span> [ <strong>cert-name</strong> <em>cert-name</em> ]</span> [ <strong><span>replace</span></strong> ]</pre>
+<p>If the same certificate exists in the PKI realm, configuring the <strong><span>replace</span></strong> parameter in this command will delete the original certificate and the corresponding RSA key pair before the specified new certificate is imported. When the RSA key pair corresponding to the original certificate is not referenced by other realms, the original certificate and RSA key pair are deleted. When the RSA key pair corresponding to the original certificate is referenced by other realms or CMP sessions, the original certificate is deleted, and the key pair is retained.</p>
+</p></li><li><span>Import the local certificate into memory on the device.</span><ul><li>When applying for a local certificate from the CA based on the PKI entity information and RSA key pair created in the local PKI entity, you only need to run the following command to import the local certificate into memory on the device. The RSA key pair is already imported into memory by default during its creation.<pre class="screen"><b><span class="cmdqueryname">pki import-certificate</span></b> <strong><span>local</span></strong> [ [ <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> ] [ <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> ] ] <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i><span><span> [ <strong>cert-name</strong> <em>cert-name</em> ]</span> [ <strong><span>no-check-hash-alg</span></strong> ]</span> [ <strong><span>no-check-same-name</span></strong> ]</pre>
+</li><li>If you need to use the key pair generated by and the certificate of another PKI entity, you have to import both the certificate and key pair file. A key pair file can either be included in a certificate file or exist independently of the certificate file. Select a method of importing a key pair file accordingly.
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="15%" id="mcps1.3.4.6.2.2.1.1.4.1.1" liSelected="liSelected"><p>Operation</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="45%" id="mcps1.3.4.6.2.2.1.1.4.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="40%" id="mcps1.3.4.6.2.2.1.1.4.1.3" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.4.6.2.2.1.1.4.1.1 "><p>Import both a certificate and a key pair file.</p>
+</td>
+<td class="cellrowborder" valign="top" width="45%" headers="mcps1.3.4.6.2.2.1.1.4.1.2 "><p><b><span class="cmdqueryname">pki import rsa-key-pair</span></b> <i><span class="varname">keyname</span></i><span> </span>{ <b><span class="cmdqueryname">pem</span></b> | <b><span class="cmdqueryname">pkcs12</span></b> } <i><span class="varname">file-name</span></i> [ <strong><span>exportable</span></strong> ] [ <b><span class="cmdqueryname">password</span></b> <i><span class="varname">password</span></i> ]</p>
+</td>
+<td class="cellrowborder" valign="top" width="40%" headers="mcps1.3.4.6.2.2.1.1.4.1.3 "><p>If a certificate file contains a key pair file, you can run this command to import both the certificate and key pair file.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.4.6.2.2.1.1.4.1.1 "><p>Import a certificate file.</p>
+</td>
+<td class="cellrowborder" valign="top" width="45%" headers="mcps1.3.4.6.2.2.1.1.4.1.2 "><p><b><span class="cmdqueryname">pki import-certificate</span></b> <strong><span>local</span></strong> [ [ <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> ] [ <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> ] ] <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i><span>  [ <strong>cert-name</strong> <em>cert-name</em> ] [ <strong>no-check-same-name</strong> ]  [ <strong><span>no-check-hash-alg</span></strong> ]</span></p>
+</td>
+<td class="cellrowborder" rowspan="2" valign="top" width="40%" headers="mcps1.3.4.6.2.2.1.1.4.1.3 "><p>If the certificate file and key pair file exist separately, you can run the two commands to import the certificate file and key pair file.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.4.6.2.2.1.1.4.1.1 "><p>Import a key pair file.</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.4.6.2.2.1.1.4.1.2 "><p><b><span class="cmdqueryname">pki import rsa-key-pair</span></b> <i><span class="varname">keyname</span></i><span> </span><span><strong><span>exclude-cert</span></strong> </span>{ <b><span class="cmdqueryname">pem</span></b> | <b><span class="cmdqueryname">pkcs12</span></b> } <i><span class="varname">file-name</span></i> [ <strong><span>exportable</span></strong> ] [ <b><span class="cmdqueryname">password</span></b> <i><span class="varname">password</span></i> ]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li></ul>
+<p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If no certificate format is specified, the system automatically identifies the certificate format and imports a specified certificate.</p>
+</div></div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513051858__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <b><span class="cmdqueryname">display pki certificate</span></b> { <strong><span>ca</span></strong> | <strong><span>local</span></strong> } [ <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> | <strong><span>filename</span></strong> <i><span class="varname">filename</span></i> ] command to check the content of the loaded certificates.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0011.html">Management Plane Security (Level-1)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0010_1.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0012.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

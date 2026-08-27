@@ -1,0 +1,98 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring WRED for Queues on an Interface">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_congestion_avoid_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_congestion_avoid_cfg_0005.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_congestion_avoid_cfg_0022.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Congestion Avoidance">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Congestion Avoidance">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563874325">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring WRED for Queues on an Interface</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563874325"></a><a name="EN-US_TASK_0000001563874325"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring WRED for Queues on an Interface</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563874325__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>WRED randomly discards packets based on WRED parameter settings, preventing global TCP synchronization and ensuring packets with higher priorities are less likely to be discarded. </p>
+<p>In the congestion avoidance mechanism, colors (green, yellow, and red) are not used to discard packets based on priorities.</p>
+<p>You can apply a drop profile to a queue on an interface to implement congestion avoidance for the queue.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563874325__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li id="EN-US_TASK_0000001563874325__step2146835717175347"><span id="EN-US_TASK_0000001563874325__cmd1995142372175347">Create a WRED drop profile and enter the WRED drop profile view.</span><p><pre class="screen" id="EN-US_TASK_0000001563874325__screen16291189113319"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563874325__cmdname83001896338">drop-profile</span></b> <i><span class="varname" id="EN-US_TASK_0000001563874325__varname43003983315">drop-profile-name</span></i></pre>
+<p id="EN-US_TASK_0000001563874325__p69648313575">By default, a WRED drop profile named <strong id="EN-US_TASK_0000001563874325__b1945155415172">default</strong> exists on the device.</p>
+<p id="EN-US_TASK_0000001563874325__p949517452582">A maximum of 63 WRED drop profiles, including the default drop profile, can be configured on the device. The default drop profile cannot be deleted, and only parameters in the profile can be modified.</p>
+</p></li><li id="EN-US_TASK_0000001563874325__step1367603871616"><span id="EN-US_TASK_0000001563874325__cmd1167583818168">Set WRED parameters.</span><p><ul id="EN-US_TASK_0000001563874325__ul15116158162210"><li id="EN-US_TASK_0000001563874325__li211614587223">Configure the current WRED drop profile to drop packets based on the default priority.<pre class="screen" id="EN-US_TASK_0000001563874325__screen3222949161811"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563874325__cmdname741412453449">wred blind</span></b>
+<b><span class="cmdqueryname" id="EN-US_TASK_0000001563874325__cmdname15684751151820">color</span></b> <strong><span id="EN-US_TASK_0000001563874325__cmdparmname8684135111816">blind</span></strong> <strong><span id="EN-US_TASK_0000001563874325__cmdparmname1368411516187">low-limit</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563874325__varname1568455121820">low-limit-percentage</span></i> <strong><span id="EN-US_TASK_0000001563874325__cmdparmname66841151161816">high-limit</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563874325__varname15685135114186">high-limit-percentage</span></i> <strong><span id="EN-US_TASK_0000001563874325__cmdparmname10685115112187">discard-percentage</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563874325__varname8685851121810">discard-percentage</span></i></pre>
+<p id="EN-US_TASK_0000001563874325__lines1398743710319">The default mode is blind and does not need to be changed. By default, the upper drop threshold in percentage, lower drop threshold in percentage, and maximum drop probability in a WRED drop profile are all 100.</p>
+</li></ul>
+<ul id="EN-US_TASK_0000001563874325__ul413920362317"><li id="EN-US_TASK_0000001563874325__li91391938233">Configure the current WRED drop profile to drop packets based on the DSCP priority.<pre class="screen" id="EN-US_TASK_0000001563874325__screen1673105118205"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563874325__cmdname18684105515918">wred dscp</span></b>
+<b><span class="cmdqueryname" id="EN-US_TASK_0000001563874325__cmdname195011789219">dscp</span></b> { <i><span class="varname" id="EN-US_TASK_0000001563874325__varname185015842118">start-dscp-value</span></i> [ <strong><span id="EN-US_TASK_0000001563874325__cmdparmname115011082210">to</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563874325__varname55012812216">end-dscp-value</span></i> ] } &amp;&lt;1-10&gt; <strong><span id="EN-US_TASK_0000001563874325__cmdparmname1550113882119">low-limit</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563874325__varname450117872116">low-limit-percentage</span></i> <strong><span id="EN-US_TASK_0000001563874325__cmdparmname2501138122117">high-limit</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563874325__varname45013814216">high-limit-percentage</span></i> <strong><span id="EN-US_TASK_0000001563874325__cmdparmname16501188142116">discard-percentage</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563874325__varname145012816214">discard-percentage</span></i></pre>
+<p id="EN-US_TASK_0000001563874325__lines15781011663">The default mode is blind. Before configuring a WRED drop profile in DSCP mode, change to DSCP mode first. By default, the upper drop threshold in percentage, lower drop threshold in percentage, and maximum drop probability in a WRED drop profile are all 100.</p>
+</li></ul>
+<div class="note" id="EN-US_TASK_0000001563874325__note81890493248"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001563874325__p192172511811">For the AR8700 series, AR6710-L26T2X4, AR6710-L26T2X4-T, AR6710-L50T2X4, and AR6710-L50T2X4-T, the default mode of a WRED drop profile is blind and cannot be configured. Therefore, only WRED parameters in blind mode can be configured.</p>
+<p id="EN-US_TASK_0000001563874325__p6622622124515">Only the AR8100 series, AR6700-H series, AR6710-L8T3TS1X2, AR6710-L8T3TS1X2-T, AR6710-L14T2X4, and AR5700 series support the setting of WRED parameters in DSCP mode.</p>
+</div></div>
+</p></li><li id="EN-US_TASK_0000001563874325__step1294515170175347"><span id="EN-US_TASK_0000001563874325__cmd759634433175347">Exit the WRED drop profile view.</span><p><pre class="screen" id="EN-US_TASK_0000001563874325__screen16791327204016"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563874325__cmdname146886272404">quit</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <i><span class="varname">interface-name </span></i>}</pre>
+</p></li><li><span>(Optional) Enable the queue capability on the interface.</span><p><pre class="screen" id="EN-US_TASK_0000001563874325__en-us_task_0000001563889757_screen18237121810142"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563874325__en-us_task_0000001563889757_cmdname336518820175">qos queue-scheduling enable</span></b></pre>
+<p id="EN-US_TASK_0000001563874325__en-us_task_0000001563889757_p3191113149">By default, the queue capability is disabled on an interface.</p>
+<p id="EN-US_TASK_0000001563874325__en-us_task_0000001563889757_p3376139122520">After the queue capability is enabled on an Eth-Trunk interface or a tunnel interface, the loopback function is enabled by default.</p>
+<p id="EN-US_TASK_0000001563874325__en-us_task_0000001563889757_p872343613253">For other physical interfaces, when the queue capability is enabled on an interface, it is not enabled on a sub-interface of the interface. If the queue capability also needs to be used on a sub-interface, enable it in the sub-interface view.</p>
+<div class="note" id="EN-US_TASK_0000001563874325__en-us_task_0000001563889757_note228617293273"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000001563874325__en-us_task_0000001563889757_ul58801372278"><li id="EN-US_TASK_0000001563874325__en-us_task_0000001563889757_li9880123719278">Queue resources are not allocated to physical and logical interfaces by default for the AR5700 series, AR6710-L14T2X4, AR6710-L8T3TS1X2, and AR6710-L8T3TS1X2-T. This command can be configured on physical and logical interfaces. For other models, queue resources are allocated to physical interfaces, but are not allocated to logical interfaces by default. Therefore, this command can be configured only on logical interfaces.</li><li id="EN-US_TASK_0000001563874325__en-us_task_0000001563889757_li878424615534">This command cannot be configured on an MP-group interface or on a serial interface created on an E1 card. If queue resources are insufficient, creating these two types of interfaces will cause queue-related functions on the interfaces to become invalid. In this case, you need to create the interfaces again when queue resources are sufficient.</li></ul>
+</div></div>
+</p></li><li><span>Apply the WRED drop profile to a queue on the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">qos queue</span></b> <i><span class="varname">queue-index</span></i> <strong><span>wred</span></strong> <i><span class="varname">drop-profile-name</span></i></pre>
+</p></li><li><span>Exit the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_congestion_avoid_cfg_0001.html">Congestion Avoidance Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_congestion_avoid_cfg_0005.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_congestion_avoid_cfg_0022.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,590 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring MPLS QoS">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_mpls-qos_cfg_001.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_mpls-qos_cfg_010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513040486">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring MPLS QoS</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513040486"></a><a name="EN-US_TASK_0000001513040486"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring MPLS QoS</h1>
+<div class="taskbody" id="taskbody0000001405119300"><div class="context"><a name="EN-US_TASK_0000001513040486__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001513040486__context1198383012183254"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001513040486__p1922672969183254">Enterprises A and B use BGP/MPLS IP VPN to connect their headquarters and branches. In <a href="#EN-US_TASK_0000001513040486__fig_dc_cfg_mpls-ldp_008701">Figure 1</a>, CE1 and CE3 connect to the headquarters and branch of enterprise A, and CE2 and CE4 connect to the headquarters and branch of enterprise B. Enterprise A uses VPN <strong id="EN-US_TASK_0000001513040486__b165321011111214">vpna</strong>, and enterprise B uses VPN <strong id="EN-US_TASK_0000001513040486__b7276131461213">vpnb</strong>.</p>
+<p id="EN-US_TASK_0000001513040486__p1884416732183254">Enterprise A has a high service level and requires better QoS guarantee.</p>
+<div class="fignone" id="EN-US_TASK_0000001513040486__fig_dc_cfg_mpls-ldp_008701"><a name="EN-US_TASK_0000001513040486__fig_dc_cfg_mpls-ldp_008701"></a><a name="fig_dc_cfg_mpls-ldp_008701"></a><span class="figcap"><b>Figure 1 </b>Network diagram of MPLS QoS</span><div class="note" id="EN-US_TASK_0000001513040486__note284233551214021"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513040486__p1315285210214021">In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img id="EN-US_TASK_0000001513040486__image3186171716106" src="figure/en-us_image_0000001512681330.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513040486__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001513040486__context858115186183254"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001513040486__p1284154131183254">Configure MPLS QoS on PE1 and PE2, enable the pipe mode for VPNs <strong id="EN-US_TASK_0000001513040486__b15917112417137">vpna</strong> and <strong id="EN-US_TASK_0000001513040486__b56322272134">vpnb</strong>, and set the MPLS EXP values of VPNs <strong id="EN-US_TASK_0000001513040486__b882524710130">vpna</strong> and <strong id="EN-US_TASK_0000001513040486__b18825184715131">vpnb</strong> to 4 and 3, respectively, to provide better QoS guarantee for services of enterprise A.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513040486__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001513040486__steps1937755898183254"><li id="EN-US_TASK_0000001513040486__step1684260374183254"><span id="EN-US_TASK_0000001513040486__cmd1382154711183254">Configure OSPF on the MPLS backbone network so that the PEs and P on the backbone network can communicate with each other.</span><p><p id="EN-US_TASK_0000001513040486__p1156993158183254"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1932943302183254">&lt;<span class="keyword" id="EN-US_TASK_0000001513040486__keyword8777123418513">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001513040486__b173723499183254">system-view</strong>
+<span>[<span class="keyword" id="EN-US_TASK_0000001513040486__keyword4415202615">HUAWEI</span>] <strong id="EN-US_TASK_0000001513040486__b725618971183254">sysname PE1</strong></span>
+[PE1] <strong id="EN-US_TASK_0000001513040486__b801620151183254">interface loopback 1</strong>
+[PE1-LoopBack1] <strong id="EN-US_TASK_0000001513040486__b1018736579183254">ip address 1.1.1.9 32</strong>
+[PE1-LoopBack1] <strong id="EN-US_TASK_0000001513040486__b15377960183254">quit</strong>
+[PE1]<strong id="EN-US_TASK_0000001513040486__b1145217513133"> interface <span>10ge</span> <span>0/0/3</span></strong>
+[PE1-<span>10GE</span><span>0/0/3</span>]<strong id="EN-US_TASK_0000001513040486__en-us_task_0241512153_b477471579175337"> undo portswitch</strong>
+[PE1-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b20452185116133">ip address 172.16.1.1 24</strong>
+[PE1-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b7453175191318">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001513040486__b1596683071183254">ospf 1</strong>
+[PE1-ospf-1] <strong id="EN-US_TASK_0000001513040486__b657795961183254">area 0</strong>
+[PE1-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b107366690183254">network 172.16.1.0 0.0.0.255</strong>
+[PE1-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b838515596183254">network 1.1.1.9 0.0.0.0</strong>
+[PE1-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b174247499183254">quit</strong>
+[PE1-ospf-1] <strong id="EN-US_TASK_0000001513040486__b1339114388183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p1434969444183254"># Configure P.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1539292774183254">&lt;<span class="keyword" id="EN-US_TASK_0000001513040486__keyword2796796133">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001513040486__b1658919394183254">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513040486__keyword62519158136">HUAWEI</span>] <strong id="EN-US_TASK_0000001513040486__b1354739826183254">sysname P</strong>
+[P] <strong id="EN-US_TASK_0000001513040486__b1535822864183254">interface loopback 1</strong>
+[P-LoopBack1] <strong id="EN-US_TASK_0000001513040486__b2120036009183254">ip address 2.2.2.9 32</strong>
+[P-LoopBack1] <strong id="EN-US_TASK_0000001513040486__b1386237980183254">quit</strong>
+[P]<strong id="EN-US_TASK_0000001513040486__b18516419181617"> interface <span>10ge</span> <span>0/0/1</span></strong>
+[P-<span>10GE</span><span>0/0/1</span>]<strong id="EN-US_TASK_0000001513040486__b9199124313309"> undo portswitch</strong>
+[P-<span>10GE</span><span>0/0/1</span>]<strong id="EN-US_TASK_0000001513040486__b0516111911168"> ip address 172.16.1.2 24</strong>
+[P-<span>10GE</span><span>0/0/1</span>]<strong id="EN-US_TASK_0000001513040486__b18516101911162"> quit</strong>
+[P]<strong id="EN-US_TASK_0000001513040486__b125161198163"> interface <span>10ge</span> <span>0/0/2</span></strong>
+[P-<span>10GE</span><span>0/0/2</span>]<strong id="EN-US_TASK_0000001513040486__b188664113318"> undo portswitch</strong>
+[P-<span>10GE</span><span>0/0/2</span>]<strong id="EN-US_TASK_0000001513040486__b1151610198166"> ip address 172.17.1.1 24</strong>
+[P-<span>10GE</span><span>0/0/2</span>]<strong id="EN-US_TASK_0000001513040486__b35165197160"> quit</strong>
+[P] <strong id="EN-US_TASK_0000001513040486__b9195137183254">ospf</strong><strong id="EN-US_TASK_0000001513040486__b36860622214"> 1</strong>
+[P-ospf-1]<strong id="EN-US_TASK_0000001513040486__b978205583183254"> area 0</strong>
+[P-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b1536943991183254">network 172.16.1.0 0.0.0.255</strong>
+[P-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b1106545170183254">network 172.17.1.0 0.0.0.255</strong>
+[P-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b1505832317183254">network 2.2.2.9 0.0.0.0</strong>
+[P-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b125581430183254">quit</strong>
+[P-ospf-1] <strong id="EN-US_TASK_0000001513040486__b1883048978183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p1141107763183254"># Configure PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen382287210183254">&lt;<span class="keyword" id="EN-US_TASK_0000001513040486__keyword414616162113">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001513040486__b1652930600183254">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513040486__keyword178781718814">HUAWEI</span>] <strong id="EN-US_TASK_0000001513040486__b850487957183254">sysname PE2</strong>
+[PE2] <strong id="EN-US_TASK_0000001513040486__b1657815639183254">interface loopback 1</strong>
+[PE2-LoopBack1] <strong id="EN-US_TASK_0000001513040486__b99986607183254">ip address 3.3.3.9 32</strong>
+[PE2-LoopBack1] <strong id="EN-US_TASK_0000001513040486__b853459747183254">quit</strong>
+[PE2]<strong id="EN-US_TASK_0000001513040486__b1049414230183254"> interface <span>10ge</span> <span>0/0/3</span></strong>
+[PE2-<span>10GE</span><span>0/0/3</span>]<strong id="EN-US_TASK_0000001513040486__b5206930103112"> undo portswitch</strong>
+[PE2-<span>10GE</span><span>0/0/3</span>]<strong id="EN-US_TASK_0000001513040486__b805741671183254"> ip address 172.17.1.2 24</strong>
+[PE2-<span>10GE</span><span>0/0/3</span>]<strong id="EN-US_TASK_0000001513040486__b1979806965183254"> quit</strong>
+[PE2]<strong id="EN-US_TASK_0000001513040486__b1444818132183254"> ospf</strong><strong id="EN-US_TASK_0000001513040486__b8945112015229"> 1</strong>
+[PE2-ospf-1]<strong id="EN-US_TASK_0000001513040486__b307274946183254"> area 0</strong>
+[PE2-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b1234355210183254">network 172.17.1.0 0.0.0.255</strong>
+[PE2-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b333220528183254">network 3.3.3.9 0.0.0.0</strong>
+[PE2-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001513040486__b905033556183254">quit</strong>
+[PE2-ospf-1] <strong id="EN-US_TASK_0000001513040486__b1457489951183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p849183211183254">After the configuration is complete, OSPF neighbor relationships can be established between PE1, P, and PE2. Run the <strong id="EN-US_TASK_0000001513040486__b651227932183254">display ip routing-table</strong> command. The command output shows that the PEs have learned the routes to each other's Loopback1.</p>
+</p></li><li id="EN-US_TASK_0000001513040486__step552504578183254"><span id="EN-US_TASK_0000001513040486__cmd225152818183254">Configure basic MPLS functions and MPLS LDP on the MPLS backbone network to establish LDP LSPs.</span><p><p id="EN-US_TASK_0000001513040486__p1457360501183254"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1779741277183254">[PE1] <strong id="EN-US_TASK_0000001513040486__b93789516183254">mpls lsr-id 1.1.1.9</strong>
+[PE1] <strong id="EN-US_TASK_0000001513040486__b978600189183254">mpls</strong>
+[PE1-mpls] <strong id="EN-US_TASK_0000001513040486__b235075180183254">quit</strong>
+[PE1]<strong id="EN-US_TASK_0000001513040486__b266192261183254"> mpls ldp</strong>
+[PE1-mpls-ldp] <strong id="EN-US_TASK_0000001513040486__b297919070183254">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001513040486__b1879895712183254">interface <span>10ge</span> <span>0/0/3</span></strong>
+[PE1-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b668139344183254">mpls</strong>
+[PE1-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b632000444183254">mpls ldp</strong>
+[PE1-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b249159759183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p1273767810183254"># Configure P.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen720190490183254">[P] <strong id="EN-US_TASK_0000001513040486__b206895202183254">mpls lsr-id 2.2.2.9</strong>
+[P] <strong id="EN-US_TASK_0000001513040486__b1648873341183254">mpls</strong>
+[P-mpls] <strong id="EN-US_TASK_0000001513040486__b182763509183254">quit</strong>
+[P]<strong id="EN-US_TASK_0000001513040486__b222135397183254"> mpls ldp</strong>
+[P-mpls-ldp] <strong id="EN-US_TASK_0000001513040486__b474822845183254">quit</strong>
+[P] <strong id="EN-US_TASK_0000001513040486__b1678875489183254">interface <span>10ge</span> <span>0/0/1</span></strong>
+[P-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b1699065359183254">mpls</strong>
+[P-<span>10GE</span><span>0/0/1</span>]<strong id="EN-US_TASK_0000001513040486__b37827491183254"> mpls ldp</strong>
+[P-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b1127181352183254">quit</strong>
+[P] <strong id="EN-US_TASK_0000001513040486__b1396279180183254">interface <span>10ge</span> <span>0/0/2</span></strong>
+[P-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b1456244727183254">mpls</strong>
+[P-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b299902969183254">mpls ldp</strong>
+[P-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b1113453224183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p613831198183254"># Configure PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen167911596183254">[PE2] <strong id="EN-US_TASK_0000001513040486__b2021703211183254">mpls lsr-id 3.3.3.9</strong>
+[PE2] <strong id="EN-US_TASK_0000001513040486__b280006621183254">mpls</strong>
+[PE2-mpls]<strong id="EN-US_TASK_0000001513040486__b166317362183254"> quit</strong>
+[PE2]<strong id="EN-US_TASK_0000001513040486__b1934105325183254"> mpls ldp</strong>
+[PE2-mpls-ldp]<strong id="EN-US_TASK_0000001513040486__b549228506183254"> quit</strong>
+[PE2] <strong id="EN-US_TASK_0000001513040486__b504286584183254">interface <span>10ge</span> <span>0/0/3</span></strong>
+[PE2-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b1679230610183254">mpls</strong>
+[PE2-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b233672388183254">mpls ldp</strong>
+[PE2-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b49011624183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p1319123016183254">After the configuration is complete, LDP sessions can be established between PE1 and P and between P and PE2. Run the <strong id="EN-US_TASK_0000001513040486__b1746725603183254">display mpls ldp session</strong> command. The command output shows that the <strong id="EN-US_TASK_0000001513040486__b166741656124520">Status</strong> field displays <strong id="EN-US_TASK_0000001513040486__b17279892465">Operational</strong>.</p>
+<p id="EN-US_TASK_0000001513040486__p88323205183254">The following example uses the command output on PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen58874212183254">[PE1]<strong id="EN-US_TASK_0000001513040486__b1342503387183254"> display mpls ldp session</strong>
+<span>  LDP Session(s) in Public Network  Codes: LAM(Label Advertisement Mode), SsnAge Unit(DDDD:HH:MM)  A '*' before a session means the session is being deleted.</span>
+ ------------------------------------------------------------------------------
+ PeerID             Status      LAM  SsnRole  SsnAge      KASent/Rcv
+ ------------------------------------------------------------------------------
+ 2.2.2.9:0          <strong id="EN-US_TASK_0000001513040486__b1525817679183254">Operational</strong> DU   Active   0000:00:01  6/6
+ ------------------------------------------------------------------------------
+ TOTAL: 1 <span>session(s)</span> Found.
+</pre>
+</p></li><li id="EN-US_TASK_0000001513040486__step658550862183254"><span id="EN-US_TASK_0000001513040486__cmd133620996183254">Configure VPN instances on PEs and connect CEs to PEs.</span><p><p id="EN-US_TASK_0000001513040486__p951641679183254"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1203683944183254">[PE1] <strong id="EN-US_TASK_0000001513040486__b1325432875183254">ip vpn-instance vpna</strong>
+[PE1-vpn-instance-vpna] <strong id="EN-US_TASK_0000001513040486__b1207453177183254">ipv4-family</strong>
+[PE1-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b1809258159183254">route-distinguisher 100:1</strong>
+[PE1-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b354737789183254">vpn-target 111:1 both</strong>
+[PE1-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b756126230183254">quit</strong>
+[PE1-vpn-instance-vpna] <strong id="EN-US_TASK_0000001513040486__b1372812849183254">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001513040486__b176365312183254">ip vpn-instance vpnb</strong>
+[PE1-vpn-instance-vpnb] <strong id="EN-US_TASK_0000001513040486__b854242280183254">ipv4-family</strong>
+[PE1-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b455309029183254">route-distinguisher 100:2</strong>
+[PE1-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b1193684642183254">vpn-target 222:2 both</strong>
+[PE1-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b1111694070183254">quit</strong>
+[PE1-vpn-instance-vpnb] <strong id="EN-US_TASK_0000001513040486__b2028637225183254">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001513040486__b27838077183254">interface <span>10ge</span> <span>0/0/1</span></strong>
+[PE1-<span>10GE</span><span>0/0/1</span>]<strong id="EN-US_TASK_0000001513040486__b108566208367"> undo portswitch</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b302527068183254">ip binding vpn-instance vpna</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b1479312850183254">ip address 10.1.1.2 24</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b1399091736183254">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001513040486__b2063062561183254">interface <span>10ge</span> <span>0/0/2</span></strong>
+[PE1-<span>10GE</span><span>0/0/2</span>]<strong id="EN-US_TASK_0000001513040486__b05141623133610"> undo portswitch</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b242483956183254">ip binding vpn-instance vpnb</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b1504325739183254">ip address 10.2.1.2 24</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b1510489449183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p1683290475183254"># Configure PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1898288940183254">[PE2] <strong id="EN-US_TASK_0000001513040486__b911039044183254">ip vpn-instance vpna</strong>
+[PE2-vpn-instance-vpna] <strong id="EN-US_TASK_0000001513040486__b802890562183254">ipv4-family</strong>
+[PE2-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b1690845519183254">route-distinguisher 200:1</strong>
+[PE2-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b356532056183254">vpn-target 111:1 both</strong>
+[PE2-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b100368295183254">quit</strong>
+[PE2-vpn-instance-vpna] <strong id="EN-US_TASK_0000001513040486__b1893309936183254">quit</strong>
+[PE2]<strong id="EN-US_TASK_0000001513040486__b443106920183254"> ip vpn-instance vpnb</strong>
+[PE2-vpn-instance-vpnb] <strong id="EN-US_TASK_0000001513040486__b114780451183254">ipv4-family</strong>
+[PE2-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b1416364730183254">route-distinguisher 200:2</strong>
+[PE2-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b337866274183254">vpn-target 222:2 both</strong>
+[PE2-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b1770826564183254">quit</strong>
+[PE2-vpn-instance-vpnb] <strong id="EN-US_TASK_0000001513040486__b950784700183254">quit</strong>
+[PE2] <strong id="EN-US_TASK_0000001513040486__b1248993687183254">interface <span>10ge</span> <span>0/0/1</span></strong>
+[PE2-<span>10GE</span><span>0/0/1</span>]<strong id="EN-US_TASK_0000001513040486__b15330752133620"> undo portswitch</strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b612456932183254">ip binding vpn-instance vpna</strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b932956137183254">ip address 10.3.1.2 24</strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b1055957567183254">quit</strong>
+[PE2] <strong id="EN-US_TASK_0000001513040486__b1368630812183254">interface <span>10ge</span> <span>0/0/2</span></strong>
+[PE2-<span>10GE</span><span>0/0/2</span>]<strong id="EN-US_TASK_0000001513040486__b3335175523610"> undo portswitch</strong>
+[PE2-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b1433037201183254">ip binding vpn-instance vpnb</strong>
+[PE2-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b2102544528183254">ip address 10.4.1.2 24</strong>
+[PE2-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b1092734299183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p1543253207183254"># Configure IP addresses for interfaces on CEs according to <a href="#EN-US_TASK_0000001513040486__fig_dc_cfg_mpls-ldp_008701">Figure 1</a>. The configuration procedure is not mentioned here.</p>
+<p id="EN-US_TASK_0000001513040486__p2108477164183254">After the configuration is complete, each PE can ping the connected CE successfully.</p>
+<div class="note" id="EN-US_TASK_0000001513040486__note1080046802183254"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513040486__p1814816770183254">If multiple interfaces on a PE are bound to the same VPN, you need to specify the source IP address when running the <strong id="EN-US_TASK_0000001513040486__b1741448729183254">ping -vpn-instance</strong> command to ping the CE connected to the remote PE. That is, you need to specify the <strong id="EN-US_TASK_0000001513040486__b855880211183254">-a</strong> <em id="EN-US_TASK_0000001513040486__i1273475029183254">source-ip-address</em> parameter when running the <strong id="EN-US_TASK_0000001513040486__b2066257448183254">ping -vpn-instance</strong> <em id="EN-US_TASK_0000001513040486__i1576096476183254">vpn-instance-name</em> <strong id="EN-US_TASK_0000001513040486__b1199233153183254">-a</strong> <em id="EN-US_TASK_0000001513040486__i2060576225183254">source-ip-address</em> command. Otherwise, the ping may fail.</p>
+</div></div>
+<p id="EN-US_TASK_0000001513040486__p1277482794183254">The following example uses the command output on PE1 to show that PE1 can ping CE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen244194839183254">[PE1] <strong id="EN-US_TASK_0000001513040486__b2143267255183254">ping -vpn-instance vpna 10.1.1.1</strong>
+  PING 10.1.1.1: 56  data bytes, press CTRL_C to break
+    Reply from 10.1.1.1: bytes=56 Sequence=1 ttl=255 time=5 ms
+    Reply from 10.1.1.1: bytes=56 Sequence=2 ttl=255 time=3 ms
+    Reply from 10.1.1.1: bytes=56 Sequence=3 ttl=255 time=3 ms
+    Reply from 10.1.1.1: bytes=56 Sequence=4 ttl=255 time=3 ms
+    Reply from 10.1.1.1: bytes=56 Sequence=5 ttl=255 time=16 ms
+
+  --- 10.1.1.1 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 3/6/16 ms </pre>
+</p></li><li id="EN-US_TASK_0000001513040486__step753977776183254"><span id="EN-US_TASK_0000001513040486__cmd1950963932183254">Establish an MP-IBGP peer relationship between PEs.</span><p><p id="EN-US_TASK_0000001513040486__p1695849248183254"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen228002179183254">[PE1] <strong id="EN-US_TASK_0000001513040486__b681787977183254">bgp 100</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001513040486__b63962593183254">peer 3.3.3.9 as-number 100</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001513040486__b1486476964183254">peer 3.3.3.9 connect-interface loopback 1</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001513040486__b684434837183254">ipv4-family vpnv4</strong>
+[PE1-bgp-af-vpnv4] <strong id="EN-US_TASK_0000001513040486__b1144372666183254">peer 3.3.3.9 enable</strong>
+[PE1-bgp-af-vpnv4] <strong id="EN-US_TASK_0000001513040486__b8845799183254">quit</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001513040486__b1725433323183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p1924002173183254"># Configure PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen470439547183254">[PE2] <strong id="EN-US_TASK_0000001513040486__b1003847884183254">bgp 100</strong>
+[PE2-bgp] <strong id="EN-US_TASK_0000001513040486__b1770862991183254">peer 1.1.1.9 as-number 100</strong>
+[PE2-bgp] <strong id="EN-US_TASK_0000001513040486__b1885093843183254">peer 1.1.1.9 connect-interface loopback 1</strong>
+[PE2-bgp] <strong id="EN-US_TASK_0000001513040486__b1305430359183254">ipv4-family vpnv4</strong>
+[PE2-bgp-af-vpnv4] <strong id="EN-US_TASK_0000001513040486__b33013038183254">peer 1.1.1.9 enable</strong>
+[PE2-bgp-af-vpnv4] <strong id="EN-US_TASK_0000001513040486__b460907705183254">quit</strong>
+[PE2-bgp] <strong id="EN-US_TASK_0000001513040486__b2015839307183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p1492142622183254">After the configuration is complete, run the <strong id="EN-US_TASK_0000001513040486__b197621298183254">display bgp peer</strong> command on PEs. The command output shows that a BGP peer relationship has been established between PEs and is in <strong id="EN-US_TASK_0000001513040486__b1077974210491">Established</strong> state.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1176586266183254">[PE1] <strong id="EN-US_TASK_0000001513040486__b2124434796183254">display bgp peer</strong>
+
+ BGP local router ID : 1.1.1.9
+ Local AS number : 100
+ Total number of peers : 1                 Peers in established state : 1
+
+  Peer            V    AS  MsgRcvd  MsgSent  OutQ  Up/Down       State              PrefRcv
+
+  3.3.3.9         4   100       12        6     0 00:02:21        <strong id="EN-US_TASK_0000001513040486__b702668001183254">Established</strong>       0
+</pre>
+</p></li><li id="EN-US_TASK_0000001513040486__step1526219547183254"><span id="EN-US_TASK_0000001513040486__cmd1627246661183254">Establish EBGP peer relationships between PEs and CEs and import VPN routes.</span><p><p id="EN-US_TASK_0000001513040486__p1588369873183254"># Configure CE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1820340004183254">&lt;<span class="keyword" id="EN-US_TASK_0000001513040486__keyword6351152624314">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001513040486__b435162694315">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513040486__keyword173511126104320">HUAWEI</span>] <strong id="EN-US_TASK_0000001513040486__b15351526164316">sysname CE1</strong>
+[CE1] <strong id="EN-US_TASK_0000001513040486__b1706567437183254">bgp 65410</strong>
+[CE1-bgp] <strong id="EN-US_TASK_0000001513040486__b175958515183254">peer 10.1.1.2 as-number 100</strong>
+[CE1-bgp] <strong id="EN-US_TASK_0000001513040486__b900943665183254">import-route direct</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p583898829183254">The configurations of CE2, CE3, and CE4 are similar to the configuration of CE1, and are not mentioned here.</p>
+<p id="EN-US_TASK_0000001513040486__p1000823701183254"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen2041822204183254">[PE1] <strong id="EN-US_TASK_0000001513040486__b1064646724183254">bgp 100</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001513040486__b1958304542183254">ipv4-family vpn-instance vpna</strong>
+[PE1-bgp-vpna] <strong id="EN-US_TASK_0000001513040486__b888858468183254">peer 10.1.1.1 as-number 65410</strong>
+[PE1-bgp-vpna] <strong id="EN-US_TASK_0000001513040486__b212436881183254">import-route direct</strong>
+[PE1-bgp-vpna] <strong id="EN-US_TASK_0000001513040486__b1963042574183254">quit</strong>
+[PE1-bgp]<strong id="EN-US_TASK_0000001513040486__b1309615750183254"> ipv4-family vpn-instance vpnb</strong>
+[PE1-bgp-vpnb] <strong id="EN-US_TASK_0000001513040486__b1568608140183254">peer 10.2.1.1 as-number 65420</strong>
+[PE1-bgp-vpnb] <strong id="EN-US_TASK_0000001513040486__b48214847183254">import-route direct</strong>
+[PE1-bgp-vpnb] <strong id="EN-US_TASK_0000001513040486__b4336266183254">quit</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001513040486__b1434633683183254">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p982483040183254">The configuration of PE2 is similar to that of PE1, and is not mentioned here.</p>
+<p id="EN-US_TASK_0000001513040486__p2082573645183254">After the configuration is complete, run the <strong id="EN-US_TASK_0000001513040486__b1951099495183254">display bgp vpnv4 vpn-instance peer</strong> command on PEs. The command output shows that BGP peer relationships have been established between PEs and CEs and are in <strong id="EN-US_TASK_0000001513040486__b18405174214501">Established</strong> state.</p>
+<p id="EN-US_TASK_0000001513040486__p1189795321183254">The following example uses the command output on PE1 to show that a peer relationship has been established between PE1 and CE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1862788461183254">[PE1] <strong id="EN-US_TASK_0000001513040486__b2015526558183254">display bgp vpnv4 vpn-instance vpna peer</strong>
+
+ BGP local router ID : 1.1.1.9
+ Local AS number : 100
+ Total number of peers : 1                 Peers in established state : 1
+
+  Peer            V    AS  MsgRcvd  MsgSent  OutQ  Up/Down       State      PrefRcv
+
+  10.1.1.1        4 65410       11        9     0 00:07:25      Established       1
+</pre>
+</p></li><li id="EN-US_TASK_0000001513040486__step840126121183254"><span id="EN-US_TASK_0000001513040486__cmd294736622183254">Configure a DiffServ mode.</span><p><p id="EN-US_TASK_0000001513040486__p1208972746183254"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen2006200554183254">
+[PE1] <strong id="EN-US_TASK_0000001513040486__b1823951098183254">ip vpn-instance vpna</strong>
+[PE1-vpn-instance-vpna] <strong id="EN-US_TASK_0000001513040486__b08541627291">ipv4-family</strong>
+[PE1-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b155208575183254">diffserv-mode pipe mpls-exp 4</strong>
+[PE1-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b687854000183254">quit</strong>
+[PE1-vpn-instance-vpna] <strong id="EN-US_TASK_0000001513040486__b1195791803018">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001513040486__b629518479183254">ip vpn-instance vpnb</strong>
+[PE1-vpn-instance-vpnb] <strong id="EN-US_TASK_0000001513040486__b12320173033018">ipv4-family</strong>
+[PE1-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b327539056183254">diffserv-mode pipe mpls-exp 3</strong>
+[PE1-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b2019358397183254">quit</strong>
+[PE1-vpn-instance-vpnb] <strong id="EN-US_TASK_0000001513040486__b15282154710309">quit</strong></pre>
+<p id="EN-US_TASK_0000001513040486__p20851614183254"># Configure PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen396801461183254">
+[PE2] <strong id="EN-US_TASK_0000001513040486__b382429484183254">ip vpn-instance vpna</strong>
+[PE1-vpn-instance-vpna] <strong id="EN-US_TASK_0000001513040486__b114011158193011">ipv4-family</strong>
+[PE2-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b1019411141183254">diffserv-mode pipe mpls-exp 4</strong>
+[PE2-vpn-instance-vpna-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b652585840183254">quit</strong>
+[PE1-vpn-instance-vpna] <strong id="EN-US_TASK_0000001513040486__b212371373117">quit</strong>
+[PE2] <strong id="EN-US_TASK_0000001513040486__b1917952869183254">ip vpn-instance vpnb</strong>
+[PE1-vpn-instance-vpnb] <strong id="EN-US_TASK_0000001513040486__b14171618143113">ipv4-family</strong>
+[PE2-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b1150263872183254">diffserv-mode pipe mpls-exp 3</strong>
+[PE2-vpn-instance-vpnb-af-ipv4] <strong id="EN-US_TASK_0000001513040486__b1313973215183254">quit</strong>
+[PE1-vpn-instance-vpnb] <strong id="EN-US_TASK_0000001513040486__b7274113013114">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001513040486__step104933211158"><span id="EN-US_TASK_0000001513040486__cmd34934211255">Configure the priority trust mode and enable mapping between PHBs and EXP values in the outbound direction.</span><p><p id="EN-US_TASK_0000001513040486__p1673210917810"># Configure PE1.</p>
+</p><p><pre class="screen" id="EN-US_TASK_0000001513040486__screen24315363717">[PE1] <strong id="EN-US_TASK_0000001513040486__b225815308135">interface </strong><strong id="EN-US_TASK_0000001513040486__b281025718125"><span>10ge</span> <span>0/0/1</span></strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b1061822512138">trust exp</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b1949914510149">quit</strong>
+[PE1]<strong id="EN-US_TASK_0000001513040486__b293931510293"> interface <span>10ge</span> <span>0/0/2</span></strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b191518278291">trust exp</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b18459103512291">quit</strong>
+[PE1]<strong id="EN-US_TASK_0000001513040486__b4499185121415"> interface <span>10ge</span> <span>0/0/3</span></strong>
+[PE1-<span>10GE</span><span>0/0/3</span>]<strong id="EN-US_TASK_0000001513040486__b7750113618255"> trust exp</strong>
+[PE1-<span>10GE</span><span>0/0/3</span>]<strong id="EN-US_TASK_0000001513040486__b272574672917"> qos phb marking exp enable</strong>
+[PE1-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b17598345183017">quit</strong></pre>
+</p><p><p id="EN-US_TASK_0000001513040486__p09333381484"># Configure P.</p>
+</p><p><pre class="screen" id="EN-US_TASK_0000001513040486__screen164461931183110">[P] <strong id="EN-US_TASK_0000001513040486__b1344619317312">interface </strong><strong id="EN-US_TASK_0000001513040486__b244663119314"><span>10ge</span> <span>0/0/1</span></strong>
+[P-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b644603133118">trust exp</strong>
+[P-<span>10GE</span><span>0/0/1</span>]<strong id="EN-US_TASK_0000001513040486__b14248134083111"> qos phb marking exp enable</strong>
+[P-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b15446831153114">quit</strong>
+[P]<strong id="EN-US_TASK_0000001513040486__b16446103111314"> interface <span>10ge</span> <span>0/0/2</span></strong>
+[P-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b144466316310">trust exp</strong>
+[P-<span>10GE</span><span>0/0/2</span>]<strong id="EN-US_TASK_0000001513040486__b11122164323114"> qos phb marking exp enable</strong>
+[P-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b11446731193111">quit</strong></pre>
+</p><p><p id="EN-US_TASK_0000001513040486__p8852114812815"># Configure PE2.</p>
+</p><p><pre class="screen" id="EN-US_TASK_0000001513040486__screen148527485810">[PE2] <strong id="EN-US_TASK_0000001513040486__b14864154714329">interface </strong><strong id="EN-US_TASK_0000001513040486__b5865147103219"><span>10ge</span> <span>0/0/1</span></strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b1865104763212">trust exp</strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513040486__b16865247173219">quit</strong>
+[PE2]<strong id="EN-US_TASK_0000001513040486__b0865144717323"> interface <span>10ge</span> <span>0/0/2</span></strong>
+[PE2-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b1786544715322">trust exp</strong>
+[PE2-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513040486__b1286524753215">quit</strong>
+[PE2]<strong id="EN-US_TASK_0000001513040486__b686584719328"> interface <span>10ge</span> <span>0/0/3</span></strong>
+[PE2-<span>10GE</span><span>0/0/3</span>]<strong id="EN-US_TASK_0000001513040486__b158657477325"> trust exp</strong>
+[PE2-<span>10GE</span><span>0/0/3</span>]<strong id="EN-US_TASK_0000001513040486__b10866134753211"> qos phb marking exp enable</strong>
+[PE2-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001513040486__b486684711322">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001513040486__example1110312872183254"><a name="EN-US_TASK_0000001513040486__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001513040486__ul826464851183254"><li id="EN-US_TASK_0000001513040486__li1027810273183254"><p id="EN-US_TASK_0000001513040486__p48801843183254"><a name="EN-US_TASK_0000001513040486__li1027810273183254"></a><a name="li1027810273183254"></a>PE1</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1042667865183254">#
+sysname PE1
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 100:1
+  vpn-target 111:1 export-extcommunity
+  vpn-target 111:1 import-extcommunity<span>
+  diffserv-mode pipe mpls-exp 4</span>
+#
+ip vpn-instance vpnb
+ ipv4-family
+  route-distinguisher 100:2
+  vpn-target 222:2 export-extcommunity
+  vpn-target 222:2 import-extcommunity<span>
+  diffserv-mode pipe mpls-exp 3</span>
+# 
+mpls lsr-id 1.1.1.9
+mpls
+#
+mpls ldp
+#
+interface <span>10ge</span><span>0/0/1</span>
+ ip binding vpn-instance vpna
+ ip address 10.1.1.2 255.255.255.0
+ trust exp
+# 
+interface <span>10ge</span><span>0/0/2</span>
+ ip binding vpn-instance vpnb
+ ip address 10.2.1.2 255.255.255.0
+ trust exp
+#
+interface <span>10ge</span><span>0/0/3</span>
+ qos phb marking exp enable
+ ip address 172.16.1.1 255.255.255.0
+ mpls
+ mpls ldp
+ trust exp
+#
+interface LoopBack1
+ ip address 1.1.1.9 255.255.255.255
+# 
+bgp 100
+ peer 3.3.3.9 as-number 100
+ peer 3.3.3.9 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+<span>  undo synchronization</span>
+  peer 3.3.3.9 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 3.3.3.9 enable
+ #
+ ipv4-family vpn-instance vpna
+  import-route direct
+  peer 10.1.1.1 as-number 65410
+ #
+ ipv4-family vpn-instance vpnb
+  import-route direct
+  peer 10.2.1.1 as-number 65420
+#
+ospf 1
+ area 0.0.0.0
+  network 1.1.1.9 0.0.0.0
+  network 172.16.1.0 0.0.0.255
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001513040486__li1344743195183254"><p id="EN-US_TASK_0000001513040486__p980977337183254"><a name="EN-US_TASK_0000001513040486__li1344743195183254"></a><a name="li1344743195183254"></a>P</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen273918830183254">#
+sysname P
+#
+mpls lsr-id 2.2.2.9
+mpls
+#
+mpls ldp
+# 
+interface <span>10ge</span><span>0/0/1</span>
+ ip address 172.16.1.2 255.255.255.0
+ mpls
+ mpls ldp
+ trust exp
+ qos phb marking exp enable
+#
+interface <span>10ge</span><span>0/0/2</span>
+ ip address 172.17.1.1 255.255.255.0
+ mpls
+ mpls ldp
+ trust exp
+ qos phb marking exp enable
+#
+interface LoopBack1
+ ip address 2.2.2.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 2.2.2.9 0.0.0.0
+  network 172.16.1.0 0.0.0.255
+  network 172.17.1.0 0.0.0.255
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001513040486__li556063015183254"><p id="EN-US_TASK_0000001513040486__p2049745008183254"><a name="EN-US_TASK_0000001513040486__li556063015183254"></a><a name="li556063015183254"></a>PE2</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1309571164183254">#
+sysname PE2
+#
+ip vpn-instance vpna                                                            
+ ipv4-family  
+  route-distinguisher 200:1
+  vpn-target 111:1 export-extcommunity
+  vpn-target 111:1 import-extcommunity<span>
+  diffserv-mode pipe mpls-exp 4</span>
+#
+ip vpn-instance vpnb                                                            
+ ipv4-family           
+  route-distinguisher 200:2
+  vpn-target 222:2 export-extcommunity
+  vpn-target 222:2 import-extcommunity<span>
+  diffserv-mode pipe mpls-exp 3</span>
+#
+mpls lsr-id 3.3.3.9
+mpls
+#
+mpls ldp
+#
+interface <span>10ge</span><span>0/0/1</span>
+ ip binding vpn-instance vpna
+ ip address 10.3.1.2 255.255.255.0
+ trust exp
+#
+interface <span>10ge</span><span>0/0/2</span>
+ ip binding vpn-instance vpnb
+ ip address 10.4.1.2 255.255.255.0
+ trust exp
+#
+interface <span>10ge</span><span>0/0/3</span>
+ ip address 172.17.1.2 255.255.255.0
+ mpls
+ mpls ldp
+ trust exp
+ qos phb marking exp enable
+#
+interface LoopBack1
+ ip address 3.3.3.9 255.255.255.255
+#
+bgp 100
+ peer 1.1.1.9 as-number 100
+ peer 1.1.1.9 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+<span>  undo synchronization</span>
+  peer 1.1.1.9 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 1.1.1.9 enable 
+ #
+ ipv4-family vpn-instance vpna
+  import-route direct
+  peer 10.3.1.1 as-number 65430
+ #
+ ipv4-family vpn-instance vpnb
+  import-route direct
+  peer 10.4.1.1 as-number 65440
+#
+ospf 1
+ area 0.0.0.0
+  network 3.3.3.9 0.0.0.0
+  network 172.17.1.0 0.0.0.255
+# 
+return</pre>
+</li><li id="EN-US_TASK_0000001513040486__li240607956183254"><p id="EN-US_TASK_0000001513040486__p186209191183254"><a name="EN-US_TASK_0000001513040486__li240607956183254"></a><a name="li240607956183254"></a>CE1 at the headquarters egress of enterprise A</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen249254944183254">#
+sysname CE1
+#
+interface <span>10ge</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+bgp 65410
+ peer 10.1.1.2 as-number 100
+ #
+ ipv4-family unicast
+<span>  undo synchronization</span>
+  import-route direct
+  peer 10.1.1.2 enable
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001513040486__li364049302183254"><p id="EN-US_TASK_0000001513040486__p395708411183254"><a name="EN-US_TASK_0000001513040486__li364049302183254"></a><a name="li364049302183254"></a>CE2 at the headquarters egress of enterprise B</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen284728316183254">#
+sysname CE2
+#
+interface <span>10ge</span><span>0/0/1</span>
+ ip address 10.2.1.1 255.255.255.0
+#
+bgp 65420
+ peer 10.2.1.2 as-number 100
+ #
+ ipv4-family unicast
+<span>  undo synchronization</span>
+  import-route direct
+  peer 10.2.1.2 enable
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001513040486__li1559785973183254"><p id="EN-US_TASK_0000001513040486__p989969282183254"><a name="EN-US_TASK_0000001513040486__li1559785973183254"></a><a name="li1559785973183254"></a>CE3 at the branch egress of enterprise A</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen1468789475183254">#
+sysname CE3
+#
+interface <span>10ge</span><span>0/0/1</span>
+ ip address 10.3.1.1 255.255.255.0
+#
+bgp 65430
+ peer 10.3.1.2 as-number 100
+ #
+ ipv4-family unicast
+<span>  undo synchronization</span>
+  import-route direct
+  peer 10.3.1.2 enable
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001513040486__li2045935122183254"><p id="EN-US_TASK_0000001513040486__p523439690183254"><a name="EN-US_TASK_0000001513040486__li2045935122183254"></a><a name="li2045935122183254"></a>CE4 at the branch egress of enterprise B</p>
+<pre class="screen" id="EN-US_TASK_0000001513040486__screen105107757183254">#
+sysname CE4
+#
+vlan batch 50
+#
+interface <span>10ge</span><span>0/0/1</span>
+ ip address 10.4.1.1 255.255.255.0
+#
+bgp 65440
+ peer 10.4.1.2 as-number 100
+ #
+ ipv4-family unicast
+<span>  undo synchronization</span>
+  import-route direct
+  peer 10.4.1.2 enable
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_mpls-qos_cfg_001.html">MPLS QoS Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_mpls-qos_cfg_010.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

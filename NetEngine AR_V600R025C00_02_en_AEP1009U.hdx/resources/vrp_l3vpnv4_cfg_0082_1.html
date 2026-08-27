@@ -1,0 +1,596 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring HoVPN on an IP RAN">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0371.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0093.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0083_1.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001411329993">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring HoVPN on an IP RAN</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001411329993"></a><a name="EN-US_TASK_0000001411329993"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring HoVPN on an IP RAN</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001411329993__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>HVPN technology enables an IP RAN to provide fixed-mobile convergence (FMC) and hierarchize the network between CSGs and RSGs. An IP RAN using HVPN technology is easy to expand and flexible to deploy. HVPN has two networking modes: HoVPN and H-VPN. The following example uses HoVPN, in which UPEs only need to store specific routes to base stations and default routes to SPEs. HoVPN lowers the routing and forwarding requirements for UPEs.</p>
+<p>On the network shown in <a href="#EN-US_TASK_0000001411329993__fig9827151855019">Figure 1</a>, the base station connects to the UPE over a VPN. HoVPN is deployed for the base station and base station controller (EPC side) to communicate. </p>
+<div class="fignone" id="EN-US_TASK_0000001411329993__fig9827151855019"><a name="EN-US_TASK_0000001411329993__fig9827151855019"></a><a name="fig9827151855019"></a><span class="figcap"><b>Figure 1 </b>HoVPN networking</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 and interface 3 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001360970064.png"></span></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>IP addresses of physical interfaces</caption><thead align="left"><tr><th align="left" class="cellrowborder" char="." valign="top" width="33.33333333333333%" id="mcps1.3.1.5.2.4.1.1" liSelected="liSelected"><p>Device</p>
+</th>
+<th align="left" class="cellrowborder" char="." valign="top" width="33.33333333333333%" id="mcps1.3.1.5.2.4.1.2" liSelected="liSelected"><p>Interface</p>
+</th>
+<th align="left" class="cellrowborder" char="." valign="top" width="33.33333333333333%" id="mcps1.3.1.5.2.4.1.3" liSelected="liSelected"><p>IP Address</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" rowspan="3" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.1 "><p>UPE1</p>
+</td>
+<td class="cellrowborder" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.2 "><p>Loopback 1</p>
+</td>
+<td class="cellrowborder" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.3 "><p>1.1.1.1/32</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.1 "><p><span>10GE</span><span>0/0/1</span></p>
+</td>
+<td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.2 "><p>172.16.3.1/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.1 "><p><span>10GE</span><span>0/0/3</span></p>
+</td>
+<td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.2 "><p>10.1.1.2/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="3" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.1 "><p>SPE1</p>
+</td>
+<td class="cellrowborder" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.2 "><p>Loopback 1</p>
+</td>
+<td class="cellrowborder" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.3 "><p>3.3.3.3/32</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.1 "><p><span>10GE</span><span>0/0/1</span></p>
+</td>
+<td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.2 "><p>172.16.3.2/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.1 "><p><span>10GE</span><span>0/0/3</span></p>
+</td>
+<td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.2 "><p>172.18.5.1/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="3" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.1 "><p>NPE1</p>
+</td>
+<td class="cellrowborder" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.2 "><p>Loopback 1</p>
+</td>
+<td class="cellrowborder" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.3 "><p>5.5.5.5/32</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.1 "><p><span>10GE</span><span>0/0/1</span></p>
+</td>
+<td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.2 "><p>172.18.5.2/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.1 "><p><span>10GE</span><span>0/0/3</span></p>
+</td>
+<td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.2 "><p>10.4.1.1/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="3" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.1 "><p>CE</p>
+</td>
+<td class="cellrowborder" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.2 "><p>Loopback 1</p>
+</td>
+<td class="cellrowborder" char="." valign="top" width="33.33333333333333%" headers="mcps1.3.1.5.2.4.1.3 "><p>7.7.7.7/32</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.1 "><p><span>10GE</span><span>0/0/1</span></p>
+</td>
+<td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.2 "><p>10.4.1.2/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.1 "><p><span>10GE</span><span>0/0/3</span></p>
+</td>
+<td class="cellrowborder" char="." valign="top" headers="mcps1.3.1.5.2.4.1.2 "><p>10.3.1.1/24</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p></p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001411329993__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Configure IGP for the UPE, SPE, and NPE to communicate and learn each other's loopback address.</p>
+</li><li><p>Establish an MPLS LSP between the UPE and SPE and between the SPE and NPE.</p>
+</li><li><p>Configure a VPN instance on the UPE and NPE, establish an EBGP peer relationship between the NPE and CE, and import local direct routes to the UPE and NPE.</p>
+</li><li><p>Establish an MP-IBGP peer relationship between the UPE and SPE and between the SPE and NPE.</p>
+</li><li><p>Create a VPN instance on the SPE and specify the UPE connected to the SPE as the understratum PE of the SPE.</p>
+</li><li><p>Configure static default routes.</p>
+</li><li>Configure route-policies to control route import and export.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001411329993__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure OSPF for the UPE, SPE, and NPE to communicate.</span><p><p>After OSPF is configured, an OSPF neighbor relationship can be established between the UPE and SPE and between the SPE and NPE. Run the <strong>display ospf peer</strong> command. The command output shows that the neighbor status is <strong>Full</strong>. Run the <strong>display ip routing-table</strong> command. The command output shows that the UPE, SPE, and NPE have learned the routes to each other's loopback interfaces.</p>
+<p>For detailed configurations, see Configuration Scripts.</p>
+</p></li><li><span>Configure basic MPLS capabilities and MPLS LDP to establish LDP LSPs on the MPLS backbone network.</span><p><p>After the configuration is complete, an LDP session can be established between the UPE and SPE and between the SPE and NPE. Run the <strong>display mpls ldp session</strong> command. The command output shows that the session status is <strong>Operational</strong>. Then, run the <strong>display mpls ldp lsp</strong> command. The command output shows that LDP LSPs have been established.</p>
+<p>For detailed configurations, see Configuration Scripts.</p>
+</p></li><li><span>Configure a VPN instance on the UPE and NPE, establish an EBGP peer relationship between the NPE and CE, and import local direct routes to the UPE and NPE.</span><p><p># Configure UPE1.</p>
+<pre class="screen">[UPE1] <strong>ip vpn-instance vpna</strong> 
+[UPE1-vpn-instance-vpna] <strong>ipv4-family</strong> 
+[UPE1-vpn-instance-vpna-af-ipv4] <strong>route-distinguisher 100:1</strong> 
+[UPE1-vpn-instance-vpna-af-ipv4] <strong>vpn-target 1:1 </strong><strong>both</strong>
+[UPE1-vpn-instance-vpna-af-ipv4] <strong>quit</strong> 
+[UPE1-vpn-instance-vpna] <strong>quit</strong> 
+[UPE1] <strong>interface <span>10GE</span><span>0/0/3</span></strong> 
+[UPE1-<span>10GE</span><span>0/0/3</span>] <strong>ip binding vpn-instance vpna</strong>
+[UPE1-<span>10GE</span><span>0/0/3</span>] <strong>ip address 10.1.1.2 24</strong> 
+[UPE1-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong> 
+[UPE1] <strong>bgp 100</strong>  
+[UPE1-bgp] <strong>ipv4-family vpn-instance vpna </strong> 
+[UPE1-bgp-vpna] <strong>peer 10.1.1.1 as-number 65410</strong>
+[UPE1-bgp-vpna] <strong>import-route direct</strong>
+[UPE1-bgp-vpna] <strong>quit</strong> 
+[UPE1-bgp] <strong>quit </strong></pre>
+<p># Configure NPE1.</p>
+<pre class="screen">[NPE1] <strong>ip vpn-instance vpna</strong> 
+[NPE1-vpn-instance-vpna] <strong>ipv4-family</strong> 
+[NPE1-vpn-instance-vpna-af-ipv4] <strong>route-distinguisher 100:1</strong> 
+[NPE1-vpn-instance-vpna-af-ipv4] <strong>vpn-target 1:1 </strong><strong>both</strong>
+[NPE1-vpn-instance-vpna-af-ipv4] <strong>quit</strong> 
+[NPE1-vpn-instance-vpna] <strong>quit</strong> 
+[NPE1] <strong>interface <span>10GE</span><span>0/0/3</span></strong> 
+[NPE1-<span>10GE</span><span>0/0/3</span>] <strong>ip binding vpn-instance vpna</strong>
+[NPE1-<span>10GE</span><span>0/0/3</span>] <strong>ip address 10.4.1.1 24</strong> 
+[NPE1-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong> 
+[NPE1] <strong>bgp 100</strong>  
+[NPE1-bgp] <strong>ipv4-family vpn-instance vpna </strong> 
+[NPE1-bgp-vpna] <strong>peer 10.4.1.2 as-number 65420</strong>
+[NPE1-bgp-vpna] <strong>import-route direct</strong>
+[NPE1-bgp-vpna] <strong>quit</strong> 
+[NPE1-bgp] <strong>quit </strong></pre>
+<p># Configure the CE.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname CE</strong> 
+[CE] <strong>interface <span>10ge</span> <span>0/0/1</span></strong> 
+[CE-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.4.1.2 24</strong> 
+[CE-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[CE] <strong>interface <span>10GE</span><span>0/0/3</span></strong> 
+[CE-<span>10GE</span><span>0/0/3</span>] <strong>ip address 10.3.1.1 24</strong> 
+[CE-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[CE] <strong>interface </strong><strong>loopback 1</strong>
+[CE-Loopback1] <strong>ip address </strong><strong>7.7.7.7 32</strong>
+[CE-Loopback1] <strong>quit</strong>
+[CE] <strong>bgp 65420</strong>  
+[CE-bgp] <strong>peer 10.4.1.1 as-number 100</strong>
+[CE-bgp] <strong>import-route direct</strong>
+[CE-bgp] <strong>quit</strong></pre>
+<p>After completing the configuration, run the <strong>display ip vpn-instance verbose</strong> command on UPE1 or the NPE. The command output shows VPN instance configuration.</p>
+</p></li><li><span>Establish an MP-IBGP peer relationship between the UPE and SPE and between the SPE and NPE.</span><p><p># Configure UPE1.</p>
+<pre class="screen">[UPE1]<strong> bgp 100</strong>
+[UPE1-bgp] <strong>router-id 1.1.1.1</strong>
+[UPE1-bgp]<strong> peer 3.3.3.3 as-number 100</strong>
+[UPE1-bgp]<strong> peer 3.3.3.3 connect-interface loopback 1</strong>
+[UPE1-bgp]<strong> ipv4-family vpnv4</strong>
+[UPE1-bgp-af-vpnv4]<strong> peer 3.3.3.3 enable</strong>
+[UPE1-bgp-af-vpnv4]<strong> quit</strong>
+[UPE1-bgp] <strong>quit </strong></pre>
+<p># Configure SPE1.</p>
+<pre class="screen">[SPE1]<strong> bgp 100</strong>
+[SPE1-bgp] <strong>router-id 3.3.3.3</strong>
+[SPE1-bgp]<strong> peer 1.1.1.1 as-number 100</strong>
+[SPE1-bgp]<strong> peer 1.1.1.1 connect-interface loopback 1</strong>
+[SPE1-bgp]<strong> peer 5.5.5.5 as-number 100</strong>
+[SPE1-bgp]<strong> peer 5.5.5.5 connect-interface loopback 1</strong>
+[SPE1-bgp]<strong> ipv4-family vpnv4</strong>
+[SPE1-bgp-af-vpnv4]<strong> peer 1.1.1.1 enable</strong>
+[SPE1-bgp-af-vpnv4]<strong> peer 5.5.5.5 enable</strong>
+[SPE1-bgp-af-vpnv4]<strong> quit</strong>
+[SPE1-bgp]<strong> quit</strong></pre>
+<p># Configure NPE1.</p>
+<pre class="screen">[NPE1]<strong> bgp 100</strong>
+[NPE1-bgp]<strong> peer 3.3.3.3 as-number 100</strong>
+[NPE1-bgp]<strong> peer 3.3.3.3 connect-interface loopback 1</strong>
+[NPE1-bgp]<strong> ipv4-family vpnv4</strong>
+[NPE1-bgp-af-vpnv4]<strong> peer 3.3.3.3 enable</strong>
+[NPE1-bgp-af-vpnv4]<strong> quit</strong>
+[NPE1-bgp]<strong> quit</strong></pre>
+</p></li><li><span>Configure a VPN instance on the SPE and specify the UPE as the understratum PE of the SPE.</span><p><p># Configure a VPN instance.</p>
+<pre class="screen">[SPE1] <strong>ip vpn-instance vpna</strong> 
+[SPE1-vpn-instance-vpna] <strong>ipv4-family</strong> 
+[SPE1-vpn-instance-vpna-af-ipv4] <strong>route-distinguisher 100:1</strong> 
+[SPE1-vpn-instance-vpna-af-ipv4] <strong>vpn-target 1:1 </strong><strong>both</strong>
+[SPE1-vpn-instance-vpna-af-ipv4] <strong>quit</strong> 
+[SPE1-vpn-instance-vpna] <strong>quit</strong> </pre>
+<p># Specify the corresponding UPE as an understratum PE.</p>
+<pre class="screen">[SPE1]<strong> bgp 100</strong>
+[SPE1-bgp]<strong> ipv4-family vpnv4</strong>
+[SPE1-bgp-af-vpnv4]<strong> peer 1.1.1.1 upe</strong>
+[SPE1-bgp-af-vpnv4] <strong>quit</strong>
+[SPE1-bgp]<strong> quit</strong></pre>
+</p></li><li><span>Configure a static default route and use a route-policy to ensure that an SPE advertises only this route to UPEs.</span><p><div class="p"># Configure SPE1.<pre class="screen">[SPE1] <strong>ip route-static vpn-instance vpna 0.0.0.0 0.0.0.0 55.55.55.55</strong>
+[SPE1] <strong>route-policy default permit node 10</strong>
+[SPE1-route-policy] <strong>apply local-preference 200</strong>
+[SPE1-route-policy] <strong>quit</strong>
+[SPE1]<strong> bgp 100</strong>
+[SPE1-bgp]<strong> ipv4-family vpn-instance vpna</strong>
+[SPE1-bgp-vpna]<strong> network 0.0.0.0 route-policy default</strong>
+[SPE1-bgp-vpna]<strong> quit</strong>
+[SPE1-bgp]<strong> quit</strong></pre>
+</div>
+</p><p><p># Configure NPE1.</p>
+<pre class="screen">[NPE1] <strong>interface loopback 2</strong>
+[NPE1-LoopBack2] <strong>ip binding vpn-instance vpna</strong>
+[NPE1-LoopBack2] <strong>ip address 55.55.55.55</strong><strong> 32</strong>
+[NPE1-LoopBack2] <strong>quit</strong></pre>
+</p></li><li><span>Configure route-policies to control route import and export.</span><p><div class="p"># Configure SPE1.<pre class="screen">[SPE1] <strong>ip ip-prefix default permit 0.0.0.0 0</strong>
+[SPE1] <strong>route-policy NPE1 deny node 10</strong>
+[SPE1-route-policy] <strong>if-match ip-prefix default</strong>
+[SPE1-route-policy] <strong>quit</strong>
+[SPE1] <strong>route-policy NPE1 permit node 20</strong>
+[SPE1-route-policy] <strong>apply local-preference 200</strong>
+[SPE1-route-policy] <strong>quit</strong>
+[SPE1]<strong> bgp 100</strong>
+[SPE1-bgp]<strong> ipv4-family vpnv4</strong>
+[SPE1-bgp-af-vpnv4] <strong>peer 5.5.5.5 route-policy NPE1 import</strong>
+[SPE1-bgp-af-vpnv4] <strong>peer 1.1.1.1 ip-prefix default export</strong>
+[SPE1-bgp-af-vpnv4]<strong> quit</strong>
+[SPE1-bgp] <strong>quit</strong></pre>
+</div>
+</p><p><p># Configure NPE1.</p>
+<pre class="screen">[NPE1] <strong>route-policy SPE1 permit node 1</strong><strong>0</strong>
+[NPE1-route-policy] <strong>apply local-preference 200</strong>
+[NPE1-route-policy] <strong>quit</strong>
+[NPE1]<strong> bgp 100</strong>
+[NPE1-bgp]<strong> ipv4-family vpnv4</strong>
+[NPE1-bgp-af-vpnv4]<strong> peer 3.3.3.3 route-policy SPE1 import</strong>
+[NPE1-bgp-af-vpnv4]<strong> quit</strong>
+[NPE1-bgp]<strong> quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001411329993__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After the configuration is complete, UPE1 does not have any route to the EPC side, but has a default route with SPE1 as the next hop. NPE1 has a BGP route to the eNodeB. The CE and UPE1 can ping each other.</p>
+<pre class="screen">&lt;UPE1&gt; <strong>display ip routing-table vpn-instance vpna</strong>
+Proto: Protocol        Pre: Preference
+<span class="keyword">Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route</span>
+------------------------------------------------------------------------------
+Routing Table : vpna
+         Destinations : 5        Routes : 5
+
+Destination/Mask    Proto  Pre  Cost        Flags NextHop         Interface
+
+        0.0.0.0/0   IBGP   255  0             RD 3.3.3.3         <span>10GE</span><span>0/0/1</span>
+       127.0.0.0/8  Direct 0    0             D  127.0.0.1       InLoopBack0
+       10.1.1.0/24  Direct 0    0             D  10.1.1.2        <span>10GE</span><span>0/0/3</span>
+       10.1.1.2/32  Direct 0    0             D  127.0.0.1       <span>10GE</span><span>0/0/3</span>
+     10.1.1.255/32  Direct 0    0             D  127.0.0.1       <span>10GE</span><span>0/0/3</span>
+255.255.255.255/32  Direct 0    0             D  127.0.0.1       InLoopBack0</pre>
+<pre class="screen">&lt;UPE1&gt; <strong> ping -vpn-instance vpna 10.3.1.1</strong>
+ PING 10.3.1.1: 56  data bytes, press CTRL_C to break
+    Reply from 10.3.1.1: bytes=56 Sequence=1 ttl=251 time=5 ms
+    Reply from 10.3.1.1: bytes=56 Sequence=2 ttl=253 time=3 ms
+    Reply from 10.3.1.1: bytes=56 Sequence=3 ttl=251 time=3 ms
+    Reply from 10.3.1.1: bytes=56 Sequence=4 ttl=253 time=2 ms
+    Reply from 10.3.1.1: bytes=56 Sequence=5 ttl=251 time=2 ms
+
+  --- 10.3.1.1 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 2/3/5 ms</pre>
+<pre class="screen">&lt;NPE1&gt; <strong>display ip routing-table vpn-instance vpna</strong>
+Proto: Protocol        Pre: Preference
+<span class="keyword">Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route</span>
+------------------------------------------------------------------------------
+Routing Table : vpna
+         Destinations : 9        Routes : 9
+
+Destination/Mask    Proto  Pre  Cost        Flags NextHop         Interface
+
+        0.0.0.0/0   IBGP   255  0             RD 3.3.3.3         <span>10GE</span><span>0/0/1</span>
+       10.1.1.0/24  IBGP   255  0             RD 3.3.3.3         <span>10GE</span><span>0/0/1</span>
+       10.4.1.0/24  Direct 0    0             D  10.4.1.1        <span>10GE</span><span>0/0/3</span>
+       10.4.1.1/32  Direct 0    0             D  127.0.0.1       <span>10GE</span><span>0/0/3</span>
+     10.4.1.255/32  Direct 0    0             D  127.0.0.1       <span>10GE</span><span>0/0/3</span>
+       10.3.1.0/24  EBGP   255  0             RD 10.4.1.2        <span>10GE</span><span>0/0/3</span>
+        7.7.7.7/32  EBGP   255  0             RD 10.4.1.2        <span>10GE</span><span>0/0/3</span>
+255.255.255.255/32  Direct 0    0             D  127.0.0.1       InLoopBack0
+</pre>
+<p>Run the <strong>display bgp vpnv4 all routing-table</strong> command on UPE1. The command output shows information about a default route in VPN instance vpna. The next hop of the default route is SPE1.</p>
+<pre class="screen">&lt;UPE1&gt; <strong>display bgp vpnv4 all routing-table</strong>
+ BGP Local router ID is 1.1.1.1
+ Status codes: * - valid, &gt; - best, d - damped,<span> x - best external,</span><span> a - add path,</span>
+               h - history,  i - internal, s - suppressed, S - Stale
+               Origin : i - IGP, e - EGP, ? - incomplete
+
+
+ Total number of routes from all PE: 4
+ Route Distinguisher: 100:1
+
+
+      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn
+
+ *&gt;i  0.0.0.0            3.3.3.3         0          200        0       i
+ *&gt;   10.1.1.0/24        0.0.0.0         0                     0       ?
+ *&gt;   10.1.1.2/32        0.0.0.0         0                     0       ?
+
+ VPN-Instance vpna, router ID 1.1.1.1:
+
+ Total Number of Routes: 4
+      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn
+
+ *&gt;i  0.0.0.0            3.3.3.3         0          200        0       i
+ *&gt;   10.1.1.0/24        0.0.0.0         0                     0       ?
+ *&gt;   10.1.1.2/32        0.0.0.0         0                     0       ? </pre>
+<p>Run the <strong>display ip routing-table vpn-instance vpna 10.3.1.1 verbose</strong> command on UPE1. The command output shows information about the backup label and backup tunnel ID of the route to the EPC side.</p>
+<pre class="screen">&lt;UPE1&gt; <strong>display ip routing-table vpn-instance vpna 10.3.1.1 verbose</strong>
+Proto: Protocol        Pre: Preference
+<span class="keyword">Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route</span>
+------------------------------------------------------------------------------
+Routing Table : vpna
+Summary Count : 1
+
+Destination: 0.0.0.0/0
+     Protocol: IBGP            Process ID: 0
+   Preference: 255                   Cost: 0
+      NextHop: 3.3.3.3          Neighbour: 0.0.0.0
+        State: Active Adv Relied      Age: 00h15m22s
+          Tag: 0                 Priority: low
+        Label: 16                 QoSInfo: 0x0
+   IndirectID: 0x5200006A
+ RelayNextHop: 3.3.3.3          Interface: <span>10GE</span><span>0/0/1</span>
+     TunnelID: 0x0000000001004c4b44 Flags: RD</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001411329993__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>UPE1</p>
+<pre class="screen">#
+sysname UPE1
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 100:1
+  vpn-target 1:1 import-extcommunity
+  vpn-target 1:1 export-extcommunity
+#
+mpls lsr-id 1.1.1.1
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 172.16.3.1 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip binding vpn-instance vpna
+ ip address 10.1.1.2 255.255.255.0
+#
+interface LoopBack1
+ ip address 1.1.1.1 255.255.255.255
+#
+bgp 100
+ router-id 1.1.1.1
+ peer 3.3.3.3 as-number 100
+ peer 3.3.3.3 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 3.3.3.3 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 3.3.3.3 enable
+ #
+ ipv4-family vpn-instance vpna
+  import-route direct
+  peer 10.1.1.1 as-number 65410
+#
+ospf 1
+ area 0.0.0.0
+  network 1.1.1.1 0.0.0.0
+  network 172.16.3.0 0.0.0.255
+#
+return</pre>
+</li><li><p>SPE1</p>
+<pre class="screen">#
+sysname SPE1
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 100:1
+  vpn-target 1:1 import-extcommunity
+  vpn-target 1:1 export-extcommunity
+#
+mpls lsr-id 3.3.3.3
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 172.16.3.2 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 172.18.5.1 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface LoopBack1
+ ip address 3.3.3.3 255.255.255.255
+#
+bgp 100
+ router-id 3.3.3.3
+ peer 1.1.1.1 as-number 100
+ peer 1.1.1.1 connect-interface LoopBack1
+ peer 5.5.5.5 as-number 100
+ peer 5.5.5.5 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 1.1.1.1 enable
+  peer 5.5.5.5 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 1.1.1.1 enable
+  peer 1.1.1.1 ip-prefix default export
+  peer 1.1.1.1 upe
+  peer 5.5.5.5 enable
+  peer 5.5.5.5 route-policy NPE1 import
+ #
+ ipv4-family vpn-instance vpna
+  network 0.0.0.0 route-policy default
+#
+ospf 1
+ area 0.0.0.0
+  network 3.3.3.3 0.0.0.0
+  network 172.16.3.0 0.0.0.255
+  network 172.18.5.0 0.0.0.255
+#
+ip ip-prefix default index 10 permit 0.0.0.0 0
+#
+route-policy NPE1 deny node 10
+ if-match ip-prefix default
+#
+route-policy NPE1 permit node 20
+ apply local-preference 200
+#
+route-policy default permit node 10
+ apply local-preference 200
+#
+ip route-static vpn-instance vpna 0.0.0.0 0.0.0.0 55.55.55.55
+#
+return</pre>
+</li><li><p>NPE1</p>
+<pre class="screen">#
+sysname NPE1
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 100:1
+  vpn-target 1:1 import-extcommunity
+  vpn-target 1:1 export-extcommunity
+#
+mpls lsr-id 5.5.5.5
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 172.18.5.2 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip binding vpn-instance vpna
+ ip address 10.4.1.1 255.255.255.0
+#
+interface LoopBack1
+ ip address 5.5.5.5 255.255.255.255
+#
+interface LoopBack2
+ ip binding vpn-instance vpna
+ ip address 55.55.55.55 255.255.255.255
+#
+bgp 100
+ router-id 5.5.5.5
+ peer 3.3.3.3 as-number 100
+ peer 3.3.3.3 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 3.3.3.3 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 3.3.3.3 enable
+  peer 3.3.3.3 route-policy SPE1 import
+ #
+ ipv4-family vpn-instance vpna
+  import-route direct
+  peer 10.4.1.2 as-number 65420
+#
+ospf 1
+ area 0.0.0.0
+  network 5.5.5.5 0.0.0.0
+  network 172.18.5.0 0.0.0.255
+#
+route-policy SPE1 permit node 10
+ apply local-preference 200
+#
+return</pre>
+</li><li><p>CE</p>
+<pre class="screen">#
+sysname CE
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.4.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.3.1.1 255.255.255.0
+#
+interface LoopBack1
+ ip address 7.7.7.7 255.255.255.255
+#
+bgp 65420
+ peer 10.4.1.1 as-number 100
+ #
+ ipv4-family unicast
+  import-route direct
+  peer 10.4.1.1 enable
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0371.html">Configuration Examples for IPv4 L3VPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0093.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_L3VPNv4_cfg_0083_1.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

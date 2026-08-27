@@ -1,0 +1,128 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a Loopback Interface Address as an Unnumbered Address">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_task_0000002202684958.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ipv4_cfg_0049.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 Basic">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 Basic">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001897139089">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a Loopback Interface Address as an Unnumbered Address</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001897139089"></a><a name="EN-US_TASK_0000001897139089"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a Loopback Interface Address as an Unnumbered Address</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001897139089__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001897139089__fig459792053619">Figure 1</a>, DeviceA and DeviceB are connected through serial interfaces. Loopback1 is configured on DeviceA and an IP address is assigned to it.</p>
+<p>To conserve IP address resources, the customer wants to implement communication without assigning an IP address to Serial1/0/0 on DeviceA.</p>
+<div class="fignone" id="EN-US_TASK_0000001897139089__fig459792053619"><a name="EN-US_TASK_0000001897139089__fig459792053619"></a><a name="fig459792053619"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring a loopback interface address as an unnumbered address</span><br><span><img src="figure/en-us_image_0000002145664997.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001897139089__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ul><li>Configure the serial interface on DeviceA to borrow the IP address of Loopback1.</li><li>Configure an IP address for the serial interface on DeviceB.</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001897139089__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure <span>Serial</span>1/0/0:0 on DeviceA to borrow the IP address of Loopback1.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceA</strong>
+[DeviceA]<strong> interface <span>serial</span> 1/0/0</strong><strong>:0</strong>
+[DeviceA-<span>Serial</span>1/0/0:0] <strong>ip address unnumbered interface loopback 1</strong>
+[DeviceA-<span>Serial</span>1/0/0:0]<strong> quit</strong></pre>
+</p></li><li><span>Configure the interface on DeviceB.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceB</strong>
+[DeviceB] <strong>interface <span>serial</span> 1/0/0</strong><strong>:0</strong>
+[DeviceB-<span>Serial</span>1/0/0:0] <strong>ip address 10.1.1.2 30</strong>
+[DeviceB-<span>Serial</span>1/0/0:0] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001897139089__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Check the configuration of <span>Serial</span>1/0/0:0. The information in bold indicates that <span>Serial</span>1/0/0:0 borrows the IP address of Loopback1.</p>
+<pre class="screen">[DeviceA] <strong>display interface <span>serial</span> 1/0/0</strong><strong>:0</strong>
+Serial1/0/0:0 current state : UP
+Line protocol current state : UP
+Last line protocol up time : 2011-12-14 16:08:45 UTC-08:00
+Route Port,The Maximum Transmit Unit is 4470, Hold timer is 10(sec)
+<strong>Internet Address is unnumbered, using address of LoopBack1(10.1.1.1/32)</strong>
+Link layer protocol is PPP
+LCP opened, IPCP opened
+Last physical up time   : 2011-12-14 16:08:39 UTC-08:00
+Last physical down time : 2011-12-14 16:06:19 UTC-08:00
+Current system time: 2011-12-14 16:09:00-08:00
+Interface is V35
+    Last 300 seconds input rate 0 bytes/sec, 0 packets/sec
+    Last 300 seconds output rate 0 bytes/sec, 0 packets/sec
+    Input: 7 packets,  102 bytes
+    Output: 7 packets ,  106 bytes
+    Input bandwidth utilization  :    0%
+    Output bandwidth utilization :    0%   </pre>
+<p># Ping DeviceB from DeviceA. The ping operation succeeds, indicating that DeviceA can communicate with DeviceB.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001897139089__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+interface <span>Serial</span>1/0/0:0
+ link-protocol ppp
+ ip address unnumbered interface LoopBack1
+#
+interface LoopBack1
+ ip address 10.1.1.1 255.255.255.255
+#
+return</pre>
+</li><li><p>DeviceB</p>
+<pre class="screen">#
+sysname DeviceB
+#
+interface <span>Serial</span>1/0/0:0
+ link-protocol ppp
+ ip address 10.1.1.2 255.255.255.252
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_task_0000002202684958.html">Configuration Examples for IPv4 Basic
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ipv4_cfg_0049.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

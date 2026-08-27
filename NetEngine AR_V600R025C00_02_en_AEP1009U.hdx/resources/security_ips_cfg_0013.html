@@ -1,0 +1,143 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Signature-based IPS">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002313073753.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebNext" content="ys_sec@security_cfgcase_contentsec_0005_22.0.xml">
+<meta name="AddWebNext" content="ys_sec@security_cfgcase_contentsec_0004_22.0.xml">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513033774">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Signature-based IPS</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513033774"></a><a name="EN-US_TASK_0000001513033774"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Signature-based IPS</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513033774__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000001513033774__fig01">Figure 1</a>, DeviceA is deployed at the border of an enterprise network as a security gateway. In the networking:</p>
+<ul><li>Intranet users can access the web server on the Internet.</li><li>The web server on the intranet provides services for both intranet users and Internet users.</li></ul>
+<div class="fignone" id="EN-US_TASK_0000001513033774__fig01"><a name="EN-US_TASK_0000001513033774__fig01"></a><a name="fig01"></a><span class="figcap"><b>Figure 1 </b>IPS networking diagram</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001563873753.png" width="NaN" height="NaN"></span></div>
+<p>The enterprise needs to enable IPS on DeviceA to meet the following requirements:</p>
+<ul><li><p>Protecting intranet users</p>
+<p>Protect intranet users from attacks, such as an attack launched from a website with malicious code, when they access the web server on the Internet.</p>
+</li><li><p>Protecting the web server on the intranet</p>
+<p>Prevent Internet and intranet users from attacking the web server on the intranet.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513033774__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure IP addresses for interfaces, enabling network connectivity.</li><li>Create security policy <strong>policy_sec_1</strong> and reference the default IPS profile <strong>default</strong> to protect intranet users against Internet attacks.</li><li>Create security policy <strong>policy_sec_2</strong> and reference the default IPS profile <strong>web_server</strong> to protect the web server on the intranet against attacks from intranet users and the Internet.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513033774__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IP addresses for interfaces and add them to security zones, enabling network connectivity.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceA</strong>
+[<span class="keyword">DeviceA</span>] <strong>interface <span>10ge</span></strong> <strong><span>0/0/1</span></strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>ip address 1.1.1.1 255.255.255.0</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>] <strong>interface <span>10ge</span></strong> <strong><span>0/0/2</span></strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.2.0.1 255.255.255.0</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>] <strong>interface <span>10ge</span></strong> <strong><span>0/0/3</span></strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/3</span>] <strong>ip address 10.3.0.1 255.255.255.0</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure a security policy for traffic between the Trust zone and the Untrust zone, and reference the IPS profile <strong>default</strong>.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>] <strong>security-policy</strong>
+[<span class="keyword">DeviceA</span>-policy-security] <strong>rule name policy_sec_1</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_1] <strong>source-zone trust</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_1] <strong>destination-zone untrust</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_1] <strong>source-address 10.3.0.0 24</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_1] <strong>profile ips default</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_1] <strong>action permit</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_1] <strong>quit</strong></pre>
+</p></li><li><span>Configure a security policy for traffic from the Trust zone to the DMZ and from the Untrust zone to the DMZ and reference the IPS profile <strong>web_server</strong>.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>-policy-security] <strong>rule name policy_sec_2</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_2] <strong>source-zone trust untrust</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_2] <strong>destination-zone dmz</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_2] <strong>destination-address 10.2.0.0 24</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_2] <strong>profile ips web_server</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_2] <strong>action permit</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_2] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>-policy-security] <strong>quit</strong></pre>
+</p></li><li><span>Save the configuration so that the device can automatically load the configuration upon the next startup.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>] <strong>quit</strong>
+&lt;<span class="keyword">DeviceA</span>&gt; <strong>save</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513033774__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>When an attack event occurs and the access is blocked, you can view the threat log of the IPS module on the device.</li><li><p>You can run the <strong>display ips statistics</strong> command to view IPS statistics.</p>
+</li></ul>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001513033774__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#
+sysname DeviceA
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.2.0.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.3.0.1 255.255.255.0
+#
+security-policy
+ rule name policy_sec_1
+  source-zone trust
+  destination-zone untrust
+  source-address 10.3.0.0 24
+  profile ips default
+  action permit
+ rule name policy_sec_2
+  source-zone trust
+  source-zone untrust
+  destination-zone dmz
+  destination-address 10.2.0.0 24
+  profile ips web_server
+  action permit</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002313073753.html">Configuration Examples for IPS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

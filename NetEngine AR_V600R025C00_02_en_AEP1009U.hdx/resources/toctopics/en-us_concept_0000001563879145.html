@@ -1,0 +1,90 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="PPP Link Establishment Process">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001564119237.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001563759493.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001563759509.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563879145">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>PPP Link Establishment Process</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563879145"></a><a name="EN-US_CONCEPT_0000001563879145"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">PPP Link Establishment Process</h1>
+<div><p><a href="#EN-US_CONCEPT_0000001563879145__fig1587001517253">Figure 1</a> shows the PPP link establishment process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563879145__fig1587001517253"><a name="EN-US_CONCEPT_0000001563879145__fig1587001517253"></a><a name="fig1587001517253"></a><span class="figcap"><b>Figure 1 </b>PPP link establishment process</span><br><span><img src="../images/en-us_image_0000001564119269.png"></span></div>
+<p></p>
+<p>The PPP link establishment process is as follows:</p>
+<ol><li>Two communicating devices enter the Establish phase from the Dead phase when starting to set up a PPP link.</li><li>In the Establish phase, the two devices perform an LCP negotiation to negotiate the maximum receive unit (MRU), authentication mode, and magic number (used for link status detection).<p>If the LCP negotiation succeeds, LCP turns Opened, which indicates that a lower-layer link has been established.</p>
+</li><li>If authentication is configured, the two devices enter the Authenticate phase and perform CHAP or PAP authentication. If no authentication is configured, the two devices enter the Network phase.</li><li>In the Authenticate phase, if authentication fails, the devices enter the Terminate phase. The link is removed and LCP turns Down.<p>If authentication succeeds, the devices enter the Network phase and LCP remains Opened.</p>
+</li><li>In the Network phase, the two devices perform an NCP negotiation to select and configure a network protocol and to negotiate network-layer parameters. After the two devices succeed in negotiating a network protocol, packets can be sent over this PPP link using the network protocol.<p>Various control protocols, such as IP Control Protocol (IPCP) and Multiprotocol Label Switching Control Protocol (MPLSCP), can be used in NCP negotiation.</p>
+</li><li>After NCP negotiation succeeds, packets can be sent over the PPP link. During the PPP operation, the PPP connection can be terminated at any time. A physical link disconnection, authentication failure, timeout timer expiry, or connection close by administrators through configuration can cause the two devices to enter the Terminate phase.</li><li>In the Terminate phase, the two devices enter the Dead phase after all resources are released. The two devices remain in the Dead phase until they start to establish a new PPP connection.</li></ol>
+<p>The following describes each phase in PPP link establishment.</p>
+<div class="section"><h4 class="sectiontitle">Dead Phase</h4><p>The physical layer is unavailable during the Dead phase. A PPP link begins and ends with this phase.</p>
+<p>When two communicating devices detect that the physical link between them is activated (for example, carrier signals are detected on the physical link), the two devices enter the Establish phase from the Dead phase.</p>
+<p>After the link is terminated, the two devices return to the Dead phase.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Establish Phase</h4><p>In the Establish phase, the two devices perform an LCP negotiation. The LCP status changes as follows:</p>
+<ul><li>When the link is unavailable, LCP is in the Initial or Starting state. When detecting that the link is available, the physical layer sends an up event to the link layer. After receiving the up event, the link layer changes the LCP status to Request-Sent. Then the devices at both ends send Configure-Request packets to configure a data link.</li><li>If the local device first receives a Configure-Ack packet from the peer, the LCP status changes from Request-Sent to Ack-Received. After the local device sends a Configure-Ack packet to the peer, the LCP status changes from Ack-Received to Opened.</li><li>If the local device first sends a Configure-Ack packet to the peer, the LCP status changes from Request-Sent to Ack-Sent. After the local device receives a Configure-Ack packet from the peer, the LCP status changes from Ack-Sent to Opened.</li><li>After LCP enters the Opened state, the two devices enter the next phase.</li></ul>
+<p>The next phase is the Authenticate or Network phase, depending on whether authentication is required.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Authenticate Phase</h4><p>The Authenticate phase is optional. By default, PPP does not perform authentication during PPP link establishment. If authentication is required, an authentication protocol must be specified in the Establish phase.</p>
+<p>PPP provides two authentication modes: PAP authentication and CHAP authentication.</p>
+<p>Both PAP and CHAP authentication supports unidirectional authentication and bidirectional authentication. In unidirectional authentication, the device on one end functions as the authenticator, and the device on the other end functions as the peer. In bidirectional authentication, each device functions as both the authenticator and peer. In practice, unidirectional authentication is typically used.</p>
+<p><strong>PAP Authentication Process</strong></p>
+<p>PAP is a two-way handshake authentication protocol that transmits passwords in plain text. <a href="#EN-US_CONCEPT_0000001563879145__fig12272748105915">Figure 2</a> shows the authentication process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563879145__fig12272748105915"><a name="EN-US_CONCEPT_0000001563879145__fig12272748105915"></a><a name="fig12272748105915"></a><span class="figcap"><b>Figure 2 </b>PAP authentication process</span><br><span><img src="../images/en-us_image_0000001513159178.png"></span></div>
+<ol><li>The peer sends the local user name and password to the authenticator.</li><li>The authenticator checks whether the received user name is in the local user table.<ul><li>If the received user name is in the local user table, the authenticator checks whether the received password is correct. If the password is correct, the authentication succeeds.</li><li>If the password is incorrect, the authentication fails. If the received user name is not in the local user table, the authentication fails.</li></ul>
+</li></ol>
+<p><strong>CHAP Authentication Process</strong></p>
+<p>CHAP is a three-way handshake authentication protocol. CHAP transmits only user names but not passwords, so it is more secure than PAP. <a href="#EN-US_CONCEPT_0000001563879145__fig187591820497">Figure 3</a> shows the CHAP authentication process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563879145__fig187591820497"><a name="EN-US_CONCEPT_0000001563879145__fig187591820497"></a><a name="fig187591820497"></a><span class="figcap"><b>Figure 3 </b>CHAP authentication process</span><br><span><img src="../images/en-us_image_0000001513159174.png"></span></div>
+<ol><li>The authenticator initiates an authentication request by sending a Challenge packet, which contains a random number and the local user name, to the peer.</li><li>The peer checks whether a CHAP password is configured on the local interface after receiving the authentication request of the authenticator.<ul><li>If a CHAP password is configured, the peer uses the ID field and random number contained in the received Challenge packet as well as the configured password for hash calculation. It then sends an authentication response that contains the generated hash value and its user name to the authenticator.</li><li>If a CHAP password is not configured, the peer searches its local user table for the corresponding password based on the user name in the received Challenge packet, uses the ID field and random number contained in the packet and the searched password for hash calculation. Thereafter, it sends an authentication response that contains the generated hash value and its user name to the authenticator.</li></ul>
+</li><li>The authenticator uses the ID field, locally saved password of the peer, and the random number in the Challenge packet for hash calculation. The authenticator then compares the generated hash value with that in the received authentication response packet. If they are the same, the authentication succeeds. If they are different, the authentication fails.</li></ol>
+<p><strong>Comparison Between CHAP and PAP Authentication</strong></p>
+<ul><li>In PAP authentication, passwords are sent over links in plain text. After a PPP link is established, the peer repeatedly sends the user name and password until authentication finishes. A high level of security is not ensured for this mode, so it is used on networks that do not require high security.</li><li>CHAP is a three-way handshake authentication protocol. In CHAP authentication, the peer sends only a user name to the authenticator. Compared with PAP, CHAP features higher security because passwords are not transmitted. On networks requiring high security, CHAP authentication is used to establish a PPP connection.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Network Phase</h4><p>In the Network phase, NCP negotiation is performed to select and configure a network protocol and to negotiate network-layer parameters.</p>
+<p>Each NCP may be in Opened or Closed state at any time. After an NCP enters the Opened state, network-layer data can be transmitted over the PPP link.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Terminate Phase</h4><p>A PPP link can be terminated at any time. A link can be terminated manually by an administrator, or be terminated due to the loss of carrier, an authentication failure, or other causes.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_concept_0000001564119237.html">Understanding PPP and MP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_concept_0000001563759493.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_concept_0000001563759509.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

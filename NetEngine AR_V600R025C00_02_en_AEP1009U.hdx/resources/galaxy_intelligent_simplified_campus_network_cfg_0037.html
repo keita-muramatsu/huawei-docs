@@ -1,0 +1,168 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Deploying an Intelligent Simplified Campus Network (Active and Standby Links)">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0038.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0020.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002065903624">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Deploying an Intelligent Simplified Campus Network (Active and Standby Links)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002065903624"></a><a name="EN-US_TASK_0000002065903624"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Deploying an Intelligent Simplified Campus Network (Active and Standby Links)</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000002065903624__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>To simplify the network architecture, an enterprise uses Huawei's Intelligent Simplified Campus Network Solution to build an office network.</p>
+<p>As shown in <a href="#EN-US_TASK_0000002065903624__fig03431317162311">Figure 1</a>, RUs connect to the central device through active and standby links, and the two neighboring RUs back up each other.</p>
+<p>The S5731-L4T2ST-RUA is used in this example. On each RU, the first uplink port connects to the central device, and the second uplink port connects to another RU.</p>
+<div class="fignone" id="EN-US_TASK_0000002065903624__fig03431317162311"><a name="EN-US_TASK_0000002065903624__fig03431317162311"></a><a name="fig03431317162311"></a><span class="figcap"><b>Figure 1 </b>Intelligent simplified campus network with active and standby links</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000002065907432.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002065903624__1.4.2"></a><a name="1.4.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The following uses backup group 1, consisting of DeviceB (RU101) and DeviceC (RU102), as an example to describe only the configurations for setting up an intelligent simplified campus network with active and standby links.</p>
+<ol><li>Connect the RUs to the local power supply. Then, connect an uplink port of the RU to the central device through a single link, and connect the other uplink port of the RU to another RU to form a standby link.</li><li>Bind the interconnection interface on the central device.</li><li>Add two RUs to a backup group on the central device and specify the backup port for each RU.</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002065903624__1.4.3"></a><a name="1.4.3"></a>
+<div class="p"><h4 class="sectiontitle">Procedure</h4><ol><li>Connect the uplink port of each RU to the central device and check whether the RUs are successfully online.<p># Check the RU status. <strong>Normal</strong> indicates that the RU is running properly.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view </strong>
+[HUAWEI] <strong>sysname DeviceA</strong> 
+[DeviceA] <strong>display remote-unit</strong> 
+------------------------------------------------------------------------------------------------------------------------
+ESN                     ID        Type               ConnectInterface     Status    VersionMatch   Name 
+------------------------------------------------------------------------------------------------------------------------
+219801176801XXXXXXXX    -         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/1</span>           Normal      YES            - 
+219801176802XXXXXXXX    -         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/2</span>           Normal      YES            -
+------------------------------------------------------------------------------------------------------------------------
+Total: 2, printed: 2</pre>
+</li><li>Configure the interconnection interfaces and interface isolation for the RUs.<p># Bind the interconnection interfaces for the RUs on the central device.</p>
+<pre class="screen">[DeviceA] <strong>remote-unit 1</strong>
+[DeviceA-remote-unit-1] <strong>name RU101</strong>
+[DeviceA-remote-unit-1] <strong>description RU101</strong>_<strong><span>10ge</span></strong><strong><span>0/0/1</span></strong>
+[DeviceA-remote-unit-1] <strong>bind interface </strong><strong><span>10GE</span><span>0/0/1</span></strong>
+[DeviceA-remote-unit-1] <strong>quit</strong>
+[DeviceA] <strong>remote-unit 2</strong>
+[DeviceA-remote-unit-2] <strong>name RU102</strong>
+[DeviceA-remote-unit-2] <strong>description RU102</strong>_<strong><span>10ge</span></strong><strong><span>0/0/2</span></strong>
+[DeviceA-remote-unit-2] <strong>bind interface </strong><strong><span>10GE</span><span>0/0/2</span></strong>
+[DeviceA-remote-unit-2] <strong>quit</strong></pre>
+</li><li>Add two RUs to a backup group on the central device and specify the backup port for each RU. Backup group 1 of DeviceB (RU101) and DeviceC (RU102) is used as an example. The configurations of other backup groups are similar.<div class="p"># Configure a backup group in the global RU view and deliver the configuration to the RUs.<pre class="screen">[DeviceA] <strong>remote-unit</strong>
+[HUAWEI-remote-unit] <strong>backup-group 1 remote-unit 1 remote-unit 2</strong>
+[HUAWEI-remote-unit] <strong>quit</strong></pre>
+</div>
+<div class="p"># Specify the backup port in the single RU view for DeviceB (RU101) and DeviceC (RU102).<pre class="screen">[DeviceA] <strong>remote-unit 1</strong>
+[DeviceA-remote-unit-1] <strong>backup-group</strong><strong> backup-port uplink 2</strong>
+[DeviceA-remote-unit-1] <strong>commit</strong>
+[DeviceA] <strong>remote-unit 2</strong>
+[DeviceA-remote-unit-2] <strong>backup-group</strong><strong> backup-port uplink 2</strong>
+[DeviceA-remote-unit-2] <strong>commit</strong></pre>
+</div>
+</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002065903624__1.4.4"></a><a name="1.4.4"></a>
+<div class="p"><h4 class="sectiontitle">Verifying the Configuration</h4><p># Check the RU status. The configured RU IDs and aliases are displayed.</p>
+<pre class="screen">[DeviceA] <strong>display remote-unit</strong> 
+------------------------------------------------------------------------------------------------------------------------
+ESN                     ID        Type               ConnectInterface     Status    VersionMatch    Name
+------------------------------------------------------------------------------------------------------------------------
+219801176801XXXXXXXX    1         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/1</span>           Normal      YES           RU101 
+219801176802XXXXXXXX    2         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/2</span>           Normal      YES           RU102 
+------------------------------------------------------------------------------------------------------------------------
+Total: 2, printed: 2</pre>
+<p># Check the RU backup group status. The RU backup group ID and status are displayed.</p>
+<pre class="screen">[DeviceA]<strong> display remote-unit backup-group</strong>
+--------------------------------------------------------------------------------------------------------
+GroupId   ESN                     ID      Type                ConnectInterface     Status      Name 
+--------------------------------------------------------------------------------------------------------
+1         219801176801XXXXXXXX     1      S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/1</span>            Normal      RU101
+1         219801176802XXXXXXXX     2      S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/2</span>            Normal      RU102
+--------------------------------------------------------------------------------------------------------</pre>
+<p># Display the status of the uplink port in an RU backup group.</p>
+<pre class="screen">[DeviceA] <strong>display remote-unit backup-group 1 </strong>
+ESN                :219801176801XXXXXXXX
+Name               :RU101
+Device type        :S5731-L4T2ST-RUA 
+Connect interface  :<span>10GE</span><span>0/0/1</span>
+----------------------------------------------
+Interface     Role       State          
+----------------------------------------------
+GE5           Master      Active                 
+GE6           Backup      Inactive                     
+----------------------------------------------
+
+ESN                :219801176802XXXXXXXX
+Name               :RU102
+Device type        :S5731-L4T2ST-RUA 
+Connect interface  :<span>10GE</span><span>0/0/2</span>
+----------------------------------------------
+Interface     Role       State      
+----------------------------------------------
+GE5           Master      Active     
+GE6           Backup      Inactive   
+----------------------------------------------</pre>
+</div></div>
+<div class="example"><a name="EN-US_TASK_0000002065903624__1.4.5"></a><a name="1.4.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#                                                                               
+remote-unit                                                                     
+ backup-group 1 remote-unit 1 remote-unit 2 
+#                                                                               
+remote-unit 1
+ name RU101                                                                     
+ description RU101_<span>10GE</span><span>0/0/1</span> 
+ backup-group backup-port uplink 2                                                                                                                                 
+#                                                                               
+remote-unit 2
+ name RU102                                                                     
+ description RU102_<span>10GE</span><span>0/0/2</span>
+ backup-group backup-port uplink 2</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0038.html">Configuration Examples for Intelligent Simplified Campus Networks
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0020.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

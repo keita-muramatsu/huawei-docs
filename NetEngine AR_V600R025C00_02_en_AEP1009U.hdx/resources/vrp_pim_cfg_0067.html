@@ -1,0 +1,84 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="trbCase">
+<meta name="DC.Title" content="Data Fails to Be Forwarded Along the SPT on a PIM-SM Network">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_0064.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_0066.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_0068.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TRBCASE_0000001176663357">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Data Fails to Be Forwarded Along the SPT on a PIM-SM Network</title>
+</head>
+<body><a name="EN-US_TRBCASE_0000001176663357"></a><a name="EN-US_TRBCASE_0000001176663357"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Data Fails to Be Forwarded Along the SPT on a PIM-SM Network</h1>
+<div><div><a name="EN-US_TRBCASE_0000001176663357__1.3.1"></a><a name="1.3.1"></a><h2 class="sectiontitle">Symptom</h2>
+<div><p>After PIM-SM is configured and an SPT is set up, user hosts cannot receive multicast data.</p>
+</div></div>
+<div><a name="EN-US_TRBCASE_0000001176663357__1.3.2"></a><a name="1.3.2"></a><h2 class="sectiontitle">Possible Causes</h2>
+<div><p>Possible causes are as follows:</p>
+<ul><li>The downstream interfaces of multicast devices do not receive any (S, G) Join messages.</li><li>PIM-SM is not enabled on interfaces.</li><li>The RPF route to the multicast source is incorrect (for example, the unicast route has a loop).</li><li>Configurations are improper (for example, the configuration of the MTU, switching threshold, or multicast boundary is improper).</li></ul>
+</div></div>
+<div><a name="EN-US_TRBCASE_0000001176663357__1.3.3"></a><a name="1.3.3"></a><h2 class="sectiontitle">Procedure</h2><div><ol><li><span>Run the <strong>display pim routing-table</strong> command in any view to check whether the PIM routing table contains correct (S, G) entries.</span><p><ul><li>If the entry exists, but the flag is RPT, the multicast group is in the ASM group address range, and the upstream interface is the RPF interface toward the RP but not the SPT interface toward the multicast source, the SPT fails to be established. In this case, run the <strong>display current-configuration </strong><strong>configuration pim</strong> command on the receiver DR to check the current configuration in the PIM view. If the command output displays <strong>spt-switch-threshold traffic-rate</strong> or <strong>spt-switch-threshold infinity</strong>, run the <strong>undo spt-switch-threshold</strong> command to delete the configuration or run the <strong>spt-switch-threshold</strong><em> traffic-rate</em> command to configure a proper traffic rate.</li><li>If the (S, G) entry exists and the flag is SPT, run the <strong>display multicast ip fib</strong> command to check the (S, G) entry in the forwarding table and check whether the value of the <strong>Matched</strong> field increases. You need to wait several minutes after running the <strong>display multicast ip fib</strong> command as the count is updated slowly.<ul><li>If the value of the <strong>Matched</strong> field keeps increasing, multicast data is properly forwarded from the upstream device to the current device. However, multicast data cannot be forwarded to the downstream device due to certain reasons.</li><li>If the value of the <strong>Matched</strong> field does not increase and the current device is not the source DR, the current device does not receive multicast data. In this case, the fault may occur on the upstream device, and you need to check whether the correct (S, G) entry exists in the PIM routing table of the upstream device.</li></ul>
+</li><li>If no correct (S, G) entry exists in the PIM routing table, go to <a href="#EN-US_TRBCASE_0000001176663357__step1841724132317">Step 2</a>.</li></ul>
+</p></li><li id="EN-US_TRBCASE_0000001176663357__step1841724132317"><a name="EN-US_TRBCASE_0000001176663357__step1841724132317"></a><a name="step1841724132317"></a><span id="EN-US_TRBCASE_0000001176663357__">Run the <strong>display pim control-message counters</strong><strong> <strong><span>interface</span></strong></strong><em> <i><span class="varname">interface-type interface-number</span></i></em><strong> <strong><span>message-type join-prune</span></strong></strong> command in any view to check whether the downstream interface receives Join messages.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the current device is the receiver DR, skip this step.</p>
+</div></div>
+</p><p><div class="p">A downstream interface fails to receive (S, G) Join messages if a fault occurs on it or PIM-SM is not enabled.<ul><li>If the number of Join/Prune messages received by the downstream interface does not increase, run the <strong><b><span class="cmdqueryname">display pim control-message counters</span></b></strong> <strong><strong><span>interface</span></strong></strong><strong><span> </span></strong><em><i><span class="varname">interface-type interface-number</span></i></em> <strong><strong><span>message-type join-prune</span></strong></strong> command on the downstream device connected to the interface to check whether the downstream device has sent Join/Prune messages to the upstream device.<ul><li>If the number of Join/Prune messages increases, the downstream device has sent Join/Prune messages. In this case, communication between the upstream and downstream PIM neighbors is abnormal.</li><li>If the number does not increase, the downstream device is not working properly. In this case, troubleshoot the downstream device.</li></ul>
+</li><li>If the number of Join/Prune messages received by the downstream interface increases, go to <a href="#EN-US_TRBCASE_0000001176663357__step04381518172617">Step 3</a>.</li></ul>
+</div>
+</p></li><li id="EN-US_TRBCASE_0000001176663357__step04381518172617"><a name="EN-US_TRBCASE_0000001176663357__step04381518172617"></a><a name="step04381518172617"></a><span id="EN-US_TRBCASE_0000001176663357__">Run the <strong>display pim interface verbose</strong> command in any view to check whether PIM-SM is enabled on the interface.</span><p><p>The common cause for the fault is that PIM-SM is not enabled on the RPF interface toward the multicast source. When deploying a PIM-SM network, you are advised to enable multicast on all devices and PIM-SM on all interfaces.</p>
+</p><p><div class="p">Especially check whether PIM-SM is configured on the RPF interface. <ul><li>If the command output does not contain interface information or the PIM mode of an interface is dense, run the <strong><b><span class="cmdqueryname">pim sm</span></b></strong> command on the interface. If the message "Error: Please enable multicast in the system view first." is displayed when you enable PIM-SM on an interface, run the <strong><b><span class="cmdqueryname">multicast routing-enable</span></b></strong> command in the system view to enable the multicast function first. Then run the <strong><b><span class="cmdqueryname">pim sm</span></b></strong> command in the interface view to enable PIM-SM.</li><li>If PIM-SM has been enabled on all the involved interfaces of the device, go to <a href="#EN-US_TRBCASE_0000001176663357__step125771854103211">Step 4</a>.</li></ul>
+</div>
+</p></li><li id="EN-US_TRBCASE_0000001176663357__step125771854103211"><a name="EN-US_TRBCASE_0000001176663357__step125771854103211"></a><a name="step125771854103211"></a><span id="EN-US_TRBCASE_0000001176663357__">Run the <strong>display multicast rpf-info</strong><em> <i><span class="varname">source-address</span></i></em> command in any view to check whether there is an RPF route to the multicast source.</span><p><ul><li>If the command output does not contain an RPF route to the multicast source, check the unicast route configuration: Run the <strong>ping</strong> command on both the device and multicast source to check connectivity between them.</li><li>If the command output contains an RPF route to the multicast source:<ul><li>If the RPF route is a multicast static route in the command output, run the <strong>display current-configuration</strong> command to check whether the multicast static route configuration is correct.</li><li>If the RPF route is a unicast route in the command output, run the <strong>display ip routing-table</strong> command to check whether the unicast route is consistent with the RPF route.</li></ul>
+</li><li>If the command output contains an RPF route to the multicast source and the route configuration is correct, go to <a href="#EN-US_TRBCASE_0000001176663357__step127301735143512">Step 5</a>.</li></ul>
+</p></li><li id="EN-US_TRBCASE_0000001176663357__step127301735143512"><a name="EN-US_TRBCASE_0000001176663357__step127301735143512"></a><a name="step127301735143512"></a><span id="EN-US_TRBCASE_0000001176663357__">Run the <strong>display pim interface</strong> <em>interface-type interface-number</em> command in any view to check whether the interface forwarding multicast data is the receiver DR.</span><p><ul><li>If the command output does not contain the local flag, the interface is not the receiver DR. In this case, perform Step 6 on the DR according to the DR address in the command output.</li><li>If the command output contains the local flag, the interface is the receiver DR. In this case, go to <a href="#EN-US_TRBCASE_0000001176663357__step23541837193616">Step 6</a>.</li></ul>
+</p></li><li id="EN-US_TRBCASE_0000001176663357__step23541837193616"><a name="EN-US_TRBCASE_0000001176663357__step23541837193616"></a><a name="step23541837193616"></a><span id="EN-US_TRBCASE_0000001176663357__">Run the <strong>display current-configuration</strong><b><span class="cmdqueryname"> </span></b><strong>interface</strong><em><strong><span> </span></strong><i><span class="varname">interface-type interface-number</span></i></em> command in the user view to check whether the multicast boundary is configured on the interface.</span><p><ul><li>If <strong>multicast boundary</strong> is displayed in the configuration of the interface, multicast boundary is configured on the interface. In this case, you are advised to run the <strong>undo multicast boundary</strong> { <em>group-address</em><i><span class="varname"> </span></i>{ <em>mask</em><i><span class="varname"> </span></i>| <em>mask-length</em> } | <strong>all</strong><strong><span> </span></strong>} command to delete the configuration or replan the network to ensure that no multicast boundary is configured on the RPF interface or the RPF neighbor interface.</li><li>If multicast boundary is not configured on the interface, go to <a href="#EN-US_TRBCASE_0000001176663357__step1479423813155">Step 7</a>.</li></ul>
+</p></li><li id="EN-US_TRBCASE_0000001176663357__step1479423813155"><a name="EN-US_TRBCASE_0000001176663357__step1479423813155"></a><a name="step1479423813155"></a><span id="EN-US_TRBCASE_0000001176663357__">Run the <strong><b><span class="cmdqueryname">display current-configuration</span></b> </strong><strong>configuration pim</strong> command in the PIM view to check whether the source-policy is configured.</span><p><p>If the command output contains <strong>source-policy acl-number</strong> or <strong>source-policy acl-name</strong>, a source-based filtering policy is configured. Any multicast data that is not permitted by the ACL is then discarded. In this case, run the <strong>undo source-policy</strong> command to delete the configuration or reconfigure ACL rules to ensure that the multicast data required by users can be forwarded normally.</p>
+</p></li></ol>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_pim_cfg_0064.html">Troubleshooting PIM
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_pim_cfg_0066.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_pim_cfg_0068.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

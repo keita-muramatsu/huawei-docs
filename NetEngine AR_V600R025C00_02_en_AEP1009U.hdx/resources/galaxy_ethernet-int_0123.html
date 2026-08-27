@@ -1,0 +1,122 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring the Rates and Duplex Modes of Ethernet Interfaces">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ethernet-int_0055.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ethernet-int_0125.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Ethernet Interface">
+<meta name="featuretype" content="Interface Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Ethernet Interface">
+<meta name="featuretype" content="Interface Management">
+<meta name="featuretype" content="Interface Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001584227413">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring the Rates and Duplex Modes of Ethernet Interfaces</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001584227413"></a><a name="EN-US_TASK_0000001584227413"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring the Rates and Duplex Modes of Ethernet Interfaces</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001584227413__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001584227413__fig_dc_cfg_int_005701">Figure 1</a>, DeviceA, DeviceB, and DeviceC are connected to <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively, on DeviceD, which is connected to the Internet through <span>10GE</span><span>0/0/4</span>.</p>
+<p>Due to special limitations of DeviceD, <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span> can only work in half-duplex mode through auto-negotiation. As a result, packet loss occurs when the service traffic volume is high. In addition, the rates of <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span> reach the maximum rate 1000 Mbit/s through auto-negotiation. If DeviceA, DeviceB, and DeviceC concurrently send data at 1000 Mbit/s, the outbound interface <span>10GE</span><span>0/0/4</span> will be congested. Users want to resolve data packet loss and congestion problems.</p>
+<div class="fignone" id="EN-US_TASK_0000001584227413__fig_dc_cfg_int_005701"><a name="EN-US_TASK_0000001584227413__fig_dc_cfg_int_005701"></a><a name="fig_dc_cfg_int_005701"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring the rate and duplex mode in non-auto-negotiation mode</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, interface3, and interface4 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, <span>10GE</span><span>0/0/3</span>, and <span>10GE</span><span>0/0/4</span>, respectively.</p>
+</div></div>
+<br><span><img src="images/fig_dc_cfg_int_104901.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001584227413__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ul><li>Configure interfaces to work in non-auto-negotiation mode to prevent their rates from being affected.</li><li><p>Forcibly set the duplex mode to full-duplex for the interfaces working in non-auto-negotiation mode to prevent packet loss.</p>
+</li><li><p>Forcibly set the working rate to 100 Mbit/s for the interfaces working in non-auto-negotiation mode to prevent data congestion.</p>
+</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001584227413__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Create an interface group and add interface1, interface2, and interface3 to it.</span><p><pre class="screen">&lt;HUAWEI&gt;<strong> system-view</strong>
+[HUAWEI] <strong>sysname DeviceD</strong>
+[DeviceD]<strong> port-group portgroup1</strong><span><samp class="codeph">   //Create a permanent interface group <strong>portgroup1</strong> and enter its view.</samp></span>
+[DeviceD-port-group-portgroup1]<strong> group-member <span>10GE</span><span>0/0/1</span> to <span>10GE</span><span>0/0/3</span></strong><span><samp class="codeph">   //Add <span><span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span></span> to <strong>portgroup1</strong>.</samp></span></pre>
+</p></li><li><span>Configure interface1, interface2, and interface3 to work in non-auto-negotiation mode, and set the duplex mode and working rate to full-duplex and 100 Mbit/s, respectively, for them in batches.</span><p><pre class="screen">[DeviceD-port-group-portgroup1] <strong>negotiation disable</strong><span><samp class="codeph">   //Configure the interfaces to work in non-auto-negotiation mode in batches.</samp></span>
+[DeviceD-port-group-portgroup1] <strong>duplex full</strong><span><samp class="codeph">   //Configure the interfaces to work in full-duplex mode in batches.</samp></span>
+[DeviceD-port-group-portgroup1] <strong>speed 100</strong><span><samp class="codeph">   //Configure the interfaces to work at 100 Mbit/s in batches.</samp></span>
+[DeviceD-port-group-portgroup1] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001584227413__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <strong>display interface <span>10ge</span><span>0/0/1</span></strong> command in any view to check the current working rate and duplex mode of the interface.</p>
+<pre class="screen">[DeviceD] <strong>display interface <span>10ge</span><span>0/0/1</span></strong>
+...
+Port Mode:             AUTO,     Port Split/Aggregate:           -          
+Speed:                 100,      Loopback:                       NONE          
+Duplex:                FULL,     Negotiation:                    DISABLE          
+Input Flow-control: DISABLE,     Output Flow-control:            DISABLE          
+Mdi:                      -,     Fec:                                
+...</pre>
+<p>The command output shows that the interface works in non-negotiation mode, the working rate is 100 Mbit/s, and the duplex mode is full-duplex.</p>
+<p>Similarly, you can run the <strong>display interface <span>10ge</span><span>0/0/2</span></strong> and <strong>display interface <span>10ge</span><span>0/0/3</span></strong> commands to check information about <span>10GE</span><span>0/0/2</span> and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001584227413__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuring Scripts</h4><pre class="screen">#
+sysname DeviceD
+#
+port-group portgroup1
+ group-member <span>10GE</span><span>0/0/1</span>
+ group-member <span>10GE</span><span>0/0/2</span>
+ group-member <span>10GE</span><span>0/0/3</span>
+#
+interface <span>10GE</span><span>0/0/1</span>
+ negotiation disable
+ duplex full
+ speed 100
+#
+interface <span>10GE</span><span>0/0/2</span>
+ negotiation disable
+ duplex full
+ speed 100
+#
+interface <span>10GE</span><span>0/0/3</span>
+ negotiation disable
+ duplex full
+ speed 100
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ethernet-int_0055.html">Configuration Examples for Ethernet Interfaces
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ethernet-int_0125.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

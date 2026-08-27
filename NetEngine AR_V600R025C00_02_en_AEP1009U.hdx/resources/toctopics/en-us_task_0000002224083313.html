@@ -1,0 +1,354 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring RADIUS over DTLS">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_aaa_cfg_0056.html">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_aaa_cfg_0061.html">
+<meta name="DC.Relation" scheme="URI" content="../dc/dc_cfg_aaa_1031.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="RADIUS">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featurename" content="HWTACACS">
+<meta name="featurename" content="LDAP">
+<meta name="featurename" content="RADIUS">
+<meta name="featurename" content="Local User">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featurename" content="HWTACACS">
+<meta name="featurename" content="LDAP">
+<meta name="featurename" content="RADIUS">
+<meta name="featurename" content="Local User">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002224083313">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring RADIUS over DTLS</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002224083313"></a><a name="EN-US_TASK_0000002224083313"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring RADIUS over DTLS</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002224083313__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000002224083313__fig_dc_cfg_aaa_102901">Figure 1</a>, a RADIUS server is deployed on the network. To ensure the confidentiality and integrity of data transmitted between the RADIUS server and client, the administrator configures DTLS for data transmission between the server and client.</p>
+<div class="fignone" id="EN-US_TASK_0000002224083313__fig_dc_cfg_aaa_102901"><a name="EN-US_TASK_0000002224083313__fig_dc_cfg_aaa_102901"></a><a name="fig_dc_cfg_aaa_102901"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring RADIUS over DTLS</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img src="../images/en-us_image_0000002188658286.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002224083313__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li>Configure a DTLS policy.</li><li>Configure a RADIUS server<span> template</span>.</li><li>Configure authentication and accounting schemes.</li><li>Apply the RADIUS server<span> template</span>, authentication scheme, and accounting scheme to a domain.</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002224083313__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>If different users access the network after RADIUS over DTLS is configured, you are advised to adjust the CPCAR value of packets based on the following table to ensure the user access rate.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Recommended CPCAR values for different RADIUS over DTLS scenarios</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="15%" id="mcps1.3.3.3.2.5.1.1" liSelected="liSelected"><p>RADIUS over DTLS Scenario</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="24.47%" id="mcps1.3.3.3.2.5.1.2" liSelected="liSelected"><p>Possible Problem</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="39.53%" id="mcps1.3.3.3.2.5.1.3" liSelected="liSelected"><p>Workaround</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="21%" id="mcps1.3.3.3.2.5.1.4" liSelected="liSelected"><p>Impact</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>Administrator</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>The access rate of administrators is low.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><p>Do not adjust the CPCAR value.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>There is no impact.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>MAC</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>Many users are concurrently authenticated, and RADIUS DTLS packets need to be retransmitted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><p>Run the <b><span class="cmdqueryname">access-user car-mode dtls mac-authen wired</span></b> command to automatically adjust the CPCAR value of MAC protocol packets to 20% of the default CPCAR value.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>The access rate of wired MAC address authentication users in the non-RADIUS over DTLS authentication scenario is affected.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>Portal 2.0</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>Many users are concurrently authenticated, and RADIUS DTLS packets need to be retransmitted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><p>Run the <b><span class="cmdqueryname">access-user car-mode dtls portal wired</span></b> command to automatically adjust the CPCAR value of Portal protocol packets to 20% of the default CPCAR value.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>The access rate of wired or wireless Portal 2.0 authentication users in the non-RADIUS over DTLS authentication scenario is affected.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>HTTPS Portal</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>Many users are concurrently authenticated, and RADIUS DTLS packets need to be retransmitted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><p>Run the <b><span class="cmdqueryname">access-user car-mode dtls https-portal wired</span></b> command to automatically adjust the CPCAR value of HTTPS Portal protocol packets to 20% of the default CPCAR value.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>The access rate of wired or wireless HTTPS Portal authentication users in the non-RADIUS over DTLS authentication scenario is affected.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>802.1X CHAP/PAP</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>Many users are concurrently authenticated, and RADIUS DTLS packets need to be retransmitted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><p>Run the <b><span class="cmdqueryname">access-user car-mode dtls dot1x wired</span></b> command to automatically adjust the CPCAR value of 802.1X protocol packets to 20% of the default CPCAR value.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>The access rate of wired 802.1X authentication users in the non-RADIUS over DTLS authentication scenario is affected.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>802.1X EAP</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>Many users are concurrently authenticated, and RADIUS DTLS packets need to be retransmitted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><ol><li>EAP has high security and uses TLS to ensure security. Therefore, you are advised not to use RADIUS over DTLS in this scenario.</li><li>If both 802.1X EAP authentication and RADIUS over DTLS have been configured, run the <b><span class="cmdqueryname">access-user car-mode dtls dot1x wired</span></b> command to automatically adjust the CPCAR value of 802.1X protocol packets to 20% of the default CPCAR value.</li></ol>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>The access rate of wired 802.1X authentication users in the non-RADIUS over DTLS authentication scenario is affected.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>Wireless 802.1X</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>Many users are concurrently authenticated, and RADIUS DTLS packets need to be retransmitted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><ol><li>EAP has high security and uses TLS to ensure security. Therefore, you are advised not to use RADIUS over DTLS in this scenario.</li><li>If both wireless 802.1X authentication and RADIUS over DTLS have been configured, run the <b><span class="cmdqueryname">access-user car-mode dtls dot1x wireless</span></b> command to automatically adjust the CPCAR value of wireless 802.1X protocol packets to 20% of the default CPCAR value.</li></ol>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>The access rates of wireless open authentication, MAC address authentication, and Portal authentication users are affected.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>Wireless MAC</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>Many users are concurrently authenticated, and RADIUS DTLS packets need to be retransmitted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><p>Run the <b><span class="cmdqueryname">access-user car-mode dtls mac-authen wireless</span></b> command to automatically adjust the CPCAR value in user association to 20% of the default CPCAR value.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>The access rates of wireless open authentication, 802.1X authentication, and Portal authentication users are affected.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>Wireless Portal</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>Many users are concurrently authenticated, and RADIUS DTLS packets need to be retransmitted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><p>Run the <b><span class="cmdqueryname">access-user car-mode dtls portal wireless</span></b> command to automatically adjust the CPCAR value in user association and that of Portal protocol packets to 20% of the default CPCAR value.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>The access rates of wireless open authentication, 802.1X authentication, and MAC address authentication users are affected.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>Wireless MAC+802.1X</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>Many users are concurrently authenticated, and RADIUS DTLS packets need to be retransmitted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><p>Run the <b><span class="cmdqueryname">access-user car-mode dtls mac-authen dot1x wireless</span></b> command to automatically adjust the CPCAR value in user association and that of wireless 802.1X packets to 20% of the default CPCAR value.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>The access rates of wireless open authentication, 802.1X authentication, and Portal authentication users are affected.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.3.2.5.1.1 "><p>RADIUS over DTLS in active/standby or load balancing scenario</p>
+</td>
+<td class="cellrowborder" valign="top" width="24.47%" headers="mcps1.3.3.3.2.5.1.2 "><p>The CPCAR value is small in the RADIUS over DTLS scenario. As a result, packets may fail to be received in the multi-server scenario.</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.53%" headers="mcps1.3.3.3.2.5.1.3 "><ol><li>You are advised to reduce the number of RADIUS servers as required.</li><li>Based on the access user type, run the <b><span class="cmdqueryname">access-user car-mode dtls</span></b> command to automatically adjust the CPCAR value of protocol packets to 20% of the default CPCAR value.</li></ol>
+</td>
+<td class="cellrowborder" valign="top" width="21%" headers="mcps1.3.3.3.2.5.1.4 "><p>In the multi-server scenario, servers may fail to receive packets.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002224083313__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IP addresses for interfaces.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname DeviceA</strong> 
+[<span class="keyword">DeviceA</span>] <strong>vlan batch 10 20</strong>
+[DeviceA] <strong>interface <span>10ge</span> </strong><strong><span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>]<strong> port trunk allow-pass vlan 10</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10ge</span> </strong><strong><span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>]<strong> port trunk allow-pass vlan 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[DeviceA] <strong>interface </strong><strong>vlanif 10</strong>
+[DeviceA-Vlanif10] <strong>ip address 10.1.1.2 255.255.255.0</strong>
+[DeviceA-Vlanif10] <strong>quit</strong>
+[DeviceA] <strong>interface </strong><strong>vlanif 20</strong>
+[DeviceA-Vlanif20] <strong>ip address 10.1.6.2 255.255.255.0</strong>
+[DeviceA-Vlanif20] <strong>quit</strong></pre>
+</p></li><li><span>Configure a DTLS policy.</span><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Ensure that the PKI realm <em>realm-name</em> bound to the DTLS policy has a certificate loaded. The certificate can be an initial device certificate or a digital certificate applied by a user. For details about how to load a certificate using PKI, see "<a href="../security_pki_cfg_0001.html">PKI Configuration</a>" in <span>CLI Configuration Guide</span> &gt; Security Configuration.</p>
+</div></div>
+<pre class="screen">[DeviceA] <strong>pki realm abcd</strong> 
+[DeviceA-pki-abcd] <strong>quit</strong> 
+[DeviceA] <strong>pki import-certificate ca realm abcd pem filename </strong><strong>test.cer</strong>
+[DeviceA] <strong>dtls policy huawei</strong>
+[DeviceA-dtls-policy-huawei] <strong>pki-domain </strong><strong>abcd</strong>
+[DeviceA-dtls-policy-huawei] <strong>quit</strong></pre>
+</p></li><li><span>Configure a RADIUS server<span> template</span>.</span><p><p># Configure a RADIUS <span>template</span> named <strong>shiva</strong>.</p>
+<pre class="screen">[DeviceA] <strong>radius-server template shiva</strong></pre>
+<p># Configure an IP address and a port number for the RADIUS authentication and accounting server.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>-radius-shiva] <strong>radius-server authentication 10.7.66.66 2083 weight 80 dtls-policy huawei</strong>
+[<span class="keyword">DeviceA</span>-radius-shiva] <strong>radius-server accounting 10.7.66.66 2083 weight 80 dtls-policy huawei</strong></pre>
+</p></li><li><span>Configure authentication and accounting schemes.</span><p><p># Create an authentication scheme named <strong>auth</strong><span> and set the authentication mode to RADIUS authentication and local authentication</span>.</p>
+<pre class="screen">[DeviceA] <strong>aaa</strong>
+[DeviceA-aaa] <strong>authentication-scheme auth</strong>
+[<span class="keyword">DeviceA</span>-aaa-authen-auth] <strong>authentication-mode radius </strong><strong>local</strong>
+[<span class="keyword">DeviceA</span>-aaa-authen-auth] <strong>quit</strong></pre>
+<p># Create an accounting scheme named <strong>abc</strong>, and set the accounting mode to RADIUS accounting.<span> Configure a policy for the device to keep users online upon accounting-start failures.</span></p>
+<pre class="screen">[<span class="keyword">DeviceA</span>-aaa] <strong>accounting-scheme abc</strong>
+[<span class="keyword">DeviceA</span>-aaa-accounting-abc] <strong>accounting-mode radius</strong>
+<span>[<span class="keyword">DeviceA</span>-aaa-accounting-abc] <strong>accounting start-fail online</strong> </span>
+[<span class="keyword">DeviceA</span>-aaa-accounting-abc] <strong>quit</strong></pre>
+</p></li><li><span>Create the domain <strong>huawei</strong>, and apply the authentication scheme <strong>auth</strong>, accounting scheme <strong>abc</strong>, and RADIUS server <span>template</span> <strong>shiva</strong> to the domain.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>-aaa] <strong>domain huawei</strong>
+[<span class="keyword">DeviceA</span>-aaa-domain-huawei] <strong>authentication-scheme auth</strong>
+[<span class="keyword">DeviceA</span>-aaa-domain-huawei] <strong>accounting-scheme abc</strong>
+[<span class="keyword">DeviceA</span>-aaa-domain-huawei] <strong>radius-server shiva</strong>
+[<span class="keyword">DeviceA</span>-aaa-domain-huawei] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>-aaa] <strong>quit</strong></pre>
+</p></li><li><span>Set the domain <strong>huawei</strong> as the global default administrative domain.</span><p><pre class="screen">[DeviceA] <strong>domain huawei admin</strong></pre>
+</p></li><li><span>Configure AAA local authentication. Set the local user name to <strong>user1-huawei</strong>, password to <strong>YsHsjx_202206</strong>, and privilege level to 3.</span><p><pre class="screen">[DeviceA] <strong>aaa</strong>
+[DeviceA-aaa] <strong>local-user user1-huawei password irreversible-cipher </strong><strong>YsHsjx_202206</strong>
+[DeviceA-aaa] <strong>local-user user1-huawei service-type ssh</strong>
+<span>Warning: If the service type of local users is configured multiple times, the new configuration overwrites the previous one. The new configuration may cause local user authentication to fail. Continue? [Y/N]:<strong id="EN-US_TASK_0000002224083313__en-us_task_0000001512836118_b196618176411">y</strong> </span>
+[DeviceA-aaa] <strong>local-user user1-huawei privilege level 3</strong>
+<span>Warning: This operation may affect online users and will change the user privilege level, Continue? [Y/N]:<strong id="EN-US_TASK_0000002224083313__en-us_task_0000001512836118_b184302356410">y</strong></span>
+[DeviceA-aaa] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000002224083313__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <span><strong>display radius-server configuration template</strong> <i><span class="varname">template-name</span></i></span> command on <span class="keyword">DeviceA</span> to check the RADIUS server template configuration. The command output shows that the configuration meets the requirements.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>] <strong>display radius-server configuration template shiva</strong>
+  ------------------------------------------------------------------------------
+  Server-template-name          :  shiva
+  Server-template-index         :  14                                      
+  Protocol-version              :  standard
+  Traffic-unit                  :  B
+  Shared-secret-key             :  ****************
+  Group-filter                  :  class  
+  Timeout-interval(in second)   :  5
+  Retransmission                :  2
+  EndPacketSendTime             :  0
+  Dead time(in minute)          :  5
+  Domain-included               :  NO
+  NAS-IP-Address                :  0.0.0.0
+  Calling-station-id MAC-format :  xxxx-xxxx-xxxx
+  Called-station-id MAC-format  :  XX-XX-XX-XX-XX-XX
+<span>  NAS-Port-ID format            :  New </span>
+  Service-type                  :  - 
+<span>  NAS-IPv6-Address              :  ::</span>
+  Server algorithm              :  master-backup           
+  Detect-interval(in second)    :  60     
+  Detect up-server(in second)   :  0              
+  Detect timeout(in second)     :  3                               
+  Chargeable-user-identity      :  Not Support             
+  CUI Not reject                :  No               
+  Force framed-ip-addr Attr     :  No 
+  Detect-interval(in second)    :  60 
+  Authentication Server 1       :  10.7.66.66     Port:2083  Weight:80  <span>[up]</span>
+                                   Vrf:- 
+                                   Source Interface:NULL                        
+                                   Source IP: ::
+                                   Shared-key: -
+                                   Down time left: -
+                                   Dtls-Policy name: huawei
+  Accounting Server     1       :  10.7.66.66     Port:1813  Weight:80  <span>[<span>up</span>]</span>
+                                   Vrf:- 
+                                   Source Interface:NULL                        
+                                   Source IP: ::
+                                   Shared-key: -
+                                   Down time left: -
+                                   Dtls-Policy name: huawei
+  ------------------------------------------------------------------------------ </pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><p><span class="keyword">DeviceA</span></p>
+<pre class="screen">#
+pki realm abcd  
+#
+sysname <span class="keyword">DeviceA</span>
+#
+#
+dtls policy huawei
+ pki-domain abcd
+#
+radius-server template shiva
+ radius-server authentication 10.7.66.66 2083 weight 80 dtls-policy huawei
+ radius-server accounting 10.7.66.66 2083 weight 80 dtls-policy huawei
+#
+aaa
+ authentication-scheme auth
+  authentication-mode radius local
+ accounting-scheme abc
+  accounting-mode radius
+ domain huawei
+  authentication-scheme auth
+  accounting-scheme abc
+  radius-server shiva
+ local-user user1-huawei password irreversible-cipher $1d$OwseVRh@LH}ZeTBm$1nH4$ab&gt;d(N{-%0!ab48y=Ic*xEUR4pVhR2"9-<font style="font-size:8pt" Face="Courier New" >~</font>,$
+ local-user user1-huawei privilege level 3
+ local-user user1-huawei service-type ssh   
+#
+domain huawei admin
+# 
+vlan batch 10 20
+#
+interface Vlanif10
+ ip address 10.1.1.2 255.255.255.0
+#
+interface Vlanif20
+ ip address 10.1.6.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span> 
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+#
+interface <span>10GE</span><span>0/0/2</span> 
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 20
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../galaxy_aaa_cfg_0056.html">Configuration Examples for AAA
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../galaxy_aaa_cfg_0061.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../dc/dc_cfg_aaa_1031.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding Online Signature Database Update">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_update_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="security_update_cfg_0009.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Signature Database Update">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Signature Database Update">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="Signature Database Update">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="Signature Database Update">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001512688406">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding Online Signature Database Update</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001512688406"></a><a name="EN-US_CONCEPT_0000001512688406"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding Online Signature Database Update</h1>
+<div><div class="section"><h4 class="sectiontitle">Methods for Online Signature Database Update</h4><p>If configured to do so, the device can obtain the latest version of the signature database file from the update server at the Huawei intelligent security center through the Internet, and then perform an online signature database update, as shown in <a href="#EN-US_CONCEPT_0000001512688406__fig443112311133">Figure 1</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001512688406__fig443112311133"><a name="EN-US_CONCEPT_0000001512688406__fig443112311133"></a><a name="fig443112311133"></a><span class="figcap"><b>Figure 1 </b>Online signature database update</span><br><span><img id="EN-US_CONCEPT_0000001512688406__image1643122310138" src="figure/en-us_image_0000002096990737.png"></span></div>
+<p></p>
+<div class="p">Online update is classified into automatic online update and manual online update. The two modes use the same signature database download address and update process. The differences between the two modes are as follows:<ul><li>In automatic online update function, the device automatically connects to the update server at the Huawei Intelligent Security Center at a specified update interval to check for a newer version of the signature database file. If a newer version is found, the device automatically downloads it and updates the local signature database. Within 24 hours of the device starting for the first time, it attempts to update the signature database every five minutes until the current signature database version is the latest.</li><li>In manual online update mode, the administrator manually connects the device to the update server at the Huawei Intelligent Security Center to check for a newer version of the signature database file. If a newer version is found, the device automatically downloads it and updates the local signature database. Manual online update can be performed at any time.</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In a hot standby scenario, the active device immediately updates the signature database online after an active/standby switchover.</p>
+</div></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Online Signature Database Update Process</h4><div class="p">The update service at the Huawei Intelligent Security Center is provided together by the control server, download server, and release server. The functions of each server are as follows:<ul><li><p>Control server: The control server is used to allocate a download server to the device and manage the status of the download server. The default domain name of the control server is sec.huawei.com.</p>
+</li><li><p>Download server: The download servers are used to store signature database files. The download servers are deployed in different regions.</p>
+</li><li><p>Release server: The release server is used to distribute signature database files to the download server.</p>
+</li></ul>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The update environment in the Huawei Intelligent Security Center uses a distributed architecture and is known as the update server of the Huawei Intelligent Security Center. The device can update the signature database online only when it connects to the update server at the Huawei Intelligent Security Center. The device uses the domain name and IP address of the control server to connect to the update server.</p>
+</div></div>
+<p><a href="#EN-US_CONCEPT_0000001512688406__fig1597384015175">Figure 2</a> shows the online signature database update process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001512688406__fig1597384015175"><a name="EN-US_CONCEPT_0000001512688406__fig1597384015175"></a><a name="fig1597384015175"></a><span class="figcap"><b>Figure 2 </b>Online signature database update process</span><br><span><img class="vsd" src="figure/en-us_image_0000001564127653.png" width="NaN" height="NaN"></span></div>
+<p>The release server periodically distributes the latest signature database file to the download server, which then interacts with the device to update the signature database file. The interaction process is as follows:</p>
+<ol><li><p>The device connects to the control server and initiates a signature database update request for the IP address of a download server.</p>
+<p>The device connects to the control server using HTTPS and port 443. The request sent by the device contains the device model, version, ESN, signature database type, current signature database version, and country information (optional). The data is used only to identify the device and the country/region where the device is located (no personal data is involved). Data is encrypted during transmission and only Huawei is involved in the data processing.</p>
+</li><li><p>After receiving the request, the control server allocates the IP address of a download server to the device based on the information contained in the request.</p>
+<ul><li>If the country information is provided in the request, the control server preferentially allocates a download server in a region to which the device belongs.</li><li>If the country information is not provided in the request, the control server allocates a download server in a region to which the IP address of the device belongs.</li></ul>
+</li><li><p>The device connects to the download server using HTTPS and port 443 and requests to download a signature database file.</p>
+</li><li><p>After receiving the request, the download server sends the encrypted signature database file to the device.</p>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_update_cfg_0007.html">Configuring Online Signature Database Update
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_update_cfg_0009.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

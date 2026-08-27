@@ -1,0 +1,504 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Hub-Spoke (Single Link Between the Hub-PE and Hub-CE, Scenario 2)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0371.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0113.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001517926905">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Hub-Spoke (Single Link Between the Hub-PE and Hub-CE, Scenario 2)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001517926905"></a><a name="EN-US_TASK_0000001517926905"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Hub-Spoke (Single Link Between the Hub-PE and Hub-CE, Scenario 2)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001517926905__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001517926905__fig887918013429">Figure 1</a>, the communication between the Spoke-CEs is controlled by the Hub-CE at the central site. In other words, the traffic between Spoke-CEs is forwarded also through the Hub-CE, not only through the Hub-PE. The Hub-PE connects to the Hub-CE and Spoke-CE3 over one link each.</p>
+<div class="fignone" id="EN-US_TASK_0000001517926905__fig887918013429"><a name="EN-US_TASK_0000001517926905__fig887918013429"></a><a name="fig887918013429"></a><span class="figcap"><b>Figure 1 </b>Example 2 for configuring hub-spoke (single link between the Hub-PE and Hub-CE)</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1, interface 2, interface 3, and interface 4 represent <span>10GE</span> <span>0/0/1</span>, <span>10GE</span> <span>0/0/2</span>, <span>10GE</span> <span>0/0/3</span>, and <span>10GE</span> <span>0/0/4</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001466789900.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001517926905__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>Note the following during the configuration:</p>
+<ul><li><p>The import and export VPN targets configured on a Spoke-PE are different.</p>
+</li><li><p>A VPN instance (<strong>vpnhub</strong>) is created on the Hub-PE. The VPN targets received by <strong>vpnhub</strong> are the VPN targets advertised by the two Spoke-PEs; the VPN targets advertised by <strong>vpnhub</strong> are the VPN targets received by the two Spoke-PEs and are different from the VPN targets received by <strong>vpnhub</strong>.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001517926905__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Establish MP-IBGP peer relationships between the Hub-PE and Spoke-PEs. (There is no need to establish an MP-IBGP peer relationship or exchange VPN routing information between the two Spoke-PEs.)</p>
+</li><li><p>Create a VPN instance on each PE and configure pop-go on the Hub-PE.</p>
+</li><li><p>Configure EBGP connections between CEs and PEs. Configure the Hub-CE to advertise the default route to the Hub-PE.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001517926905__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IGP on the backbone network for the Hub-PE and Spoke-PEs to communicate.</span><p><p>OSPF is used as IGP in this example. For detailed configurations, see Configuration Scripts.</p>
+<p>After the configuration is complete, OSPF neighbor relationships are established between the Hub-PE and Spoke-PEs. Run the <strong>display ospf peer</strong> command. The command output shows that the neighbor status is <strong>Full</strong>. Run the <strong>display ip routing-table</strong> command. The command output shows that the Hub-PE and Spoke-PEs have learned the routes to each other's loopback interface.</p>
+</p></li><li><span>Configure basic MPLS capabilities and MPLS LDP to establish LDP LSPs on the backbone network.</span><p><p>For detailed configurations, see Configuration Scripts.</p>
+<p>After the configuration is complete, LDP peer relationships are established between the Hub-PE and Spoke-PEs. Run the <strong>display mpls ldp session</strong> command on each device. The command output shows that <strong>Session State</strong> is <strong>Operational</strong>.</p>
+</p></li><li><span>Configure a VPN instance on each PE,<span> enable the IPv4 address family for the instance,</span> and bind the interface that connects each PE to a CE to the VPN instance on that PE.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The import VPN target list of a VPN instance on the Hub-PE must contain the export VPN targets of all Spoke-PEs.</p>
+<p>The export VPN target list of the other VPN instance on the Hub-PE must contain the import VPN targets of all Spoke-PEs.</p>
+</div></div>
+<p># Configure Spoke-PE1.</p>
+<pre class="screen">&lt;Spoke-PE1&gt; <strong>system-view</strong>
+[Spoke-PE1] <strong>ip vpn-instance vpna</strong>
+[Spoke-PE1-vpn-instance-vpna] <strong>ipv4-family</strong>
+[Spoke-PE1-vpn-instance-vpna-af-ipv4] <strong>route-distinguisher 100:1</strong>
+[Spoke-PE1-vpn-instance-vpna-af-ipv4] <strong>vpn-target 100:1 export-extcommunity</strong>
+[Spoke-PE1-vpn-instance-vpna-af-ipv4] <strong>vpn-target 200:1 import-extcommunity</strong>
+[Spoke-PE1-vpn-instance-vpna-af-ipv4] <strong>quit</strong>
+[Spoke-PE1-vpn-instance-vpna] <strong>quit</strong>
+[Spoke-PE1] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[Spoke-PE1-<span>10GE</span><span>0/0/1</span>] <strong>ip binding vpn-instance vpna</strong>
+[Spoke-PE1-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.1.1.2 24</strong>
+[Spoke-PE1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure Spoke-PE2.</p>
+<pre class="screen">&lt;Spoke-PE2&gt; <strong>system-view</strong>
+[Spoke-PE2] <strong>ip vpn-instance vpna</strong>
+[Spoke-PE2-vpn-instance-vpna] <strong>ipv4-family</strong>
+[Spoke-PE2-vpn-instance-vpna-af-ipv4] <strong>route-distinguisher 100:3</strong>
+[Spoke-PE2-vpn-instance-vpna-af-ipv4] <strong>vpn-target 100:1 export-extcommunity</strong>
+[Spoke-PE2-vpn-instance-vpna-af-ipv4] <strong>vpn-target 200:1 import-extcommunity</strong>
+[Spoke-PE2-vpn-instance-vpna-af-ipv4] <strong>quit</strong>
+[Spoke-PE2-vpn-instance-vpna] <strong>quit</strong>
+[Spoke-PE2] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[Spoke-PE2-<span>10GE</span><span>0/0/1</span>] <strong>ip binding vpn-instance vpna</strong>
+[Spoke-PE2-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.4.1.2 24</strong>
+[Spoke-PE2-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure the Hub-PE.</p>
+<pre class="screen">&lt;Hub-PE&gt; <strong>system-view</strong>
+[Hub-PE] <strong>ip ip-prefix defaultip index 10 permit 0.0.0.0 0</strong>
+[Hub-PE] <strong>route-policy policy_in permit node 1</strong>
+[Hub-PE-route-policy] <strong>if-match ip-prefix defaultip</strong>
+[Hub-PE-route-policy] <strong>quit</strong>
+[Hub-PE] <strong>route-policy policy_in deny node 2</strong>
+[Hub-PE-route-policy] <strong>quit</strong>
+[Hub-PE] <strong>ip vpn-instance vpnhub</strong>
+[Hub-PE-vpn-instance-vpnhub] <strong>ipv4-family</strong>
+[Hub-PE-vpn-instance-vpnhub-af-ipv4] <strong>route-distinguisher 100:21</strong>
+[Hub-PE-vpn-instance-vpnhub-af-ipv4] <strong>export route-policy policy_in</strong>
+[Hub-PE-vpn-instance-vpnhub-af-ipv4] <strong>vpn-target 200:1 export-extcommunity</strong>
+[Hub-PE-vpn-instance-vpnhub-af-ipv4] <strong>vpn-target 100:1 import-extcommunity</strong>
+[Hub-PE-vpn-instance-vpnhub-af-ipv4] <strong>apply-label per-route pop-go</strong>
+[Hub-PE-vpn-instance-vpnhub-af-ipv4] <strong>quit</strong>
+[Hub-PE-vpn-instance-vpnhub] <strong>quit</strong>
+[Hub-PE] <strong>interface <span>10GE</span><span>0/0/3</span></strong>
+[Hub-PE-<span>10GE</span><span>0/0/3</span>] <strong>ip binding vpn-instance vpnhub</strong>
+[Hub-PE-<span>10GE</span><span>0/0/3</span>] <strong>ip address 10.2.1.2 24</strong>
+[Hub-PE-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[Hub-PE] <strong>ip vpn-instance vpna</strong>
+[Hub-PE-vpn-instance-vpna] <strong>ipv4-family</strong>
+[Hub-PE-vpn-instance-vpna-af-ipv4] <strong>route-distinguisher 100:3</strong>
+[Hub-PE-vpn-instance-vpna-af-ipv4] <strong>vpn-target 100:1 export-extcommunity</strong>
+[Hub-PE-vpn-instance-vpna-af-ipv4] <strong>vpn-target 200:1 import-extcommunity</strong>
+[Hub-PE-vpn-instance-vpna-af-ipv4] <strong>quit</strong>
+[Hub-PE-vpn-instance-vpna] <strong>quit</strong>
+[Hub-PE] <strong>interface <span>10GE</span><span>0/0/4</span></strong>
+[Hub-PE-<span>10GE</span><span>0/0/4</span>] <strong>ip binding vpn-instance vpna</strong>
+[Hub-PE-<span>10GE</span><span>0/0/4</span>] <strong>ip address 10.3.1.2 24</strong>
+[Hub-PE-<span>10GE</span><span>0/0/4</span>] <strong>quit</strong></pre>
+<p># Configure IP addresses for interfaces on CEs, as shown in <a href="#EN-US_TASK_0000001517926905__fig887918013429">Figure 1</a>. For detailed configurations, see Configuration Scripts.</p>
+<p>After completing the configuration, run the <strong>display ip vpn-instance verbose</strong> command on each PE to check the VPN instance configurations. Each PE can ping its connected CEs using the <strong>ping -vpn-instance</strong> <em>vpn-name ip-address</em> command.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If a PE has multiple interfaces bound to the same VPN instance, use the <strong>-a</strong> <em>source-ip-address</em> parameter to specify a source IP address when running the <strong>ping -vpn-instance</strong> <em>vpn-instance-name</em> <strong>-a</strong> <em>source-ip-address dest-ip-address</em> command to ping the CE connected to the remote PE. If the source IP address is not specified, the ping operation may fail.</p>
+</div></div>
+</p></li><li><span>Establish EBGP peer relationships between PEs and CEs to import VPN routes.</span><p><p># Configure Spoke-CE1.</p>
+<pre class="screen">[Spoke-CE1] <strong>interface loopback 1</strong>
+[Spoke-CE1-Loopback1] <strong>ip address 11.11.11.11 32</strong>
+[Spoke-CE1-Loopback1] <strong>quit</strong>
+[Spoke-CE1] <strong>bgp 65410</strong>
+[Spoke-CE1-bgp] <strong>peer 10.1.1.2 as-number 100</strong>
+[Spoke-CE1-bgp] <strong>network 11.11.11.11 32</strong>
+[Spoke-CE1-bgp] <strong>quit</strong></pre>
+<p># Configure Spoke-PE1.</p>
+<pre class="screen">[Spoke-PE1] <strong>bgp 100</strong>
+[Spoke-PE1-bgp] <strong>ipv4-family vpn-instance vpna</strong>
+[Spoke-PE1-bgp-vpna] <strong>peer 10.1.1.1 as-number 65410</strong>
+[Spoke-PE1-bgp-vpna] <strong>quit</strong>
+[Spoke-PE1-bgp] <strong>quit</strong></pre>
+<p># Configure Spoke-CE2.</p>
+<pre class="screen">[Spoke-CE2] <strong>interface loopback 1</strong>
+[Spoke-CE2-Loopback1] <strong>ip address 22.22.22.22 32</strong>
+[Spoke-CE2-Loopback1] <strong>quit</strong>
+[Spoke-CE2] <strong>bgp 65420</strong>
+[Spoke-CE2-bgp] <strong>peer 10.4.1.2 as-number 100</strong>
+[Spoke-CE2-bgp] <strong>network 22.22.22.22 32</strong>
+[Spoke-CE2-bgp] <strong>quit</strong></pre>
+<p># Configure Spoke-PE2.</p>
+<pre class="screen">[Spoke-PE2] <strong>bgp 100</strong>
+[Spoke-PE2-bgp] <strong>ipv4-family vpn-instance vpna</strong>
+[Spoke-PE2-bgp-vpna] <strong>peer 10.4.1.1 as-number 65420</strong>
+[Spoke-PE2-bgp-vpna] <strong>quit</strong>
+[Spoke-PE2-bgp] <strong>quit</strong></pre>
+<p># Configure the Hub-CE.</p>
+<pre class="screen">[Hub-CE] <strong>interface loopback 1</strong>
+[Hub-CE-Loopback1] <strong>ip address 33.33.33.33 32</strong>
+[Hub-CE-Loopback1] <strong>quit</strong>
+[Hub-CE] <strong>bgp 65430</strong>
+[Hub-CE-bgp] <strong>peer 10.2.1.2 as-number 100</strong>
+[Hub-CE-bgp] <strong>peer 10.2.1.2 default-route-advertise</strong>
+[Hub-CE-bgp] <strong>network 33.33.33.33 32</strong>
+[Hub-CE-bgp] <strong>quit</strong></pre>
+<p># Configure the Hub-PE.</p>
+<pre class="screen">[Hub-PE] <strong>bgp 100</strong>
+[Hub-PE-bgp] <strong>ipv4-family vpn-instance vpnhub</strong>
+[Hub-PE-bgp-vpnhub] <strong>peer 10.2.1.1 as-number 65430</strong>
+[Hub-PE-bgp-vpnhub] <strong>quit</strong>
+[Hub-PE-bgp] <strong>ipv4-family vpn-instance vpna</strong>
+[Hub-PE-bgp-vpna] <strong>peer 10.3.1.1 as-number 65440</strong>
+[Hub-PE-bgp-vpna] <strong>quit</strong>
+[Hub-PE-bgp] <strong>quit</strong></pre>
+<p>After completing the configuration, run the <strong>display bgp vpnv4 all peer</strong> command on each PE. The command output shows that BGP peer relationships have been established between the PEs and CEs and are in <strong>Established</strong> state.</p>
+</p></li><li><span>Establish MP-IBGP peer relationships between the PEs.</span><p><p># Configure Spoke-PE1.</p>
+<pre class="screen">[Spoke-PE1] <strong>bgp 100</strong>
+[Spoke-PE1-bgp] <strong>peer 2.2.2.9 as-number 100</strong>
+[Spoke-PE1-bgp] <strong>peer 2.2.2.9 connect-interface loopback 1</strong>
+[Spoke-PE1-bgp] <strong>ipv4-family vpnv4</strong>
+[Spoke-PE1-bgp-af-vpnv4] <strong>peer 2.2.2.9 enable</strong>
+[Spoke-PE1-bgp-af-vpnv4] <strong>quit</strong></pre>
+<p># Configure Spoke-PE2.</p>
+<pre class="screen">[Spoke-PE2] <strong>bgp 100</strong>
+[Spoke-PE2-bgp] <strong>peer 2.2.2.9 as-number 100</strong>
+[Spoke-PE2-bgp] <strong>peer 2.2.2.9 connect-interface loopback 1</strong>
+[Spoke-PE2-bgp] <strong>ipv4-family vpnv4</strong>
+[Spoke-PE2-bgp-af-vpnv4] <strong>peer 2.2.2.9 enable</strong>
+[Spoke-PE2-bgp-af-vpnv4] <strong>quit</strong></pre>
+<p># Configure the Hub-PE.</p>
+<pre class="screen">[Hub-PE] <strong>bgp 100</strong>
+[Hub-PE-bgp] <strong>peer 1.1.1.9 as-number 100</strong>
+[Hub-PE-bgp] <strong>peer 1.1.1.9 connect-interface loopback 1</strong>
+[Hub-PE-bgp] <strong>peer 3.3.3.9 as-number 100</strong>
+[Hub-PE-bgp] <strong>peer 3.3.3.9 connect-interface loopback 1</strong>
+[Hub-PE-bgp] <strong>ipv4-family vpnv4</strong>
+[Hub-PE-bgp-af-vpnv4] <strong>peer 1.1.1.9 enable</strong>
+[Hub-PE-bgp-af-vpnv4] <strong>peer 3.3.3.9 enable</strong>
+[Hub-PE-bgp-af-vpnv4] <strong>quit</strong></pre>
+<p>After completing the configuration, run the <strong>display bgp peer</strong> or <strong>display bgp vpnv4 all peer</strong> command on PEs. The command output shows that BGP peer relationships have been established between PEs and are in the <strong>Established</strong> state.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001517926905__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After completing the configuration, configure Spoke-CEs to ping each other. The command output shows that the Spoke-CEs can ping each other.</p>
+<p>The following example uses the command output on Spoke-CE1.</p>
+<pre class="screen">&lt;Spoke-CE1&gt; <strong>ping -a 11.11.11.11 22.22.22.22</strong>
+ PING 22.22.22.22: 56  data bytes, press CTRL_C to break
+    Reply from 22.22.22.22: bytes=56 Sequence=1 ttl=250ime=80 ms
+    Reply from 22.22.22.22: bytes=56 Sequence=2 ttl=250ime=129 ms
+    Reply from 22.22.22.22: bytes=56 Sequence=3 ttl=250 time=132 ms
+    Reply from 22.22.22.22: bytes=56 Sequence=4 ttl=250 time=92 ms
+    Reply from 22.22.22.22: bytes=56 Sequence=5 ttl=250 time=126 ms
+  --- 22.22.22.22 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 80/111/132 ms </pre>
+<p>Run the <strong>display bgp routing-table</strong> command on each Spoke-CE. The command output shows BGP routing table information.</p>
+<p>The following example uses the command output on Spoke-CE1.</p>
+<pre class="screen">&lt;Spoke-CE1&gt; <strong>display bgp routing-table</strong>
+
+ BGP Local router ID is 10.1.1.1
+ Status codes: * - valid, &gt; - best, d - damped, x - best external, a - add path,
+               h - history,  i - internal, s - suppressed, S - Stale
+               Origin : i - IGP, e - EGP, ? - incomplete
+ RPKI validation codes: V - valid, I - invalid, N - not-found
+
+
+ Total Number of Routes: 2 
+        Network            NextHop                       MED        LocPrf    PrefVal Path/Ogn
+
+ *&gt;     0.0.0.0/0          10.1.1.2                                             0      100 65430i
+ *&gt;     11.11.11.11/32     0.0.0.0                        0                     0       i</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001517926905__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>Spoke-CE1</p>
+<pre class="screen">#
+sysname Spoke-CE1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+interface Loopback 1
+ ip address 11.11.11.11 255.255.255.255
+#
+bgp 65410
+ peer 10.1.1.2 as-number 100
+ #
+ ipv4-family unicast
+  network 11.11.11.11 255.255.255.255
+  peer 10.1.1.2 enable
+#
+return</pre>
+</li><li><p>Spoke-PE1</p>
+<pre class="screen">#
+sysname Spoke-PE1
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 100:1
+  vpn-target 100:1 export-extcommunity
+  vpn-target 200:1 import-extcommunity
+#
+mpls lsr-id 1.1.1.9
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip binding vpn-instance vpna
+ ip address 10.1.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 20.1.1.1 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface LoopBack1
+ ip address 1.1.1.9 255.255.255.255
+#
+bgp 100
+ peer 2.2.2.9 as-number 100
+ peer 2.2.2.9 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 2.2.2.9 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 2.2.2.9 enable
+#
+ ipv4-family vpn-instance vpna
+  peer 10.1.1.1 as-number 65410
+#
+ospf 1
+ area 0.0.0.0
+  network 20.1.1.0 0.0.0.255
+  network 1.1.1.9 0.0.0.0
+#
+return</pre>
+</li><li><p>Spoke-PE2</p>
+<pre class="screen">#
+sysname Spoke-PE2
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 100:3
+  vpn-target 100:1 export-extcommunity
+  vpn-target 200:1 import-extcommunity
+#
+mpls lsr-id 3.3.3.9
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip binding vpn-instance vpna
+ ip address 10.4.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 11.1.1.1 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface LoopBack1
+ ip address 3.3.3.9 255.255.255.255
+#
+bgp 100
+ peer 2.2.2.9 as-number 100
+ peer 2.2.2.9 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 2.2.2.9 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 2.2.2.9 enable
+#
+ ipv4-family vpn-instance vpna
+  peer 10.4.1.1 as-number 65420
+#
+ospf 1
+ area 0.0.0.0
+  network 3.3.3.9 0.0.0.0
+  network 11.1.1.0 0.0.0.255
+#
+return</pre>
+</li><li>Spoke-CE2<pre class="screen">#
+sysname Spoke-CE2
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.4.1.1 255.255.255.0
+#
+interface Loopback 1
+ ip address 22.22.22.22 255.255.255.255
+#
+bgp 65420
+ peer 10.4.1.2 as-number 100
+ #
+ ipv4-family unicast
+  network 22.22.22.22 255.255.255.255
+  peer 10.4.1.2 enable
+#
+return</pre>
+</li><li>Spoke-CE3<pre class="screen">#
+sysname Spoke-CE3
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.3.1.1 255.255.255.0
+#
+interface Loopback 1
+ ip address 44.44.44.44 255.255.255.255
+#
+bgp 65440
+ peer 10.3.1.2 as-number 100
+ #
+ ipv4-family unicast
+  network 44.44.44.44 255.255.255.255
+  peer 10.3.1.2 enable
+#
+return</pre>
+</li><li>Hub-CE<pre class="screen">#
+sysname Hub-CE
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.2.1.1 255.255.255.0
+#
+interface LoopBack1
+ ip address 33.33.33.33 255.255.255.255
+#
+bgp 65430
+ peer 10.2.1.2 as-number 100
+ #
+ ipv4-family unicast
+  network 33.33.33.33 255.255.255.255
+  peer 10.2.1.2 enable
+  peer 10.2.1.2 default-route-advertise
+#               
+return</pre>
+</li><li>Hub-PE<pre class="screen">#
+sysname Hub-PE
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 100:3
+  vpn-target 100:1 export-extcommunity
+  vpn-target 200:1 import-extcommunity
+#
+ip vpn-instance vpnhub
+ ipv4-family
+  route-distinguisher 100:21
+  export route-policy policy_in
+  apply-label per-route pop-go
+  vpn-target 200:1 export-extcommunity
+  vpn-target 100:1 import-extcommunity
+#
+mpls lsr-id 2.2.2.9
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 20.1.1.2 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 11.1.1.2 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip binding vpn-instance vpnhub
+ ip address 10.2.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/4</span>
+ ip binding vpn-instance vpna
+ ip address 10.3.1.2 255.255.255.0
+#
+interface LoopBack1
+ ip address 2.2.2.9 255.255.255.255
+#
+bgp 100
+ peer 1.1.1.9 as-number 100
+ peer 1.1.1.9 connect-interface LoopBack1
+ peer 3.3.3.9 as-number 100
+ peer 3.3.3.9 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 1.1.1.9 enable
+  peer 3.3.3.9 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 1.1.1.9 enable
+  peer 3.3.3.9 enable
+#
+ ipv4-family vpn-instance vpna
+  peer 10.3.1.1 as-number 65440
+ ipv4-family vpn-instance vpnhub
+  peer 10.2.1.1 as-number 65430
+#
+ospf 1
+ area 0.0.0.0
+  network 2.2.2.9 0.0.0.0
+  network 20.1.1.0 0.0.0.255
+  network 11.1.1.0 0.0.0.255
+#
+ip ip-prefix defaultip index 10 permit 0.0.0.0 0
+#
+route-policy policy_in permit node 1
+ if-match ip-prefix defaultip
+#
+route-policy policy_in deny node 2
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0371.html">Configuration Examples for IPv4 L3VPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0113.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

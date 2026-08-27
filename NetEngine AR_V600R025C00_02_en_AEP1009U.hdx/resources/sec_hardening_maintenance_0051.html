@@ -1,0 +1,89 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="AAA User Management">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0050.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513171774">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>AAA User Management</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513171774"></a><a name="EN-US_TASK_0000001513171774"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">AAA User Management</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513171774__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>AAA, short for authentication, authorization, and accounting, provides the following types of security services:</p>
+<ul><li><p>Authentication: determines which users can access the network.</p>
+</li><li><p>Authorization: authorizes users to access specific services.</p>
+</li><li><p>Accounting: records network resource usage.</p>
+</li></ul>
+<p>AAA is closely related to services and its configuration is flexible.</p>
+<p>Depending on the location where user information (including the usernames, passwords, and attributes) is stored, AAA authentication is classified as either remote or local authentication.</p>
+<ul><li>Remote authentication: User information is configured on the remote authentication server. Remote authentication over Remote Authentication Dial-In User Service (RADIUS) or Huawei Terminal Access Controller Access Control System (HWTACACS) is supported. HWTACACS is an enhancement of TACACS (RFC 1492).</li><li>Local authentication: User information is configured on the local device, which functions as an authentication server and provides a global default domain for administrators. For example, if the username entered by an administrator for authentication during Telnet or SSH login does not contain a domain name, the device considers that the administrator belongs to the global default domain.</li></ul>
+<p>An attacker may attempt to obtain system administrator login rights by traversing key information, such as usernames and passwords.</p>
+<p>Account locking can be configured to defend against such common username and password attacks and cracking attempts. Specifically, set the maximum number of consecutive authentication failures allowed and the re-authentication interval to prevent unauthorized user logins. After account locking is configured, a user is blocked for a period of time after a specified number of consecutive login failures. This helps reduce the attempt success ratio of attackers and enhance device security.</p>
+<p>In addition, to enhance administrator account security, you are advised to select an irreversible encryption algorithm when configuring the administrator password and configure a service type for each user to prevent incorrect use of administrator and common user accounts.</p>
+<p><strong>Administrator security</strong></p>
+<ul><li>Check whether there are unused administrator accounts in the system. If so, you are advised to delete these accounts to reduce attacks.</li><li>Check whether account permissions have been minimized and whether accounts are prevented from accessing unnecessary resources to ensure information security.</li><li>Assign exclusive accounts for administrators with different maintenance roles to avoid account sharing.</li><li>Check and audit account logins and operation logs.</li></ul>
+<h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513171774__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the AAA view.</span><p><pre class="screen"><b><span class="cmdqueryname">aaa</span></b></pre>
+</p></li><li><span>Enable the system to lock out administrators that fail remote AAA authentication, and configure the authentication retry interval, maximum number of consecutive failed password attempts, and account lockout duration.</span><p><pre class="screen"><strong>administrator remote authen-fail</strong><strong> retry-interval </strong><em>retry-interval </em><strong>retry-time </strong><em>retry-time </em><strong>block-time</strong><em> block-time</em></pre>
+<p>By default, the account locking function is enabled for administrators who fail remote authentication. When users fail remote authentication, the authentication retry interval defaults to 5 minutes, the maximum number of consecutive failed password attempts defaults to 30, and the account lockout duration defaults to 5 minutes.</p>
+</p></li><li><span>Enable the system to lock accounts that fail local authentication, and configure the authentication retry interval, maximum number of consecutive failed password attempts, and account lockout duration.</span><p><pre class="screen"><strong>local-aaa-user wrong-password</strong> <strong><span>retry-interval</span></strong> <i><span class="varname">retry-interval</span></i> <strong><span>retry-time</span></strong> <i><span class="varname">retry-time</span></i> <strong><span>block-time</span></strong> <i><span class="varname">block-time</span></i></pre>
+<p>By default, the function of locking local accounts is enabled. Set the authentication retry interval to 5 minutes, maximum number of consecutive failed password attempts to 3, and account lockout duration to 5 minutes.</p>
+</p></li><li><span>If the administrator logs in to the device in AAA mode, you need to create a local administrator and configure the login mode (service-type).</span><p><p>For security purposes, you are advised to use a secure login mode and set the service type to SSH, terminal, or HTTP (corresponding to HTTPS).</p>
+<p>Insecure login modes are not recommended, corresponding to Telnet and FTP service types.</p>
+<pre class="screen"><strong>local-user </strong><em>user-name</em><strong> service-type</strong> { <strong>http</strong> | <strong>ssh</strong> | <strong>terminal</strong> }</pre>
+<p>By default, the <strong>service-type</strong> of a local access user is <strong>none</strong>. That is, all login modes are disabled.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513171774__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <b><span class="cmdqueryname">display aaa configuration</span></b> command.</p>
+<ul><li>Check the <strong>Remote-user block retry-interval</strong>, <strong>Remote-user block retry-time</strong>, and <strong>Remote-user block time</strong> fields in the command output to view the authentication retry interval, maximum number of consecutive failed password attempts, and account lockout duration when remote users fail authentication.</li><li>Check the <strong>Local-user block retry-interval</strong>, <strong>Local-user block retry-time</strong>, and <strong>Local-user block time</strong> fields in the command output to view the authentication retry interval, maximum number of consecutive failed password attempts, and account lockout duration when local users fail authentication.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0050.html">Access Authentication Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

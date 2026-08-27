@@ -1,0 +1,107 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Configuring the Traffic Steering Mode in a Policy">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_qos_spr_cfg_0010.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001513155446.html">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_qos_spr_cfg_0014.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Smart Policy Routing">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Smart Policy Routing">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="Smart Policy Routing">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513035478">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Configuring the Traffic Steering Mode in a Policy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513035478"></a><a name="EN-US_TASK_0000001513035478"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Configuring the Traffic Steering Mode in a Policy</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513035478__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>SPR supports two traffic steering modes: preferential occupation and load balancing.</p>
+<ul><li>Preferential occupation: The connection with the best quality on TNs is selected for traffic forwarding.</li></ul>
+<ul><li>Load balancing: Connections on multiple TNs with the same priority load balance traffic.</li></ul>
+<p>On the network shown in <a href="#EN-US_TASK_0000001513035478__fig839715573019">Figure 1</a>, Site1 is the local site, and Site2 is the remote site. Traffic is sent from Site1 to Site2. The traffic steering mode is load balancing, and Connection1 through Connection5 are selected for traffic steering. The outbound bandwidth values of TNP1, TNP2, TNP5 are 600 Mbit/s, 400 Mbit/s, and 50 Mbit/s, respectively. The inbound bandwidth values of TNP3, TNP4, and TNP6 are 80 Mbit/s, 20 Mbit/s, and 20 Mbit/s, respectively. The principles for calculating the bandwidth weights of connections are as follows:</p>
+<ol><li>Connections are grouped by TNP, meaning that connections with overlapping TNPs are added to the same group. The grouping rules are as follows: First, the system finds an ungrouped connection, for example, Connection1. The system creates group A for Connection1 and searches for an ungrouped connection that has the same source or destination TNP as Connection1. The system finds that Connection2 has the same source TNP as Connection1 and Connection3 has the same destination TNP as Connection1, and so adds them to group A. Similarly, the system searches for an ungrouped connection that has the same source or destination TNP as Connection2. The system finds that Connection4 has the same destination TNP as Connection2, and so adds it to group A. When the system searches for ungrouped connections that have the same source or destination TNP as Connection3 and Connection4, no such ungrouped connection is found. Adding connections to group A is complete. Similarly, Connection5 is added to group B. To sum up, Connection1, Connection2, Connection3, and Connection4 are added to one group (group A), and Connection5 is added to another group (group B).</li><li>The system determines the available bandwidth of a group and uses the smaller value between the total inbound bandwidth and the total outbound bandwidth. The total outbound bandwidth of group A is the sum of the outbound bandwidth values of TNP1 and TNP2, which is 1000 Mbit/s. The total inbound bandwidth of group A is the sum of the inbound bandwidth values of TNP3 and TNP4, which is 100 Mbit/s. Therefore, 100 Mbit/s is used as the available bandwidth of group A. The available bandwidth of group B, calculated in a similar way, is 20 Mbit/s.</li><li>The system determines the connection bandwidth ratio based on the inbound and outbound TNP bandwidth ratios. The bandwidth ratio of TNP1 is 600 Mbit/s/(600 Mbit/s + 400 Mbit/s) = 0.6, and the bandwidth ratio of TNP3 is 80 Mbit/s/(80 Mbit/s + 20 Mbit/s) = 0.8. Therefore, the bandwidth ratio of Connection1 enumerated by TNP1 and TNP3 is 0.6 x 0.8 = 0.48. The system determines the actual bandwidth weight of a connection based on the available bandwidth of the group and the bandwidth ratio of the connection. The actual bandwidth weight of Connection1 is 100 x 0.48 = 48. The actual bandwidth weights of Connection1, Connection2, Connection3, Connection4, and Connection5 are 48, 12, 32, 8, and 20, respectively. The sum of the weights is 120.</li></ol>
+<p>When the actual rate of traffic passing through the connections is 100 Mbit/s, the actual traffic allocated to Connection1 is 100 Mbit/s x 48/120 = 40 Mbit/s. Similarly, the actual traffic allocated to Connection2, Connection3, Connection4, and Connection5 is 10 Mbit/s, 26.6 Mbit/s, 6.7 Mbit/s, and 16.7 Mbit/s, respectively.</p>
+<div class="fignone" id="EN-US_TASK_0000001513035478__fig839715573019"><a name="EN-US_TASK_0000001513035478__fig839715573019"></a><a name="fig839715573019"></a><span class="figcap"><b>Figure 1 </b>Calculating the bandwidth weights of connections</span><br><span><img src="../images/en-us_image_0000002212258654.png"></span></div>
+<p>For TNs with different priorities, the preferential occupation mode is recommended. For TNs with the same priority, the load balancing mode is recommended, as this mode improves bandwidth utilization while ensuring service experience.</p>
+<p>When you configure the bandwidth threshold in a policy profile, link bandwidth thresholds, and application bandwidth thresholds, the traffic steering behavior varies according to the traffic steering mode:</p>
+<ul><li>Preferential occupation:<ul><li>Upper bandwidth threshold: the switchover threshold for traffic steering. When the bandwidth usage of a link (or application bandwidth usage of a link) exceeds the upper bandwidth threshold (or upper application bandwidth threshold), the connection corresponding to the link does not meet the traffic steering conditions. Traffic is then switched to the connection corresponding to another link that meets the conditions.</li><li>Lower bandwidth threshold: the switchback threshold for traffic steering. When the bandwidth usage of a link (or application bandwidth usage of a link) falls below the lower bandwidth threshold (or lower application bandwidth threshold), the link meets the traffic steering conditions again. If the switchback function is configured, traffic is switched back to the connection corresponding to the link.</li></ul>
+</li></ul>
+<ul><li>Load balancing:<ul><li>When the bandwidth usage of a link (or application bandwidth usage of a link) falls below the lower bandwidth threshold (or lower application bandwidth threshold), both existing and new flows can be transmitted over the link. (The existing and new flows are distinguished based on 5-tuple information. If the 5-tuple information remains unchanged, the flows are existing flows. Otherwise, the flows are new flows.)</li><li>When the bandwidth usage of a link (or application bandwidth usage of a link) is between the lower and upper bandwidth thresholds (or lower and upper application bandwidth thresholds), existing flows continue to be transmitted over the link and new flows are switched to a low-priority link.</li><li>When the bandwidth usage of a link (or application bandwidth usage of a link) exceeds the upper bandwidth threshold (or upper application bandwidth threshold), both existing and new flows are switched to a low-priority link.</li></ul>
+</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513035478__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the SPR configuration view.</span><p><pre class="screen"><b><span class="cmdqueryname">smart-policy-route</span></b></pre>
+</p></li><li><span>(Optional) Enable the function of calculating link quality based on bandwidth for SPR.</span><p><pre class="screen"><b><span class="cmdqueryname">link-quality based bandwidth enable</span></b></pre>
+<p>By default, the function of calculating link quality based on bandwidth is enabled. This function takes effect only in load balancing mode.</p>
+</p></li><li><span>Configure the bandwidth threshold for SPR.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">bandwidth-threshold</span></b> </strong><em><i><span class="varname">threshold-value</span></i></em></pre>
+</p><p><p>By default, the bandwidth threshold for SPR is 95%. This function takes effect only in load balancing mode.</p>
+</p></li><li><span>Enter the policy profile view.</span><p><pre class="screen"><b><span class="cmdqueryname">spr-policy</span></b> <b><span class="cmdqueryname">node</span></b> <i><span class="varname">node-index</span></i></pre>
+</p></li><li><span>Configure the traffic steering mode in the SPR policy.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">routing-mode</span></b> </strong>{ <strong><strong><span>path-prefer</span></strong></strong> | <strong><strong><span>load-balance</span></strong></strong> }</pre>
+</p><p><p>By default, the traffic steering mode in a policy is preferential occupation.</p>
+<p>When the traffic steering mode is set to load balancing, you need to run the <strong><b><span class="cmdqueryname">bandwidth</span></b> </strong>{ <strong>input</strong> | <strong>output</strong> } <em>bandwidth-value</em> command on the CPE to configure the outbound bandwidth of the TNP.</p>
+</p></li><li><span>Configure the bandwidth threshold in the policy profile.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">bandwidth-threshold</span></b> </strong>{<strong> <strong><span>lower-limit percentage</span></strong> </strong><em>lower-limit-percentage</em><strong> </strong>|<strong> <strong><span>upper-limit</span></strong></strong><strong><strong><span> percentage</span></strong> </strong><em>upper-limit-percentage</em> } *</pre>
+<p>By default, no bandwidth threshold is configured in a policy profile.</p>
+</p></li><li><span>(Optional) Configure the application priority of the policy profile.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">application-priority</span></b> </strong><em><i><span class="varname">priority</span></i></em></pre>
+<p>By default, the application priority of a policy profile is not configured. This function takes effect only in load balancing mode.</p>
+</p></li><li><span>(Optional) In SPR policy-based load balancing mode, configure the function of ignoring the bandwidth threshold for traffic. (After the bandwidth threshold is configured for the first time, perform this step if you want to ensure that the configuration takes effect only for subsequent traffic and not for previous traffic.)</span><p><pre class="screen"><b><span class="cmdqueryname">traffic-hold bandwidth-ignore enable</span></b></pre>
+<p>By default, the function of ignoring the bandwidth threshold for traffic is disabled in an SPR policy profile.</p>
+</p></li><li><span>Associate the policy with a link and enter the link configuration view.</span><p><pre class="screen"><b><span class="cmdqueryname">link transport-network </span></b><i><span class="varname">name</span></i> [ <strong><span>id</span></strong> <i><span class="varname">id</span></i> ]</pre>
+<p>By default, a policy is not associated with a link.</p>
+</p></li><li><span>Configure link bandwidth thresholds.</span><p><pre class="screen"><b><span class="cmdqueryname">link-bandwidth-threshold</span></b> <strong><span>lower-limit</span></strong> { <strong><span>percentage</span></strong> <i><span class="varname">lower-limit-percentage</span></i> | <strong><span>value</span></strong> <i><span class="varname">lower-limit-value</span></i> } <strong><span>upper-limit</span></strong> { <strong><span>percentage</span></strong> <i><span class="varname">upper-limit-percentage</span></i> | <strong><span>value</span></strong> <i><span class="varname">upper-limit-value</span></i> }</pre>
+<p>By default, no link bandwidth threshold is configured.</p>
+</p></li><li><span>Configure application bandwidth thresholds.</span><p><pre class="screen"><b><span class="cmdqueryname">application-bandwidth-threshold</span></b> <strong><span>lower-limit</span></strong> { <strong><span>percentage</span></strong> <i><span class="varname">lower-limit-percentage</span></i> | <strong><span>value</span></strong> <i><span class="varname">lower-limit-value</span></i> } <strong><span>upper-limit</span></strong> { <strong><span>percentage</span></strong> <i><span class="varname">upper-limit-percentage</span></i> | <strong><span>value</span></strong> <i><span class="varname">upper-limit-value</span></i> }</pre>
+<p>By default, no application bandwidth threshold is configured.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../galaxy_qos_spr_cfg_0010.html">Configuring an SPR Policy
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_task_0000001513155446.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../galaxy_qos_spr_cfg_0014.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

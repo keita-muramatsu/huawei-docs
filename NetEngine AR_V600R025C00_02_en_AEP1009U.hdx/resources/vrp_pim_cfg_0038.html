@@ -1,0 +1,89 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding PIM-SM Anycast RP">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_0037.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_0039.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001176743267">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding PIM-SM Anycast RP</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001176743267"></a><a name="EN-US_CONCEPT_0000001176743267"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding PIM-SM Anycast RP</h1>
+<div><p>Anycast rendezvous point (RP) allows you to configure multiple RPs with the same address in a PIM-SM domain and set up peer relationships between RPs. In this way, a multicast source can register to the closest RP, and receivers can join the closest RP. This alleviates burdens on a single RP, implements RP backup, and optimizes forwarding paths.</p>
+<p>In a traditional PIM-SM domain, each multicast group can be mapped to only one RP. When the network is overloaded or traffic congestion occurs, the following problems may occur: the RP is overburdened; route convergence is slow after the RP fails; the multicast forwarding path is not optimal. Currently, anycast RP can be implemented in a PIM-SM domain using Multicast Source Discovery Protocol (MSDP) or PIM anycast RP. When deploying a network, you can use either of the two solutions. It is not recommended that you use both solutions simultaneously. In a PIM-SM domain, MSDP and PIM cannot be used together to configure an anycast RP.</p>
+<div class="p">If anycast RP is implemented using PIM, you can also configure a device to advertise the data source information obtained from MSDP peers in another domain to peers in the local domain. PIM anycast RP applies to a single PIM-SM domain. To enable an RP to obtain the source and group information in another PIM-SM domain, you can use either of the following schemes:<ul><li><p>Set up an MSDP peer relationship between every anycast RP member in a PIM-SM domain and an RP in another PIM-SM domain.</p>
+</li><li><p>Set up MSDP peer relationships between some anycast RP members in a PIM-SM domain with the RP in another PIM-SM domain. When the members that have set up MSDP peer relationships receive MSDP SA messages, they convert the messages into Register messages and send them to those that do not set up MSDP peer relationships.</p>
+</li></ul>
+</div>
+<p>Anycast RP can be implemented in either of the preceding schemes. A receiver and multicast source each select the closest RPs to create RPTs. After receiving multicast data, the receiver DRs determine whether to trigger an SPT switchover. In this way, the optimal RP path and load sharing are implemented. The following describes how anycast RP is implemented using PIM.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176743267__fig_dc_vrp_multicast_feature_300109"><a name="EN-US_CONCEPT_0000001176743267__fig_dc_vrp_multicast_feature_300109"></a><a name="fig_dc_vrp_multicast_feature_300109"></a><span class="figcap"><b>Figure 1 </b>Typical networking diagram of implementing anycast RP using PIM</span><br><span><img class="vsd" src="figure/en-us_image_0000001176743309.png"></span></div>
+<div class="p">In a PIM-SM domain of the network shown in <a href="#EN-US_CONCEPT_0000001176743267__fig_dc_vrp_multicast_feature_300109">Figure 1</a>, multicast sources (Source1 and Source2) send multicast data to multicast group G, and Receiver1 and Receiver2 are members of group G. Perform the following operations to use PIM to implement anycast RP in the PIM-SM domain:<ul><li><p>Configure RP1 and RP2 and assign both the same RP address (address of a loopback interface). Assume that the RP address is 10.10.10.10.</p>
+</li><li><p>Set up a connectionless peer relationship between RP1 and RP2 using unique addresses. Assume that the local address of RP1 is 1.1.1.1 and the local address of RP2 is 2.2.2.2 in the peer relationship.</p>
+</li></ul>
+</div>
+<div class="p">The process of implementing anycast RP using PIM is as follows:<ol><li><div class="p">Receivers send <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300505">Join messages</a> to the closest RPs and build RPTs.<ul><li><p>U1 joins the RPT with RP1 as the root, and RP1 creates an (*, G) entry.</p>
+</li><li><p>U2 joins the RPT with RP2 as the root, and RP2 creates an (*, G) entry.</p>
+</li></ul>
+</div>
+</li><li><div class="p">Multicast sources register with the closest RPs.<ul><li><p>DR1 sends a <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register message</a> to RP1, and RP1 creates an (S1, G) entry. Multicast data from S1 reaches U1 along the RPT.</p>
+</li><li><p>DR2 sends a <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register message</a> to RP2, and RP2 creates an (S2, G) entry. Multicast data from S2 reaches U2 along the RPT.</p>
+</li></ul>
+</div>
+</li><li><div class="p">After receiving <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register messages</a> from the source DRs, the RPs re-encapsulate the <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register messages</a> and forward them to peers for multicast source information sharing.<ul><li><p>After receiving the (S1, G) <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register message</a> from DR1, RP1 replaces the source and destination addresses in the <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register message</a> with 1.1.1.1 and 2.2.2.2, respectively, and re-encapsulates the message and sends it to RP2. After RP2 receives the <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register message</a>, it detects that the message was sent from peer 1.1.1.1. In this case, RP2 processes the message without forwarding it to other peers.</p>
+</li><li><p>After receiving the (S2, G) <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register message</a> from DR2, RP2 replaces the source and destination addresses in the <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register message</a> with 2.2.2.2 and 1.1.1.1, respectively, and re-encapsulates the message and sends it to RP1. After RP1 receives the <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300503">Register message</a>, it detects that the message was sent from peer 2.2.2.2. In this case, RP1 processes the message without forwarding it to other peers.</p>
+</li></ul>
+</div>
+</li><li><div class="p">RPs join SPTs with the source DRs as the roots to obtain multicast data.<ul><li><p>RP1 sends a <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300505">Join message</a> to S2. Multicast data from S2 first reaches RP1 along the SPT and then reaches U1 along the RPT.</p>
+</li><li><p>RP2 sends a <a href="vrp_pim_cfg_0004.html#EN-US_CONCEPT_0000001130783604__section_dc_vrp_multicast_feature_300505">Join message</a> to S1. Multicast data from S1 reaches RP2 along the SPT and then reaches U2 along the RPT.</p>
+</li></ul>
+</div>
+</li><li><p>After receiving multicast data, the receiver DRs determine whether to trigger an SPT switchover.</p>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_pim_cfg_0037.html">Configuring PIM-SM Anycast RP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_pim_cfg_0039.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

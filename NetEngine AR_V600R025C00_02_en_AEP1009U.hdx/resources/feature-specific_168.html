@@ -1,0 +1,237 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring IS-IS Route Leaking">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_167.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_169.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001572235612">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring IS-IS Route Leaking</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001572235612"></a><a name="EN-US_TASK_0000001572235612"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring IS-IS Route Leaking</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001572235612__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_context423353958183118"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p1797728493183118">On the network shown in <a href="#EN-US_TASK_0000001572235612__en-us_task_0000001355819296_fig_dc_cfg_isisv4_008001">Figure 1</a>, IS-IS is configured on the six routers. DeviceA and DeviceB function as Level-1 routers. DeviceC and DeviceD function as Level-1–2 routers and belong to area 10. DeviceE and DeviceF function as Level-2 routers and belong to area 20. The cost of GE 1/0/0 on DeviceC is 40, and other interfaces use the default cost 10. It is required that routing information in the Level-2 area be leaked to the Level-1 area so that the route from DeviceA to DeviceF is selected as the optimal route.</p>
+<div class="fignone" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_fig_dc_cfg_isisv4_008001"><a name="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_fig_dc_cfg_isisv4_008001"></a><a name="en-us_task_0000001355819296_fig_dc_cfg_isisv4_008001"></a><span class="figcap"><b>Figure 1 </b>Configuring IS-IS route leaking</span><div class="note" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_note19608123113412"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p247215810330">In this example, interface 1, interface 2, and interface 3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_image2072255598183118" src="figure/en-us_image_0000001355979256.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001572235612__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_context58072256259"><h4 class="sectiontitle">Precautions</h4><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p2031124116257">To improve security, you are advised to configure IS-IS authentication. For details, see Configuring IS-IS Authentication. IS-IS interface authentication is used as an example. For details, see Example for Configuring Basic IS-IS Functions.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001572235612__1.3.3"></a><a name="1.3.3"></a>
+<div class="p" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_context1712084028183118"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="p" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p1292592503183118">The configuration roadmap is as follows:<ul id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_ul1750325821183118"><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li51993840183118">Assign an IP address to each interface and configure IS-IS on each device to implement network interworking.</li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li483950486183118">Configure DeviceA and DeviceB as Level-1 devices, and configure DeviceC and DeviceD as Level-1–2 devices in area 10. Configure DeviceE and DeviceF as Level-2 devices in area 20.</li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li1933750864183118">Set the cost of GE 1/0/0 on DeviceC to 40, and retain the default cost 10 on other interfaces.</li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li1369329804183118">Configure route leaking from the Level-2 area to the Level-1 area so that the route from DeviceA to DeviceF is selected as the optimal route.</li></ul>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001572235612__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_steps10132325172748"><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_step3792121612142"><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmd379271619147">Configure IPv4 addresses for interfaces on each routing device.</span><p><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p09961176214"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen5996171732119"><span class="keyword" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_keyword1999619179211">&lt;HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b5996111718211">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_keyword14483024162213">HUAWEI</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b1099715174214">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b1899720174216">interface </strong><strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b999673799214023"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b477726134818">ip address 192.168.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b399751772116">quit</strong></pre>
+<p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p14998141713211">The configurations of DeviceB, DeviceC, DeviceD, DeviceE, and DeviceF are similar to the configuration of DeviceA. For detailed configurations, see Configuration Scripts.</p>
+</p></li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_step15560153417818"><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmd1656013344818">Configure basic IS-IS functions on each device.</span><p><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p951727795214037"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen173447507278">[DeviceA] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b54015507272">isis 10</strong>
+[DeviceA-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b15402195052711">is-level level-1</strong>
+[DeviceA-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b44021750182719">network-entity 10.0000.0000.0001.00</strong>
+[DeviceA-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b2402105013271">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b184021650142712">interface </strong><strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b181674616442"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b34031508277">isis enable 10</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b940335072718">quit</strong></pre>
+<p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p22740840214037"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen523641132814">[DeviceB] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b112671418283">isis 10</strong>
+[DeviceB-isis-10] <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname162678113287">is-level</span></strong> <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname132671716286">level-1</span></strong>
+[DeviceB-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b1026817119285">network-entity 10.0000.0000.0002.00</strong>
+[DeviceB-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b026811122811">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b172713167445">interface </strong><strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b16271171615440"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname92696117284">isis</span></strong> <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname82691615287">enable</span></strong> <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname8269111102819">10</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname1826919111287">quit</span></strong></pre>
+<p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p416358224214037"># Configure DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen1125162124714">[DeviceC] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b6309102144712">isis 10</strong>
+[DeviceC-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b12309428472">network-entity 10.0000.0000.0003.00</strong>
+[DeviceC-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b1531012104719">quit</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b3241220204412">interface </strong><strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b8956152216443"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname131016224716">isis</span></strong> <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname16310420475">enable</span></strong> <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname12310132134712">10</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b1560116220183118">isis cost 40 level-2</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b631111244719">quit</strong></pre>
+<p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p1520634372214037"># Configure DeviceD.</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen610259154715">[DeviceD] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b181287984716">isis 10</strong>
+[DeviceD-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b51288914715">network-entity 10.0000.0000.0004.00</strong>
+[DeviceD-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b1212914964717">quit</strong>
+[DeviceD] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b172324617434">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceD-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b161301392471">isis enable 10</strong>
+[DeviceD-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b81306954720">quit</strong></pre>
+<p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p194664532476"># Configure DeviceE.</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen5466105312475">[DeviceE] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b9466135316478">isis 10</strong>
+[DeviceE-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b19466353144714">is-level level-2</strong>
+[DeviceE-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b546675319471">network-entity 20.0000.0000.0005.00</strong>
+[DeviceE-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b19466155394712">quit</strong>
+[DeviceE] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b7466195354713">interface </strong><strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b1846616530476"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceE-<span>10GE</span><span>0/0/1</span>] <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname24675531479">isis</span></strong> <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname13467753134715">enable</span></strong> <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname1346713539475">10</span></strong>
+[DeviceE-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b346775314715">quit</strong></pre>
+<p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p16467353174715"># Configure DeviceF.</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen864221525011">[DeviceF] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b36421615125015">isis 10</strong>
+[DeviceF-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b156422155504">is-level level-2</strong>
+[DeviceF-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b8642141585011">network-entity 20.0000.0000.0006.00</strong>
+[DeviceF-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b7642121519507">quit</strong>
+[DeviceF] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b8643141517507">interface </strong><strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b86431415195013"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceF-<span>10GE</span><span>0/0/1</span>] <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname15643615115016">isis</span></strong> <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname66431015185010">enable</span></strong> <strong><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmdparmname4643171516508">10</span></strong>
+[DeviceF-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b26431115195011">quit</strong></pre>
+<p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p14465325219">The configurations of <span>10GE</span><span>0/0/2</span> and <span>10GE</span><span>0/0/3</span> are the same as the configuration of <span>10GE</span><span>0/0/1</span>. For detailed configurations, see Configuration Scripts.</p>
+</p></li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_step4656124917598"><span id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_cmd56576499595">Configure route leaking on DeviceD.</span><p><pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen852214915616">[DeviceD] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b2522949195616">isis 10</strong>
+[DeviceD-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b1979174244183118">import-route isis level-2 into level-1</strong>
+[DeviceD-isis-10] <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b2522949105620">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_example121226172748"><a name="EN-US_TASK_0000001572235612__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p262534351183118"># Before configuring route leaking on DeviceD, run the <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b1808485410183118">tracert 192.168.6.2</strong> command on DeviceA. The command output shows that the link from DeviceA to DeviceF is DeviceA -&gt; DeviceC -&gt; DeviceE -&gt; DeviceF. The cost of the entire link is 60 (10 + 40 + 10 = 60).</p>
+<p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p44993997183118"># After configuring route leaking on DeviceD, run the <strong id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_b6600155011017">tracert 192.168.6.2</strong> command on DeviceA. The command output shows that the link from DeviceA to DeviceF is DeviceA -&gt; DeviceB -&gt; DeviceD -&gt; DeviceE -&gt; DeviceF. The cost of the entire link is 40 (10 + 10 + 10 + 10 = 40). The route from DeviceA to DeviceF is selected as the optimal route after route leaking is configured.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001572235612__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_ul93742314211"><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li1522814685214037"><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p236305849214037"><a name="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li1522814685214037"></a><a name="en-us_task_0000001355819296_li1522814685214037"></a>DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen123478174813">#
+sysname DeviceA
+#
+isis 10
+ is-level level-1
+ network-entity 10.0000.0000.0001.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.1.1 255.255.255.0
+ isis enable 10
+#  
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.2.1 255.255.255.0
+ isis enable 10
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li1527384361214037"><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p52687952216"><a name="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li1527384361214037"></a><a name="en-us_task_0000001355819296_li1527384361214037"></a>DeviceB</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen11934121654811">#
+sysname DeviceB
+#
+isis 10
+ is-level level-1
+ network-entity 10.0000.0000.0002.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.1.2 255.255.255.0
+ isis enable 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.3.1 255.255.255.0
+ isis enable 10
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li765850743214037"><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p1783941130214037"><a name="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li765850743214037"></a><a name="en-us_task_0000001355819296_li765850743214037"></a>DeviceC</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen1838422415486">#
+sysname DeviceC
+#
+isis 10
+ network-entity 10.0000.0000.0003.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.4.1 255.255.255.0
+ isis enable 10
+ isis cost 40 level-2
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.2.2 255.255.255.0
+ isis enable 10
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li2062901706214037"><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p65491927214037"><a name="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li2062901706214037"></a><a name="en-us_task_0000001355819296_li2062901706214037"></a>DeviceD</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen14173218488">#
+sysname DeviceD
+#
+isis 10
+ network-entity 10.0000.0000.0004.00
+ import-route isis level-2 into level-1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.3.2 255.255.255.0
+ isis enable 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.5.1 255.255.255.0
+ isis enable 10
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li1696410204519"><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p796414201155"><a name="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li1696410204519"></a><a name="en-us_task_0000001355819296_li1696410204519"></a>DeviceE</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen796482015510">#
+sysname DeviceE
+#
+isis 10
+ is-level level-2
+ network-entity 20.0000.0000.0005.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.4.2 255.255.255.0
+ isis enable 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.5.2 255.255.255.0
+ isis enable 10
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 192.168.6.1 255.255.255.0
+ isis enable 10
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li7965192010515"><p id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_p29656202516"><a name="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_li7965192010515"></a><a name="en-us_task_0000001355819296_li7965192010515"></a>DeviceF</p>
+<pre class="screen" id="EN-US_TASK_0000001572235612__en-us_task_0000001355819296_screen1296532018514">#
+sysname DeviceF
+#
+isis 10
+ is-level level-2
+ network-entity 20.0000.0000.0006.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.6.2 255.255.255.0
+ isis enable 10
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_167.html">IS-IS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_169.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

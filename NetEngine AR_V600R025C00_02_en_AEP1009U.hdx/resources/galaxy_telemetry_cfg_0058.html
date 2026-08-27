@@ -1,0 +1,551 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Developing Code">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_telemetry_cfg_0054.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_telemetry_cfg_0057.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001563754537">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Developing Code</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001563754537"></a><a name="EN-US_TOPIC_0000001563754537"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Developing Code</h1>
+<div><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This section only provides the code that you need to pay attention to, which is for reference only.</p>
+<p>Except the automatically generated code, you need to develop other code by yourself.</p>
+</div></div>
+<p>Add the automatically generated Java code to the Java project you have created, and use the data push RPC service to receive data sent from the device. Parse the telemetry header data, and then parse the subsequent data according to the corresponding Java class structure based on the <strong>sensor-path</strong> field value.</p>
+<ol><li>Overwrite the automatically generated RPC service dataPublish, and develop code to obtain corresponding fields.<p>The following example describes how to obtain traffic data of <span>10GE</span><span>0/0/1</span>.</p>
+<ol type="a"><li>Overwrite the RPC service dataPublish. <p>The abstract class gRPCDataserviceImplBase is defined in the <strong>gRPCDataserviceGrpc.java</strong> file that is automatically generated for the RPC service. You need to overwrite this class.</p>
+<p>Create a class (for example, GrpcDataServiceImpl) to overwrite the automatically generated class gRPCDataserviceImplBase. The following is an example of Java code.</p>
+<pre class="screen">public class GrpcDataServiceImpl extends   //Create the GrpcDataServiceImpl class to overwrite the gRPCDataserviceImplBase class.
+gRPCDataserviceGrpc.gRPCDataserviceImplBase {
+
+private HashMap&lt;String, Integer&gt; ipHashMap = new HashMap&lt;String, Integer&gt;();
+
+private BlockingDeque&lt;TelemetrySourceData&gt; sourceDatas = new LinkedBlockingDeque&lt;TelemetrySourceData&gt;();
+
+private int dataCount = 0;
+
+public GrpcDataServiceImpl() {
+ipHashMap.clear();
+sourceDatas.clear();
+dataCount = 0;
+}
+
+@Override
+public StreamObserver&lt;serviceArgs&gt; dataPublish(final StreamObserver&lt;serviceArgs&gt; responseObserver) {   //Implement dataPublish.
+return new StreamObserver&lt;serviceArgs&gt;() {
+@Override
+public void onCompleted() {
+responseObserver.onCompleted();
+}
+
+@Override
+public void onError(Throwable arg0) {
+Log.<em>error</em>("dataPublish cancelled :" + arg0 + "; message:" + arg0.getMessage());
+}
+
+@Override
+public void onNext(serviceArgs serArgs) {   //Perform the decoding operation in the onNext method. Decoding is implemented using the TelemetryData class.
+try {
+TelemetryData telData = TelemetryConvert.getInstance().getTelemetryData(serArgs);
+
+if (telData == null) {
+return;
+}
+...
+} catch (Exception e) {
+Log.error("dataPublish onNext:" + e);
+}
+}
+};
+}
+}</pre>
+</li><li>Parse data.<p>After the RPC service is overwritten, use the input parameter <strong>serviceArgs serArgs</strong> in the onNext method to obtain the data sent by the device. The data is encapsulated with an RPC parameter, telemetry header, and service data, and needs to be parsed layer by layer.</p>
+<p>The <strong>huawei-grpc-dialout.proto</strong> file defines RPC parameters.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.1.2.2.3.1.3.1.1" liSelected="liSelected"><p><strong>Definition in the .proto File</strong></p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.1.2.2.3.1.3.1.2" liSelected="liSelected"><p><strong>Definition in the Automatically Generated Java Code</strong></p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.1.2.2.3.1.3.1.1 "><p>message serviceArgs {</p>
+<p>int64 ReqId = 1;</p>
+<p>bytes data = 2;</p>
+<p>string errors = 3;</p>
+<p>}</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.1.2.2.3.1.3.1.2 "><p>public interface serviceArgsOrBuilder extends</p>
+<p>// @@protoc_insertion_point(interface_extends:huawei_dialout.serviceArgs)</p>
+<p>com.google.protobuf.MessageOrBuilder {</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional int64 ReqId = 1;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getReqId();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional bytes data = 2;&lt;/code&gt;</p>
+<p>*/</p>
+<p>com.google.protobuf.ByteString getData();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional string errors = 3;&lt;/code&gt;</p>
+<p>*/</p>
+<p>java.lang.String getErrors();</p>
+<p>/**</p>
+<p>* &lt;code&gt;optional string errors = 3;&lt;/code&gt;</p>
+<p>*/</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getErrorsBytes();</p>
+<p>}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li></ol>
+<p>Obtain the data field values through an input parameter. The following is an example of Java code.</p>
+<pre class="screen">public TelemetryData getTelemetryData(serviceArgs serArgs) {
+
+TelemetryData telData = null;
+try {
+ByteString byteString = serArgs.getData();
+...</pre>
+<p>After <strong>byteString</strong> data is obtained, parse the telemetry header, which is defined in the <strong>huawei-telemetry.proto</strong> file.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.1.6.1.3.1.1" liSelected="liSelected"><p><strong>Definition in the .proto File</strong></p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.1.6.1.3.1.2" liSelected="liSelected"><p><strong>Definition in the Automatically Generated Java Code</strong></p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.1.6.1.3.1.1 "><p>message Telemetry {</p>
+<p>string node_id_str = 1;</p>
+<p>string subscription_id_str = 2;</p>
+<p>string sensor_path = 3;</p>
+<p>uint64 collection_id = 4;</p>
+<p>uint64 collection_start_time = 5;</p>
+<p>uint64 msg_timestamp = 6;</p>
+<p>TelemetryGPBTable data_gpb = 7;</p>
+<p>uint64 collection_end_time = 8;</p>
+<p>uint32 current_period = 9;</p>
+<p>string except_desc = 10;</p>
+<p>}</p>
+<p></p>
+<p>message TelemetryGPBTable {</p>
+<p>repeated TelemetryRowGPB row = 1;</p>
+<p>repeated DataPath delete = 2;</p>
+<p>Generator generator = 3;</p>
+<p>}</p>
+<p></p>
+<p>message TelemetryRowGPB {</p>
+<p>uint64 timestamp = 1;</p>
+<p>bytes content = 11;</p>
+<p>}</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.1.6.1.3.1.2 "><p>public interface TelemetryOrBuilder extends</p>
+<p>// @@protoc_insertion_point(interface_extends:telemetry.Telemetry)</p>
+<p>com.google.protobuf.MessageOrBuilder {</p>
+<p></p>
+<p>java.lang.String getNodeIdStr();</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getNodeIdStrBytes();</p>
+<p>java.lang.String getSubscriptionIdStr();</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getSubscriptionIdStrBytes();</p>
+<p>java.lang.String getSensorPath();</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getSensorPathBytes();</p>
+<p>java.lang.String getProtoPath();</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getProtoPathBytes();</p>
+<p>long getCollectionId();</p>
+<p>long getCollectionStartTime();</p>
+<p>long getMsgTimestamp();</p>
+<p>boolean hasDataGpb();</p>
+<p>telemetry.HuaweiTelemetry.TelemetryGPBTable getDataGpb();</p>
+<p>telemetry.HuaweiTelemetry.TelemetryGPBTableOrBuilder getDataGpbOrBuilder();</p>
+<p>long getCollectionEndTime();</p>
+<p>int getCurrentPeriod();</p>
+<p>java.lang.String getExceptDesc();</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getExceptDescBytes();</p>
+<p>java.lang.String getProductName();</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getProductNameBytes();</p>
+<p>int getEncodingValue();</p>
+<p>telemetry.HuaweiTelemetry.Telemetry.Encoding getEncoding();</p>
+<p>java.lang.String getDataStr();</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getDataStrBytes();</p>
+<p>java.lang.String getNeId();</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getNeIdBytes();</p>
+<p>java.lang.String getSoftwareVersion();</p>
+<p>com.google.protobuf.ByteString</p>
+<p>getSoftwareVersionBytes();</p>
+<p>}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Invoke the parseFrom interface to parse <strong>byteString</strong> data, so as to obtain the object encapsulated in the telemetry header. Then, obtain the <strong>dataGpb</strong> field, which is a list and needs to be further expanded. The following is an example of Java code.</p>
+<pre class="screen">public TelemetryData getTelemetryData(serviceArgs serArgs) {
+
+TelemetryData telData = null;
+try {
+ByteString byteString = serArgs.getData();
+Telemetry telemetry = Telemetry.parseFrom(byteString.toByteArray());
+if (telemetry == null) {
+return telData;
+}
+
+TelemetryGPBTable dataGpb = telemetry.getDataGpb();
+List&lt;TelemetryRowGPBData&gt; rowGPBDatas = new ArrayList&lt;TelemetryRowGPBData&gt;();
+
+if (dataGpb != null) {
+int rowCount = dataGpb.getRowCount();
+for (int i = 0; i &lt; rowCount; i++) {
+TelemetryRowGPBData rowGPBData = copyTelemetryRowGPB(dataGpb.getRow(i), telemetry.getSensorPath());
+rowGPBDatas.add(rowGPBData);
+}
+}
+...</pre>
+<p id="EN-US_TOPIC_0000001563754537__p719403311318">Perform GPB decoding for rowGPBData. The following is an example of Java code.</p>
+<pre class="screen" id="EN-US_TOPIC_0000001563754537__screen4180124818211">public class GBP_Decode {
+  private static void gbp_decode() throws IOException, InterruptedException,FileNotFoundException, DescriptorValidationException,InvalidProtocolBufferException { 
+    System.out.println("------init msg------");
+    byte[] byteArray = initMsg();
+    System.out.println("------generate descriptor------");
+    // Generate a descriptor file.
+    String protocCMD = "protoc --descriptor_set_out=D://cinema1.description D://cinema1.proto --proto_path=D://";
+        Process process = Runtime.getRuntime().exec(protocCMD);
+        process.waitFor();
+        int exitValue = process.exitValue();
+        if (exitValue != 0) {
+            System.out.println("protoc execute failed");
+            return;
+        }
+    System.out.println("------customer msg------");
+    Descriptors.Descriptor pbDescritpor = null;
+    DescriptorProtos.FileDescriptorSet descriptorSet = DescriptorProtos.FileDescriptorSet
+        .parseFrom(new FileInputStream("D://cinema1.description"));
+    for (DescriptorProtos.FileDescriptorProto fdp : descriptorSet.getFileList()) {
+      Descriptors.FileDescriptor fileDescriptor = Descriptors.FileDescriptor.buildFrom(fdp, new Descriptors.FileDescriptor[] {});
+      for (Descriptors.Descriptor descriptor : fileDescriptor.getMessageTypes()) {
+        String className = fdp.getOptions().getJavaPackage() + "."
+            + fdp.getOptions().getJavaOuterClassname() + "$"
+            + descriptor.getName();
+        System.out.println(descriptor.getFullName() + " -&gt; "+ className);
+
+        if (descriptor.getName().equals("Ticket")) {
+          System.out.println("Movie descriptor found");
+          pbDescritpor = descriptor;
+          break;
+        }
+      }
+    }
+
+    if (pbDescritpor == null) {
+      System.out.println("No matched descriptor");
+      return;
+    }
+    DynamicMessage.Builder pbBuilder = DynamicMessage.newBuilder(pbDescritpor);
+    Message pbMessage = pbBuilder.mergeFrom(byteArray).build();
+    System.out.println(pbMessage);
+  }
+
+  private static byte[] initMsg() {
+    Cinema1.Movie.Builder movieBuilder = Cinema1.Movie.newBuilder();
+    movieBuilder.setName("The Shining");
+    movieBuilder.setType(Cinema1.MovieType.ADULT);
+    movieBuilder.setReleaseTimeStamp(327859200);
+    Movie movie = movieBuilder.build();
+
+    Cinema1.Movie.Builder movieBuilder1 = Cinema1.Movie.newBuilder();
+    movieBuilder1.setName("The Shining1");
+    movieBuilder1.setType(Cinema1.MovieType.CHILDREN);
+    movieBuilder1.setReleaseTimeStamp(327859201);
+    Movie movie1 = movieBuilder1.build();
+
+    Cinema1.Customer.Builder customerBuilder = Cinema1.Customer.newBuilder();
+    customerBuilder.setName("echo");
+    customerBuilder.setGender(Cinema1.Gender.MAN);
+    customerBuilder.setBirthdayTimeStamp(1231232333);
+
+    Cinema1.Ticket.Builder ticketBuilder = Cinema1.Ticket.newBuilder();
+    ticketBuilder.setId(1);
+    ticketBuilder.addMovie(movie);
+    ticketBuilder.addMovie(movie1);
+    ticketBuilder.setCustomer(customerBuilder.build());
+    Ticket ticket = ticketBuilder.build();
+    System.out.println(ticket.toString());
+    byte[] byteArray = ticket.toByteArray();
+
+    return byteArray;
+  }
+}</pre>
+<p>The method of parsing the third layer is controlled by the value of the <strong>sensor-path</strong> field. Therefore, before parsing the third layer, select different classes based on the <strong>sensor-path</strong> field. The following is an example of Java code.</p>
+<pre class="screen">private TelemetryRowGPBData copyTelemetryRowGPB(TelemetryRowGPB rowGpb, String sensorPath) {
+TelemetryRowGPBData rowGPBData = new TelemetryRowGPBData();
+if (rowGpb != null) {
+long timestamp = rowGpb.getTimestamp();
+String collectionTimestamp = "0";
+try {
+collectionTimestamp = timestamp &gt; 0 ? timestampToString(timestamp) : String.<em>valueOf</em>(timestamp);
+} catch (Exception e) {
+Log.<em>error</em>("copyTelemetryRowGPB timestampToString Exception : " + e.getMessage());
+}
+
+rowGPBData.timestamp = collectionTimestamp;
+rowGPBData.content = getObject(sensorPath, rowGpb);
+}
+return rowGPBData;
+}</pre>
+<p>For the getObject method, data is decapsulated to obtain service data according to the corresponding Java class based on the <strong>sensor-path</strong> field value. The following is an example of Java code.</p>
+<pre class="screen">private Object getObject(String sensorPath, TelemetryRowGPB rowGpb) {
+Object object = null;
+try {
+switch (sensorPath) {
+case "huawei-ifm:ifm/interfaces/interface":
+object = Ifm.parseFrom(rowGpb.getContent());
+break;
+
+case "huawei-devm:devm/cpuinfos/cpuinf":
+object = <u>Qos</u>.parseFrom(rowGpb.getContent());
+break;
+...
+default:
+Log.<em>error</em>("sensorPath : " + sensorPath + ", TelemetryRowGPB :" + rowGpb);
+break;
+}
+} catch (InvalidProtocolBufferException e) {
+Log.<em>error</em>("getObject InvalidProtocolBufferException : " + e.getMessage());
+}
+
+return object;
+}</pre>
+<p>Use the parseFrom method of the Ifm class to decode the content in the data area. The obtained data maps a .proto file. The data to be sampled is interface traffic data, so the corresponding .proto file is <strong>huawei-ifm.proto</strong>. The Java code generated is as follows:</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50.51%" id="mcps1.3.3.1.16.1.3.1.1" liSelected="liSelected"><p><strong>Definition in the .proto File</strong></p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="49.49%" id="mcps1.3.3.1.16.1.3.1.2" liSelected="liSelected"><p><strong>Definition in the Automatically Generated Java Code</strong></p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50.51%" headers="mcps1.3.3.1.16.1.3.1.1 "><p>message Ifm {</p>
+<p>message Interfaces {</p>
+<p>message Interface {</p>
+<p>enum IfAdminStatus {</p>
+<p>IfAdminStatus_DOWN = 0;</p>
+<p>IfAdminStatus_UP = 1;</p>
+<p>};</p>
+<p>IfAdminStatus ifAdminStatus = 5;</p>
+<p>message IfClearedStat {</p>
+<p>uint64 sendByte = 29;</p>
+<p>uint64 sendPacket = 36;</p>
+<p>}</p>
+<p>IfClearedStat ifClearedStat = 9;</p>
+<p>message IfDynamicInfo {</p>
+<p>enum IfOperStatus {</p>
+<p>IfOperStatus_DOWN = 0;</p>
+<p>IfOperStatus_UP = 1;</p>
+<p>};</p>
+<p>IfOperStatus ifOperStatus = 5;</p>
+<p>}</p>
+<p>IfDynamicInfo ifDynamicInfo = 13;</p>
+<p>uint32 ifIndex = 16;</p>
+<p>string ifName = 25;</p>
+<p>message IfStatistics {</p>
+<p>message EthPortErrSts {</p>
+<p>uint64 rxAlignment = 1;</p>
+<p>uint64 rxCRC = 2;</p>
+<p>uint64 rxFragment = 3;</p>
+<p>uint64 rxInrangeLen = 4;</p>
+<p>uint64 rxJabber = 5;</p>
+<p>uint64 rxJumboOctets = 6;</p>
+<p>uint64 rxLong = 7;</p>
+<p>uint64 rxOverrun = 8;</p>
+<p>uint64 rxPause = 9;</p>
+<p>uint64 rxSymbol = 10;</p>
+<p>uint64 rxUndersize = 11;</p>
+<p>uint64 txJumboOctets = 12;</p>
+<p>uint64 txLost = 13;</p>
+<p>uint64 txOverrun = 14;</p>
+<p>uint64 txPause = 15;</p>
+<p>uint64 txSystem = 16;</p>
+<p>uint64 txUnderrun = 17;</p>
+<p>}</p>
+<p>EthPortErrSts ethPortErrSts = 1;</p>
+<p>uint64 rcvBroadPacket = 2;</p>
+<p>uint64 rcvMutiPacket = 5;</p>
+<p>uint64 rcvUniPacket = 6;</p>
+<p>uint64 receiveByte = 7;</p>
+<p>uint64 receivePacket = 8;</p>
+<p>uint64 sendBroadPacket = 9;</p>
+<p>uint64 sendByte = 10;</p>
+<p>uint64 sendMutiPacket = 13;</p>
+<p>uint64 sendPacket = 14;</p>
+<p>uint64 sendUniPacket = 15;</p>
+<p>}</p>
+<p>IfStatistics ifStatistics = 35;</p>
+<p>}</p>
+<p>repeated Interface interface = 1;</p>
+<p>}</p>
+<p>Interfaces interfaces = 5;</p>
+<p>}</p>
+</td>
+<td class="cellrowborder" valign="top" width="49.49%" headers="mcps1.3.3.1.16.1.3.1.2 "><p>public interface IfStatisticsOrBuilder extends</p>
+<p>// @@protoc_insertion_point(interface_extends:huawei_ifm.Ifm.Interfaces.Interface.IfStatistics)</p>
+<p>com.google.protobuf.MessageOrBuilder {</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional .huawei_ifm.Ifm.Interfaces.Interface.IfStatistics.EthPortErrSts ethPortErrSts = 1;&lt;/code&gt;</p>
+<p>*/</p>
+<p>boolean hasEthPortErrSts();</p>
+<p>/**</p>
+<p>* &lt;code&gt;optional .huawei_ifm.Ifm.Interfaces.Interface.IfStatistics.EthPortErrSts ethPortErrSts = 1;&lt;/code&gt;</p>
+<p>*/</p>
+<p>huawei_ifm.HuaweiIfm.Ifm.Interfaces.Interface.IfStatistics.EthPortErrSts getEthPortErrSts();</p>
+<p>/**</p>
+<p>* &lt;code&gt;optional .huawei_ifm.Ifm.Interfaces.Interface.IfStatistics.EthPortErrSts ethPortErrSts = 1;&lt;/code&gt;</p>
+<p>*/</p>
+<p>huawei_ifm.HuaweiIfm.Ifm.Interfaces.Interface.IfStatistics.EthPortErrStsOrBuilder getEthPortErrStsOrBuilder();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 rcvBroadPacket = 2;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getRcvBroadPacket();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 rcvMutiPacket = 5;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getRcvMutiPacket();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 rcvUniPacket = 6;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getRcvUniPacket();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 receiveByte = 7;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getReceiveByte();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 receivePacket = 8;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getReceivePacket();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 sendBroadPacket = 9;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getSendBroadPacket();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 sendByte = 10;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getSendByte();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 sendMutiPacket = 13;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getSendMutiPacket();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 sendPacket = 14;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getSendPacket();</p>
+<p></p>
+<p>/**</p>
+<p>* &lt;code&gt;optional uint64 sendUniPacket = 15;&lt;/code&gt;</p>
+<p>*/</p>
+<p>long getSendUniPacket();</p>
+<p>}</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>After obtaining the object data, use corresponding methods to obtain indicator values from the data sent by the device.</p>
+</li><li>Register the created class with the gRPC service framework.<p>After the RPC service code is developed, register the created class with the gRPC service framework. When the device requests the RPC to push data, the gRPC service framework automatically calls the registered function to implement decoding.</p>
+<p>For example, use Netty to start the listening port. The following is an example of Java code.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.2.3.1.3.1.1" liSelected="liSelected"><p>Java Code</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.2.3.1.3.1.2" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.2.3.1.3.1.1 "><p>public void start(int port) throws IOException {</p>
+<p>NettyServerBuilder builder = NettyServerBuilder.forPort(port).flowControlWindow(500);</p>
+<p>server = builder.addService(dataServiceImpl).build().start();</p>
+<p>}</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.2.3.1.3.1.2 "><p>Netty is used to listen on the port and bind services. dataServiceImpl is generated through dataServiceImpl = new GrpcDataServiceImpl (). The dataServiceImpl class is the class created in the first step.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li></ol>
+<p>After the preceding operations are complete, the collector is interconnected. The .proto files of other services are processed in similar ways.</p>
+<p>The overall development roadmap is the same if the collector software is developed using Python or C++.</p>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_telemetry_cfg_0054.html">Developing the Static Telemetry Subscription Function
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_telemetry_cfg_0057.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

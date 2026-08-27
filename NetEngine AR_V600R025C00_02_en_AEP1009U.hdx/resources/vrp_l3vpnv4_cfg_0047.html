@@ -1,0 +1,103 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring VPN FRR">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_1144.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0131.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001335386990">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring VPN FRR</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001335386990"></a><a name="EN-US_TASK_0000001335386990"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring VPN FRR</h1>
+<div class="taskbody"><p></p>
+<div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001335386990__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring VPN FRR, you have completed the following tasks:</p>
+<ul><li><p>Configure a routing protocol on the devices for them to communicate.</p>
+</li><li><p>Ensure that two unequal-cost routes destined for the CE are available on the PE.</p>
+</li><li><p>Create a VPN.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001335386990__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>If a CE is dual-homed to two PEs, you can configure VPN FRR to ensure that if the primary link between PEs fails, VPN services are switched to the backup link.</p>
+<p>VPN FRR applies to services that are very sensitive to packet loss and delay on a VPN. On the network shown in <a href="vrp_L3VPNv4_cfg_0047.html">Configuring VPN FRR</a>, CE1 is dual-homed to PE2 and PE3, and VPN FRR is configured on PE1. When the link between PE1 and PE2 fails, VPN traffic needs to be fast switched to the link between PE1 and PE3.</p>
+<p>Two methods for configuring VPN FRR are available:</p>
+<ul><li>Configure VPN FRR.</li><li>Configure VPN BGP auto FRR.</li></ul>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>VPN FRR networking</span><br><span><img class="vsd" src="figure/en-us_image_0000001337704338.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001335386990__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configuring VPN FRR</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance view.</span><p><pre class="screen"><b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance IPv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable VPN FRR.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn frr</span></b></pre>
+</p></li><li class="substepexpand"><span>Return to the VPN instance view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Enter the BGP VPN instance IPv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure delayed route selection.</span><p><pre class="screen"><b><span class="cmdqueryname">route-select delay</span></b> <i><span class="varname">delay-value</span></i></pre>
+<p>Delayed route selection ensures that after the primary path recovers, the device on the primary path performs route selection only after the corresponding forwarding entries on the device are stable. This prevents traffic loss during traffic switchback.</p>
+</p></li></ol>
+</li><li id="EN-US_TASK_0000001335386990__step204872680214050"><span id="EN-US_TASK_0000001335386990__cmd878846619214050">Configure VPN BGP auto FRR.</span><p></p><ol id="EN-US_TASK_0000001335386990__substeps1523662433214050"><li class="substepexpand" id="EN-US_TASK_0000001335386990__substep1919014271113"><span id="EN-US_TASK_0000001335386990__cmd0190162191118">Enter the system view.</span><p><pre class="screen" id="EN-US_TASK_0000001335386990__screen0190182201118"><b><span class="cmdqueryname" id="EN-US_TASK_0000001335386990__cmdname121901623114">system-view</span></b></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001335386990__substep3113232193113"><span id="EN-US_TASK_0000001335386990__cmd1311310321319">Enter the BGP view.</span><p><pre class="screen" id="EN-US_TASK_0000001335386990__screen1011393219318"><b><span class="cmdqueryname" id="EN-US_TASK_0000001335386990__cmdname1083639469214038">bgp</span></b> <i><span class="varname" id="EN-US_TASK_0000001335386990__varname158567311439">as-number</span></i></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001335386990__substep51141132133110"><span id="EN-US_TASK_0000001335386990__cmd9114532133117">Enter the BGP VPN instance IPv4 address family view.</span><p><pre class="screen" id="EN-US_TASK_0000001335386990__screen3114143215319"><b><span class="cmdqueryname" id="EN-US_TASK_0000001335386990__cmdname1892780867214050">ipv4-family</span></b> <strong><span id="EN-US_TASK_0000001335386990__cmdparmname1834228779214050">vpn-instance</span></strong> <i><span class="varname" id="EN-US_TASK_0000001335386990__varname1150401398214050">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001335386990__substep1877938094214050"><span id="EN-US_TASK_0000001335386990__cmd938385899214050">Enable VPN BGP auto FRR.</span><p><pre class="screen" id="EN-US_TASK_0000001335386990__screen11991137141113"><b><span class="cmdqueryname" id="EN-US_TASK_0000001335386990__cmdname862856173214050">auto-frr</span></b></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001335386990__substep9249103405"><span id="EN-US_TASK_0000001335386990__cmd8241510164019">Configure delayed route selection.</span><p><pre class="screen" id="EN-US_TASK_0000001335386990__screen16873151434114"><b><span class="cmdqueryname" id="EN-US_TASK_0000001335386990__cmdname1088957273214050">route-select delay</span></b> <i><span class="varname" id="EN-US_TASK_0000001335386990__varname261541512214050">delay-value</span></i></pre>
+</p></li></ol>
+</li></ul></div>
+<div class="postreq"><a name="EN-US_TASK_0000001335386990__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display ip routing-table vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> [ <i><span class="varname">ipv4-address</span></i> ] <strong><span>verbose</span></strong> command to check the backup outbound interface and backup next hop of a VPN IP route in the routing table.</p>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_1144.html">Configuring IPv4 L3VPN FRR
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0131.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

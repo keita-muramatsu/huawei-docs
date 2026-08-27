@@ -1,0 +1,115 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring LDP Keychain Authentication">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0070.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0072.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0075.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001338035342">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring LDP Keychain Authentication</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001338035342"></a><a name="EN-US_TASK_0000001338035342"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring LDP Keychain Authentication</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001338035342__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring LDP keychain authentication, complete the following task:</p>
+<ul><li><a href="../vrp_keychain_cfg_0001.html">Keychain Configuration</a></li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001338035342__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>To help improve LDP session security, you can configure keychain authentication for a TCP connection over which an LDP session has been established or LDP keychain authentication for Targeted Hello messages.</p>
+<p>Keychain allows users to define a group of passwords to form a password string. Each password is assigned encryption and decryption algorithms, such as MD5 and SHA-1, and a validity period. The system selects a valid password based on the user configuration before sending or receiving a packet. Within the validity period of the password, the system uses the encryption algorithm matching the password to encrypt the packet before sending it. The system also uses the decryption algorithm matching the password to decrypt the packet after accepting it. In addition, the system automatically switches to a new valid password based on the password validity period, which minimizes password decryption risks if the password is not changed for a long time.</p>
+<div class="p">You can configure either LDP MD5 authentication or LDP keychain authentication to match your scenario:<ul><li><p>The MD5 algorithm is easy to configure and generates a single password, which can only be changed manually. MD5 authentication applies to networks requiring short-period encryption.</p>
+</li><li><p>Keychain authentication involves a set of passwords, which can be automatically switched based on the configuration. However, keychain authentication is complex to configure and applies to networks requiring high security.</p>
+</li></ul>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>LDP authentication configurations are prioritized in descending order: for a single peer, for a specified peer group, and for all peers. Both keychain and MD5 authentication can be configured. However, configurations with a higher priority override those with a lower priority, and those with the same priority are mutually exclusive. For example, if MD5 authentication is configured for Peer1 and keychain authentication is configured for all LDP peers, MD5 authentication takes effect on Peer1 and keychain authentication takes effect on other peers.</p>
+<p>As MD5 is insecure, you are advised to use a more secure authentication mode, such as keychain authentication.</p>
+</div></div>
+</div>
+<p>Perform the following configuration on the LSRs at both ends of an LDP session.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001338035342__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure LDP keychain authentication for a specified LDP peer based on the TCP connection.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable LDP keychain authentication and specify a keychain name.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication key-chain</span></b> <strong><span>peer</span></strong> <i><span class="varname">peer-id</span></i> <strong><span>name</span></strong> <i><span class="varname">keychain-name</span></i></pre>
+</p><p><p>By default, LDP keychain authentication is not performed between LDP peers.</p>
+<div class="notice"><span class="noticetitle"><img src="../public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><ul><li>Configuring LDP keychain authentication causes an LDP session to be reestablished and deletes the LSP associated with the original LDP session.</li><li>When the AES-128-CMAC algorithm is configured, a key string must contain 16 characters.</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure LDP keychain authentication for LDP peers in a specified LDP peer group based on the TCP connection.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable LDP keychain authentication for LDP peers in a specified LDP peer group and specify a keychain name.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication key-chain peer-group</span></b> <i><span class="varname">ip-prefix-name</span></i> <strong><span>name</span></strong> <i><span class="varname">keychain-name</span></i></pre>
+</p><p><p>An IP prefix list can be specified using <i><span class="varname">ip-prefix-name</span></i> to define the range of peer IP addresses in a peer group. Ensure that the IP prefix list specified by <i><span class="varname">ip-prefix-name</span></i> has been configured before performing this step.</p>
+</p></li><li class="substepexpand"><span>(Optional) Exclude a specified peer from authentication.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication exclude</span></b> <strong><span>peer</span></strong> <i><span class="varname">peer-id</span></i></pre>
+</p><p><p>By default, after LDP keychain authentication is enabled for all LDP peers, keychain authentication takes effect on all LDP peers. Perform this step to disable the device from authenticating a specified LDP peer.</p>
+</p></li></ol>
+</li><li><span>Configure LDP keychain authentication for all LDP peers based on the TCP connection.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable LDP keychain authentication for all LDP peers and specify a keychain name.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication key-chain all</span></b> <strong><span>name</span></strong> <i><span class="varname">keychain-name</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Exclude a specified peer from authentication.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication exclude</span></b> <strong><span>peer</span></strong> <i><span class="varname">peer-id</span></i></pre>
+</p><p><p>By default, after LDP keychain authentication is enabled for all LDP peers, keychain authentication takes effect on all LDP peers. Perform this step to disable the device from authenticating a specified LDP peer.</p>
+</p></li></ol>
+</li><li><span>Configure LDP keychain authentication for a UDP connection.</span><p><ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the MPLS-LDP view.<pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</li><li>Enable keychain authentication for Targeted Hello packets of a specified LDP peer and specify a keychain name.<pre class="screen"><b><span class="cmdqueryname">authentication udp-remote key-chain</span></b> <strong><span>peer</span></strong> <i><span class="varname">peer-id</span></i> <strong><span>name</span></strong> <i><span class="varname">keychain-name</span></i></pre>
+<p>After the configuration is successful, the configured keychain authentication takes effect on the specified peer. If the authentication fails, the LDP session cannot be established.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This command supports only the keychain authentication using a strong encryption algorithm (SHA-256, HMAC-SHA-256, HMAC-SHA-384, HMAC-SHA-512, AES-128-CMAC, or SM3) but not a weak encryption algorithm.</p>
+</div></div>
+</li></ol>
+<p></p>
+</p></li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0070.html">Configuring LDP Security Features
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0072.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0075.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,100 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding BGP Route Attributes">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0021.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0023.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001176663679">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding BGP Route Attributes</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001176663679"></a><a name="EN-US_CONCEPT_0000001176663679"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding BGP Route Attributes</h1>
+<div><p></p>
+<p>BGP route attributes are a set of parameters that describe specific BGP routes, and BGP can filter and select routes based on these attributes. BGP route attributes are classified into the following types:</p>
+<ul><li><p>Well-known mandatory: This type of attribute can be identified by all BGP devices and must be carried in Update messages. Without this attribute, errors occur in the routing information.</p>
+</li><li><p>Well-known discretionary: This type of attribute can be identified by all BGP devices. As this type of attribute is optional, it is not necessarily carried in Update messages.</p>
+</li><li><p>Optional transitive: This indicates the transitive attribute between ASs. A BGP device may not recognize this type of attribute, but will still accept messages carrying it and advertise them to other peers.</p>
+</li><li><p>Optional non-transitive: If a BGP device does not recognize this type of attribute, the device ignores it and does not advertise messages carrying it to other peers.</p>
+</li></ul>
+<p>The most common BGP route attributes are as follows:</p>
+<ul><li><p>Origin</p>
+<p>The Origin attribute defines the origin of a BGP route, and is classified into the following types:</p>
+<ul><li><p>IGP: This type of attribute has the highest priority. IGP is the Origin attribute for routes obtained through an IGP in the AS from which the routes originate. For example, the Origin attribute of the routes imported to the BGP routing table using the <strong>network</strong> command is IGP.</p>
+</li><li><p>EGP: This type of attribute has the second highest priority. The Origin attribute of the routes obtained through EGP is EGP.</p>
+</li><li><p>Incomplete: This type of attribute has the lowest priority, and indicates any routes that do not have the IGP or EGP Origin attribute. For example, the Origin attribute of the routes imported by BGP using the <strong>import-route</strong> command is Incomplete.</p>
+</li></ul>
+</li><li><p>AS_Path</p>
+<p>The AS_Path attribute records the numbers of all ASs through which a BGP route passes from the local end to the destination in the distance-vector order.</p>
+<p>When a BGP speaker advertises a local route:</p>
+<ul><li><p>When advertising the route beyond the local AS, the BGP speaker adds the local AS number to the AS_Path list and then advertises this attribute to peers through Update messages.</p>
+</li><li><p>When advertising the route within the local AS, the BGP speaker creates an empty AS_Path list in an Update message.</p>
+</li></ul>
+<p>When a BGP speaker advertises a route learned from the Update message of another BGP speaker:</p>
+<ul><li><p>When advertising the route beyond the local AS, the BGP speaker adds the local AS number to the far left side of the AS_Path list. From the AS_Path attribute, the BGP device that receives the route learns the ASs through which the route passes to the destination. The number of the AS closest to the local AS is placed on the far left side of the list, and the other AS numbers are listed next to the former in sequence.</p>
+</li><li><p>When advertising the route within the local AS, the BGP speaker does not change its AS_Path attribute.</p>
+</li></ul>
+<div class="p">Four types of AS_Path attributes are available: AS_Sequence, AS_Set, AS_Confed_Sequence, and AS_Confed_Set.<ul><li>AS_Sequence: ordered set of ASs that the route in an Update message has traversed to reach the destination.</li><li>AS_Set: unordered set of ASs that the route in an Update message has traversed to reach the destination. The AS_Set attribute is used in route summarization scenarios. After route summarization, the device records the unordered set of AS numbers because it cannot sequence the numbers of ASs through which specific routes pass. Regardless of how many AS numbers an AS_Set contains, BGP considers the AS_Set length to be 1 during route selection.</li><li>AS_Confed_Sequence: ordered set of member ASs in the local confederation that an Update message has traversed.</li><li>AS_Confed_Set: unordered set of member ASs in the local confederation that an Update message has traversed. This type is primarily used for route summarization in a confederation.</li></ul>
+</div>
+<p>The AS_Confed_Sequence and AS_Confed_Set attributes are used to prevent routing loops and select routes among the member ASs in a confederation.</p>
+</li><li><p>Next_Hop</p>
+<p>Different from the Next_Hop attribute in an IGP, the Next_Hop attribute in BGP is not necessarily the IP address of a peer. In most cases, the Next_Hop attribute in BGP complies with the following rules:</p>
+<ul><li><p>When advertising a route to an EBGP peer, a BGP speaker sets the Next_Hop of the route to the IP address of the local interface used to establish the EBGP peer relationship.</p>
+</li><li><p>When advertising a locally generated route to an IBGP peer, a BGP speaker sets the Next_Hop of the route to the IP address of the local interface used to establish the IBGP peer relationship.</p>
+</li><li><p>When advertising a route learned from an EBGP peer to an IBGP peer, a BGP speaker does not change the Next_Hop of the route.</p>
+</li></ul>
+</li><li><p>MED</p>
+<p>The MED is transmitted only between two neighboring ASs, and the AS that receives the MED does not advertise it to a third AS.</p>
+<p>Similar to the cost (or metric) used by an IGP, the MED is used to determine the optimal route when traffic enters an AS. When a BGP device learns multiple routes with the same destination address but different next hops from different EBGP peers, the route with the smallest MED value is selected as the optimal route if all other attributes are the same.</p>
+</li><li><p>Local_Pref</p>
+<p>The Local_Pref attribute indicates the preference of a BGP route. It is valid only between IBGP peers and is not advertised to other ASs.</p>
+<p>The Local_Pref attribute is used to determine the optimal route when traffic leaves an AS. When a BGP device receives multiple routes with the same destination address but different next hops from IBGP peers, the route with the largest Local_Pref value is selected as the optimal route if all other attributes are the same.</p>
+</li></ul>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_bgp_cfg_0021.html">Configuring BGP Route Attributes
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bgp_cfg_0023.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

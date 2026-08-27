@@ -1,0 +1,111 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="LDP Session Down">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0083.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0084.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0086.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001385569985">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>LDP Session Down</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001385569985"></a><a name="EN-US_TASK_0000001385569985"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">LDP Session Down</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001385569985__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Fault Symptom</h4><p>An LDP session goes down.</p>
+<h4 class="sectiontitle">Possible Causes</h4><ul><li><p>The interface on which the LDP session is established is shut down.</p>
+</li><li><p>The <b><span class="cmdqueryname">undo mpls</span></b>, <b><span class="cmdqueryname">undo mpls ldp</span></b>, or <b><span class="cmdqueryname">undo mpls ldp remote peer</span></b> command is run.</p>
+</li><li><p>A route does not exist.</p>
+</li><li><p>The LDP Keepalive-hold timer expires.</p>
+</li><li><p>The LDP Hello-hold timer expires.</p>
+</li></ul>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001385569985__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Check whether the interface on which the LDP session is established is shut down.</span><p><p>Run the <b><span class="cmdqueryname">display this</span></b> command in the interface view and check whether the following information is displayed:</p>
+<pre class="screen">shutdown</pre>
+<p>The command output shows that the interface is shut down.</p>
+</p><ul><li><p>If the interface is shut down, run the <b><span class="cmdqueryname">undo shutdown</span></b> command in the interface view to enable the interface.</p>
+</li><li><p>If the interface is not shut down, go to Step 2.</p>
+</li></ul>
+</li><li><span>Check whether commands for canceling MPLS configurations are executed.</span><p><p>Run the <b><span class="cmdqueryname">display current-configuration</span></b> command to check whether commands for canceling MPLS configurations are executed.</p>
+<ul><li><div class="p">If the command output does not contain the following information:<pre class="screen">mpls</pre>
+The MPLS configurations are canceled.</div>
+</li><li><div class="p">If the command output does not contain the following information:<pre class="screen">mpls ldp</pre>
+The MPLS LDP configurations are canceled.</div>
+</li><li><div class="p">If the command output does not contain the following information:<pre class="screen">mpls ldp remote-peer</pre>
+Remote LDP session configurations are deleted.</div>
+</li></ul>
+</p><ul><li><p>If commands for canceling MPLS configurations are executed, run the corresponding commands to restore the configurations.</p>
+</li><li><p>If no commands for canceling MPLS configurations are executed, go to Step 3.</p>
+</li></ul>
+</li><li><span>Check whether routes are available.</span><p><p>Run the <b><span class="cmdqueryname">display ip routing-table</span></b> command to check whether a route to the peer exists based on the <strong>Destination/Mask</strong> field value. If the route does not exist, a TCP connection cannot be established.</p>
+</p><ul><li><p>If the route does not exist, troubleshoot the IGP route fault.</p>
+</li><li><p>If the route exists, go to Step 4.</p>
+</li></ul>
+</li><li><span>Check whether the LDP Hello-hold timer expires.</span><p><p>Run the <b><span class="cmdqueryname">display mpls ldp interface</span></b> command to check whether both ends of the LDP session can normally send Hello messages. You are advised to run the <b><span class="cmdqueryname">display mpls ldp interface</span></b> command once every three seconds. If the number of sent or received Hello messages remain unchanged after the command is run for several times, the Hello-hold timer expires.</p>
+</p><ul><li><p>If the Hello-hold timer expires, troubleshoot the high CPU usage fault.</p>
+</li><li><p>If the Hello-hold timer does not expire, go to Step 5.</p>
+</li></ul>
+</li><li><span>Check whether the LDP Keepalive-hold timer expires.</span><p><p>Run the <b><span class="cmdqueryname">display mpls ldp session</span></b> command to check whether the two ends of the session can normally send Keepalive messages. You are advised to run the <b><span class="cmdqueryname">display mpls ldp session</span></b> command once every five seconds. If the number of sent or received Keepalive messages remain unchanged after the command is run several times, the Keepalive-hold timer expires.</p>
+</p><ul><li><p>If the Keepalive-hold timer expires, troubleshoot the message forwarding fault.</p>
+</li><li><p>If the Keepalive-hold timer does not expire, go to Step 6.</p>
+</li></ul>
+</li><li><span>Collect the following information and contact technical support personnel:</span><p><ul><li>Results of the preceding steps</li><li>Configuration file, logs, and alarms of the device</li></ul>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0083.html">Troubleshooting MPLS LDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0084.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0086.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

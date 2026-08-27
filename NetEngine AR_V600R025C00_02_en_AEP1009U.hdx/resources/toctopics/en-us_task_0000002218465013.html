@@ -1,0 +1,126 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Session Link Stateful Inspection">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../security_session_management_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000002085002922.html">
+<meta name="DC.Relation" scheme="URI" content="../security_session_management_cfg_0012.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Session Management">
+<meta name="featuretype" content="System-level Forwarding">
+<meta name="featuretype" content="System-level Forwarding">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002218465013">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring Session Link Stateful Inspection</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002218465013"></a><a name="EN-US_TASK_0000002218465013"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Session Link Stateful Inspection</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002218465013__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The device uses a detection mechanism based on the connection status and treats all packets exchanged between two communication parties over the same connection as one single data flow. The device considers the packets in the same data flow related to each other.</p>
+<p>The device can perform stateful inspection for TCP and ICMP packets. If the connection status of a packet is valid, the device creates a session for the packet and records its connection status in the session. If the connection status of a packet is invalid, the device discards it.</p>
+<p>The following uses TCP as an example. As shown in <a href="#EN-US_TASK_0000002218465013__fig62141342124814">Figure 1</a>, TCP provides reliable connection services. A connection channel must be established between two parties through a three-way handshake before one party sends data to the other.</p>
+<div class="fignone" id="EN-US_TASK_0000002218465013__fig62141342124814"><a name="EN-US_TASK_0000002218465013__fig62141342124814"></a><a name="fig62141342124814"></a><span class="figcap"><b>Figure 1 </b>TCP three-way handshake</span><br><span><img class="vsd" src="../images/en-us_image_0000002218637049.png" width="NaN" height="NaN"></span></div>
+<p>A TCP connection involves three handshakes. If any handshake is missing, for example, the device receives the SYN-ACK packet for the second handshake but not a SYN packet for the first handshake, the device determines that the connection status of the SYN-ACK packet is invalid and discards the packet.</p>
+<p><a href="#EN-US_TASK_0000002218465013__table1479365212528">Table 1</a> lists the processing results of the first TCP and ICMP packets when the stateful inspection function is enabled and disabled.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000002218465013__table1479365212528"></a><a name="table1479365212528"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000002218465013__table1479365212528" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Session establishment for TCP and ICMP packets</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.1.7.2.5.1.1" liSelected="liSelected"><p>Protocol</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.1.7.2.5.1.2" liSelected="liSelected"><p>First Packet Type</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.1.7.2.5.1.3" liSelected="liSelected"><p>Stateful Inspection Enabled</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.1.7.2.5.1.4" liSelected="liSelected"><p>Stateful Inspection Disabled</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" rowspan="2" valign="top" width="25%" headers="mcps1.3.1.7.2.5.1.1 "><p>TCP</p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.7.2.5.1.2 "><p>SYN packet</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.7.2.5.1.3 "><p>The device creates a session and forwards the packet.</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.7.2.5.1.4 "><p>The device creates a session and forwards the packet.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.1.7.2.5.1.1 "><p>SYN-ACK or ACK packet</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.7.2.5.1.2 "><p>The device discards the packet without creating a session.</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.7.2.5.1.3 "><p>The device creates a session and forwards the packet.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="2" valign="top" width="25%" headers="mcps1.3.1.7.2.5.1.1 "><p>ICMP</p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.7.2.5.1.2 "><p>Echo Request message in a ping process</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.7.2.5.1.3 "><p>The device creates a session and forwards the packet.</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.7.2.5.1.4 "><p>The device creates a session and forwards the packet.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.1.7.2.5.1.1 "><p>Echo Reply message in a ping process</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.7.2.5.1.2 "><p>The device discards the packet without creating a session.</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.7.2.5.1.3 "><p>The device creates a session and forwards the packet.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002218465013__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enable the IPv4 link stateful inspection function.</span><p><pre class="screen"><b><span class="cmdqueryname">session link-state</span></b> [ <strong><span>icmp</span></strong> | <strong><span>tcp</span></strong> ] <strong><strong><span>check</span></strong></strong></pre>
+<p>By default, the link stateful inspection function is disabled.</p>
+</p></li><li><span>(Optional) Disable link stateful inspection for traffic bound to a specified VPN instance.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">session link-state exclude vpn-instance</span></b> </strong><em><i><span class="varname">vpn-instance-name</span></i></em></pre>
+<p>By default, no VPN instance is bound to link stateful inspection. If link stateful inspection is enabled, the device detects traffic of all VPN instances.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../security_session_management_cfg_0001.html">Session Management Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_task_0000002085002922.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../security_session_management_cfg_0012.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

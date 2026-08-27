@@ -1,0 +1,85 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding the LDP GR Helper">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0061.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0063.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001387915221">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Understanding the LDP GR Helper</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001387915221"></a><a name="EN-US_CONCEPT_0000001387915221"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding the LDP GR Helper</h1>
+<div><div class="section"><h4 class="sectiontitle">LDP GR Helper</h4><p>LDP graceful restart (GR) ensures uninterrupted traffic forwarding on a device (Restarter) that performs an active/standby switchover or protocol restart with the help of its neighbor (Helper).</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001387915221__fig73421948194817"><a name="EN-US_CONCEPT_0000001387915221__fig73421948194817"></a><a name="fig73421948194817"></a><span class="figcap"><b>Figure 1 </b>LDP GR implementation</span><br><span><img class="vsd" src="figure/en-us_image_0000001617972301.png" width="NaN" height="NaN"></span></div>
+<div class="p">During an active/standby switchover, if GR is not enabled, the neighbor deletes the LSP because the session is down. As a result, traffic and services are interrupted for a short time. In the preceding situation, if LDP GR is configured, forwarding entries remain unchanged before and after an unexpected active/standby switchover or protocol restart, implementing uninterrupted MPLS forwarding. <a href="#EN-US_CONCEPT_0000001387915221__fig73421948194817">Figure 1</a> illustrates the process of LDP GR.<ol><li><p>Before an active/standby switchover, LDP neighbors negotiate the GR capability during the establishment of an LDP session.</p>
+</li><li><p>After detecting that the Restarter performs an active/standby switchover or LDP restarts, the Helper starts the GR Reconnect timer and retains forwarding entries related to the Restarter before the timer expires. The prerequisite for non-stop forwarding is that the Restarter retains MPLS forwarding entries.</p>
+</li><li><p>If the LDP session between the Restarter and Helper is reestablished before the GR Reconnect timer of the Helper expires, the Helper deletes the GR Reconnect timer and starts the GR Recovery timer.</p>
+</li><li><p>The Helper and the Restarter help each other restore the forwarding entries before the Recovery timer expires. After the timer expires, the Helper deletes all Restarter-related forwarding entries that are not restored.</p>
+</li><li><p>After the Restarter performs an active/standby switchover or protocol restart, the Restarter starts the Forwarding State Holding timer. The Restarter preserves the forwarding entries before a restart and restores the forwarding entries before the timer expires with the assistance of the Helper. After the Forwarding State Holding timer expires, the Restarter deletes all forwarding entries that are not restored.</p>
+</li></ol>
+</div>
+<p>The device can function as a Helper to assist the Restarter implement uninterrupted forwarding during an active/standby switchover or protocol restart.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">GR Helper Timers</h4><p>Configuring GR Helper timers includes configuring the LDP session Reconnect timer and LSP Recovery timer.</p>
+<div class="p">Timers associated with LDP GR are as follows:<ul><li><div class="p">Reconnect timer: After the GR restarter performs an active/standby switchover, the GR Helper detects that the LDP session with the GR Restarter fails, starts the Reconnect timer, and waits for the reestablishment of the LDP session.<ul><li><p>If the Reconnect timer expires before the LDP session between the GR Helper and Restarter is established, the GR Helper immediately deletes MPLS forwarding entries associated with the GR Restarter and exits from the GR Helper process.</p>
+</li><li><p>If the LDP session between the GR Helper and the GR Restarter is established before the Reconnect timer times out, the GR Helper deletes the timer and starts the Recovery timer.</p>
+</li></ul>
+</div>
+</li><li><div class="p">Recovery timer: After an LDP session is reestablished, the GR Helper starts the Recovery timer and waits for the LSP to recover.<ul><li><p>If the Recovery timer expires, the GR Helper considers that the GR process on the neighbor is complete and deletes non-restored LSPs.</p>
+</li><li><p>If all LSPs are restored before the Recovery timer expires, the GR Helper considers that the GR process is complete on the neighbor after the Recovery timer expires.</p>
+</li></ul>
+</div>
+</li><li><p>Neighbor-liveness timer: indicates the LDP GR time.</p>
+</li></ul>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Changing the value of an LDP GR timer causes an LDP session to be reestablished.</p>
+</div></div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0061.html">Configuring the LDP GR Helper
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0063.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

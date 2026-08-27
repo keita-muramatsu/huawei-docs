@@ -1,0 +1,177 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a DHCPv6 PD Client">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000002242192005.html">
+<meta name="DC.Relation" scheme="URI" content="../dc/dc_cfg_dhcpv6_0036.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DHCPv6">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DHCPv6">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001782282753">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a DHCPv6 PD Client</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001782282753"></a><a name="EN-US_TASK_0000001782282753"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a DHCPv6 PD Client</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001782282753__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001782282753__fig_dc_cfg_dhcpv6_003501">Figure 1</a>, DeviceA is required to function as a DHCPv6 PD client so that it can obtain an IPv6 address prefix from the DHCPv6 PD server. Configure DeviceA as a DHCP PD client to assign IPv6 addresses and other network configuration parameters to users. This reduces the burden on the DHCPv6 server and implements hierarchical IPv6 deployment. The address of the DHCPv6 PD server is fc00:1::1/64, and the DHCPv6 PD client and DHCPv6 PD server are on the same link. In this example, the DHCPv6 PD client assigns network configuration parameters including the DNS server address fc00:2::1/64 and DNS suffix <strong>example.com</strong> to users.</p>
+<div class="fignone" id="EN-US_TASK_0000001782282753__fig_dc_cfg_dhcpv6_003501"><a name="EN-US_TASK_0000001782282753__fig_dc_cfg_dhcpv6_003501"></a><a name="fig_dc_cfg_dhcpv6_003501"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring a DHCPv6 PD client</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000001782641309.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001782282753__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Enable the IPv6 function on the interface connecting DeviceA to the DHCPv6 PD server to implement IPv6 communication.</li><li>Enable the DHCPv6 PD client function on the interface connecting DeviceA to the DHCPv6 PD server so that the device can obtain an IPv6 address prefix through DHCPv6.</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001782282753__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>To enable a device to process STA IPv6 services in wireless scenarios, run the <strong>sta-ipv6-service enable</strong> command in the WLAN view.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001782282753__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Add interfaces to VLANs.</span><p><p># Add <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span> to VLAN 10 and VLAN 20, respectively.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>vlan batch 10 20</strong></pre>
+<pre class="screen">[DeviceA] <strong>interface </strong><strong><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port link-type access</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port default vlan 10</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface </strong><strong><span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port link-type access</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port default vlan 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure the IPv6 function for VLANIF 10 on DeviceA.</span><p><pre class="screen">[DeviceA] <strong>interface vlanif 10</strong>
+[DeviceA-Vlanif10] <strong>ipv6 enable</strong>
+[DeviceA-Vlanif10] <strong>ipv6 address auto link-local</strong>
+[DeviceA-Vlanif10] <strong>ipv6 address auto global default</strong></pre>
+</p></li><li><span>Configure the DHCPv6 client function on DeviceA.</span><p><p># Enable the DHCPv6 PD client function on VLANIF 10.</p>
+<pre class="screen">[DeviceA-Vlanif10] <strong>dhcpv6 client pd myprefix </strong>
+[DeviceA-Vlanif10] <strong>quit </strong></pre>
+</p><p><p># Set the DNS suffix to <strong>example.com</strong>.</p>
+<pre class="screen">[DeviceA] <strong>dns domain example.com</strong></pre>
+</p></li><li><span>Configure DeviceA to send RA messages to assign address prefixes to hosts.</span><p><p># Configure the device to send RA messages and set the M and O flags.</p>
+<pre class="screen">[DeviceA] <strong>interface vlanif 20</strong>
+[DeviceA-Vlanif20] <strong>ipv6 enable</strong>
+[DeviceA-Vlanif20] <strong>ipv6 address auto link-local</strong>
+[DeviceA-Vlanif20] <strong>ipv6 nd ra halt disable</strong>
+[DeviceA-Vlanif20] <strong>ipv6 nd autoconfig managed-address-flag</strong>
+[DeviceA-Vlanif20] <strong>ipv6 nd autoconfig other-flag</strong>
+[DeviceA-Vlanif20] <strong>ipv6 address myprefix ::1:0:0:0:1/64  </strong>
+[DeviceA-Vlanif20] <strong>quit</strong>
+[DeviceA] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p># Run the <b><span class="cmdqueryname">display dhcpv6 client</span></b> command on DeviceA to check the DHCPv6 PD client configuration.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>display dhcpv6 client</strong>
+Vlanif10 is in DHCPv6-PD client mode.                               
+State is BOUND.                                                                 
+Preferred server DUID   : 000300060819A6CDA894                                  
+  Reachable via address : FE80::A19:A6FF:FECD:A897                              
+IA PD IA ID 0x00000051 T1 43200 T2 69120                                        
+  Prefix name  : myprefix                                                       
+  Obtained     : 2022-12-22 09:33:09                                            
+  Renews       : 2022-12-22 21:33:09                                            
+  Rebinds      : 2022-12-23 04:45:09                                            
+  Prefix       : FC00:1::/48                                                      
+    Lifetime valid 172800 seconds, preferred 86400 seconds                      
+    Expires at 2022-12-24 09:33:09(172792 seconds left)                         
+DNS server     : FC00:2::1                                 </pre>
+<p># Run the <b><span class="cmdqueryname">display dhcpv6 client statistics</span></b> command on DeviceA to check statistics on DHCPv6 PD client messages.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>display dhcpv6 client statistics</strong>
+Message statistics of interface Vlanif10:                          
+   Message                  Received                                            
+   Advertise                1                                                   
+   Reply                    1                                                   
+   Reconfigure              0                                                   
+   Invalid                  0                                                   
+                                                                                
+   Message                  Sent                                                
+   Solicit                  1                                                   
+   Request                  1                                                   
+   Confirm                  0                                                   
+   Renew                    0                                                   
+   Rebind                   0                                                   
+   Release                  0                                                   
+   Decline                  0                                                   
+   Information-request      0</pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001782282753__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen">#
+ sysname DeviceA
+#
+dns domain example.com 
+#
+vlan batch 10 20
+# 
+interface Vlanif10
+ ipv6 enable
+ ipv6 address auto link-local
+ ipv6 address auto global default
+ dhcpv6 client pd myprefix
+#
+interface Vlanif20
+ ipv6 enable
+ ipv6 address myprefix ::1:0:0:0:1/64
+ ipv6 address auto link-local
+ ipv6 nd ra halt disable
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type access
+ port default vlan 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type access
+ port default vlan 20
+#
+return</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_concept_0000002242192005.html">Configuration Examples for DHCPv6
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../dc/dc_cfg_dhcpv6_0036.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

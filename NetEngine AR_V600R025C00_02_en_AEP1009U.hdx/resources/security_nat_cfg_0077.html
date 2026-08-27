@@ -1,0 +1,180 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring NAT Server for Internet Users to Access Intranet Servers">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_nat_cfg_0097.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="NAT">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NAT">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513156062">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring NAT Server for Internet Users to Access Intranet Servers</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513156062"></a><a name="EN-US_TASK_0000001513156062"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring NAT Server for Internet Users to Access Intranet Servers</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513156062__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>An enterprise has deployed <span><span class="eudemon">DeviceA</span></span> at the intranet border. NAT Server needs to be configured on DeviceA so that the web and FTP servers on the enterprise's private network can provide services to Internet users. Due to limited IP address resources, the enterprise has only one available public IP address 1.1.1.1. This IP address is assigned to the WAN interface of <span><span class="eudemon">DeviceA</span></span> and used by the intranet server to provide services to Internet users. <a href="#EN-US_TASK_0000001513156062__fig12611898592">Figure 1</a> shows the network diagram, in which the router is the access gateway provided by the ISP.</p>
+<div class="fignone" id="EN-US_TASK_0000001513156062__fig12611898592"><a name="EN-US_TASK_0000001513156062__fig12611898592"></a><a name="fig12611898592"></a><span class="figcap"><b>Figure 1 </b>Network diagram of NAT Server</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interfaces 1 and 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001564116321.png"></span></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" colspan="2" valign="top" id="mcps1.3.1.4.1.5.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.1.5.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.1.5.1.3" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p><span>10GE</span><span>0/0/1</span></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.2 "><p>IP address: 1.1.1.1/24</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.3 "><p>1.1.1.1/24 is a public address provided by the ISP.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p><span>10GE</span><span>0/0/2</span></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.2 "><p>IP address: 10.2.0.1/24</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.3 "><p>Intranet servers use 10.2.0.1 as the default gateway address.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="2" colspan="2" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p>NAT Server</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.2 "><p>Name: policy_web</p>
+<p>Public IP address: 1.1.1.1</p>
+<p>Private IP address: 10.2.0.7</p>
+<p>Public port: 8080</p>
+<p>Private port: 80</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.3 "><p>When Internet users send traffic to 1.1.1.1 through port 8080, DeviceA can forward the traffic to the web server based on this mapping entry.</p>
+<p>The web server has the private address 10.2.0.7 and private port number 80.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p>Name: policy_ftp</p>
+<p>Public IP address: 1.1.1.1</p>
+<p>Private IP address: 10.2.0.8</p>
+<p>Public port: 21</p>
+<p>Private port: 21</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p>When Internet users send traffic to 1.1.1.1 through port 21, DeviceA can forward the traffic to the FTP server based on this mapping entry.</p>
+<p>The FTP server has the private address 10.2.0.8 and private port number 21.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p>Default route</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.2 "><p>Destination address: 0.0.0.0</p>
+<p>Next-hop address: 1.1.1.254</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.3 "><p>Configure a default route to the Internet on <span><span class="eudemon">DeviceA</span></span> so that it can forward traffic from intranet servers to the ISP router.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513156062__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure IP addresses for interfaces, enabling network connectivity. In addition, enable the NAT function on <span>10GE</span> <span>0/0/1</span>.</li><li>Configure NAT Server to implement address translation for the intranet web and FTP server.</li><li>Configure a default route on <span><span class="eudemon">DeviceA</span></span> to enable it to forward traffic from intranet servers to the ISP router.</li><li>Configure a static route to the public address of intranet servers on the ISP router.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513156062__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IP addresses for interfaces, enabling network connectivity. In addition, enable the NAT function on <span>10GE</span> <span>0/0/1</span>.</span><p><p># Configure an IP address for <span>10GE</span> <span>0/0/1</span> and enable the NAT function on this interface.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitc</strong><strong>h</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>ip address 1.1.1.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>nat enable</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure an IP address for <span>10GE</span> <span>0/0/2</span>.</p>
+<pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>undo portswitc</strong><strong>h</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.2.0.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure NAT Server.</span><p><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>nat server policy_web protocol tcp global 1.1.1.1 8080 inside 10.2.0.7 www route</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>nat server policy_ftp protocol tcp global 1.1.1.1 ftp inside 10.2.0.8 ftp route</strong></pre>
+</p></li><li><span>Enable the NAT ALG function for FTP.</span><p><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>firewall</strong> <strong>detect ftp</strong></pre>
+</p></li><li><span>Configure a default route on DeviceA to enable it to forward traffic from intranet servers to the ISP router.</span><p><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>ip route-static 0.0.0.0 0.0.0.0 1.1.1.254</strong></pre>
+</p></li><li><span>On the ISP router, configure a static route to the public address of intranet servers, with the next-hop address set to 1.1.1.1. The ISP router can then forward traffic destined for the intranet server to <span><span class="eudemon">DeviceA</span></span>.</span><p><p>Contact the ISP network administrator to perform this step.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513156062__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol><li>Verify that Internet users can access the intranet servers.</li><li>Check for the session entries with the destination address as the public address of intranet servers. If such an entry is found and the post-NAT IP address is the private IP address of an intranet server, the NAT policy has been configured successfully. <pre class="screen">&lt;HUAWEI&gt; <strong>display session all verbose</strong>
+  Session Table Information:
+    Protocol          : 6(TCP)
+    SrcAddr  Port Vpn : 1.2.1.3 2474
+    DestAddr Port Vpn : 1.1.1.1 8080
+    Time To Live      : 60s
+    NAT Info
+      New SrcAddr     : -
+      New SrcPort     : -
+      New DestAddr    : 10.2.0.7
+      New DestPort    : 80
+
+  Total : 1</pre>
+</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001513156062__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#
+ sysname <span><span class="eudemon">DeviceA</span></span>
+#
+ nat server policy_web protocol tcp global 1.1.1.1 8080 inside 10.2.0.7 www route
+ nat server policy_ftp protocol tcp global 1.1.1.1 ftp inside 10.2.0.8 ftp route
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.1.1 255.255.255.0
+ nat enable
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.2.0.1 255.255.255.0 
+#
+ firewall detect ftp
+#
+ ip route-static 0.0.0.0 0.0.0.0 1.1.1.254 
+# 
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_nat_cfg_0097.html">NAT Server
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

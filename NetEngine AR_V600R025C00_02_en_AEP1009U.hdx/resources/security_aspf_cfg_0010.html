@@ -1,0 +1,101 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding PPTP ALG">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_aspf_cfg_0006.html">
+<meta name="DC.Relation" scheme="URI" content="security_aspf_cfg_0009.html">
+<meta name="DC.Relation" scheme="URI" content="security_aspf_cfg_0011.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="ALG">
+<meta name="featurename" content="ASPF">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="ALG">
+<meta name="featurename" content="ASPF">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featurename" content="ALG">
+<meta name="featurename" content="ASPF">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001513169730">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding PPTP ALG</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_CONCEPT_0000001513169730"></a><a name="EN-US_CONCEPT_0000001513169730"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding PPTP ALG</h1>
+<div><p>The Point-to-Point Tunneling Protocol (PPTP) is a new enhanced security protocol developed based on the PPP protocol. It is a method for implementing Virtual Private Networks (VPNs).</p>
+<p>PPTP is a multi-channel protocol. It uses TCP to create control channels to send control commands, and uses GRE to encapsulate data packets that will be transmitted in data channels.</p>
+<p>PPTP adopts the client/server mode. The PPTP client establishes a TCP connection with the PPTP server, and then establishes a PPTP control-layer connection on the TCP connection. Then, the PPP data packets are encapsulated through GRE and then transmitted in the tunnel. <a href="#EN-US_CONCEPT_0000001513169730__fig124601146185712">Figure 1</a> shows the key interaction process between the client and the server in the PPTP ALG scenario.</p>
+<p>In the NAT scenario where the source IP address and source port are both translated, the communication between the client and the server may be abnormal. PPTP uses GRE to encapsulate data packets, but the GRE header does not contain port information. Common NAT can only identify and translate the source IP address of the client. When multiple clients on the intranet interact with the same server, the <span><span class="eudemon">Device</span></span> receiving a response packet from the server cannot determine to which client the response packet is sent based on only the destination public IP address. As a result, the <span><span class="eudemon">Device</span></span> discards the packet.</p>
+<p>In addition, PPTP differentiates tunnels based on the source IP address and call ID in the GRE header. Because clients do not negotiate with each other, they may carry the same call ID. After the source IP address is translated using NAT, different clients correspond to the same public network address and call ID. As a result, tunnels fail to be established.</p>
+<p>Therefore, in the NAT scenario where the source IP address and source port are both translated, you need to enable PPTP ALG on the <span><span class="eudemon">Device</span></span> to translate the source IP address and convert the call ID, and create an invisible channel (server map) for subsequent data transmission. If this invisible channel is not available, data packets will be blocked under the control of a refined security policy (only packets from the client to port 1723 of the server are allowed to pass through).</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001513169730__fig124601146185712"><a name="EN-US_CONCEPT_0000001513169730__fig124601146185712"></a><a name="fig124601146185712"></a><span class="figcap"><b>Figure 1 </b>PPTP ALG</span><br><span><img class="vsd" src="figure/en-us_image_0000001513049902.png"></span><ol><li><p>The client and the server establish a TCP connection through three-way handshake. A control connection session is generated on the <span><span class="eudemon">Device</span></span>. The IP address of the client is translated from 192.168.1.1 to 1.1.1.2 through source NAT, and the port is translated from <strong>xxxx</strong> to <strong>yyyy</strong>.</p>
+</li><li><p>The client and the server continue to establish a PPTP control-layer connection based on the TCP connection. The packets matching the control connection session are permitted.</p>
+<ol type="a"><li><p>The client carries the local call ID in the Outgoing Call Request packet. The source IP address and call ID of the packet are changed on the <span><span class="eudemon">Device</span></span> and then sent to the server. Server map 1 is also created on the <span><span class="eudemon">Device</span></span>.</p>
+<pre class="screen">&lt;sysname&gt; <strong>display firewall server-map aspf</strong>
+Type: ASPF, 1.1.1.1 -&gt; 1.1.1.2:bbbb[192.168.1.1:aaaa], Zone: ---
+   Protocol: tcp(Appro: pptp-gre), Left-Time: 00:03:09
+   VPN: public -&gt; public</pre>
+<p>According to the server map, the IP address of the client is changed from 192.168.1.1 to 1.1.1.2, and the call ID of the client is changed from <strong>aaaa</strong> to <strong>bbbb</strong>.</p>
+</li><li><p>The server carries the local call ID in the Outgoing Call Reply packet. The destination IP address of the packet is translated on the <span><span class="eudemon">Device</span></span> and then sent to the client. Server map 2 is also created on the <span><span class="eudemon">Device</span></span>. The call ID of the server is equivalent to the destination port. In the source NAT scenario, the destination port does not need to be translated. Therefore, the <span><span class="eudemon">Device</span></span> does not change the call ID of the server.</p>
+<pre class="screen">&lt;sysname&gt; <strong>display firewall server-map aspf</strong>
+Type: ASPF, 192.168.1.1[1.1.1.2] -&gt; 1.1.1.1:cccc, Zone: ---
+   Protocol: tcp(Appro: pptp-gre), Left-Time: 00:03:09
+   VPN: public -&gt; public</pre>
+<p>According to the server map, the call ID of the server is <strong>cccc</strong>.</p>
+</li></ol>
+</li><li><p>The client and the server transmit data through tunnels. Two tunnels are generated for each pair of client and server to exchange data packets. One tunnel is used for communication from the client to the server, and the other is used for communication from the server to the client.</p>
+<p>When a packet from the client to the server reaches the <span><span class="eudemon">Device</span></span>, server map 2 is matched and the <span><span class="eudemon">Device</span></span> translates the source address to the public address 1.1.1.2, permits the packet, and creates a session. The packet is no longer controlled by a security policy.</p>
+<p>Similarly, when a packet from the server to the client reaches the <span><span class="eudemon">Device</span></span>, server map 1 is matched and the <span><span class="eudemon">Device</span></span> translates the destination address to the client's actual IP address 192.168.1.1 and changes the call ID to the actual call ID. Then, the <span><span class="eudemon">Device</span></span> permits the packet and creates a session. The packet is no longer controlled by a security policy.</p>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_aspf_cfg_0006.html">Configuring ASPF/ALG for Well-Known Protocols
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_aspf_cfg_0009.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_aspf_cfg_0011.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

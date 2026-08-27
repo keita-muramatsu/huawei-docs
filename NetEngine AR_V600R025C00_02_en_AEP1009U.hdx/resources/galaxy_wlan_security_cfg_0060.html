@@ -1,0 +1,450 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a WPA2-802.1X-AES Security Policy">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_security_cfg_0054.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_security_cfg_0015.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_security_cfg_0031.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="MAC Address Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="WLAN Security">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002180111434">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring a WPA2-802.1X-AES Security Policy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002180111434"></a><a name="EN-US_TASK_0000002180111434"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a WPA2-802.1X-AES Security Policy</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000002180111434__1.4.1"></a><a name="1.4.1"></a>
+<div class="p" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_context1794097266180155"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1557265444180155">In <a href="#EN-US_TASK_0000002180111434__en-us_task_0000002089197741_fig_dc_cfg_nac_0067p01">Figure 1</a>, DeviceA functioning as a WAC in an enterprise is directly connected to an AP. The enterprise deploys the WLAN named <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b3543296400">wlan-net</strong> to provide wireless network access for employees. The WAC functions as a DHCP server to assign IP addresses on the network segment 10.23.101.0/24 to STAs.</p>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p709590505180155">As the WLAN is open to users, there are potential security risks to enterprise information if no access control is available to the WLAN. To meet the enterprise's high security requirements, a WPA security policy, 802.1X authentication, and secure AES encryption need to be configured, and the RADIUS server authenticates identities of STAs.</p>
+<div class="fignone" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_fig_dc_cfg_nac_0067p01"><a name="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_fig_dc_cfg_nac_0067p01"></a><a name="en-us_task_0000002089197741_fig_dc_cfg_nac_0067p01"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring 802.1X authentication</span><div class="note" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_note267115563145"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p74311544145216">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="imgResize" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_image2098453156180155" src="figure/en-us_image_0000002053000866.png" width="522.37828125" height="235.16004246000006" title="Click to enlarge"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002180111434__1.4.2"></a><a name="1.4.2"></a>
+<div class="p" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_context1422249602180155"><h4 class="sectiontitle">Configuration Roadmap</h4><ol id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ol1634165850180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li790482683180155">Configure basic WLAN services on the WAC so that the WAC can communicate with upstream and downstream devices and that the AP can go online.</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li811339325180155">Configure RADIUS authentication parameters.</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li163478861180155">Configure an 802.1X access profile to manage 802.1X access control parameters.</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li940559294180155">Configure an authentication profile to manage NAC configurations.</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li829794086180155">Configure WLAN service parameters, and bind a security profile and an authentication profile to a VAP profile to control STA access to the WLAN.</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002180111434__1.4.3"></a><a name="1.4.3"></a>
+<div class="p" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_context28342539180155"><h4 class="sectiontitle">Data Plan</h4>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_table671991216180155" frame="border" border="1" rules="all"><thead align="left"><tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row1262371126180155"><th align="left" class="cellrowborder" valign="top" width="16%" id="mcps1.4.3.2.1.3.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p839530571180155">Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="84%" id="mcps1.4.3.2.1.3.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p306915589180155">Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row203469694180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1485618061180155">RADIUS authentication parameters</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1429169545180155">Authentication scheme name: scheme1</p>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1784291105180155">Accounting scheme name: scheme2</p>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p762842010180155">RADIUS server template name: radius_huawei</p>
+<ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul1499130640180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1123669144180155">IP address: 10.23.200.1</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1272893417180155">Authentication port number: 1812</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1014088561180155">Accounting port number: 1813</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1865524642180155">Shared key: YsHsjx_202206mc@1</li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row853174043220"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p115394073217">Authentication domain</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p175414016322">The authentication domain is named <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1168917251446">example.com</strong> and bound to:</p>
+<ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul87881429376"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li147881542113712">RADIUS server template <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b878410506114240">radius_huawei</strong></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li191624411374">Authentication scheme <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1797758973114240">scheme1</strong></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li17971154643716">Accounting scheme <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b19518420114240">scheme2</strong></li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row1809611437180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1764279418180155p0">802.1X access profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul1751329455180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1762390001180155">Name: d1</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1157300265180155">Authentication mode: EAP</li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row86804195180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1743430498180155p0">Authentication profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul1947907015180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li561904875180155">Name: p1</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li251974717180155">Bound access profile and authentication domain: 802.1X access profile <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b18754441144420">d1</strong> and authentication domain <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b197546416449">example.com</strong></li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row1876477979180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1840433757180155p0">DHCP server</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry2011334234180155p0">The WAC functions as a DHCP server to assign IP addresses to the AP and STAs.</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row1645508955180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry666735419180155p0">IP address pool for the AP</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry198288930180155p0">10.23.100.2 to 10.23.100.254/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row1940164719180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1654996206180155p0">IP address pool for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1001130211180155p0">10.23.101.2 to 10.23.101.254/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row746681397180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry878383960180155p0">IP address of the WAC's source interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry229242115180155p0">VLANIF 100: 10.23.100.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row616672548180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry2088493378180155p0">AP group</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul732185063180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1499984746180155">Name: ap-group1</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li620547779180155">Bound profiles: VAP profile <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b255531313456">wlan-vap</strong> and regulatory domain profile <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b14555713164515">domain1</strong></li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row1932922795180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry227218272180155p0">Regulatory domain profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul919591546180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li2052983015180155">Name: domain1</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1095228971180155">Country code: CN</li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row458364919180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1304986202180155p0">SSID profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul1515223745180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li2060091692180155">Name: wlan-ssid</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1470964354180155">SSID name: wlan-net</li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row456031315180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1071850985180155p0">Security profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul1444245165180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1160848427180155">Name: wlan-security</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1509536068180155">Security policy: WPA2+802.1X+AES</li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row391239013180155"><td class="cellrowborder" valign="top" width="16%" headers="mcps1.4.3.2.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry870451279180155p0">VAP profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.4.3.2.1.3.1.2 "><ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul2032131911180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1692400847180155">Name: wlan-vap</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li859188720180155">Service VLAN: VLAN 101</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1292652417180155">Bound profiles: SSID profile <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b86031352164518">wlan-ssid</strong>, security profile <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b18603352104517">wlan-security</strong>, and authentication profile <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b56034528450">p1</strong></li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002180111434__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_steps162893427180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_dc_cfg_wlan_basic_006707"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd841358591180155">Configure the device as the WAC so that the AP and WAC can transmit CAPWAP packets.</span><p><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1625811362180155"># Configure the WAC and add <span>10GE</span> <span>0/0/1</span> to VLAN 100 (management VLAN).</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen2004929282180155">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1670536062180155">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1608775006180155">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1606202906180155">vlan batch 100 101</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b641514930180155">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b7602920677">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1455377439180155">port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1219830471180155">port trunk pvid vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b313221660180155">port trunk allow-pass vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1064837814180155">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_dc_cfg_wlan_basic_006708"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd697550821180155">Configure the WAC to communicate with upstream network devices.</span><p><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p160976146180155"># Add the WAC's uplink interface <span>10GE</span> <span>0/0/2</span> to VLAN 101 (service VLAN).</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen405125792180155">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1287262758180155">interface </strong><strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b127181631133810"><span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b123580371472">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b896168398180155">port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1414223973180155">port trunk allow-pass vlan 101</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b380689137180155">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_dc_cfg_wlan_basic_006709"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd1463430463180155">Configure the WAC as a DHCP server to assign IP addresses to the AP and STAs.</span><p><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1966546276180155"># Configure the WAC as a DHCP server to assign IP addresses to APs from the IP address pool on VLANIF 100, and assign IP addresses to STAs from the IP address pool on VLANIF 101.</p>
+<div class="note" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_note915301615180155"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><div class="p" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_dns">Configure a DNS server address as required. The common methods are as follows:<ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul232321670190906"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1308948364190906">In the interface address pool scenario, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmdname1275983352190906">dhcp server dns-list</span></b> <i><span class="varname" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_varname1725413979190906">ip-address</span></i> &amp;&lt;1-8&gt; command in the VLANIF interface view.</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li973163190190906">In the global address pool scenario, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmdname1105842059190906">dns-list</span></b> <i><span class="varname" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_varname617431492190906">ip-address</span></i> &amp;&lt;1-8&gt; command in the IP address pool view.</li></ul>
+</div>
+</div></div>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen1977763532180155">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1008235388180155">dhcp enable</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b425576149180155">interface vlanif 100</strong>
+[DeviceA-Vlanif100] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b394420736180155">ip address 10.23.100.1 24</strong>
+[DeviceA-Vlanif100] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b656447399180155">dhcp select interface</strong>
+[DeviceA-Vlanif100] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b913725371180155">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b756410892180155">interface vlanif 101</strong>
+[DeviceA-Vlanif101] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1635292651180155">ip address 10.23.101.1 24</strong>
+[DeviceA-Vlanif101] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b949241513180155">dhcp select interface</strong>
+[DeviceA-Vlanif101] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b582538916180155">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_router"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd111256343180155">Configure a route from the WAC to the server (assume that the IP address of the upstream device connected to the WAC is 10.23.101.2).</span><p><pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen846689502180155">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b723957390180155">ip route-static 10.23.200.0 255.255.255.0 10.23.101.2</strong></pre>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_dc_cfg_wlan_basic_006710"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_cmd108679793180155">Configure AP onboarding.</span><p><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_p167721438532"># Create an AP group to which the APs with the same configuration can be added.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_screen119118375610">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b435609882190941">wlan</strong>
+[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b515289571190941">ap-group name ap-group1</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b685467009190941">quit</strong></pre>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_p1943123435715"># Create a regulatory domain profile, configure the WAC country code in the profile, and bind the profile to the AP group.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_screen94911383573">[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b786186692190941">regulatory-domain-profile name domain1</strong>
+[DeviceA-wlan-regulate-domain-domain1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b2119677943190941">country-code cn</strong>
+Warning: Modifying the country code will clear the channel and power configurations of radios, and requires the APs to be restarted if they run V200R019C10 or earlier. Continue? [Y/N]:<strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b359134135116">y</strong>
+[DeviceA-wlan-regulate-domain-domain1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b1923328223190941">quit</strong>
+[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b1345861752190941">ap-group name ap-group1</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b1610466502190941">regulatory-domain-profile domain1</strong>
+Warning: This configuration change will clear the channel and power configurations of radios, and may restart APs. Continue?[Y/N]:<strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b154118307015">y</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b462524377190941">quit</strong>
+[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b1945925161190941">quit</strong></pre>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_p96651843195711"># Configure the WAC's source interface.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_screen1457174765712">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b153071432420">capwap dtls no-auth enable</strong>
+Warning: This operation allows for device access in non-DTLS encryption mode even when DTLS is enabled and brings security risks. Af
+ter the device goes online for the first time, disable this function to prevent security risks. Continue? [Y/N]:<strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b873351515818">y</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b1007605707190941">capwap source interface vlanif 100</strong>
+Set the DTLS PSK(contains 8-32 plain-text characters, or 128 or 148 cipher-text characters that must be a combination of at least tw
+o of the following: lowercase letters a to z, uppercase letters A to Z, digits, and special characters):********
+Confirm PSK:********
+Set the user name for FIT APs(The value is a string of 4 to 31 characters, which can contain letters, underscores, and digits, and m
+ust start with a letter):********
+Set the password for FIT APs(plain-text password of 8-128 characters or cipher-text password of 128-268 characters that must be a co
+mbination of at least three of the following: lowercase letters a to z, uppercase letters A to Z, digits, and special characters):******
+Confirm password:********
+Set the PSK of the global offline management VAP(plain-text password of 8-63 characters or cipher-text password of 128-188 character
+s that must be a combination of at least two of the following: lowercase letters a to z, uppercase letters A to Z, digits, and speci
+al characters):********
+Confirm PSK:********
+</pre>
+<div class="note" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_note02501740181316"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_en-us_task_0000001512834582_p5622114217102">After the peer device goes online, run the <b><span class="capwap dtls no-auth enable" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_en-us_task_0000001512834582_cmdname1836138131215">undo capwap dtls no-auth enable</span></b> command to disable the function of establishing CAPWAP DTLS sessions in none authentication mode, thereby preventing unauthorized devices from accessing the network.</p>
+</div></div>
+<div class="p" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_p1896849213190941"># Import the APs offline on the WAC, and add the APs to the AP group <span class="parmvalue" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_parmvalue910111335814"><b>ap-group1</b></span>. In this example, the AP's MAC address is 00e0-fc12-3456. Configure a name for the AP based on its position, so that it can be easily located by its name. For example, name the AP <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b192361417155819">area_1</strong> if it is deployed in area 1.<div class="note" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_note2142023332190941"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_p15113201100">The default AP authentication mode is MAC address authentication. If the default settings have not been changed, you do not need to run the <b><span class="cmdqueryname" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_cmdname133250869190941">ap auth-mode mac-auth</span></b> command.</p>
+</div></div>
+</div>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_screen72910500313">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b2131059191190941">wlan</strong>
+[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b1357729041190941">ap auth-mode mac-auth</strong>
+[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b1027267010190941">ap-id 0 ap-mac 00e0-fc12-3456</strong>
+[DeviceA-wlan-ap-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b153283990190941">ap-name area_1</strong>
+[DeviceA-wlan-ap-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b1915157211190941">ap-group ap-group1</strong>
+Warning: This operation may cause AP reset. If the country code changes, it will clear channel, power and antenna gain configuration s of the radio, Whether to continue? [Y/N]:<strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b12719133761012">y</strong>
+[DeviceA-wlan-ap-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b1104804878190941">quit</strong>
+[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b2775113855319">quit</strong></pre>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_p9536313119"># After the AP goes online, disable the function of establishing CAPWAP DTLS sessions in non-authentication mode.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_screen51743187158">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_en-us_task_0000001513040202_b159941437112514">undo capwap dtls no-auth enable</strong></pre>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_radius"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd1358919314180155">Configure a RADIUS server template, an authentication scheme, and an accounting scheme.</span><p><div class="note" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_note1373150878180155"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1687535884180155">Ensure that the RADIUS server address, port number, and shared key are correctly configured and are the same as those on the RADIUS server.</p>
+</div></div>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1274709277180155"># Configure a RADIUS server template.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen1765563587180155">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b129052300180155">radius-server template radius_huawei</strong>
+[DeviceA-radius-radius_huawei] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1549431112180155">radius-server authentication 10.23.200.1 1812</strong>
+[DeviceA-radius-radius_huawei] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1292288258180155">radius-server accounting 10.23.200.1 1813</strong>
+[DeviceA-radius-radius_huawei] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1191742239180155">radius-server shared-key cipher YsHsjx_202206mc@1</strong>
+[DeviceA-radius-radius_huawei] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1015814081180155">quit</strong></pre>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p814804930180155"># Configure an authentication scheme that uses RADIUS authentication.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen559091784180155">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1366608904180155">aaa</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b475713225180155">authentication-scheme scheme1</strong>
+[DeviceA-aaa-authen-scheme1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1392779157180155">authentication-mode radius</strong>
+[DeviceA-aaa-authen-scheme1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1442060540180155">quit</strong></pre>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p2043209574180155"># Configure an accounting scheme that uses RADIUS accounting.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen165143530180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1422395712180155">accounting-scheme scheme2</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b546735786180155">accounting-mode radius</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1580729935180155">accounting realtime 15</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1801757958180155">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_note1651524917180155"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul953142544180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li49199942180155"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p122221099180155"><a name="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li49199942180155"></a><a name="en-us_task_0000002089197741_li49199942180155"></a>In this example, the device is connected to iMaster NCE-Campus. The accounting function is not provided for accounting purposes, and is only used to maintain terminal online information through accounting packets.</p>
+</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li574901211180155"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p835725424180155"><a name="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li574901211180155"></a><a name="en-us_task_0000002089197741_li574901211180155"></a>The <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1494149788180155">accounting realtime</strong> command is used to set the real-time accounting interval. A shorter real-time accounting interval requires higher performance of the device and RADIUS server. The real-time accounting interval needs to be set based on the user quantity.</p>
+</li></ul>
+</div></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_table815171445180155" frame="border" border="1" rules="all"><thead align="left"><tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row448960306180155"><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.4.4.6.2.9.1.3.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1321387679180155p0">User Quantity</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.4.4.6.2.9.1.3.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry2008631953180155p0">Real-Time Accounting Interval</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row740965039180155"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.4.4.6.2.9.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry690362117180155p0">1 to 99</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.4.4.6.2.9.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1818983558180155p0">3 minutes</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row1810941108180155"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.4.4.6.2.9.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1726264903180155p0">100 to 499</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.4.4.6.2.9.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry483812563180155p0">6 minutes</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row1817140789180155"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.4.4.6.2.9.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry278717501180155p0">500 to 999</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.4.4.6.2.9.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry310310304180155p0">12 minutes</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_row1861450965180155"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.4.4.6.2.9.1.3.1.1 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry1445390411180155p0">≥ 1000</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.4.4.6.2.9.1.3.1.2 "><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_entry432216514180155p0">≥ 15 minutes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p647338067180155"># Create the authentication domain <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1268816544556">example.com</strong> and bind an authentication scheme, an accounting scheme, and a RADIUS server template to the authentication domain.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen1103919884180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1779449303180155">domain example.com</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b9829611185718">authentication-scheme scheme1</strong>
+[DeviceA-aaa-domain-example.com]<strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b080613416577"> accounting-scheme scheme2</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1067229579180155">radius-server radius_huawei</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1924928464180155">quit</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b522075648180155">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_dot1x-access"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd1081107194180155">Configure the 802.1X access profile <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1752892585114240">d1</strong>.</span><p><div class="note" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_note325322473180155"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p201438449180155">By default, an 802.1X access profile uses EAP authentication. Ensure that the RADIUS server supports the EAP protocol. Otherwise, the RADIUS server cannot process 802.1X authentication requests.</p>
+</div></div>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen61095905180155">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b447331605180155">dot1x-access-profile name d1</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1125380938180155">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_auth-profile"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd804395169180155">Configure the authentication profile <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1237814440114240">p1</strong>, bind the 802.1X access profile to the authentication profile, and specify a forcible authentication domain.</span><p><pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen816978552180155">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1482808951180155">authentication-profile name p1</strong>
+[DeviceA-authentication-profile-p1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b373735678180155">dot1x-access-profile d1</strong>
+[DeviceA-authentication-profile-p1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b525947397180155">access-domain example.com force</strong>
+[DeviceA-authentication-profile-p1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b2102638307180155">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_dc_cfg_wlan_basic_006703"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd209144616180155">Configure WLAN service parameters.</span><p><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1545069693180155"># Create the security profile <span class="parmvalue" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_parmvalue2027784854180155"><b>wlan-security</b></span> and configure a security policy in the profile.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen2037700873180155">[DeviceA] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1571569122180155">wlan</strong>
+[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1676273082180155">security-profile name wlan-security</strong>
+[DeviceA-wlan-sec-prof-wlan-security] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b454131272180155">security wpa2 dot1x aes</strong>
+[DeviceA-wlan-sec-prof-wlan-security] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b211312974180155">quit</strong></pre>
+</p><p><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1724989173180155"># Create the SSID profile <span class="parmvalue" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_parmvalue1571569827114240"><b>wlan-ssid</b></span> and set the SSID name to <span class="parmvalue" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_parmvalue1495738561114240"><b>wlan-net</b></span>.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen1137222852180155">[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1241123782180155">ssid-profile name wlan-ssid</strong>
+[DeviceA-wlan-ssid-prof-wlan-ssid] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b390902541180155">ssid wlan-net</strong>
+[DeviceA-wlan-ssid-prof-wlan-ssid] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b943093613180155">quit</strong></pre>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p667744958180155"># Create the VAP profile <span class="parmvalue" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_parmvalue1238315342573"><b>wlan-vap</b></span>, configure the service VLAN, and bind the security profile, SSID profile, and authentication profile to the VAP profile.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen1223131448180155">[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b597576317180155">vap-profile name wlan-vap</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b299052096180155">service-vlan vlan-id 101</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b754153323180155">security-profile wlan-security</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1309685771180155">ssid-profile wlan-ssid</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b2084574197180155">authentication-profile p1</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1639899402180155">quit</strong></pre>
+<p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p33613094180155"># Bind the VAP profile <span class="parmvalue" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_parmvalue197367478573"><b>wlan-vap</b></span> to the AP group and apply the profile to radios 0 and 1 of the APs.</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen496617535180155">[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b229805331180155">ap-group name ap-group1</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b370207406180155">vap-profile wlan-vap wlan 1 radio 0</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b621948796180155">vap-profile wlan-vap wlan 1 radio 1</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b838362568180155">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_radio"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd1224217378180155">Configure channels and power for the AP radios.</span><p><div class="note" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_note1981438457180155"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1007232770180155">The automatic channel and power calibration functions are enabled by default. The manual channel and power configurations take effect only when the two functions are disabled. The channel and power configurations for the AP radios in this example are for reference only. In practice, configure the channel and power of AP radios based on the actual country code of the AP and network planning.</p>
+</div></div>
+<div class="p" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1527106740180155"># Disable the automatic channel and power calibration functions of AP radio 0, and configure its channel and power.<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen1799851686180155">[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1636787491180155">ap-id 0</strong>
+[DeviceA-wlan-ap-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1077725510180155">radio 0</strong>
+[DeviceA-wlan-ap-0-radio-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b475359473180155">calibrate auto-channel-select disable</strong>
+[DeviceA-wlan-ap-0-radio-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1620547420180155">calibrate auto-txpower-select disable</strong>
+[DeviceA-wlan-ap-0-radio-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b905013675180155">channel 20mhz 6</strong>
+Warning: This action may cause service interruption. Continue?[Y/N]<strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b692282211016">y</strong> 
+[DeviceA-wlan-ap-0-radio-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b966334905180155">eirp 127</strong>
+[DeviceA-wlan-ap-0-radio-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b517182406180155">quit</strong></pre>
+</div>
+<div class="p" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1614480331180155"># Disable the automatic channel and power calibration functions of AP radio 1, and configure its channel and power.<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen1589968782180155">[DeviceA-wlan-ap-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1720057246180155">radio 1</strong>
+[DeviceA-wlan-ap-0-radio-1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1197719335180155">calibrate auto-channel-select disable</strong>
+[DeviceA-wlan-ap-0-radio-1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b47021167180155">calibrate auto-txpower-select disable</strong>
+[DeviceA-wlan-ap-0-radio-1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b88092923180155">channel 80mhz 149</strong>
+Warning: This action may cause service interruption. Continue?[Y/N]<strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b209221822305">y</strong> 
+[DeviceA-wlan-ap-0-radio-1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b477327509180155">eirp 127</strong>
+[DeviceA-wlan-ap-0-radio-1] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b494989875180155">quit</strong>
+[DeviceA-wlan-ap-0] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b2110233874180155">quit</strong>
+[DeviceA-wlan] <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b581201740180155">quit</strong></pre>
+</div>
+</p></li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_step558670077180155"><span id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_cmd769479455180155">Verify the configuration.</span><p><ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ul1177108499180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li779498795180155">After the configuration is complete, the WLAN with the SSID <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b8737132753020">wlan-net</strong> is available to STAs.</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1926135853180155">A user can use the 802.1X authentication client on a STA for authentication. After entering the correct user name and password, the user is successfully authenticated and can access resources on the Internet. You need to configure the 802.1X authentication client based on the configured authentication mode PEAP.<ul id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_dc_cfg_wlan_sec_0023_ul01"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li2107426345180155"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1066790444180155"><a name="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li2107426345180155"></a><a name="en-us_task_0000002089197741_li2107426345180155"></a>Configuration in the Windows XP operating system:</p>
+<ol type="a" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ol893409571180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1879638833180155">On the <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b177951744704">Association</strong> tab page of the <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b6795154411014">Wireless network properties</strong> dialog box, add SSID <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b179519441000">wlan-net</strong>, and set the authentication mode to <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b11795044404">WPA2</strong> and encryption mode to <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b57951446013">AES</strong>.</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li933949044180155">On the <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b76012531705">Authentication</strong> tab page, set <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b176021531020">EAP type</strong> to <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b96026531409">PEAP</strong> and click <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b136021853506">Properties</strong>. In the <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b186021453206">Protected EAP Properties</strong> dialog box, deselect <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1360214531401">Validate server certificate</strong> and click <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b206021538015">Configure</strong>. In the dialog box that is displayed, deselect <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b196021653807">Automatically use my Windows logon name and password</strong> and click <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b106022531013">OK</strong>.</li></ol>
+</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li331511890180155"><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p1147754912180155"><a name="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li331511890180155"></a><a name="en-us_task_0000002089197741_li331511890180155"></a>Configuration in the Windows 7 operating system:</p>
+<ol type="a" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_ol976964214180155"><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li1727837269180155">Access the <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b75122298116">Manage wireless networks</strong> page, click <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1651212291411">Add</strong> and select <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b11512102913111">Manually create a network profile</strong>. In the dialog box that is displayed, add SSID <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1351318291717">wlan-net</strong>, set the authentication mode to <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1651382919114">WPA2-Enterprise</strong> and encryption mode to <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1351319298112">AES</strong>. Click <span class="uicontrol" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_uicontrol80176591180155"><b>Next</b></span>.</li><li id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_li84444290180155">Scan SSIDs and double-click SSID <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b859857145114240">wlan-net</strong>. On the <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1986120337114240">Security</strong> tab page, set <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1790607877114240">EAP type</strong> to <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1170464329114240">PEAP</strong> and click <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1974741408114240">Settings</strong>. In the dialog box that is displayed, deselect <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b226050245114240">Validate server certificate</strong> and click <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b862798277114240">Configure</strong>. In the dialog box that is displayed, deselect <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1753739383114240">Automatically use my Windows logon name and password</strong> and click <strong id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_b1009397230114240">OK</strong>.</li></ol>
+</li></ul>
+</li></ul>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_example477471579180155"><a name="EN-US_TASK_0000002180111434__1.4.5"></a><a name="1.4.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_p621194565180155">DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000002180111434__en-us_task_0000002089197741_screen186093012180155">#
+sysname DeviceA
+#
+vlan batch 100 to 101
+#
+authentication-profile name p1
+ dot1x-access-profile d1
+ access-domain example.com force
+#
+dot1x-access-profile name d1
+#
+dhcp enable
+#
+radius-server template radius_huawei
+ radius-server shared-key cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!Cd/`W03KjAwAqn64E&lt;\TxGC_SOri&lt;2BP\A+!!!!!2jp5!!!!!!B!!!!Oe2HMc-&gt;XMa#TLDZUaJBFJtm#XVj*E:S*|(N7`J1B:3QY!!!!!!!!!!!!!!!%+%# 
+ radius-server authentication 10.23.200.1 1812 weight 80
+ radius-server accounting 10.23.200.1 1813 weight 80
+#
+aaa
+ authentication-scheme scheme1
+  authentication-mode radius
+ accounting-scheme scheme2
+  accounting-mode radius
+  accounting realtime 15
+ domain example.com
+  authentication-scheme scheme1
+  accounting-scheme scheme2
+  radius-server radius_huawei
+#
+interface Vlanif100
+ ip address 10.23.100.1 255.255.255.0
+ dhcp select interface
+#
+interface Vlanif101
+ ip address 10.23.101.1 255.255.255.0
+ dhcp select interface
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk pvid vlan 100
+ port trunk allow-pass vlan 100
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 101
+#
+ip route-static 10.23.200.0 255.255.255.0 10.23.101.2 
+#  
+capwap source interface vlanif 100
+#
+wlan
+ security-profile name wlan-security
+  security wpa2 dot1x aes
+ ssid-profile name wlan-ssid
+  ssid wlan-net
+ vap-profile name wlan-vap
+  service-vlan vlan-id 101
+  ssid-profile wlan-ssid
+  security-profile wlan-security
+  authentication-profile p1
+ regulatory-domain-profile name domain1
+ ap-group name ap-group1
+  regulatory-domain-profile domain1
+  radio 0
+   vap-profile wlan-vap wlan 1
+  radio 1
+   vap-profile wlan-vap wlan 1
+ ap-id 0 type-id 1 ap-mac 00e0-fc12-3456 ap-sn 210235554710CB000042
+  ap-name area_1
+  ap-group ap-group1
+  radio 0
+   channel 20mhz 6
+   eirp 127
+<span>   calibrate auto-channel-select disable  </span>
+<span>   calibrate auto-txpower-select disable</span>
+  radio 1
+   channel 80mhz 149
+   eirp 127
+<span>   calibrate auto-channel-select disable </span>
+<span>   calibrate auto-txpower-select disable</span>
+#
+return</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_security_cfg_0054.html">Configuration Examples for WLAN Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_wlan_security_cfg_0015.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_wlan_security_cfg_0031.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

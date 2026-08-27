@@ -1,0 +1,100 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Network Resource Push">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0038.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0050.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0052.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563873885">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Network Resource Push</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563873885"></a><a name="EN-US_TASK_0000001563873885"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Network Resource Push</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001563873885__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Network resource push takes effect only for template IPsec policies.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563873885__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>When multiple branches are connected to the headquarters, network resources such as IP addresses and DNS server addresses can be centrally deployed on the headquarters gateway to simplify the configuration and maintenance of IPsec and other network resources on the gateways in the branches. When a branch gateway initiates IKEv2 negotiation and establishes an IPsec tunnel with the headquarters gateway, the headquarters gateway can push network resources to the branch gateway through IKEv2. The headquarters gateway can push network resources and differentiate network resources of different branches using the following methods:</p>
+<ul><li><p>Use an IP address pool: Network resources including IP addresses, domain names, and DNS server addresses can be configured on the headquarters gateway and pushed to the branches' gateways.</p>
+</li><li><p>Use an IKE user table: For the IKE users in an IKE user table, IP addresses and DNS server addresses can be configured on the headquarters gateway and pushed to the branches' gateways.</p>
+</li></ul>
+<p>The method of using an IKE user table takes precedence over the method of using a service scheme, and can push different network resources including IP addresses and DNS server addresses to different branches.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001563873885__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure network resource push using a service scheme.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Reference a global address pool.</span><p><pre class="screen"><b><span class="cmdqueryname">ip-pool</span></b> <i><span class="varname">ip-pool-name</span></i></pre>
+<p>By default, no global address pool is referenced by an IKE peer.</p>
+<p><i><span class="varname">ip-pool-name</span></i> specifies a global address pool created using the <b><span class="cmdqueryname">ip-pool</span></b> <i><span class="varname">ip-pool-name</span></i> command in the system view.</p>
+</p></li></ol>
+</li><li><span>Configure network resource push using an IKE user table.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE user table view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike user-table</span></b> <i><span class="varname">user-table-id</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE user view.</span><p><pre class="screen"><b><span class="cmdqueryname">user</span></b> <i><span class="varname">user-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the IP address to be allocated to an IKE user.</span><p><pre class="screen"><b><span class="cmdqueryname">ip-alloc</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>mask</span></strong> <i><span class="varname">ip-mask</span></i></pre>
+<p>By default, the IP address to be allocated to an IKE user is not configured.</p>
+</p></li><li class="substepexpand"><span>Configure the DNS server address to be allocated to an IKE user.</span><p><pre class="screen"><b><span class="cmdqueryname">dns</span></b> <i><span class="varname">ipv4-address1</span></i> [ <i><span class="varname">ipv4-address2</span></i> ]
+<b><span class="cmdqueryname">quit</span></b></pre>
+<p>By default, the DNS server address to be allocated to an IKE user is not configured.</p>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Reference an IKE user table.</span><p><pre class="screen"><b><span class="cmdqueryname">user-table</span></b> <i><span class="varname">user-table-id</span></i></pre>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0038.html">IPsec Reliability
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0050.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0052.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

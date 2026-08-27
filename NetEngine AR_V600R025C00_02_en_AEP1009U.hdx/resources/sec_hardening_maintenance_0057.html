@@ -1,0 +1,82 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="VRRP Security">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0021.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0056.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0022.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563891733">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>VRRP Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563891733"></a><a name="EN-US_TASK_0000001563891733"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">VRRP Security</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563891733__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Overview</h4><p>VRRP groups several routing devices into a virtual one. If one routing device fails, services are switched to another one, ensuring service continuity and reliability.</p>
+<p>VRRP may have the following security risks:</p>
+<ul><li>A large number of valid VRRP packets are sent within a period of time to attack a device.</li><li>VRRP packets that do not meet VRRP security check requirements are constructed to attack a device.</li></ul>
+<div class="p">To address the preceding risks, VRRP provides the following security hardening measures:<ul><li>Attack packet suppression: If a device receives more than 20 packets within a period of time or receives packets sent from itself, it discards the packets.</li><li>VRRP authentication configuration: VRRP supports simple authentication and HMAC-MD5 authentication. You are advised to configure HMAC-MD5 authentication for VRRP to improve security.</li><li>Packet check: This function is supported by default and does not need to be configured.</li></ul>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563891733__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Impact on the System</h4><ul><li>Receiving a large number of VRRP packets within a period of time may cause high CPU usage.</li><li>Receiving packets that do not meet VRRP security requirements may bring security risks.</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563891733__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Switch the interface working mode to Layer 3.</span><p><pre class="screen" id="EN-US_TASK_0000001563891733__en-us_task_0228023023_screen166833536478"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563891733__en-us_task_0228023023_cmdname182821059820">undo portswitch</span></b></pre>
+<p id="EN-US_TASK_0000001563891733__en-us_task_0228023023_p18457174912148">Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li><span>Configure an authentication mode for a specified VRRP group.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">vrrp vrid</span></b> </strong><em><i><span class="varname">virtual-router-id</span></i></em><strong> <b><span class="cmdqueryname">authentication-mode</span></b></strong><strong> { simple</strong> { [ <strong>plain </strong>]<strong> </strong><em><i><span class="varname">key</span></i></em> | <strong>cipher</strong><em> <i><span class="varname">cipher-key</span></i></em> } | <strong>md5 </strong><i><span class="varname">md5-key</span></i> }</pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>VRRP supports only simple authentication and HMAC-MD5 authentication. HMAC-MD5 authentication with higher security is recommended.</p>
+</div></div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563891733__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <strong><b><span class="cmdqueryname">display vrrp </span></b></strong>[ <strong>interface</strong> { <em><i><span class="varname">interface-nam</span></i>e</em> | <em><i><span class="varname">interface-type</span></i></em><em><i><span class="varname"> interface-number</span></i></em> } ] [ <em><i><span class="varname">virtual-id</span></i></em><i><span class="varname"> </span></i>] <strong>verbose</strong> command. The <strong>Auth Type</strong> field in the command output indicates the authentication mode of VRRP packets.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0021.html">Control Plane Security (Level-1)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0056.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0022.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring BGP Graceful Degradation">
+<meta name="abstract" content="On a live network, the memory usage of a device may be high when the service traffic is heavy or the configuration is incorrect. If BGP keeps accepting new routes in this case, the device memory may be exhausted. As a result, the process or board is reset, or even the device is restarted. When the memory usage increases rapidly, BGP graceful degradation can take hierarchical policies, such as reducing the route learning speed, stopping route learning, and disconnecting peer relationships, to proactively cope with the situation. This ensures that the memory usage of the device is within a proper range while reducing the impact on services, ensuring normal service running and preventing serious events such as device restarts.">
+<meta name="description" content="On a live network, the memory usage of a device may be high when the service traffic is heavy or the configuration is incorrect. If BGP keeps accepting new routes in this case, the device memory may be exhausted. As a result, the process or board is reset, or even the device is restarted. When the memory usage increases rapidly, BGP graceful degradation can take hierarchical policies, such as reducing the route learning speed, stopping route learning, and disconnecting peer relationships, to proactively cope with the situation. This ensures that the memory usage of the device is within a proper range while reducing the impact on services, ensuring normal service running and preventing serious events such as device restarts.">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0144.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0147.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_2000.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002213813577">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring BGP Graceful Degradation</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002213813577"></a><a name="EN-US_TASK_0000002213813577"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring BGP Graceful Degradation</h1>
+<div class="taskbody"><p>On a live network, the memory usage of a device may be high when the service traffic is heavy or the configuration is incorrect. If BGP keeps accepting new routes in this case, the device memory may be exhausted. As a result, the process or board is reset, or even the device is restarted. When the memory usage increases rapidly, BGP graceful degradation can take hierarchical policies, such as reducing the route learning speed, stopping route learning, and disconnecting peer relationships, to proactively cope with the situation. This ensures that the memory usage of the device is within a proper range while reducing the impact on services, ensuring normal service running and preventing serious events such as device restarts.</p>
+<div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000002213813577__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring BGP graceful degradation, you have completed the following task:</p>
+<ul><li><p><a href="vrp_bgp_cfg_0014.html">Configure basic BGP functions.</a></p>
+</li><li>Run the <b><span class="cmdqueryname">memory-usage reliability switch on</span></b> command to enable memory overload reliability.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002213813577__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Based on the device memory usage, the device memory states are classified as follows:</p>
+<ol><li>Warning state: state when the device memory usage exceeds the warning threshold (also called the notification threshold). The default warning threshold is 70%, indicating that the device enters the warning state when the device memory usage exceeds 70%. You can set this threshold using the <strong>notice-threshold</strong> <em>notice-threshold-value</em> in the <b><span class="cmdqueryname">memory-usage reliability</span></b> command.</li><li>Danger state: state when the device memory usage exceeds the danger threshold (also called the overload threshold). The default danger threshold is 85%, indicating that the device enters the danger state when the device memory usage exceeds 85%. You can set this threshold using the <strong>overload-threshold</strong> <em>overload-threshold-value</em> in the <b><span class="cmdqueryname">memory-usage reliability</span></b> command.</li><li>Exception state: state when the device memory usage exceeds the exception threshold. The default exception threshold is 90%, indicating that the device enters the exception state when the device memory usage exceeds 90%. You can set this threshold using the <strong>exception-threshold</strong> <em>exception-threshold-value</em> in the <b><span class="cmdqueryname">memory-usage reliability</span></b> command.</li></ol>
+<p><a href="#EN-US_TASK_0000002213813577__table816723594816">Table 1</a> lists the hierarchical policies, processing modes, and recovery measures taken by BGP in different memory states.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000002213813577__table816723594816"></a><a name="table816723594816"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000002213813577__table816723594816" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Processing and recovery measures used in BGP graceful degradation</caption><thead align="left"><tr><th align="center" class="cellrowborder" valign="top" width="12.16%" id="mcps1.4.2.4.2.5.1.1" liSelected="liSelected"><p>Device Status</p>
+</th>
+<th align="center" class="cellrowborder" valign="top" width="8.16%" id="mcps1.4.2.4.2.5.1.2" liSelected="liSelected"><p>Policy</p>
+</th>
+<th align="center" class="cellrowborder" valign="top" width="51.1%" id="mcps1.4.2.4.2.5.1.3" liSelected="liSelected"><p>Processing Mode</p>
+</th>
+<th align="center" class="cellrowborder" valign="top" width="28.58%" id="mcps1.4.2.4.2.5.1.4" liSelected="liSelected"><p>Recovery Measure</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="12.16%" headers="mcps1.4.2.4.2.5.1.1 "><p>Memory warning state</p>
+</td>
+<td class="cellrowborder" valign="top" width="8.16%" headers="mcps1.4.2.4.2.5.1.2 "><p>Reducing the route learning speed</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.1%" headers="mcps1.4.2.4.2.5.1.3 "><p>When the memory enters the warning state, the BGP route learning speed is reduced to control the memory usage increase.</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.58%" headers="mcps1.4.2.4.2.5.1.4 "><p>Restore the normal route learning rate.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="12.16%" headers="mcps1.4.2.4.2.5.1.1 "><p>Memory danger state</p>
+</td>
+<td class="cellrowborder" valign="top" width="8.16%" headers="mcps1.4.2.4.2.5.1.2 "><p>Stopping route learning</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.1%" headers="mcps1.4.2.4.2.5.1.3 "><p>If the memory enters the danger state and the BGP memory usage ranks in the top 3, the device stops learning new routes from peers (only updating and deleting routes).</p>
+<p>The IPv4, VPNv4, VPNv6, EVPN, and IPv6 address families are affected, and other address families are not affected.</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.58%" headers="mcps1.4.2.4.2.5.1.4 "><p>Re-learn routes from each peer to control the route learning rate.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="12.16%" headers="mcps1.4.2.4.2.5.1.1 "><p>Staying in the memory danger state for over a specified period of time</p>
+</td>
+<td class="cellrowborder" valign="top" width="8.16%" headers="mcps1.4.2.4.2.5.1.2 "><p>Disconnecting peer relationships</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.1%" headers="mcps1.4.2.4.2.5.1.3 "><p>If the memory is in the danger state for a long time and the escape time has expired, peers are disconnected.</p>
+<ol><li>Peer disconnection sequence: The peer from which the highest proportion of non-optimal routes are learned is preferentially disconnected.</li><li>To prevent key services from being interrupted, you can run a command to configure the device not to disconnect a specified peer when the device memory is in the danger state.</li></ol>
+</td>
+<td class="cellrowborder" valign="top" width="28.58%" headers="mcps1.4.2.4.2.5.1.4 "><p>Re-establish the peer relationships in sequence.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="12.16%" headers="mcps1.4.2.4.2.5.1.1 "><p>Over a specified period after all peers are disconnected</p>
+</td>
+<td class="cellrowborder" valign="top" width="8.16%" headers="mcps1.4.2.4.2.5.1.2 "><p>Restarting the BGP process</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.1%" headers="mcps1.4.2.4.2.5.1.3 "><p>If the memory stays in the danger state for a short period of time after all peers are disconnected, the involved BGP process or board is restarted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.58%" headers="mcps1.4.2.4.2.5.1.4 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="12.16%" headers="mcps1.4.2.4.2.5.1.1 "><p>Memory exception state</p>
+</td>
+<td class="cellrowborder" valign="top" width="8.16%" headers="mcps1.4.2.4.2.5.1.2 "><p>Restarting the BGP process</p>
+</td>
+<td class="cellrowborder" valign="top" width="51.1%" headers="mcps1.4.2.4.2.5.1.3 "><p>If the memory enters the exception state, the involved BGP process or board is restarted.</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.58%" headers="mcps1.4.2.4.2.5.1.4 "><p>-</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002213813577__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="system-view">system-view</span></b></pre>
+</p></li><li><span>Configure BGP to discard received routes when the device memory is in the danger state.</span><ul><li>Configure BGP to discard the following routes when the device memory is in the danger state: the routes newly received from peers, the routes newly leaked from the VPNv4, VPNv6, and EVPN address families to VPN instances, and the routes advertised by VPN instances to the VPNv4, VPNv6, and EVPN address families.<pre class="screen"><b><span class="bgp memory-usage danger-threshold new-route">bgp memory-usage danger-threshold</span></b> <strong><span>discard</span></strong> <strong><span>new-route</span></strong> <strong><span>include</span></strong> { <strong><span>vrf-import-route</span></strong> | <strong><span>vrf-export-route</span></strong> }<span><sup>*</sup></span></pre>
+</li><li>Configure BGP to discard newly received routes when the device memory is in the danger state.<pre class="screen"><b><span class="bgp memory-usage danger-threshold new-route">bgp memory-usage danger-threshold</span></b> <strong><span>discard</span></strong> <strong><span>new-route</span></strong></pre>
+</li></ul>
+<p><div class="caution"><span class="cautiontitle"><img src="public_sys-resources/caution_3.0-en-us.png"> </span><div class="cautionbody"><p>Configuring the <b><span class="bgp memory-usage danger-threshold new-route">bgp memory-usage danger-threshold</span></b> <strong><span>discard</span></strong> <strong><span>new-route</span></strong> command may affect route learning and compromise services. Therefore, exercise caution when running this command.</p>
+</div></div>
+</p></li><li><span>Configure the device to tear down peer relationships if the device memory remains in the danger state for a specified period and the memory usage of the BGP component ranks in the top 3, and to reset the BGP process if the danger state persists and the memory usage of the BGP component still ranks in the top 3 after the peer relationships are torn down.</span><p><pre class="screen"><b><span class="bgp memory-usage danger-threshold escape timeout">bgp memory-usage danger-threshold escape timeout</span></b> <i><span class="varname">time</span></i> [ <i><span class="varname">minute</span></i> ]</pre>
+<div class="caution"><span class="cautiontitle"><img src="public_sys-resources/caution_3.0-en-us.png"> </span><div class="cautionbody"><p>Configuring the <b><span class="bgp memory-usage danger-threshold escape timeout">bgp memory-usage danger-threshold escape timeout</span></b> <i><span class="varname">time</span></i> [ <i><span class="varname">minute</span></i> ] command may interrupt services such as IGP and route management services. Therefore, exercise caution when running this command. You can run the <strong><b><span class="bgp memory-usage danger-threshold escape">bgp memory-usage danger-threshold escape</span></b> <strong><span>disable</span></strong></strong> command to disable BGP from attempting to escape from the danger state when the device memory is in the danger state.</p>
+</div></div>
+</p></li><li><span>(Optional) Configure the device not to establish peer relationships with the BGP peers that fail to go up in a specified period when the device memory is in the danger state.</span><p><pre class="screen"><b><span class="bgp memory-usage danger-threshold escape timeout">bgp memory-usage danger-threshold not-allow-connect</span></b> [ <strong>escape time</strong> <i><span class="varname">time-value</span></i> ]</pre>
+<p>By default, when the device memory is in the danger state and the memory usage of the BGP component ranks in the top 3, the device does not establish peer relationships with the BGP peers that fail to go up within 72 hours.</p>
+</p></li><li><span>(Optional) Configure the device not to disconnect a specified peer when the device memory is in the danger state.</span><ol type="a"><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="bgp">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the device not to disconnect a specified peer when the device memory is in danger state. This prevents key services from being affected.</span><p><pre class="screen"><b><span class="peer low-memory exempt">peer</span></b> { <i><span class="varname">peerIpv4Addr</span></i> | <i><span class="varname">peerIpv6Addr</span></i> | <i><span class="varname">groupName</span></i> } <strong><span>low-memory exempt</span></strong></pre>
+</p></li><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="quit">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>(Optional) Configure the device to exempt rejected routes when the device memory is in the danger state.</span><ol type="a"><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="bgp">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP-IPv4 unicast address family view.</span><p><pre class="screen"><b><span class="ipv4-family unicast">ipv4-family</span></b> <strong><span>unicast</span></strong></pre>
+</p></li><li class="substepexpand"><span>Configure the device to accept only the routes that match the specified IP prefix list when the device memory is in the danger state.</span><p><pre class="screen"><b><span class="prefix low-memory exempt ip-prefix">prefix low-memory exempt ip-prefix</span></b> <i><span class="varname">prefix-filter-name</span></i></pre>
+</p><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When the device memory is in the danger state, the routes received from BGP peers are rejected. To restore the rejected routes after the <b><span class="prefix low-memory exempt ip-prefix">prefix low-memory exempt ip-prefix</span></b> command is run, run the <b><span class="refresh bgp">refresh bgp</span></b> command.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="quit">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="quit">quit</span></b></pre>
+</p></li></ol>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_bgp_cfg_0144.html">Maintaining BGP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bgp_cfg_0147.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_bgp_cfg_2000.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

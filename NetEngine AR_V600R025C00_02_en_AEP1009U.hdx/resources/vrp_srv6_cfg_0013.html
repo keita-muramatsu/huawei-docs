@@ -1,0 +1,89 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding EVPN L3VPN over SRv6 BE">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0012.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0014.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Learning More">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001130622586">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Understanding EVPN L3VPN over SRv6 BE</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001130622586"></a><a name="EN-US_CONCEPT_0000001130622586"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding EVPN L3VPN over SRv6 BE</h1>
+<div><p></p>
+<p>Implementing EVPN L3VPN over SRv6 BE involves establishing SRv6 BE paths, advertising VPN routes, and forwarding data. The following uses EVPN L3VPNv4 over SRv6 BE as an example. The data forwarding process in an EVPN L3VPNv6 over SRv6 BE scenario is similar and is therefore not described here.</p>
+<div class="p"><a href="#EN-US_CONCEPT_0000001130622586__fig_dc_vrp_srv6_all_feature_002801">Figure 1</a> shows how EVPN L3VPNv4 over SRv6 BE is implemented.<div class="fignone" id="EN-US_CONCEPT_0000001130622586__fig_dc_vrp_srv6_all_feature_002801"><a name="EN-US_CONCEPT_0000001130622586__fig_dc_vrp_srv6_all_feature_002801"></a><a name="fig_dc_vrp_srv6_all_feature_002801"></a><span class="figcap"><b>Figure 1 </b>Implementation of EVPN L3VPNv4 over SRv6 BE</span><br><span><img class="vsd" src="figure/en-us_image_0000001176662189.png"></span></div>
+<ol><li>SRv6 and SRv6 VPN are configured on each PE, and IPv6 is enabled on the transit node.</li><li>PE2 advertises an SRv6 locator route to PE1.</li><li><p>CE-to-PE route advertisement: CE2 advertises its IPv4 route to PE2. Either a static route or a routing protocol (RIP, OSPF, IS-IS, or BGP) can be deployed between the CE and PE.</p>
+</li><li>After learning the route advertised by CE2, PE2 installs it in the IPv4 routing table of the corresponding VPN instance and converts it into an EVPN IP prefix route.</li><li><p>Inter-PE route advertisement: PE2 advertises the EVPN IP prefix route to its BGP EVPN peer PE1 through an update message carrying RT and SRv6 VPN SID attributes.</p>
+</li><li><p>After PE1 receives the EVPN IP prefix route, if the next hop of the route is reachable and the route matches the BGP import route-policy, PE1 performs a series of actions to determine whether to install the route in the IPv4 routing table of the corresponding EVPN instance. These actions include VPN route leaking, route recursion to an SRv6 BE path, and route selection. The VPN route is associated with an SRv6 VPN SID when being delivered.</p>
+</li><li><p>PE-to-CE route advertisement: CE1 can learn the VPN route from PE1 through a static route or a routing protocol (RIP, OSPF, IS-IS, or BGP). The route advertisement process is similar to that from CE2 to PE2.</p>
+</li></ol>
+</div>
+<div class="p"><a href="#EN-US_CONCEPT_0000001130622586__fig_dc_vrp_srv6_all_feature_002802">Figure 2</a> shows route advertisement and data forwarding in an EVPN L3VPNv4 over SRv6 BE scenario.<div class="fignone" id="EN-US_CONCEPT_0000001130622586__fig_dc_vrp_srv6_all_feature_002802"><a name="EN-US_CONCEPT_0000001130622586__fig_dc_vrp_srv6_all_feature_002802"></a><a name="fig_dc_vrp_srv6_all_feature_002802"></a><span class="figcap"><b>Figure 2 </b>Route advertisement and data forwarding in an EVPN L3VPNv4 over SRv6 BE scenario</span><br><span><img class="imgResize" src="figure/en-us_image_0000001130622648.png" width="522.37828125" height="328.13899849500007" title="Click to enlarge"></span></div>
+</div>
+<div class="p">In the route advertisement phase:<ol><li>A locator is configured on PE2.</li><li>PE2 advertises the locator route 2001:DB8:2:1::/64 corresponding to the specified SRv6 SID to PE1 through an IGP. PE1 then installs the route in its IPv6 routing table.</li><li>A VPN End.DT4 SID 2001:DB8:2:1::C100 within the locator range is configured on PE2, which then generates My Local SID Table.</li><li>After receiving the VPN IPv4 route advertised by CE2, PE2 converts it into an EVPN IP prefix route and advertises it to PE1 through the BGP EVPN peer relationship. The route carries an SRv6 VPN SID, that is, the End.DT4 SID 2001:DB8:2:1::C100.</li><li>After receiving the EVPN route, PE1 leaks it to the IPv4 routing table of the corresponding VPN instance, converts it into a common IPv4 route, and advertises it to CE1.</li></ol>
+</div>
+<div class="p">In the data forwarding phase:<ol><li><p>CE1 sends a common IPv4 packet to PE1.</p>
+</li><li><p>After receiving the packet through the interface bound to a VPN instance, PE1 searches the IPv4 routing table of the corresponding VPN instance for a matching IPv4 prefix and finds the associated SRv6 VPN SID and next hop. Then, the device directly uses the SRv6 VPN SID 2001:DB8:2:1::C100 as the destination address and encapsulates the packet into an IPv6 one.</p>
+</li><li><p>PE1 finds the route 2001:DB8:2:1::/64 based on the longest match rule and forwards the packet to the P device over the shortest path.</p>
+</li><li><p>Similarly, the P device finds the route 2001:DB8:2:1::/64 based on the longest match rule and forwards the packet to PE2 over the shortest path.</p>
+</li><li><p>PE2 searches My Local SID Table based on 2001:DB8:2:1::C100 and finds a matching End.DT4 SID. According to the instruction bound to the SID, PE2 removes the IPv6 header and searches the IPv4 routing table of the VPN instance corresponding to the End.DT4 SID for packet forwarding.</p>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0012.html">Configuring EVPN L3VPN over SRv6 BE
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0014.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

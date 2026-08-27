@@ -1,0 +1,127 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Layer 3 Multicast Security">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0114.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564012069">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Layer 3 Multicast Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564012069"></a><a name="EN-US_TASK_0000001564012069"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Layer 3 Multicast Security</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564012069__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>Layer 3 multicast security policies include PIM neighbor filtering, PIM Join message filtering, MSDP MD5 authentication, and MSDP keychain authentication.</p>
+<ul><li>PIM neighbor filtering<p>ACL rules can be configured on interfaces to filter received Hello messages. Neighbor relationships can be established only after the Hello messages pass the filtering. </p>
+<p>If a large number of malicious Hello messages exist, configure rules on interfaces so that the interfaces allow only specified Hello messages to pass through and discard malicious Hello messages.</p>
+</li><li>PIM Join message filtering<p>ACL rules can be configured on interfaces to filter received Join messages. This can prevent attacks initiated using malicious Join messages.</p>
+<p>If a large number of malicious Join messages exist, configure rules on interfaces so that the interfaces allow only specified Join messages to pass through and discard malicious Join messages.</p>
+</li><li>MSDP MD5 authentication<p>MD5 authentication can be configured on MSDP peers to provide security protection. MD5 authentication must be enabled on both peers, and the authentication passwords configured for them must be the same. After this function is enabled, the transmit end peer sends an MD5-encrypted MSDP message, which is transferred to the receive end peer over a TCP connection. The receive end peer decrypts the MSDP message based on the uniform MD5 encryption rules and the key contained in the message. After decrypting the message successfully, the receive end peer sends the message to the MSDP module for processing.</p>
+<p>Only the MSDP messages passing MD5 authentication are processed. This effectively prevents attacks that are conducted through malicious messages.</p>
+</li><li>MSDP keychain authentication<p>Multicast MSDP supports keychains. Keychains and new TCP extension options can be used to configure a group of passwords for each TCP connection. Each password can be configured with different encryption algorithms and validity periods. Passwords can be changed at any time, which greatly improves the security of encrypted messages.</p>
+<p>Only the messages passing keychain authentication are processed. This effectively prevents attacks that are conducted through malicious messages.</p>
+</li></ul>
+<h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001564012069__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure PIM neighbor filtering.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a basic numbered ACL or named ACL as needed.</span><p><ul><li>Configure a basic ACL.<pre class="screen"><span><b><span class="cmdqueryname">acl</span></b> [ <strong><span>number</span></strong> ] <i><span class="varname">basic-acl-number</span></i></span>
+<span><b><span class="cmdqueryname"> rule</span></b> [ <i><span class="varname">rule-id</span></i> ] [ <strong><span>name</span></strong> <i><span class="varname">rule-name</span></i> ] { <strong><span>deny</span></strong> | <strong><span>permit</span></strong> } <strong><span>source</span></strong> { <i><span class="varname">source-ip-address</span></i> { <i><span class="varname">source-wildcard</span></i> | <strong><span>0</span></strong> } | <strong><span>any</span></strong> }</span>
+<strong><b><span class="cmdqueryname"> quit</span></b></strong></pre>
+</li><li>Configure a named ACL.<pre class="screen"><strong><b><span class="cmdqueryname">acl</span></b></strong> <strong><span>name</span></strong> <em><i><span class="varname">acl-name</span></i></em> <strong><strong><span>basic</span></strong></strong>
+<strong><b><span class="cmdqueryname"> rule</span></b></strong> [ <i><span class="varname">rule-id </span></i>] [ <strong><strong><span>name</span></strong></strong> <em><i><span class="varname">rule-name</span></i></em> ] { <strong><strong><span>deny</span></strong></strong> | <strong><strong><span>permit</span></strong></strong> } <strong><strong><span>source</span></strong></strong> { <em>source-ip-address</em> { <em><i><span class="varname">source-wildcard</span></i></em> | <strong><strong><span>0</span></strong></strong> } | <strong>any</strong> }
+<strong><b><span class="cmdqueryname"> quit</span></b></strong></pre>
+</li></ul>
+</p></li><li class="substepexpand"><span>Enter the PIM interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Switch the interface working mode to Layer 3.</span><p><pre class="screen" id="EN-US_TASK_0000001564012069__en-us_task_0228023023_screen132321812144720"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564012069__en-us_task_0228023023_cmdname42322122476">undo portswitch</span></b></pre>
+<p id="EN-US_TASK_0000001564012069__en-us_task_0228023023_p64817191519">Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li class="substepexpand"><span>Configure a neighbor filtering policy.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">pim neighbor-policy</span></b></strong> { <em>basic-acl-number</em> | <strong>acl-name</strong> <em>acl-name</em> }</pre>
+<p>The neighbor filtering policy defines the range of valid neighbor addresses, and the device discards the Hello messages received from the neighbors whose addresses are beyond the range.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>If a received message matches the ACL rule in <strong>permit</strong> mode, the device establishes a neighbor relationship with the remote end.</li><li>If a received message matches the ACL rule in <strong>deny</strong> mode, the device does not establish a neighbor relationship with the remote end.</li><li>If a received message does not match the ACL rule, the device does not establish a neighbor relationship with the remote end.</li><li>If a specified ACL does not exist or does not contain rules, the device does not establish a neighbor relationship with any other devices using any address.</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure PIM Join message filtering.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a basic or an advanced ACL as needed.</span><p><ul><li>Configure a basic ACL.<pre class="screen"><span><b><span class="cmdqueryname">acl</span></b> [ <strong><span>number</span></strong> ] <i><span class="varname">basic-acl-number</span></i></span>
+<span><b><span class="cmdqueryname"> rule</span></b> [ <i><span class="varname">rule-id</span></i> ] [ <strong><span>name</span></strong> <i><span class="varname">rule-name</span></i> ] { <strong><span>deny</span></strong> | <strong><span>permit</span></strong> } <strong><span>source</span></strong> { <i><span class="varname">source-ip-address</span></i> { <i><span class="varname">source-wildcard</span></i> | <strong><span>0</span></strong> } | <strong><span>any</span></strong> }</span>
+<strong> quit</strong></pre>
+</li><li>Configure an advanced ACL.<pre class="screen"><span><b><span class="cmdqueryname">acl</span></b> { <strong><span>name</span></strong> <i><span class="varname">advance-acl-name</span></i> [ <strong><span>advance</span></strong> | [ <span><strong><span>number</span></strong> </span>] <i><span class="varname">advance-acl-number</span></i> ] | [ <strong><span>number</span></strong> ] <i><span class="varname">advance-acl-number</span></i> }</span>
+ <span><b><span class="cmdqueryname">rule</span></b> [ <i><span class="varname">rule-id</span></i> ] [ <strong><span>name</span></strong> <i><span class="varname">rule-name</span></i> ] { <strong><span>deny</span></strong> | <strong><span>permit</span></strong> } <strong><span>ip</span></strong> [ <strong><span>destination</span></strong> { <i><span class="varname">destination-ip-address</span></i> { <i><span class="varname">destination-wildcard</span></i> | <strong><span>0</span></strong> } | <strong><span>any</span></strong> } | <strong><span>source</span></strong> { <i><span class="varname">source-ip-address</span></i> { <i><span class="varname">source-wildcard</span></i> | <strong><span>0</span></strong> } | <strong><span>any</span></strong> } ] <sup>*</sup></span>
+<strong> quit</strong> </pre>
+</li></ul>
+</p></li><li class="substepexpand"><span>Enter the PIM interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Switch the interface working mode to Layer 3.</span><p><pre class="screen" id="EN-US_TASK_0000001564012069__en-us_task_0228023023_screen132321812144720_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564012069__en-us_task_0228023023_cmdname42322122476_1">undo portswitch</span></b></pre>
+<p id="EN-US_TASK_0000001564012069__en-us_task_0228023023_p64817191519_1">Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li class="substepexpand"><span>Configure a policy to filter join information in Join/Prune messages.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">pim join-policy</span></b></strong> { { <em>advanced-acl-number</em> | <strong>acl-name</strong> <em>acl-name</em> } | <strong>asm</strong> { <em>basic-acl-number</em> | <strong>acl-name</strong> <em>acl-name</em> } | <strong>ssm</strong> { <em>advanced-acl-number</em> | <strong>acl-name</strong> <em>acl-name</em> } }</pre>
+<p>If <strong>asm</strong> is specified, set the multicast group address range for join information through the <strong>source</strong> parameter in the <strong>rule</strong> command in the basic ACL view.</p>
+<p>If <strong>ssm</strong> is specified, set the multicast source address range and multicast group address range for join information through the <strong>source</strong> and <strong>destination</strong> parameters, respectively, in the <strong>rule</strong> command in the advanced ACL view.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>If a Join message's join information matches an ACL rule and the action is <strong>permit</strong>, the device permits this message.</li><li>If a Join message's join information matches an ACL rule and the action is <strong>deny</strong>, the device denies this message.</li><li>If a Join message's join information does not match any ACL rule, the device denies this message.</li><li>If a specified ACL does not exist or does not contain rules, the device denies all Join messages.</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure MSDP MD5 authentication.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MSDP view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">msdp</span></b></strong> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ]</pre>
+</p></li><li class="substepexpand"><span>Configure MSDP MD5 authentication.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">peer-address</span></i> <b><span class="cmdqueryname">password</span></b> {<strong><span> cipher</span></strong> <i><span class="varname">cipher-password</span></i> | <strong><span>simple</span></strong> <i><span class="varname">simple-password</span></i> }</pre>
+<p>After this function is enabled, the transmit end peer sends an MD5-encrypted MSDP message, which is transferred to the receive end peer over a TCP connection. The receive end peer decrypts the MSDP message based on the uniform MD5 encryption rules and the key contained in the message. After decrypting the message successfully, the receive end peer sends the message to the MSDP module for processing.</p>
+<p>MD5 authentication must be enabled on both peers, and the authentication passwords configured for them must be the same. </p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>If <strong><span>simple</span></strong> is specified, the password is saved in the configuration file in cleartext. This brings security risks. You are advised to specify <strong><span>cipher</span></strong> so that the password is saved in ciphertext in the configuration file.</li><li><p>The password must be at least eight characters long and contains at least two of the following character types: uppercase letters, lowercase letters, digits, and special characters (excluding question marks and spaces).</p>
+</li><li><p>For security purposes, you are advised to configure a ciphertext password and change it periodically.</p>
+</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure MSDP authentication.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MSDP view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">msdp</span></b></strong> [<strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i>]</pre>
+</p></li><li class="substepexpand"><span>Configure an MSDP keychain.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">peer-address</span></i> <b><span class="cmdqueryname">keychain</span></b> <i><span class="varname">keychain-name</span></i></pre>
+<p>Keychain authentication must be configured on both MSDP peers, and the keychains configured at both ends must use the same encryption algorithm and password so that a TCP connection can be set up and MSDP messages can be exchanged properly.</p>
+<p>The keychain specified by <i><span class="varname">keychain-name</span></i> must exist before you configure MSDP keychain authentication; otherwise, the TCP connection cannot be established.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>MD5 and keychain authentication modes are mutually exclusive.</p>
+<p>The encryption algorithm used for MD5 authentication poses security risks. Therefore, you are advised to use an authentication mode based on a supported more secure encryption algorithm.</p>
+</div></div>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001564012069__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <b><span class="cmdqueryname">display msdp</span></b> <span><span><span><span>{</span></span> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> | <strong><span>all-instance</span></strong> } </span></span><strong><span>peer-status</span></strong> [ <i><span class="varname">peer-address</span></i> ] command to check authentication information about MSDP peers.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0114.html">Multicast Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

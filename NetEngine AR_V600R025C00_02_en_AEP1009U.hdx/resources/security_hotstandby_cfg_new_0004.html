@@ -1,0 +1,65 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Heartbeat Link">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_hotstandby_cfg_new_0003.html">
+<meta name="DC.Relation" scheme="URI" content="security_hotstandby_cfg_new_0006.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Hot Standby">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Hot Standby">
+<meta name="featuretype" content="High Availability">
+<meta name="featurename" content="Hot Standby">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001512673310">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Heartbeat Link</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001512673310"></a><a name="EN-US_CONCEPT_0000001512673310"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Heartbeat Link</h1>
+<div><p>In hot standby networking, two devices exchange messages through heartbeat links to learn the peer status and back up various entries. The interfaces at both ends of a heartbeat link are called <span class="uicontrol"><b>heartbeat interfaces</b></span>. Huawei Redundancy Protocol (HRP) packets carry the exchanged messages, which include:</p>
+<ul><li>Heartbeat packets (Hello packets): used to check whether devices are alive. Two devices periodically (every 1s by default) send heartbeat packets to each other to check whether the peer device is alive. This also involves checking the priority of the peer device to determine whether the current status of the local and peer devices is stable and whether a switchover is required.</li><li>Entry backup packets: used to synchronize status information between two devices.</li><li>Heartbeat link detection packets: used to detect whether the peer heartbeat interface is available and can receive packets from the local heartbeat interface.</li></ul>
+<div class="section"><h4 class="sectiontitle">Heartbeat Interface Planning and Connecting</h4><p>You are advised to plan and connect heartbeat interfaces as follows:</p>
+<ul><li>You can connect heartbeat interfaces directly or through a switch or router. For two devices that form a hot standby group, install them in the same or adjacent racks, and directly connect the heartbeat interfaces through a network or optical cable.</li><li><p>Plan a dedicated interface as a heartbeat interface. Such an interface can only send hot standby-related packets (for example, heartbeat and backup packets) and cannot receive service packets. In addition, add multiple Ethernet interfaces to an Eth-Trunk interface and use this Eth-Trunk interface as a heartbeat interface. The Eth-Trunk interface is configured to work in static LACP mode and enabled with per-packet load sharing. This improves link reliability and increases the backup channel's bandwidth.</p>
+</li><li>To ensure the stability of the dual-device system and improve the reliability of heartbeat links, you can configure multiple heartbeat interfaces. Currently, by default, STP loop detection is enabled on the device, and multiple VLANs are considered existing in instance 0. In this case, STP considers that multiple heartbeat interfaces form a loop and reserves only one heartbeat interface. To prevent this, if multiple heartbeat interfaces are configured, you need to add each interface to a different VLAN and then add each VLAN to a different instance to ensure that all the directly connected interfaces are available.</li><li>The management interface cannot be used as a heartbeat interface.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Requirements for Heartbeat Interfaces</h4><ul><li>The heartbeat interfaces on the two devices must be of the same type, have the same ID, and run the same link protocol. This requirement also applies to member Eth-Trunk interfaces used as the heartbeat interfaces. If VLANIF interfaces are used as the heartbeat interfaces, the same requirement applies to the Layer 2 physical interfaces that transmit and receive packets.</li><li>The MTU values of all interfaces that send and receive HRP packets cannot be smaller than 1500 bytes. These interfaces include heartbeat interfaces and the interfaces of other network devices that HRP packets pass through. The maximum length of entry backup packets is 1500 bytes, and the packets cannot be fragmented. If the MTU values of the interfaces are smaller than 1500 bytes, packet processing will fail.</li><li>When an Eth-Trunk interface or its sub-interface is a heartbeat interface in the running state, adding an interface in the up state as its member interface may disconnect the heartbeat link. In this case, run the <strong>shutdown</strong> command to disable the interface and try again.</li><li>The IP address configured for the heartbeat interface must be the primary IP address.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_hotstandby_cfg_new_0003.html">Understanding Hot Standby
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_hotstandby_cfg_new_0006.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,248 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring an OSPF NSSA">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ospf_cfg_0149.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ospf_cfg_0030.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ospf_cfg_0040.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_network_route_0013.xml">
+<meta name="featurename" content="OSPF">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="OSPF">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="OSPF">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001130783272">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring an OSPF NSSA</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001130783272"></a><a name="EN-US_TASK_0000001130783272"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring an OSPF NSSA</h1>
+<div class="taskbody" id="taskbody1562534672214036"><div class="context"><a name="EN-US_TASK_0000001130783272__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001130783272__section_dc_vrp_ospf_cfg_201901"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001130783272__p1207250800214036">An excessive number of entries in a routing table wastes network resources and leads to high CPU usage. To solve this problem, a non-backbone area on the border of an AS can be configured as an NSSA, which does not transmit routes learned from other areas on the OSPF network, and instead imports AS external routes. This reduces bandwidth and storage resource consumption.</p>
+<p id="EN-US_TASK_0000001130783272__p1470359914214036">On the network shown in <a href="#EN-US_TASK_0000001130783272__fig_dc_vrp_ospf_cfg_201901">Figure 1</a>, OSPF runs on all devices and the entire AS is divided into two areas. DeviceA and DeviceB function as ABRs to forward inter-area routes, and DeviceD functions as an ASBR and imports the external static route 10.0.0.0/8. To import AS-external routes, but reduce the number of LSAs advertised to area 1 without compromising route reachability, configure area 1 as an NSSA and DeviceA as an LSA translator in the NSSA.</p>
+<div class="fignone" id="EN-US_TASK_0000001130783272__fig_dc_vrp_ospf_cfg_201901"><a name="EN-US_TASK_0000001130783272__fig_dc_vrp_ospf_cfg_201901"></a><a name="fig_dc_vrp_ospf_cfg_201901"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring an OSPF NSSA</span><div class="note" id="EN-US_TASK_0000001130783272__note1073714215214036"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001130783272__p609725764214036">In this example, interface 1, interface 2, and interface 3 represent <span>10GE</span> <span>0/0/1</span>, <span>10GE</span> <span>0/0/2</span>, and <span>10GE</span> <span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001130783272__image66963732214036" src="figure/en-us_image_0000001130783360.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001130783272__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001130783272__context1211816359"><h4 class="sectiontitle">Precautions</h4><p id="EN-US_TASK_0000001130783272__p14185764612">To improve security, OSPF area authentication or interface authentication is recommended. For details, see "Improving OSPF Network Security." OSPF area authentication is used as an example. For details, see "Example for Configuring Basic OSPF Functions."</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001130783272__1.3.3"></a><a name="1.3.3"></a>
+<div class="p" id="EN-US_TASK_0000001130783272__section_dc_vrp_ospf_cfg_201902"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001130783272__p155112107214036">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001130783272__ol1007183002214036"><li id="EN-US_TASK_0000001130783272__li726867770214036">Enable OSPF on each device and configure basic OSPF functions to ensure that the devices can communicate with each other using OSPF.</li><li id="EN-US_TASK_0000001130783272__li1893557406214036">Configure area 1 as an NSSA.</li><li id="EN-US_TASK_0000001130783272__li1837003347214036">Configure DeviceD to import the static route 10.0.0.0/8.</li><li id="EN-US_TASK_0000001130783272__li640161604214036">Configure DeviceA in the NSSA as an LSA translator.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001130783272__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001130783272__section_dc_vrp_ospf_cfg_201904"><li id="EN-US_TASK_0000001130783272__step489998795214036"><span id="EN-US_TASK_0000001130783272__cmd1957444967214036">Assign an IP address to each interface.</span><p><p id="EN-US_TASK_0000001130783272__p746125662214036">Assign an IP address to each interface as shown in <a href="#EN-US_TASK_0000001130783272__fig_dc_vrp_ospf_cfg_201901">Figure 1</a>. For detailed configurations, see the configuration scripts.</p>
+</p></li><li id="EN-US_TASK_0000001130783272__step1825420715214036"><span id="EN-US_TASK_0000001130783272__cmd894575963214036">Configure basic OSPF functions.</span><p><p id="EN-US_TASK_0000001130783272__p956696853214036">For detailed configurations, see the configuration scripts.</p>
+</p></li><li id="EN-US_TASK_0000001130783272__step607719940214036"><span id="EN-US_TASK_0000001130783272__cmd516806448214036">Configure area 1 as an NSSA.</span><p><p id="EN-US_TASK_0000001130783272__p1189897569214036"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001130783272__screen103282026141015">[DeviceA] <strong id="EN-US_TASK_0000001130783272__b18340826191014">ospf</strong>
+[DeviceA-ospf-1] <strong id="EN-US_TASK_0000001130783272__b5341192613103">area 1</strong>
+[DeviceA-ospf-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001130783272__b2034102616104">nssa</strong>
+[DeviceA-ospf-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001130783272__b53419265102">quit</strong>
+[DeviceA-ospf-1] <strong id="EN-US_TASK_0000001130783272__b1052714446353">quit</strong></pre>
+<p id="EN-US_TASK_0000001130783272__p1793316626214036"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001130783272__screen19281123561011">[DeviceB] <strong id="EN-US_TASK_0000001130783272__b16284103521017">ospf</strong>
+[DeviceB-ospf-1] <strong id="EN-US_TASK_0000001130783272__b32841735181020">area 1</strong>
+[DeviceB-ospf-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001130783272__b9284193512104">nssa</strong>
+[DeviceB-ospf-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001130783272__b0284173541010">quit</strong>
+[DeviceB-ospf-1] <strong id="EN-US_TASK_0000001130783272__b174112024163613">quit</strong></pre>
+<p id="EN-US_TASK_0000001130783272__p1000250914214036"># Configure DeviceD.</p>
+<pre class="screen" id="EN-US_TASK_0000001130783272__screen970914218151">[DeviceD] <strong id="EN-US_TASK_0000001130783272__b1771514281514">ospf</strong>
+[DeviceD-ospf-1] <strong id="EN-US_TASK_0000001130783272__b1071514426152">area 1</strong>
+[DeviceD-ospf-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001130783272__b5715442171516">nssa</strong>
+[DeviceD-ospf-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001130783272__b971512423155">quit</strong>
+[DeviceD-ospf-1] <strong id="EN-US_TASK_0000001130783272__b169749177812">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001130783272__note1478758856214036"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001130783272__p10401101318473">All devices in the NSSA must have the <b><span class="cmdqueryname" id="EN-US_TASK_0000001130783272__cmdname831868480214036">nssa</span></b> command configuration.</p>
+</div></div>
+</p></li><li id="EN-US_TASK_0000001130783272__step2104234063214036"><span id="EN-US_TASK_0000001130783272__cmd1101198045214036">Configure static route 10.0.0.0/8 on DeviceD, and configure the device to import the route into the OSPF process.</span><p><pre class="screen" id="EN-US_TASK_0000001130783272__screen11881354121515">[DeviceD] <strong id="EN-US_TASK_0000001130783272__b18888195413151">ip route-static 10.0.0.0 8 null 0</strong>
+[DeviceD] <strong id="EN-US_TASK_0000001130783272__b9889554161516">ospf</strong>
+[DeviceD-ospf-1] <strong id="EN-US_TASK_0000001130783272__b8889154191515">import-route static</strong>
+[DeviceD-ospf-1] <strong id="EN-US_TASK_0000001130783272__b0889175451514">quit</strong></pre>
+<p id="EN-US_TASK_0000001130783272__p1851470676214036"># Check information about the OSPF routing table on DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001130783272__screen132604113162">[DeviceC] <strong id="EN-US_TASK_0000001130783272__b17291611151610">display ospf routing</strong>
+          OSPF Process 1 with Router ID 3.3.3.3
+                   Routing Tables
+
+ Routing for Network
+ Destination        Cost  Type       NextHop         AdvRouter       Area
+ 192.168.3.0/24     2     Inter-area 192.168.0.1     1.1.1.1       0.0.0.0
+ 192.168.4.0/24     2     Inter-area 192.168.2.1     2.2.2.2       0.0.0.0
+ 192.168.0.0/24     1     Stub       192.168.0.2     3.3.3.3       0.0.0.0
+ 192.168.1.0/24     2     Inter-area 192.168.0.1     1.1.1.1       0.0.0.0
+ 192.168.1.0/24     2     Inter-area 192.168.2.1     2.2.2.2       0.0.0.0
+ 192.168.2.0/24     1     Stub       192.168.2.2     3.3.3.3       0.0.0.0
+
+ Routing for ASEs
+ <strong id="EN-US_TASK_0000001130783272__b843177249214321">Destination</strong>      <strong id="EN-US_TASK_0000001130783272__b1928798425214321">Cost</strong>      <strong id="EN-US_TASK_0000001130783272__b797570340214321">Type</strong>       <strong id="EN-US_TASK_0000001130783272__b1565305549214321">Tag</strong>    <strong id="EN-US_TASK_0000001130783272__b1472783736214321">NextHop</strong>         <strong id="EN-US_TASK_0000001130783272__b781436565214321">AdvRouter</strong>
+ <strong id="EN-US_TASK_0000001130783272__b1013193576214321">10.0.0.0/8</strong>       <strong id="EN-US_TASK_0000001130783272__b943642722214321">1</strong>         <strong id="EN-US_TASK_0000001130783272__b2134186792214321">Type2</strong>      <strong id="EN-US_TASK_0000001130783272__b1274626810214321">1</strong>      <strong id="EN-US_TASK_0000001130783272__b963097883214321">192.168.2.1</strong>     <strong id="EN-US_TASK_0000001130783272__b407097217214321">2.2.2.2</strong>
+
+ Total Nets: 7
+ Intra Area: 2  Inter Area: 4  <strong id="EN-US_TASK_0000001130783272__b529281131615">ASE: 1</strong>  NSSA: 0</pre>
+<p id="EN-US_TASK_0000001130783272__p24491628214036">The command output shows that the router ID of the AS external route imported into the NSSA is 2.2.2.2, meaning that DeviceB functions as an LSA translator. This is because OSPF selects the ABR with the larger router ID as an LSA translator.</p>
+</p></li><li id="EN-US_TASK_0000001130783272__step296084958214036"><span id="EN-US_TASK_0000001130783272__cmd580279007214036">Configure DeviceA as an LSA translator.</span><p><pre class="screen" id="EN-US_TASK_0000001130783272__screen123296241168">[DeviceA] <strong id="EN-US_TASK_0000001130783272__b13331182421610">ospf</strong>
+[DeviceA-ospf-1] <strong id="EN-US_TASK_0000001130783272__b183318245165">area 1</strong>
+[DeviceA-ospf-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001130783272__b83311224171611">nssa default-route-advertise no-summary translator-always</strong>
+[DeviceA-ospf-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001130783272__b123318243164">quit</strong>
+[DeviceA-ospf-1] <strong id="EN-US_TASK_0000001130783272__b1491512483133">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001130783272__section_dc_vrp_ospf_cfg_201905"><a name="EN-US_TASK_0000001130783272__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001130783272__p1530992762214036"># Check information about the OSPF routing table on DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001130783272__screen6501153771610">[DeviceC] <strong id="EN-US_TASK_0000001130783272__b19527737161614">display ospf routing</strong>
+          OSPF Process 1 with Router ID 3.3.3.3
+                   Routing Tables
+
+ Routing for Network
+ Destination        Cost  Type       NextHop         AdvRouter       Area
+ 192.168.3.0/24     2     Inter-area 192.168.0.1     1.1.1.1       0.0.0.0
+ 192.168.4.0/24     2     Inter-area 192.168.2.1     2.2.2.2       0.0.0.0
+ 192.168.0.0/24     1     Stub       192.168.0.2     3.3.3.3       0.0.0.0
+ 192.168.1.0/24     2     Inter-area 192.168.2.1     2.2.2.2       0.0.0.0
+ 192.168.1.0/24     2     Inter-area 192.168.0.1     1.1.1.1       0.0.0.0
+ 192.168.2.0/24     1     Stub       192.168.2.2     3.3.3.3       0.0.0.0
+
+ Routing for ASEs
+ <strong id="EN-US_TASK_0000001130783272__b61349534214321">Destination</strong>      <strong id="EN-US_TASK_0000001130783272__b868839984214321">Cost</strong>      <strong id="EN-US_TASK_0000001130783272__b99315780214321">Type</strong>       <strong id="EN-US_TASK_0000001130783272__b2031414383214321">Tag</strong>    <strong id="EN-US_TASK_0000001130783272__b812478166214321">NextHop</strong>         <strong id="EN-US_TASK_0000001130783272__b852249696214321">AdvRouter</strong>
+ <strong id="EN-US_TASK_0000001130783272__b293559126214321">10.0.0.0/8</strong>       <strong id="EN-US_TASK_0000001130783272__b2114245659214321">1</strong>         <strong id="EN-US_TASK_0000001130783272__b790586123214321">Type2</strong>      <strong id="EN-US_TASK_0000001130783272__b413040925214321">1</strong>      <strong id="EN-US_TASK_0000001130783272__b460333638214321">192.168.0.1</strong>     <strong id="EN-US_TASK_0000001130783272__b1842974312214321">1.1.1.1</strong>
+
+ Total Nets: 7
+ Intra Area: 2  Inter Area: 4  <strong id="EN-US_TASK_0000001130783272__b13528133731615">ASE: 1</strong>  NSSA: 0</pre>
+<p id="EN-US_TASK_0000001130783272__p63097116137">The command output shows that DeviceC has imported an AS external route, and that the router ID of the device that advertises this route is 1.1.1.1, indicating that DeviceA functions as an LSA translator.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001130783272__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001130783272__ul1552631060214036"><li id="EN-US_TASK_0000001130783272__li933682155214036"><p id="EN-US_TASK_0000001130783272__p732970456214036"><a name="EN-US_TASK_0000001130783272__li933682155214036"></a><a name="li933682155214036"></a>DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001130783272__screen1214016369214036">#
+sysname DeviceA
+#
+router id 1.1.1.1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.0.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.3.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 192.168.1.1 255.255.255.0
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.0.0 0.0.0.255
+ area 0.0.0.1
+  network 192.168.1.0 0.0.0.255
+  network 192.168.3.0 0.0.0.255
+  nssa default-route-advertise no-summary translator-always
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001130783272__li1048228038214036"><p id="EN-US_TASK_0000001130783272__p1760278325214036"><a name="EN-US_TASK_0000001130783272__li1048228038214036"></a><a name="li1048228038214036"></a>DeviceB</p>
+<pre class="screen" id="EN-US_TASK_0000001130783272__screen1963999235214036">#
+sysname DeviceB
+#
+router id 2.2.2.2
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.2.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 192.168.4.2 255.255.255.0
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.2.0 0.0.0.255
+ area 0.0.0.1
+  network 192.168.1.0 0.0.0.255
+  network 192.168.4.0 0.0.0.255
+  nssa
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001130783272__li984325507214036"><p id="EN-US_TASK_0000001130783272__p1492263308214036"><a name="EN-US_TASK_0000001130783272__li984325507214036"></a><a name="li984325507214036"></a>DeviceC</p>
+<pre class="screen" id="EN-US_TASK_0000001130783272__screen1376893725214036">#
+sysname DeviceC
+#
+router id 3.3.3.3
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.0.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.2.2 255.255.255.0
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.0.0 0.0.0.255
+  network 192.168.2.0 0.0.0.255
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001130783272__li718273491214036"><p id="EN-US_TASK_0000001130783272__p1016983450214036"><a name="EN-US_TASK_0000001130783272__li718273491214036"></a><a name="li718273491214036"></a>DeviceD</p>
+<pre class="screen" id="EN-US_TASK_0000001130783272__screen868155621214036">#
+sysname DeviceD
+#
+router id 4.4.4.4
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.3.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.4.1 255.255.255.0
+#
+ospf 1
+import-route static
+ area 0.0.0.1
+  network 192.168.3.0 0.0.0.255
+  network 192.168.4.0 0.0.0.255
+  nssa
+#
+ip route-static 10.0.0.0 255.0.0.0 NULL0
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_ospf_cfg_0149.html">Configuration Examples for OSPF
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_ospf_cfg_0030.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_ospf_cfg_0040.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

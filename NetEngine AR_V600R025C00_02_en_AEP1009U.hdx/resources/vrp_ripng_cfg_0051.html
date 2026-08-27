@@ -1,0 +1,237 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring RIPng to Filter Received Routes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ripng_cfg_0042.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ripng_cfg_0029.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="RIPng">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="RIPng">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001871170166">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring RIPng to Filter Received Routes</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001871170166"></a><a name="EN-US_TASK_0000001871170166"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring RIPng to Filter Received Routes</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001871170166__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000001871170166__fig_dc_vrp_rip_cfg_005001">Figure 1</a>, the prefixes of all the IPv6 addresses are 64 bits long, and interfaces between adjacent devices are connected using IPv6 link-local addresses.</p>
+<p>All the devices are required to learn IPv6 routing information on the network through RIPng. DeviceB is required to filter out the route (2001:DB8:0:3::/64) received from DeviceC so that the route is not added to the routing table of DeviceB or advertised to DeviceA.</p>
+<div class="fignone" id="EN-US_TASK_0000001871170166__fig_dc_vrp_rip_cfg_005001"><a name="EN-US_TASK_0000001871170166__fig_dc_vrp_rip_cfg_005001"></a><a name="fig_dc_vrp_rip_cfg_005001"></a><span class="figcap"><b>Figure 1 </b>Networking diagram for configuring RIPng to filter received routes</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1, interface 2, and interface 3 represent <span>10GE</span> <span>0/0/1</span>, <span>10GE</span> <span>0/0/2</span>, and <span>10GE</span> <span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001916889833.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001871170166__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Enable RIPng on each device so that the devices can communicate with each other.</p>
+</li><li><p>Configure an ACLv6 on DeviceB to filter received routes.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001871170166__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IPv6 address to each interface.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 enable</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 address auto link-local</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ipv6 enable</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ipv6 address 2001:DB8:0:1::1 64</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p>The configurations of DeviceB and DeviceC are similar to the configuration of DeviceA. For detailed configurations, see Configuration Scripts.</p>
+</p></li><li><span>Configure basic RIPng functions.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">[<span class="keyword">Device</span>A] <strong>ripng 1</strong>
+[DeviceA-ripng-1] <strong>quit</strong>
+[<span class="keyword">Device</span>A] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong>ripng 1 enable</strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ripng 1 enable</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Configure DeviceB.</p>
+<pre class="screen">[<span class="keyword">Device</span>B] <strong>ripng 1</strong>
+[DeviceB-ripng-1] <strong>quit</strong>
+[<span class="keyword">Device</span>B] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong>ripng 1 enable</strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceB] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>ripng 1 enable</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Configure DeviceC.</p>
+<pre class="screen">[<span class="keyword">Device</span>C] <strong>ripng 1</strong>
+[DeviceC-ripng-1] <strong>quit</strong>
+[<span class="keyword">Device</span>C] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/1</span>] <strong>ripng 1 enable</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceC] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong>ripng 1 enable</strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[DeviceC] <strong>interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong>ripng 1 enable</strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong></pre>
+<p># Check the RIPng routing table of DeviceB.</p>
+<pre class="screen">[DeviceB] <strong>display ripng 1 route</strong>
+   Route Flags: R - RIPng
+                A - Aging, G - Garbage-collect
+ ----------------------------------------------------------------
+ Peer FE80::D472:0:3C23:1  on <span>10GE</span><span>0/0/2</span>
+ Dest 2001:DB8:0:1::/64,
+     via FE80::D472:0:3C23:1, cost  1, tag 0, RA, 4 Sec
+ Peer FE80::F54C:0:9FDB:1  on <span>10GE</span><span>0/0/3</span>
+ Dest 2001:DB8:0:2::/64,
+     via FE80::F54C:0:9FDB:1, cost  1, tag 0, RA, 3 Sec
+ Dest 2001:DB8:0:3::/64,
+     via FE80::F54C:0:9FDB:1, cost  1, tag 0, RA, 3 Sec</pre>
+<p>The preceding command output shows that the RIPng routing table of DeviceB contains the route of network segment 2001:DB8:0:3::/64.</p>
+<p># Check the RIPng routing table of DeviceA.</p>
+<pre class="screen">[DevicA] <strong>display ripng 1 route</strong>
+   Route Flags:  R - RIPng
+                A - Aging, G - Garbage-collect
+ ----------------------------------------------------------------
+
+ Peer FE80::476:0:3624:1  on <span>10GE</span><span>0/0/2</span>
+ Dest 2001:DB8:0:2::/64,
+     via FE80::476:0:3624:1, cost  2, tag 0, RA, 21 Sec
+ Dest 2001:DB8:0:3::/64,
+     via FE80::476:0:3624:1, cost  2, tag 0, RA, 21 Sec</pre>
+<p>The preceding command output shows that the RIPng routing table of DeviceA contains the network segment route 2001:DB8:0:3::/64 advertised by DeviceB.</p>
+</p></li><li><span>Configure DeviceB to filter received routes.</span><p><p># Configure an ACL on <span class="keyword">Device</span>B to deny the packets with the source address being 2001:DB8:0:3::/64.</p>
+<pre class="screen">[<span class="keyword">Device</span>B] <strong>acl ipv6 number 2000</strong>
+[<span class="keyword">Device</span>B-acl6-basic-2000] <strong>rule deny source 2001:DB8:0:3:: 64</strong>
+[<span class="keyword">Device</span>B-acl6-basic-2000] <strong>rule permit</strong>
+[<span class="keyword">Device</span>B-acl6-basic-2000] <strong>quit</strong>
+[<span class="keyword">Device</span>B]<strong> ripng 1</strong>
+[<span class="keyword">Device</span>B]<strong> filter-policy 2000 import</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001871170166__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Check the RIPng routing table of DeviceB. You can view that the RIPng routing table does not contain the route of network segment 2001:DB8:0:3::/64.</p>
+<pre class="screen">[DeviceB] <strong>display ripng 1 route</strong>
+   Route Flags: R - RIPng
+                A - Aging, G - Garbage-collect
+ ----------------------------------------------------------------
+ Peer FE80::D472:0:3C23:1  on <span>10GE</span><span>0/0/2</span>
+ Dest 2001:DB8:0:1::/64,
+     via FE80::D472:0:3C23:1, cost  1, tag 0, RA, 25 Sec
+ Peer FE80::F54C:0:9FDB:1  on <span>10GE</span><span>0/0/3</span>
+ Dest 2001:DB8:0:2::/64,
+     via FE80::F54C:0:9FDB:1, cost  1, tag 0, RA, 14 Sec</pre>
+<p># Check the RIPng routing table of DeviceA, and you can view that the RIPng routing table does not contain the route of network segment 2001:DB8:0:3::/64.</p>
+<pre class="screen">[<span class="keyword">Switch</span>A] <strong>display ripng 1 route</strong>
+   Route Flags: R - RIPng
+                A - Aging, G - Garbage-collect
+ ----------------------------------------------------------------
+
+ Peer FE80::476:0:3624:1  on <span>10GE</span><span>0/0/2</span>
+ Dest 2001:DB8:0:2::/64,
+     via FE80::476:0:3624:1, cost  2, tag 0, RA, 7 Sec</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001871170166__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p><span class="keyword">Device</span>A</p>
+<pre class="screen">#
+sysname DeviceA
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address auto link-local
+ ripng 1 enable
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:0:1::1/64
+ ripng 1 enable
+#
+ripng 1
+#
+return</pre>
+</li><li><p>DeviceB</p>
+<pre class="screen">#
+sysname DeviceB
+#
+acl ipv6 number 2000  
+ rule 0 deny source 2001:DB8:0:3::/64  
+ rule 1 permit
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address auto link-local
+ ripng 1 enable
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address auto link-local
+ ripng 1 enable
+#
+ripng 1
+ filter-policy 2000 import
+#
+return</pre>
+</li><li><p><span class="keyword">Device</span>C</p>
+<pre class="screen">#
+sysname DeviceC
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address auto link-local
+ ripng 1 enable
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:0:2::1/64
+ ripng 1 enable
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:0:3::1/64
+ ripng 1 enable
+#
+ripng 1
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ripng_cfg_0042.html">Configuration Examples for RIPng
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ripng_cfg_0029.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

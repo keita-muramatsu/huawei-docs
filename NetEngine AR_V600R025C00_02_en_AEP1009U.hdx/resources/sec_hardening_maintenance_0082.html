@@ -1,0 +1,97 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Login Through Telnet">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0026.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564131869">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Login Through Telnet</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564131869"></a><a name="EN-US_TASK_0000001564131869"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Login Through Telnet</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001564131869__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><h4 class="sectiontitle">Overview</h4><p>Telnet is an application-layer protocol for remote login. It uses TCP to transmit data in cleartext, leaving the device vulnerable to denial of service (DoS), port scanning, brute force password cracking, and other attacks. As a result, device information may be disclosed, posing great security risks. To avoid these problems, use the following security policies:</p>
+<ul><li>Disable the Telnet service and use STelnet to log in to the device.</li><li>Configure an ACL whitelist to restrict login IP addresses, preventing DoS attacks.</li><li>Configure VTY user interfaces by segment to prevent DoS attacks.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564131869__1.4.2"></a><a name="1.4.2"></a>
+<div class="p"><h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001564131869__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Disable the Telnet service.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<strong>undo telnet [ ipv6 ] server enable</strong></pre>
+</p></li><li><span>Configure an ACL whitelist to prevent DoS attacks.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Create a basic ACL. You can create a numbered or named ACL.</span><p><ul><li>Create a numbered basic ACL and enter its view.<pre class="screen"><b><span class="cmdqueryname">acl</span></b> [ <strong><span>number</span></strong> ] <i><span class="varname">acl-number</span></i></pre>
+</li></ul>
+<ul><li>Create a named basic ACL and enter its view.<pre class="screen"><b><span class="cmdqueryname">acl name</span></b> <i><span class="varname">basic-acl-name</span></i> <strong><span>basic</span></strong></pre>
+</li></ul>
+</p></li><li class="substepexpand"><span>Configure a basic ACL rule.</span><p><pre class="screen"><b><span class="cmdqueryname">rule</span></b> [ <i><span class="varname">rule-id</span></i> ] [ <strong><span>name</span></strong> <i><span class="varname">rule-name</span></i> ] { <strong><span>deny</span></strong> | <strong><span>permit</span></strong> } [ <strong><span>fragment-type</span></strong> <strong><span>fragment</span></strong> | <strong><span>source</span></strong> { <i><span class="varname">source-ip-address</span></i> { <i><span class="varname">source-wildcard</span></i> | <strong><span>0</span></strong><span> | <i><span class="varname">src-netmask</span></i></span> } | <strong><span>any</span></strong> } | <strong><span>time-range</span></strong> <i><span class="varname">time-name</span></i> | <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i><span> | <strong><span>logging</span></strong></span> ] <sup>*</sup></pre>
+</p></li><li class="substepexpand"><span>Exit the ACL view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Set the maximum number of VTY login users.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">user-interface maximum-vty</span></b> </strong><em>number</em></pre>
+</p></li><li class="substepexpand"><span>Enter the VTY user interface view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">user-interface vty</span></b> </strong><em><i><span class="varname">first-ui-number</span></i></em> [ <em><i><span class="varname">last-ui-number</span></i></em> ]</pre>
+</p></li><li class="substepexpand"><span>Configure the limit on incoming and outgoing calls for VTY user interfaces.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">acl</span></b> </strong>{ <em>acl4name</em> | <em>acl4num</em> } { <strong>inbound</strong> | <strong>outbound</strong> }
+<strong><b><span class="cmdqueryname">acl</span></b> ipv6 </strong>{ <em>acl6name</em> | <em>acl6num</em> } { <strong>inbound</strong> | <strong>outbound</strong> }</pre>
+<p>To prevent users from using a specified IP address or an IP address in a specified network segment to access a <span class="keyword">device</span>, specify <strong>inbound</strong>.</p>
+<p>To prevent users who have already logged in to a device from logging in to other <span class="keyword">devices</span>, specify <strong>outbound</strong>.</p>
+</p></li></ol>
+</li><li><span>Configure VTY user interfaces by segment to prevent DoS attacks.</span><p><p>At least one user interface is configured with SSH.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Set the maximum number of VTY login users.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">user-interface maximum-vty</span></b> </strong><em>number</em></pre>
+</p></li><li class="substepexpand"><span>Enter the VTY user interface view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">user-interface vty</span></b> </strong><em>first-ui-number</em> [ <em>last-ui-number</em> ]</pre>
+</p></li><li class="substepexpand"><span>Configure the protocols supported by the user interface.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">protocol inbound</span></b> </strong><strong>ssh</strong></pre>
+</p></li><li class="substepexpand"><span>Exit the VTY user interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the VTY user interface view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">user-interface vty</span></b> </strong><em>first-ui-number</em> [ <em>last-ui-number</em> ]</pre>
+</p></li><li class="substepexpand"><span>Configure the protocols supported by the user interface.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">protocol inbound</span></b> </strong><strong>telnet</strong></pre>
+</p></li><li class="substepexpand"><span>Exit the VTY user interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001564131869__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><ul><li>Run the <b><span class="cmdqueryname">display telnet server status</span></b> command to check the current connection information of the Telnet server.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0026.html">Device Login Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

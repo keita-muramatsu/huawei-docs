@@ -1,0 +1,106 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding SRv6 TE Policy Failover">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0132.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0134.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Learning More">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001141937012">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding SRv6 TE Policy Failover</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001141937012"></a><a name="EN-US_CONCEPT_0000001141937012"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding SRv6 TE Policy Failover</h1>
+<div><p></p>
+<div class="section"><h4 class="sectiontitle">MBB and Delayed Deletion for SRv6 TE Policies</h4><p>SRv6 TE Policies support make-before-break (MBB), enabling a forwarder to establish a new segment list before deleting the original one. During the establishment process, traffic continues to be forwarded using the original segment list. This segment list is deleted only after a specified delay elapses, thereby preventing packet loss during a segment list switchover.</p>
+<p>This delayed deletion mechanism takes effect only for segment lists (including backup segment lists) that are in the up state in an SRv6 TE Policy.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">SRv6 TE Policy Failover</h4><p>On the network shown in <a href="#EN-US_CONCEPT_0000001141937012__fig103561942152712">Figure 1</a>, two SRv6 TE Policies are deployed: one between PE1 and PE3, and another one between PE2 and PE4. <a href="#EN-US_CONCEPT_0000001141937012__table734015526223">Table 1</a> lists the possible failure points and corresponding protection measures.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001141937012__fig103561942152712"><a name="EN-US_CONCEPT_0000001141937012__fig103561942152712"></a><a name="fig103561942152712"></a><span class="figcap"><b>Figure 1 </b>SRv6 TE Policy-related fault scenarios</span><br><span><img class="vsd" src="figure/en-us_image_0000001187897199.png"></span></div>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001141937012__table734015526223"></a><a name="table734015526223"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001141937012__table734015526223" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Protection measures for possible failure points</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="9.790000000000001%" id="mcps1.4.2.4.2.3.1.1" liSelected="liSelected"><p>Failure Point</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="90.21000000000001%" id="mcps1.4.2.4.2.3.1.2" liSelected="liSelected"><p>Protection Measure</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.4.2.4.2.3.1.1 "><p>1 or 8</p>
+</td>
+<td class="cellrowborder" valign="top" width="90.21000000000001%" headers="mcps1.4.2.4.2.3.1.2 "><p>If the BGP peer relationships between the controller and all forwarders go down, the following protection measures can be taken:</p>
+<ol><li>Configure BGP GR between the controller and forwarders, and continue to use the specified SRv6 TE Policy for packet forwarding during the GR period. In this case, the forwarders wait until the BGP peer relationships with the controller go up again.</li><li>Deploy a standby controller in redundancy mode so that it can protect the active controller. If the BGP peer relationships between the active controller and forwarders are not restored when the GR period expires, the forwarders switch the BGP peer relationships to the standby controller.</li></ol>
+<p>If neither of the preceding protection measures is taken or they both fail, the SRv6 TE Policy is deleted. As a result, VPNv4 route recursion to the SRv6 TE Policy fails, meaning that the route must be recursed again. If an SRv6 BE path exists on the network, the VPNv4 route will recurse to this path. However, when traffic is switched to the SRv6 BE path in this hard convergence scenario, packet loss occurs.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.4.2.4.2.3.1.1 "><p>2 or 3</p>
+</td>
+<td class="cellrowborder" valign="top" width="90.21000000000001%" headers="mcps1.4.2.4.2.3.1.2 "><p>An access-side equal-cost multi-path (ECMP) switchover is performed on CE1 to switch traffic to PE2 for forwarding.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.4.2.4.2.3.1.1 "><p>4, 5, or 6</p>
+</td>
+<td class="cellrowborder" valign="top" width="90.21000000000001%" headers="mcps1.4.2.4.2.3.1.2 "><p>Assume that a BGP peer relationship is established between PE1 and PE3 using loopback addresses. If point 4, 5, or 6 is faulty, the loopback addresses remain reachable through P2. Consequently, the BGP peer relationship between PE1 and PE3 is not interrupted, and the route sent from PE3 to PE1 is not deleted. In this case, a fast reroute (FRR) switchover is performed within the SRv6 TE Policy.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.4.2.4.2.3.1.1 "><p>7</p>
+</td>
+<td class="cellrowborder" valign="top" width="90.21000000000001%" headers="mcps1.4.2.4.2.3.1.2 "><p>After PE1 detects that PE3 is faulty, the BGP peer relationship between them is interrupted. BGP then deletes the BGP route received from PE3, selects a route advertised by PE4, and switches traffic to PE4 through VPN FRR.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">SRv6 TE Policy Multi-Level Protection</h4><p>Technologies such as U-BFD for SRv6 TE Policy and headend-based fault detection can be used to detect segment list reliability. If a segment list fails, an SRv6 TE Policy failover is triggered.</p>
+<p>As shown in <a href="#EN-US_CONCEPT_0000001141937012__fig19266654184313">Figure 2</a> and <a href="#EN-US_CONCEPT_0000001141937012__fig1345011895311">Figure 3</a>, the headend and endpoint of SRv6 TE Policy 1 are PE1 and PE2, respectively, and those of SRv6 TE Policy 2 are PE1 and PE3, respectively. SRv6 TE Policy 1 and SRv6 TE Policy 2 can form a VPN FRR relationship. Hot-standby protection is implemented for the primary and backup paths in SRv6 TE Policy 1. Segment list 1 specifies the End SIDs to P1, P2, and PE2, and can use SRv6 local protection technologies, such as TI-LFA.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001141937012__fig19266654184313"><a name="EN-US_CONCEPT_0000001141937012__fig19266654184313"></a><a name="fig19266654184313"></a><span class="figcap"><b>Figure 2 </b>SRv6 TE Policy failover</span><br><span><img class="vsd" src="figure/en-us_image_0000001141937054.png"></span></div>
+<div class="fignone" id="EN-US_CONCEPT_0000001141937012__fig1345011895311"><a name="EN-US_CONCEPT_0000001141937012__fig1345011895311"></a><a name="fig1345011895311"></a><span class="figcap"><b>Figure 3 </b>SRv6 TE Policy SID stack information</span><br><span><img class="vsd" src="figure/en-us_image_0000001187897201.png"></span></div>
+<p>On the network shown in <a href="#EN-US_CONCEPT_0000001141937012__fig19266654184313">Figure 2</a>:</p>
+<ul><li>If P1 or the link between it and PE1 fails, local protection (such as midpoint protection, as shown in <a href="#EN-US_CONCEPT_0000001141937012__fig19266654184313">Figure 2</a>, or TI-LFA) on PE1 takes effect. If U-BFD for segment list 1 on PE1 detects the fault before traffic is restored through local protection, U-BFD sets segment list 1 to down and instructs SRv6 TE Policy 1 to switch traffic to segment list 2 of the backup candidate path.</li><li>If P2 or the link between it and P1 fails, local protection on P1 takes effect.</li><li>If the link between P2 and PE2 fails, local protection on P2 takes effect.</li><li>If PE2 fails, all candidate paths of SRv6 TE Policy 1 are unavailable. U-BFD can detect the fault and set SRv6 TE Policy 1 to down, triggering a VPN FRR switchover to switch traffic to SRv6 TE Policy 2.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0132.html">Configuring SRv6 TE Policy Failover
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0134.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Portal Authentication (Using the HTTP Protocol)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_cfg_nac_0245.html">
+<meta name="DC.Relation" scheme="URI" content="../dc/dc_cfg_nac_1106p.html">
+<meta name="DC.Relation" scheme="URI" content="../dc_cfg_nac_0068p_ar.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="MAC Address Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001888568849">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Portal Authentication (Using the HTTP Protocol)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001888568849"></a><a name="EN-US_TASK_0000001888568849"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Portal Authentication (Using the HTTP Protocol)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001888568849__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="dc_cfg_nac_0106p.html#EN-US_TASK_0000001888568845__fig1119614398917">Figure 1</a>, users in a company's guest area access the company's intranet through DeviceA. Unauthorized access to the intranet will damage the company's service system and cause leakage of key information. Therefore, the administrator requires that DeviceA should control users' network access rights to ensure intranet security. Because guest users move frequently, Portal authentication is used and the RADIUS server authenticates the users.</p>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Network diagram for configuring Portal authentication</span><div class="note" id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_note4431204417521"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_p74311544145216">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_image867371313197" src="figure/en-us_image_0000001842321312.png" width="NaN" height="NaN"></span></div>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>HTTPS is recommended, as it is more secure than HTTP. For related examples, see <a href="dc_cfg_nac_1106p.html">Example for Configuring Portal Authentication (Using the HTTPS Protocol)</a>.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001888568849__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure network connectivity.</span><p><p id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_p84582529382"># Create VLANs, configure the allowed VLANs on interfaces, and configure IP addresses for interfaces.</p>
+<pre class="screen" id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_screen301526699180144">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b928229808180144">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b133851142144816">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b680095247180144">vlan batch 10 20</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b7792145114597">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b175579513484">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1207589107180144">port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1134790390180144">port trunk allow-pass vlan 10</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1964778305180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1465044327180144">interface vlanif 10</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1679677264180144">ip address 192.168.1.10 24</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1471693815180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1978555855180144">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b187010224495">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b75631228180144">port link-type access</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1122878415180144">port default vlan 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1086189616180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b47469953180144">interface vlanif 20</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1545963845180144">ip address 192.168.2.10 24</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1803338608180144">quit</strong></pre>
+</p></li><li><span>Configure AAA.</span><p><p id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_p358937154180155"># Create and configure the RADIUS server template <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b2056112620397">rd1</strong>.</p>
+<pre class="screen" id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_screen686256393180155">[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b73717601180155">radius-server template rd1</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1406708956180155">radius-server authentication 192.168.2.30 1812</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1292288258180155">radius-server accounting 192.168.2.30 1813</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b2003642657180155">radius-server shared-key cipher Huawei@123456789</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b872302376180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_p281467549180155"># Create the authentication scheme <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b10891318103912">abc</strong> and set the authentication mode to RADIUS authentication.</p>
+<pre class="screen" id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_screen1781419855180155">[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1032982426180155">aaa</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1759942452180155">authentication-scheme abc</strong>
+[DeviceA-aaa-authen-abc] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1048351695180155">authentication-mode radius</strong>
+[DeviceA-aaa-authen-abc] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b588806095180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_p2043209574180155"># Create the accounting scheme <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b112179324281">scheme2</strong> and set the accounting mode to RADIUS accounting.</p>
+<pre class="screen" id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_screen165143530180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1422395712180155">accounting-scheme scheme2</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b546735786180155">accounting-mode radius</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1580729935180155">accounting realtime 15</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1801757958180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_p819297258180155"># Create the authentication domain <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b920112773215">example.com</strong>, and bind the authentication scheme <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b192017278325">abc</strong>, accounting scheme <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b7201122733217">scheme2</strong>, and RADIUS server template <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b202015274320">rd1</strong> to the domain.</p>
+<pre class="screen" id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_screen320149039180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1001200399180155">domain example.com</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b146438677180155">authentication-scheme abc</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b080613416577">accounting-scheme scheme2</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1538456000180155">radius-server rd1</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b1208779973180155">quit</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b2064952769180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_p1834738088180155"># Check whether a user can pass RADIUS authentication. (The test user <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b244213818404">test1</strong> and password <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b24481138154018">test1@123</strong> have been configured on the RADIUS server.)</p>
+<pre class="screen" id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_screen1970406229180155">[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001513160210_b228013602180155">test-aaa test1 test1@123 radius-template rd1</strong>
+Info: Account test succeeded.</pre>
+</p></li><li><span>Enable the Portal interconnection function of the HTTP protocol.</span><p><pre class="screen">[DeviceA] <strong>portal web-authen-server http</strong>
+[DeviceA] <strong>portal web-authen-server server-source ip-address 192.168.2.10</strong></pre>
+</p></li><li><span>Configure a URL template and a Portal server template.</span><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li id="EN-US_TASK_0000001888568849__en-us_task_0000001842447926_li178991333155418">Ensure that the Portal server IP address, URL, Portal authentication port number, and shared key are configured correctly and are the same as those on the Portal server.</li><li id="EN-US_TASK_0000001888568849__en-us_task_0000001842447926_li19730141195418">The parameters carried in a redirect URL and the parameter values depend on the requirements of the connected Portal server. The requirements may vary according to the Portal server.</li><li id="EN-US_TASK_0000001888568849__en-us_task_0000001842447926_li195939811186">When a device connects to iMaster NCE-Campus, you need to run the <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001842447926_b13326164011146">url-parameter set device-ip </strong><em id="EN-US_TASK_0000001888568849__en-us_task_0000001842447926_i5326164021413">ip-address</em> and <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001842447926_b0691764115">url-parameter device-ip ac-ip user-ipaddress uaddress user-mac umac</strong> commands in the URL template view to send the device IP address to iMaster NCE-Campus. Otherwise, iMaster NCE-Campus cannot display the re-authentication page.</li></ul>
+</div></div>
+<p># Configure a URL template, configure the redirect URL for the Portal server, and specify parameters carried in the URL as the user IP address and user MAC address.</p>
+<pre class="screen">[DeviceA] <strong>url-template name url1</strong> 
+[DeviceA-url-template-url1] <strong>url http://192.168.2.30:19008/portal</strong> 
+[DeviceA-url-template-url1] <strong>url-parameter set device-ip</strong> <strong>192.168.2.10</strong>
+[DeviceA-url-template-url1] <strong>url-parameter device-ip ac-ip user-ipaddress uaddress user-mac umac</strong>
+[DeviceA-url-template-url1] <strong>quit</strong></pre>
+<p># Configure a Portal server template and bind it to the URL template.</p>
+<pre class="screen">[DeviceA] <strong>web-auth-server abc</strong>
+[DeviceA-web-auth-server-abc] <strong>server-ip 192.168.2.30</strong>
+[DeviceA-web-auth-server-abc] <strong>protocol http</strong>
+[DeviceA-web-auth-server-abc] <strong>http-method post cmd-key cmd1</strong>
+[DeviceA-web-auth-server-abc] <strong>url-template url1</strong>
+[DeviceA-web-auth-server-abc] <strong>quit</strong></pre>
+</p></li><li><span>Configure the Portal access profile <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b98799367485211">portal1</strong> and bind it to the Portal server template.</span><p><pre class="screen" id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_screen486052258180155">[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b2017156256180155">portal-access-profile name portal1</strong>
+[DeviceA-portal-access-profile-portal1] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b2078216211287">web-auth-server abc</strong>
+[DeviceA-portal-access-profile-portal1] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b1096026508180155">quit</strong></pre>
+</p></li><li><span>Configure an authentication-free profile to permit traffic between terminal users and DeviceA.</span><p><pre class="screen">[DeviceA] <strong>free-rule-template name default_free_rule</strong>
+[DeviceA-free-rule-default_free_rule] <strong>free-rule</strong><strong> 1 </strong><strong>destination</strong><strong> </strong><strong>ip</strong><strong> 192.168.1.10 mask 24</strong>
+[DeviceA-free-rule-default_free_rule] <strong>quit</strong></pre>
+</p></li><li><span>Configure the authentication profile <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b149953204385211">p1</strong>.</span><p><pre class="screen" id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_screen162369466180155">[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b901142194180155">authentication-profile name p1</strong>
+[DeviceA-authentication-profile-p1] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b1805838623180155">portal-access-profile portal1</strong>
+[DeviceA-authentication-profile-p1] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b15412849192810">access-domain example.com force</strong>
+[DeviceA-authentication-profile-p1] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b885050906180155">quit</strong></pre>
+</p></li><li><span># Bind the authentication profile <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b96993266885211">p1</strong> to <span>10GE</span> <span>0/0/1</span> and enable Portal authentication on <span>10GE</span> <span>0/0/1</span>.</span><p><pre class="screen" id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_screen20354015183115">[DeviceA] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b835401519311">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b15354171510319">authentication-profile p1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b143541115103119">quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><ol type="a" id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_ol47418487180155"><li id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_li1926454929180155">After a user opens a browser and enters any website address, the user is redirected to the Portal authentication page. The user then can enter the user name and password for authentication.</li><li id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_li689889558180155">If the user name and password are correct, an authentication success message is displayed on the Portal authentication page. The user can access the network.</li><li id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_li1614003747180155">After users go online, you can run the <strong id="EN-US_TASK_0000001888568849__en-us_task_0000001888568845_b2008246149180155">display access-user access-type portal</strong> command on the device to view information about online Portal authentication users.</li></ol>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001888568849__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+vlan batch 10 20
+#
+aaa
+ authentication-scheme abc    
+  authentication-mode radius    
+ accounting-scheme scheme2
+  accounting-mode radius
+  accounting realtime 15
+ domain example.com            
+  authentication-scheme abc     
+  accounting-scheme scheme2
+  radius-server rd1      
+#  
+portal web-authen-server http 
+portal web-authen-server server-source ip-address 192.168.2.10
+#   
+radius-server template rd1 
+ radius-server shared-key cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!SKvr${[Fs.3t@/5k|BENhEu&gt;W(3\<font style="font-size:8pt" Face="Courier New" >~</font>XG!!D;!!!!!2jp5!!!!!!A!!!!3"pK8qv!}9M#(4$jGWvQF/R[CNe/+:W^jk8HUe&amp;W%+%#
+ radius-server authentication 192.168.2.30 1812 weight 80
+ radius-server accounting 192.168.2.30 1813 weight 80
+#
+free-rule-template name default_free_rule
+ free-rule 1 destination ip 192.168.1.10 mask 255.255.255.0 
+# 
+url-template name url1 
+ url http://192.168.2.30:19008/portal 
+ url-parameter set device-ip 192.168.2.10
+ url-parameter device-ip ac-ip user-ipaddress uaddress user-mac umac 
+#
+web-auth-server abc
+ server-ip 192.168.2.30
+ protocol http  
+ http-method post cmd-key cmd1
+ url-template url1
+#
+portal-access-profile name portal1
+ web-auth-server abc
+#
+authentication-profile name p1
+ portal-access-profile portal1
+ access-domain example.com force
+#
+interface Vlanif10
+ ip address 192.168.1.10 255.255.255.0
+#
+interface Vlanif20
+ ip address 192.168.2.10 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+ authentication-profile p1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+<strong> </strong>port link-type access
+ port default vlan 20
+#
+return </pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../galaxy_cfg_nac_0245.html">Configuration Examples for NAC
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../dc/dc_cfg_nac_1106p.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../dc_cfg_nac_0068p_ar.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

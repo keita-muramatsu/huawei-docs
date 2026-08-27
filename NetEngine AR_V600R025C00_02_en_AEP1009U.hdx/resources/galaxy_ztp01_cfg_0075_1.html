@@ -1,0 +1,82 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding DHCP-based Deployment (with a Controller)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0074.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0076.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_deployment.ditamap">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001941467797">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding DHCP-based Deployment (with a Controller)</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001941467797"></a><a name="EN-US_CONCEPT_0000001941467797"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding DHCP-based Deployment (with a Controller)</h1>
+<div><p>During DHCP-based deployment (with a controller), the device interacts with the DHCP server, <span>iMaster NCE-Campus</span>, and bootstrap server. <a href="#EN-US_CONCEPT_0000001941467797__fig1086016417131">Figure 1</a> shows the DHCP-based deployment process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001941467797__fig1086016417131"><a name="EN-US_CONCEPT_0000001941467797__fig1086016417131"></a><a name="fig1086016417131"></a><span class="figcap"><b>Figure 1 </b>DHCP-based deployment process (with a controller)</span><br><span><img src="figure/en-us_image_0000002160557036.png" width="NaN" height="NaN"></span></div>
+<ol><li>Configuring network deployment parameters<p>The network administrator configures global parameters and ZTP on <span>iMaster NCE-Campus</span>. The controller has the following functions:</p>
+<ul><li><strong>iMaster NCE-Campus</strong>: establishes NETCONF connections with the device to deliver deployment configurations to the device.</li></ul>
+</li><li>Deploying the DHCP server and bootstrap server<div class="p">The network administrator configures a DHCP server. The network administrator can also configure the DHCP relay agent, bootstrap server, DNS server, and Syslog server as required. The functions of each device are as follows:<ul><li><strong>DHCP relay agent:</strong> relays DHCP packets between the device and the DHCP server when they are located on different network segments.</li><li><strong>DHCP server:</strong> allocates the temporary management IP address, default gateway address, address and port number of the bootstrap server, address and port number of <span>iMaster NCE-Campus</span>, DNS server address, and Syslog server address to the device.</li><li><strong>Bootstrap server</strong>: stores CA certificates applied by users. For security purposes, no initial certificate is available on <span>iMaster NCE-Campus</span>. In this case, a device needs to download a CA certificate from the bootstrap server so that two-way authentication for establishing a NETCONF connection between the device and <span>iMaster NCE-Campus</span> can be successfully performed. Currently, iMaster NCE<span>-</span>Campus integrates the bootstrap server function.</li><li><p><strong>DNS server</strong>: provides mappings between domain names and IP addresses, and resolves the domain name of the bootstrap server to an IP address.</p>
+</li><li><strong>Syslog server</strong>: records important information in user logs during ZTP deployment and uploads the logs to the NMS.</li></ul>
+</div>
+</li><li><p>Powering on the device</p>
+<p>The deployment person powers on and starts the device. The device starts with a configuration file if one is available. Otherwise, the device automatically starts the ZTP process.</p>
+</li><li><p>Obtaining DHCP information</p>
+<ol type="a"><li>The device sends DHCP request packets through its Layer 3 physical interface.</li><li>The DHCP server sends a DHCP reply packet to the device. The <a href="galaxy_ztp01_cfg_0076.html">Option parameters</a> in the packet specify the information that the device needs to obtain from the DHCP server.</li></ol>
+</li><li>(Optional) Obtaining the CA certificate<p>This phase is mandatory when no initial certificate is available on the controller.</p>
+<p>The device obtains the CA certificate from the bootstrap server as follows:</p>
+<ol type="a"><li>The device establishes an HTTPS connection with the bootstrap server based on the obtained address and port number of the bootstrap server.</li><li>The device sends a request packet to the bootstrap server to download a CA certificate. The request packet carries the device ESN or the IP address of the bootstrap server.<ul><li>If the Option parameter specifies the certificate verification mode as <strong>ESN</strong>, the request packet carries the device ESN. </li><li>If the Option parameter specifies the certificate verification mode as <strong>DOMAIN_IP</strong>, the request packet carries the IP address of the bootstrap server. The CA certificate can be obtained only after being successfully verified.</li></ul>
+</li><li>The bootstrap server searches for the CA certificate based on the ESN or IP address in the request packet and sends a response packet carrying the CA certificate to the device. The response packet also carries the device ESN or the IP address of the bootstrap server.</li><li>After receiving the response packet from the bootstrap server, the device terminates the HTTPS connection with the bootstrap server, parses the response packet, and verifies the validity of the certificate. <p>If the CA certificate sent by the bootstrap server has been signed, the device verifies the signature of the certificate. After the signature verification is successful, the device verifies the certificate. If the CA certificate sent by the bootstrap server has not been signed, the device determines whether to trust the certificate based on the Option parameter setting. If the Option parameter specifies that the certificate can be trusted, the device verifies the certificate. Otherwise, the device verifies the signature first. In this case, signature verification will fail.</p>
+<p>The device verifies the certificate based on the certificate verification mode specified by an Option parameter. If the certificate verification mode is <strong>ESN</strong>, the device verifies the certificate based on the device ESN. If the certificate authentication mode is <strong>DOMAIN_IP</strong>, the device verifies the certificate based on the IP address of the bootstrap server. If the verification fails, the device fails to obtain a CA certificate.</p>
+</li><li>The device imports the obtained CA certificate to the PKI realm named <strong>default</strong> to establish a NETCONF connection with the controller.</li></ol>
+</li><li>(Optional) Starting the Syslog server<p>The device obtains the address of the Syslog server from the DHCP reply packet and enables the Syslog server function. Information about important phases during device deployment is recorded in user logs, which the Syslog server will upload to the NMS.</p>
+</li><li>Registering with the controller<p>After receiving the DHCP reply packet, the device enables proactive NETCONF registration and creates an SSH user named <strong>huawei</strong>. The device then establishes a NETCONF connection with the controller based on the obtained address and port number of the controller. The controller delivers deployment configurations to the device, which then completes automatic deployment.</p>
+</li></ol>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_CONCEPT_0000001941467797__en-us_concept_0000001630972845_ul17421158171718"><li id="EN-US_CONCEPT_0000001941467797__en-us_concept_0000001630972845_li139516121818">When deploying an unconfigured device, you are advised not to manually deliver the same configurations as those delivered during ZTP. Doing so will cause the configurations to be deleted if the deployment fails.</li><li id="EN-US_CONCEPT_0000001941467797__en-us_concept_0000001630972845_li5937113715817">ZTP depends on OPS. You can run the <b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001941467797__en-us_concept_0000001630972845_cmdname64678429732956">display ops process current</span></b> command to obtain the task ID, which indicates the ZTP process ID, and then run the <strong id="EN-US_CONCEPT_0000001941467797__en-us_concept_0000001630972845_b29565876832956"><b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001941467797__en-us_concept_0000001630972845_cmdname172923032332956">ops stop process</span></b></strong> <em id="EN-US_CONCEPT_0000001941467797__en-us_concept_0000001630972845_i165707559532956"><i><span class="varname" id="EN-US_CONCEPT_0000001941467797__en-us_concept_0000001630972845_varname76645647132956">process-id</span></i></em> command to stop the ongoing ZTP process. This operation, however, may cause the configurations that have been delivered during ZTP to be retained on the device.</li></ul>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ztp01_cfg_0074.html">Configuring DHCP-based Deployment (with a Controller)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ztp01_cfg_0076.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

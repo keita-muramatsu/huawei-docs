@@ -1,0 +1,389 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring BFD for IPv4 PIM">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_1089.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_0043.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_1085.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001847804870">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring BFD for IPv4 PIM</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001847804870"></a><a name="EN-US_TASK_0000001847804870"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring BFD for IPv4 PIM</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001847804870__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In multicast applications, if the current DR on a shared network segment is faulty, other PIM neighbors trigger a new round of DR election only after the neighbor relationship times out. As a result, multicast data transmission is interrupted. The interruption time (usually in seconds) is not shorter than the timeout time of the neighbor relationship. BFD can detect changes in the status of a link on a shared network segment within milliseconds, enabling a device to rapidly respond to PIM neighbor faults. By configuring BFD for IPv4 PIM and the DR switchover delay function together, when the current DR on the shared network segment fails, the interruption time of multicast data transmission is shortened, improving the reliability of multicast data transmission.</p>
+<p>On the network shown in <a href="#EN-US_TASK_0000001847804870__fig_dc_vrp_multicast_cfg_004101">Figure 1</a>, the downstream interface interface2 of DeviceC functions as the current DR and is responsible for forwarding multicast data to Receiver, and the host can receive VoD information from the multicast source. BFD for IPv4 PIM is deployed on the shared network segment where DeviceB and DeviceC reside. When the downstream interface interface2 of DeviceC fails, PIM can rapidly detect the fault and trigger DR election. The interface2 of DeviceB is immediately elected as the new DR and is responsible for forwarding multicast data. Then, multicast data is immediately switched to the new path. This shortens the period during which multicast data transmission is interrupted and improves the reliability of multicast data transmission. In addition, configure the DR switchover delay. Then, after the faulty DR on the network recovers, DR election is re-performed and the routing table is rebuilt. During this process, the interface maintains the original multicast forwarding entry to shorten the interruption period of multicast data transmission to the maximum extent.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<div class="fignone" id="EN-US_TASK_0000001847804870__fig_dc_vrp_multicast_cfg_004101"><a name="EN-US_TASK_0000001847804870__fig_dc_vrp_multicast_cfg_004101"></a><a name="fig_dc_vrp_multicast_cfg_004101"></a><span class="figcap"><b>Figure 1 </b>Networking diagram of configuring BFD for IPv4 PIM</span><br><span><img class="vsd" src="images/fig_dc_cfg_pim-sm_ipv4_005701.png"></span></div>
+<p>To complete the configuration, you need the following data:</p>
+<ul><li><p>Multicast source (S) address: 10.1.7.1/24</p>
+</li><li><p>Multicast group (G) address: 225.1.1.1/24</p>
+</li><li>BFD parameters: minimum sending interval, minimum receiving interval, and local detection multiplier</li><li>DR switchover delay</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001847804870__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Configure IP addresses and a unicast routing protocol for interfaces on each device.</p>
+</li><li><p>Enable multicast on all devices that provide multicast services, enable PIM-SM on each interface, and enable IGMP on the interface connected to the host.</p>
+</li><li><p>Configure an RP on DeviceA.</p>
+</li><li>Enable BFD globally. Enable BFD for IPv4 PIM on the interface connecting the device to the network segment to which user hosts belong and configure BFD parameters.</li><li>Set the PIM DR switchover delay on the interfaces connected to the network segments of user hosts.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001847804870__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IP address to each device interface and configure a unicast routing protocol. For detailed configurations, see Configuration Scripts.</span></li><li><span>Enable multicast on each device, PIM-SM on each interface, and IGMP on the interfaces that connect the device to the host.</span><p><p># Configure DeviceC. The configurations of DeviceA and DeviceC are similar to the configuration of DeviceB. For detailed configurations, see Configuration Scripts.</p>
+<pre class="screen">[<span class="keyword">Device</span>B] <strong>multicast routing-enable</strong>
+[<span class="keyword">Device</span>B] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/2</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/2</span>] <strong>igmp enable</strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>B] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure RPs.</span><p><p># Create a loopback interface on DeviceA and enable PIM-SM; configure the loopback interface to function as both a C-RP and C-BSR.</p>
+<pre class="screen">[<span class="keyword">Device</span>A] <strong>interface loopback 0</strong>
+[<span class="keyword">Device</span>A-Loopback0] <strong>ip address 1.1.1.1</strong>
+[<span class="keyword">Device</span>A-Loopback0] <strong>pim sm</strong>
+[<span class="keyword">Device</span>A-Loopback0] <strong>quit</strong>
+[<span class="keyword">Device</span>A] <strong>pim</strong>
+[<span class="keyword">Device</span>A-pim] <strong>c-bsr Loopback0</strong>
+[<span class="keyword">Device</span>A-pim] <strong>c-rp Loopback0</strong>
+[<span class="keyword">Device</span>A-pim] <strong>quit</strong></pre>
+</p></li><li><span>Enable BFD globally on DeviceB and DeviceC, enable BFD for IPv4 PIM on the device's interface connected to the user host network segment, and configure BFD parameters.</span><p><p># Configure DeviceB. The configuration of DeviceC is similar to the configuration of DeviceB. For detailed configurations, see Configuration Scripts.</p>
+<pre class="screen">[<span class="keyword">Device</span>B] <strong>bfd</strong>
+[<span class="keyword">Device</span>B-bfd] <strong>quit</strong>
+[<span class="keyword">Device</span>B] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/2</span>] <strong>pim bfd enable</strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/2</span>] <strong>pim bfd min-tx-interval 100 min-rx-interval 100 detect-multiplier 3</strong></pre>
+</p></li><li><span>Configure the DR switchover delay on the interfaces connecting DeviceB and DeviceC to the user host network segment.</span><p><p># Configure DeviceB. The configuration of DeviceC is similar to the configuration of DeviceB. For detailed configurations, see Configuration Scripts.</p>
+<pre class="screen">[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/2</span>] <strong>pim timer dr-switch-delay 20</strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001847804870__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># The multicast source starts to send data to the group, and hosts can receive the data from the source. Run the <strong><b><span class="cmdqueryname">display pim interface</span></b> verbose</strong> command to check detailed information about PIM interfaces connected to hosts. The command output shows that the DR on the host network segment is DeviceC, PIM BFD is enabled on the interface, and the switchover delay is configured. A command output example is as follows:</p>
+<pre class="screen">&lt;DeviceB&gt; <strong>display pim </strong><strong>interface</strong> <strong><span>10GE</span> <span>0/0/2</span> verbose</strong>
+VPN-Instance: public net
+ Interface: <span>10GE</span><span>0/0/2</span>, 10.1.1.1
+     PIM version: 2
+     PIM mode: Sparse
+     PIM state: up
+     <strong>PIM DR: 10.1.1.2</strong>
+     PIM DR Priority (configured): 1
+     PIM neighbor count: 1
+     PIM hello interval: 30 s
+     PIM LAN delay (negotiated): 500 ms
+     PIM LAN delay (configured): 500 ms
+     PIM hello override interval (negotiated): 2500 ms
+     PIM hello override interval (configured): 2500 ms
+     PIM Silent: disabled 
+     PIM neighbor tracking (negotiated): disabled
+     PIM neighbor tracking (configured): disabled
+     PIM generation ID: 0XF5712241
+     PIM require-GenID: disabled
+     PIM hello hold interval: 105 s
+     PIM assert hold interval: 180 s
+     PIM triggered hello delay: 5 s
+     PIM J/P interval: 60 s
+     PIM J/P hold interval: 210 s
+     PIM BSR domain border: disabled
+     <strong>PIM BFD: enabled</strong>
+     <strong>PIM BFD min-tx-interval: 100 ms</strong>
+     <strong>PIM BFD min-rx-interval: 100 ms</strong>
+     <strong>PIM BFD detect-multiplier: 3</strong>
+     <strong>PIM dr-switch-delay timer : 20 s</strong>
+     Number of routers on link not using DR priority: 0
+     Number of routers on link not using LAN delay: 0
+     Number of routers on link not using neighbor tracking: 2
+     ACL of PIM neighbor policy: -
+     ACL of PIM ASM join policy: -
+     ACL of PIM SSM join policy: - 
+     ACL of PIM join policy: -
+     PIM ignore assert: disabled</pre>
+<pre class="screen">&lt;DeviceC&gt; <strong>display pim </strong><strong>interface</strong> <strong><span>10GE</span> <span>0/0/2</span> verbose</strong>
+VPN-Instance: public net
+ Interface: <span>10GE</span><span>0/0/2</span>, 10.1.1.2
+     PIM version: 2
+     PIM mode: Sparse
+     PIM state: up
+     <strong>PIM DR: 10.1.1.2 (local)</strong>
+     PIM DR Priority (configured): 1
+     PIM neighbor count: 1
+     PIM hello interval: 30 s
+     PIM LAN delay (negotiated): 500 ms
+     PIM LAN delay (configured): 500 ms
+     PIM hello override interval (negotiated): 2500 ms
+     PIM hello override interval (configured): 2500 ms
+     PIM Silent: disabled 
+     PIM neighbor tracking (negotiated): disabled
+     PIM neighbor tracking (configured): disabled
+     PIM generation ID: 0X8365186A
+     PIM require-GenID: disabled
+     PIM hello hold interval: 105 s
+     PIM assert hold interval: 180 s
+     PIM triggered hello delay: 5 s
+     PIM J/P interval: 60 s
+     PIM J/P hold interval: 210 s
+     PIM BSR domain border: disabled
+     <strong>PIM BFD: enabled</strong>
+     <strong>PIM BFD min-tx-interval: 100 ms</strong>
+     <strong>PIM BFD min-rx-interval: 100 ms</strong>
+     <strong>PIM BFD detect-multiplier: 3</strong>
+     <strong>PIM dr-switch-delay timer : 20 s</strong>
+     Number of routers on link not using DR priority: 0
+     Number of routers on link not using LAN delay: 0
+     Number of routers on link not using neighbor tracking: 2
+     ACL of PIM neighbor policy: -
+     ACL of PIM ASM join policy: -
+     ACL of PIM SSM join policy: - 
+     ACL of PIM join policy: -
+     PIM ignore assert: disabled</pre>
+<p># Run the <strong><b><span class="cmdqueryname">display pim bfd session</span></b></strong> command to view information about the BFD session on DeviceB and DeviceC. Check whether the BFD session is set up. A command output example is as follows:</p>
+<pre class="screen">&lt;DeviceB&gt; <strong>display pim bfd session</strong>
+VPN-Instance: public net
+Total 1 BFD session Created
+<span>10GE</span><span>0/0/2</span> (10.1.1.1): Total 1 BFD session Created
+Neighbor     ActTx(ms)     ActRx(ms)     ActMulti     Local/Remote     State
+10.1.1.2     100           100           3            8192/8192        <strong>Up</strong></pre>
+<pre class="screen">&lt;DeviceC&gt; <strong>display pim bfd session</strong>
+VPN-Instance: public net
+Total 1 BFD session Created
+<span>10GE</span><span>0/0/2</span> (10.1.1.2): Total 1 BFD session Created
+Neighbor     ActTx(ms)     ActRx(ms)     ActMulti     Local/Remote     State
+10.1.1.1     100           100           3            8192/8192        <strong>Up</strong></pre>
+<p>The command output shows that the BFD session is up, and the actual interval for sending BFD packets is 100 ms, the interval for receiving BFD packets is 100 ms, and the detection multiplier is 3.</p>
+<p># Run the <strong><b><span class="cmdqueryname">display pim routing-table</span></b></strong> command to check the PIM routing table. The command output shows that DeviceC functions as the DR, and (S, G) and (*, G) entries exist. The command output is as follows:</p>
+<pre class="screen">&lt;DeviceC&gt; <strong>display pim routing-table</strong>
+VPN-Instance: public net
+ Total 1 (*, G) entry; 1 (S, G) entry
+ 
+(*, 225.1.1.1)
+     RP: 1.1.1.1
+     Protocol: pim-sm, Flag: WC
+     UpTime: 00:13:46
+     Upstream interface: <span>10GE</span><span>0/0/1</span> , Refresh time: 00:00:53
+         Upstream neighbor: 10.1.3.2
+         RPF prime neighbor: 10.1.3.2
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: igmp, UpTime: 00:13:46, Expires:-
+(10.1.7.1, 225.1.1.1)
+     RP: 1.1.1.1
+     Protocol: pim-sm, Flag: SPT ACT
+     UpTime: 00:00:42
+     Upstream interface: <span>10GE</span><span>0/0/1</span>, Refresh time: 00:00:53
+         Upstream neighbor: 10.1.3.2
+         RPF prime neighbor: 10.1.3.2
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: pim-sm, UpTime: 00:00:42, Expires:-</pre>
+<p># If the downstream interface <span>10GE</span><span>0/0/2</span> of DeviceC fails, run the <strong><b><span class="cmdqueryname">display pim interface</span></b> verbose</strong> command on DeviceB to check detailed information about the PIM interface. A command output example is as follows:</p>
+<pre class="screen">&lt;DeviceB&gt; <strong>display pim </strong><strong>interface</strong> <strong><span>10GE</span> <span>0/0/2</span> verbose</strong>
+VPN-Instance: public net
+ Interface: <span>10GE</span><span>0/0/2</span>, 10.1.1.1
+     PIM version: 2
+     PIM mode: Sparse
+     PIM state: up
+     <strong>PIM DR: 10.1.1.2</strong><strong> (local)</strong>
+     PIM DR Priority (configured): 1
+     PIM neighbor count: 1
+     PIM hello interval: 30 s
+     PIM LAN delay (negotiated): 500 ms
+     PIM LAN delay (configured): 500 ms
+     PIM hello override interval (negotiated): 2500 ms
+     PIM hello override interval (configured): 2500 ms
+     PIM Silent: disabled 
+     PIM neighbor tracking (negotiated): disabled
+     PIM neighbor tracking (configured): disabled
+     PIM generation ID: 0XF5712241
+     PIM require-GenID: disabled
+     PIM hello hold interval: 105 s
+     PIM assert hold interval: 180 s
+     PIM triggered hello delay: 5 s
+     PIM J/P interval: 60 s
+     PIM J/P hold interval: 210 s
+     PIM BSR domain border: disabled
+     <strong>PIM BFD: enabled</strong>
+     <strong>PIM BFD min-tx-interval: 100 ms</strong>
+     <strong>PIM BFD min-rx-interval: 100 ms</strong>
+     <strong>PIM BFD detect-multiplier: 3</strong>
+     <strong>PIM dr-switch-delay timer : 20 s</strong>
+     Number of routers on link not using DR priority: 0
+     Number of routers on link not using LAN delay: 0
+     Number of routers on link not using neighbor tracking: 2
+     ACL of PIM neighbor policy: -
+     ACL of PIM ASM join policy: -
+     ACL of PIM SSM join policy: - 
+     ACL of PIM join policy: -
+     PIM ignore assert: disabled</pre>
+<p>The command output shows that after the downstream interface <span>10GE</span><span>0/0/2</span> of DeviceC fails, the downstream interface <span>10GE</span><span>0/0/2</span> of DeviceB is immediately elected as the DR.</p>
+<p># Run the <strong>display pim routing-table</strong> command to check the PIM routing table. The command output shows that multicast routing entries exist on DeviceB. The command output is as follows:</p>
+<pre class="screen">&lt;DeviceB&gt; <strong>display pim routing-table</strong>
+VPN-Instance: public net
+ Total 1 (*, G) entry; 1 (S, G) entry
+ 
+(*, 225.1.1.1)
+     RP: 1.1.1.1
+     Protocol: pim-sm, Flag: WC
+     UpTime: 00:13:46
+     Upstream interface: <span>10GE</span><span>0/0/1</span> , Refresh time: 00:00:53
+         Upstream neighbor: 10.1.2.2
+         RPF prime neighbor: 10.1.2.2
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: igmp, UpTime: 00:13:46, Expires:-
+(10.1.7.1, 225.1.1.1)
+     RP: 1.1.1.1
+     Protocol: pim-sm, Flag: SPT ACT
+     UpTime: 00:00:42
+     Upstream interface: <span>10GE</span><span>0/0/1</span>, Refresh time: 00:00:53
+         Upstream neighbor: 10.1.2.2
+         RPF prime neighbor: 10.1.2.2
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: pim-sm, UpTime: 00:00:42, Expires:-</pre>
+<p>The command output shows that multicast traffic is rapidly switched to a new path after <span>10GE</span><span>0/0/2</span> on DeviceC fails. Then, the downstream interface <span>10GE</span><span>0/0/2</span> of DeviceB functions as the new DR and is responsible for forwarding multicast data at the receive end.</p>
+<h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p><span class="keyword">Device</span>A</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>A
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.7.2 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.2 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.1.3.2 255.255.255.0
+ pim sm
+#
+interface Loopback
+ ip address 1.1.1.1 255.255.255.255
+ pim sm
+#
+pim
+ c-bsr Loopback0
+ c-rp Loopback0
+#
+ospf 1
+ area 0.0.0.0
+  network 10.1.7.0 0.0.0.255
+  network 10.1.2.0 0.0.0.255
+  network 10.1.3.0 0.0.0.255
+  network 1.1.1.1 0.0.0.0
+#
+return</pre>
+</li><li><p><span class="keyword">Device</span>B</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>B
+#
+multicast routing-enable
+#
+bfd
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.2.1 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.1.1 255.255.255.0
+ pim timer dr-switch-delay 20
+ pim sm
+ pim bfd enable
+ pim bfd min-tx-interval 100 min-rx-interval 100 detect-multiplier 3
+ igmp enable
+#
+ospf 1
+ area 0.0.0.0
+  network 10.1.2.0 0.0.0.255
+  network 10.1.1.0 0.0.0.255
+#
+return</pre>
+</li><li><p><span class="keyword">Device</span>C</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>C
+#
+multicast routing-enable
+#
+bfd
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.3.1 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.1.2 255.255.255.0
+ pim timer dr-switch-delay 20
+ pim sm
+ pim bfd enable
+ pim bfd min-tx-interval 100 min-rx-interval 100 detect-multiplier 3
+ igmp enable
+#
+ospf 1
+ area 0.0.0.0
+  network 10.1.3.0 0.0.0.255
+  network 10.1.1.0 0.0.0.255
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_pim_cfg_1089.html">Configuration Examples for PIM
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_pim_cfg_0043.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_pim_cfg_1085.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

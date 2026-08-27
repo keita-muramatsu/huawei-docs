@@ -1,0 +1,88 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding LDP Extension for Inter-Area LSPs">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0036.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0038.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001337755216">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Understanding LDP Extension for Inter-Area LSPs</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001337755216"></a><a name="EN-US_CONCEPT_0000001337755216"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding LDP Extension for Inter-Area LSPs</h1>
+<div><div class="section"><h4 class="sectiontitle">Fundamentals</h4><p>On a large-scale network, multiple IGP areas need to be configured for flexible deployment and fast convergence. To prevent excessive resource consumption caused by a large number of routes, an area border router (ABR) needs to summarize the routes in an area and advertise the summary routes to neighboring IGP areas. LDP extension for inter-area LSPs enables LDP to search for routes based on the longest match rule so that LDP can establish LDP LSPs across multiple IGP areas based on summary routes.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001337755216__fig_dc_vrp_feature_new_004001"><a name="EN-US_CONCEPT_0000001337755216__fig_dc_vrp_feature_new_004001"></a><a name="fig_dc_vrp_feature_new_004001"></a><span class="figcap"><b>Figure 1 </b>LDP extension for inter-area LSPs</span><br><span><img class="vsd" src="figure/en-us_image_0000001395695657.png" width="NaN" height="NaN"></span></div>
+<p>The network shown in <a href="#EN-US_CONCEPT_0000001337755216__fig_dc_vrp_feature_new_004001">Figure 1</a> has two IGP areas: Area 10 and Area 20.</p>
+<div class="p">In the routing table of LSR-D on the edge device of Area 10, there are two host routes to LSR-B and LSR-C. To minimize route resource consumption, you can use IS-IS on LSR-D to summarize the two routes into one. The resulting summary route192.168.3.0/24 can then be sent to Area 20. Consequently, the routing table of LSR-A contains the summary route, but does not contain host routes with 32-bit addresses. By default, when establishing an LSP, LDP searches the routing table for the route that exactly matches the FEC carried in a received Label Mapping message. <a href="#EN-US_CONCEPT_0000001337755216__tab_dc_vrp_feature_new_004001">Table 1</a> describes the routing entry information of LSR-A and the routing information carried in the FEC on the network shown in <a href="#EN-US_CONCEPT_0000001337755216__fig_dc_vrp_feature_new_004001">Figure 1</a>.
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001337755216__tab_dc_vrp_feature_new_004001"></a><a name="tab_dc_vrp_feature_new_004001"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001337755216__tab_dc_vrp_feature_new_004001" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Routing entry information of LSR-A and routing information carried in the FEC</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="35.5%" id="mcps1.3.1.5.3.2.3.1.1" liSelected="liSelected"><p>Routing Entry Information of LSR-A</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="64.5%" id="mcps1.3.1.5.3.2.3.1.2" liSelected="liSelected"><p>Routing Information Carried in the FEC</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" rowspan="2" valign="top" width="35.5%" headers="mcps1.3.1.5.3.2.3.1.1 "><p>192.168.3.0/24</p>
+</td>
+<td class="cellrowborder" valign="top" width="64.5%" headers="mcps1.3.1.5.3.2.3.1.2 "><p>192.168.3.1/32</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.1.5.3.2.3.1.1 "><p>192.168.3.2/32</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+For summary routes, LDP can establish only liberal LSPs (refer to those that have been assigned labels but fail to be established), but cannot establish LDP LSPs across IGP areas. As a result, LDP cannot provide backbone network tunnels for VPN services.</div>
+<p>To prevent such an issue on the network shown in <a href="#EN-US_CONCEPT_0000001337755216__fig_dc_vrp_feature_new_004001">Figure 1</a>, enable LDP to search for routes based on the longest match rule during LSP establishment. The summary route 192.168.3.0/24 already exists in the routing table of LSR-A. When LSR-A receives a Label Mapping message (assuming that the message carries the FEC 192.168.3.1/32) from Area 10, LSR-A can find the summary route 192.168.3.0/24 based on the longest match rule. It uses the outbound interface and next hop of the route as the outbound interface and next hop to the FEC 192.168.3.1/32. LDP can then establish an LDP LSP across IGP areas.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">DoD Support for Inter-Area LDP Extension</h4><p>In a remote DoD LDP session, LDP can use the longest match rule to establish an LSP destined for the peer's LSR ID.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001337755216__fig_dc_vrp_feature_new_00400501"><a name="EN-US_CONCEPT_0000001337755216__fig_dc_vrp_feature_new_00400501"></a><a name="fig_dc_vrp_feature_new_00400501"></a><span class="figcap"><b>Figure 2 </b>DoD support for inter-area LDP extension</span><br><span><img class="vsd" src="figure/en-us_image_0000001345295738.png" width="NaN" height="NaN"></span></div>
+<p>On the network shown in <a href="#EN-US_CONCEPT_0000001337755216__fig_dc_vrp_feature_new_00400501">Figure 2</a>, only the default route 0.0.0.0 exists between nodes A and C, and a remote DoD session is established between nodes A and C. To establish an LSP between nodes A and C, a downstream session is queried based on the longest match rule, and a Label Request message is sent to the downstream node. Upon receipt of the Label Request message, the transit node B checks whether an exact route exists. If no exact route is found and the longest match function is enabled, node B searches for a route based on the longest match rule and establishes an LSP for the route.</p>
+<p>A remote LDP session in DoD mode is established on node A, no exact route to the LSR ID of the peer is found, and the longest match function is configured for LDP. In this case, node A can automatically send a DoD Label Request message after the remote IP address is configured for the remote peer.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0036.html">Configuring LDP Extension for Inter-Area LSPs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0038.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

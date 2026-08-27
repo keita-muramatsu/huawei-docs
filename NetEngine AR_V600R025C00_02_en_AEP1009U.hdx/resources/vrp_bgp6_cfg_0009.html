@@ -1,0 +1,102 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring BGP4+ to Import Routes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp6_cfg_0006.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp6_cfg_0008.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp6_cfg_0011.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BGP4+">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BGP4+">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="BGP4+">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001176661961">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring BGP4+ to Import Routes</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001176661961"></a><a name="EN-US_TASK_0000001176661961"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring BGP4+ to Import Routes</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001176661961__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>BGP4+ itself cannot discover routes. It needs to import routes from other protocols (such as static routes or OSPFv3 routes) to the BGP4+ routing table so that they can be transmitted within an AS or between ASs.</p>
+<p>BGP4+ can import routes in either Import or Network mode.</p>
+<ul><li><p>Import mode: BGP4+ imports routes by protocol type, such as RIPng, OSPFv3, IPv6 IS-IS, static routes, and direct routes.</p>
+</li><li><p>Network mode: BGP4+ imports a route with the specified prefix and mask to the BGP4+ routing table. Network mode is more precise than Import mode.</p>
+</li></ul>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001176661961__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Import mode</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="system-view">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="bgp">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP-IPv6 unicast address family view.</span><p><pre class="screen"><b><span class="ipv6-family unicast">ipv6-family</span></b> <strong><span>unicast</span></strong></pre>
+</p></li><li class="substepexpand"><span>To configure BGP4+ to import routes from another protocol, run either of the following commands as required:</span><p><ul><li>Configure BGP4+ to import routes from another routing protocol.<pre class="screen"><b><span class="import-route direct isis ospf rip static med route-policy">import-route</span></b> { <strong><span>direct</span></strong> | <strong><span>isis</span></strong> <i><span class="varname">process-id</span></i> | <strong><span>ospf</span></strong> <i><span class="varname">process-id</span></i><span> | <strong><span>rip</span></strong> <i><span class="varname">process-id</span></i></span> | <strong><span>static</span></strong> <span>| <strong><span>op-route</span></strong> </span>} [ <strong><span>med</span></strong> <i><span class="varname">med</span></i> | <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ] <sup>*</sup></pre>
+</li><li>Configure BGP4+ to import direct routes (excluding Vlink direct routes).<pre class="screen"><b><span class="import-route direct exclude vlink med route-policy">import-route</span></b> <strong><span>direct</span></strong> <strong><span>exclude</span></strong> <strong><span>vlink</span></strong> [ <strong><span>med</span></strong> <i><span class="varname">med</span></i> | <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ] <sup>*</sup></pre>
+</li></ul>
+</p><p><p>To set an MED value for the imported routes, specify the <i><span class="varname">med</span></i> parameter. An EBGP peer selects the route with the lowest MED value to guide traffic entering the AS where the peer resides.</p>
+<p>To filter the routes imported from another protocol, specify the <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> parameter. </p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When configuring the device to import the routes discovered by a dynamic routing protocol, such as OSPF<span>, RIP,</span> or IS-IS, specify the process ID of the protocol.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>(Optional) Enable BGP4+ to import default routes.</span><p><pre class="screen"><b><span class="default-route imported">default-route imported</span></b></pre>
+<p>Default routes can be imported only if both the <b><span class="default-route imported">default-route imported</span></b> and <b><span class="import-route">import-route</span></b> commands are run. Using only the <b><span class="cmdqueryname">import-route</span></b> command cannot import default routes, and using only the <b><span class="cmdqueryname">default-route imported</span></b> command imports the default routes that exist in the local routing table.</p>
+</p></li></ol>
+</li><li><span>Network mode</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="system-view">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="bgp">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP-IPv6 unicast address family view.</span><p><pre class="screen"><b><span class="ipv6-family unicast">ipv6-family</span></b> <strong><span>unicast</span></strong></pre>
+</p></li><li class="substepexpand"><span>Configure the device to import local IPv6 routes.</span><p><pre class="screen"><b><span class="network route-policy">network</span></b> <i><span class="varname">ipv6-address</span></i> <i><span class="varname">prefix-length</span></i> [ <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ]</pre>
+<p>If no mask or mask length is specified, the address is processed as a classful address.</p>
+<p>The local routes to be advertised must exist in the local IPv6 routing table.</p>
+<p>You can specify the <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> parameter to filter the routes imported from another protocol. </p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li><p>The destination address and mask specified in the <b><span class="network">network</span></b> command must be consistent with those in the corresponding entry in the local IPv6 routing table. Otherwise, the specified route will not be advertised.</p>
+</li><li><p>When using the <b><span class="undo network">undo network</span></b> command to clear the existing configuration, specify the correct mask.</p>
+</li></ul>
+</div></div>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_bgp6_cfg_0006.html">Configuring Basic BGP4+ Functions
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bgp6_cfg_0008.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_bgp6_cfg_0011.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an IPsec Profile">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0033.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0035.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563754233">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an IPsec Profile</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563754233"></a><a name="EN-US_TASK_0000001563754233"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an IPsec Profile</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001563754233__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><ul><li>An IPsec proposal has been configured.</li><li>IKE peers have been configured.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563754233__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>An IPsec profile defines how to protect data flows, including IPsec proposals, IKE negotiation parameters for SA establishment, SA lifetime, and Perfect Forward Secrecy (PFS). An IPsec profile is similar to an IPsec policy except that an IPsec profile is uniquely identified by its name and must be configured through IKE negotiation. For successful IKE negotiation, all the parameters specified in an IPsec profile on the local and remote ends must match.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563754233__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an IPsec profile and enter the IPsec profile view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+</p></li><li><span>Reference an IPsec proposal.</span><p><pre class="screen"><b><span class="cmdqueryname">proposal</span></b> <i><span class="varname">proposal-name</span></i></pre>
+<p>By default, an IPsec policy does not reference an IPsec proposal.</p>
+<p><i><span class="varname">proposal-name</span></i> specifies an existing IPsec proposal. For details about how to configure an IPsec proposal, see <a href="security_ipsec_cfg_0013.html">Configuring an IPsec Proposal</a>.</p>
+</p></li><li><span>Reference an IKE peer.</span><p><pre class="screen"><b><span class="cmdqueryname">ike-peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p><p><p>By default, an IPsec policy does not reference an IKE peer.</p>
+<p><i><span class="varname">peer-name</span></i> specifies an existing IKE peer. For details about how to configure an IKE peer, see <a href="security_ipsec_cfg_0019.html">Configuring an IKE Peer</a>.</p>
+<p>When an IPsec profile is used, the IP address configured using the <b><span class="cmdqueryname">destination</span></b> command on a tunnel interface is preferentially used as the remote address for IKE negotiation. If this IP address is not configured, the IP address configured using the <b><span class="cmdqueryname">remote-address</span></b> command in the IKE peer view is used for IKE negotiation. If both commands are run, ensure that the same IP address is configured using the two commands. Otherwise, IKE negotiation fails. If multiple IKE peers are referenced in an IPsec profile, do not run the <b><span class="cmdqueryname">destination</span></b> command on a tunnel interface. Instead, you need to run the <b><span class="cmdqueryname">remote-address</span></b> command on each IKE peer referenced in the IPsec profile.</p>
+</p></li><li><strong>Optional: </strong><span>Configure PFS used when the local end initiates negotiation.</span><p><pre class="screen"><span><b><span class="cmdqueryname">pfs</span></b> { <strong><span>dh-group1</span></strong> | <strong><span>dh-group2</span></strong><span> | <strong><span>dh-group5</span></strong> | <strong><span>dh-group14</span></strong></span></span> | <strong><span>dh-group15</span></strong> | <strong><span>dh-group16</span></strong> | <strong><span>dh-group18</span></strong> | <strong><span>dh-group19</span></strong> | <strong><span>dh-group20</span></strong> | <strong><span>dh-group21</span></strong> | <strong><span>dh-group24</span></strong> }</pre>
+</p><p><p>By default, PFS is not used when the local end initiates negotiation.</p>
+<p>When the local end initiates negotiation, there is an additional DH exchange in IKEv1 phase 2 or IKEv2 Create_Child_SA Exchange, which ensures security of the IPsec SA key and improves communication security. Group 1, Group 2, and Group 5 are not recommended because they cannot meet security requirements.</p>
+<p>During PFS configuration, the PFS DH groups specified on both ends must be the same. Otherwise, IPsec SA negotiation fails.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563754233__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display ipsec profile</span></b> [ <strong><span>brief</span></strong> | <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i> ] [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] command to check the IPsec profile configuration.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001563754233__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p><a href="security_ipsec_cfg_0035.html">Configuring a Tunnel Interface and Applying an IPsec Profile</a>.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0033.html">Configuring IPsec Using an IPsec Profile
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0035.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

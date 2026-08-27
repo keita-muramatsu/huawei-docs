@@ -1,0 +1,77 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="RADIUS over DTLS">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_aaa_cfg_0021.html">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_aaa_cfg_0027.html">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_aaa_cfg_0028.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="RADIUS">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="RADIUS">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featurename" content="HWTACACS">
+<meta name="featurename" content="LDAP">
+<meta name="featurename" content="RADIUS">
+<meta name="featurename" content="Local User">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002188586370">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>RADIUS over DTLS</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002188586370"></a><a name="EN-US_CONCEPT_0000002188586370"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">RADIUS over DTLS</h1>
+<div><p></p>
+<p>DTLS ensures the confidentiality and integrity of data transmitted between the RADIUS client and server. In UDP transmission scenarios, DTLS prevents third parties from eavesdropping on messages, tampering with messages, forging identities, and more. DTLS runs between the transport layer and the application layer. The well-known port number for RADIUS over DTLS is 2083, without distinguishing authentication, accounting, and dynamic authorization.</p>
+<p>Before establishing a session with the RADIUS server, the RADIUS client needs to perform a DTLS handshake. After the handshake is successful, the RADIUS client can complete registration and data transmission. <a href="#EN-US_CONCEPT_0000002188586370__en-us_concept_0000001391188192_fig_dc_vrp_aaa_feature_001802">Figure 1</a> shows the handshake process between the RADIUS client and server.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002188586370__en-us_concept_0000001391188192_fig_dc_vrp_aaa_feature_001802"><a name="EN-US_CONCEPT_0000002188586370__en-us_concept_0000001391188192_fig_dc_vrp_aaa_feature_001802"></a><a name="en-us_concept_0000001391188192_fig_dc_vrp_aaa_feature_001802"></a><span class="figcap"><b>Figure 1 </b>Handshake process between the RADIUS client and server</span><br><span><img src="../images/en-us_image_0000002320309249.png"></span></div>
+<ol><li>The RADIUS client sends a ClientHello packet to initiate handshake and key negotiation. The packet contains the following information:<ul><li>32-byte random number: used to generate a shared key.</li><li>Cipher suite supported by the client.</li><li>Compression mode supported by the client.</li></ul>
+</li><li>After receiving the ClientHello packet, the RADIUS server uses the hash-based message authentication code (HMAC) algorithm to generate a cookie based on the IP address and other parameters of the client, encapsulates the cookie into a HelloVerifyRequest packet, and sends the packet to the RADIUS client.</li><li>After receiving the HelloVerifyRequest packet, the RADIUS client fills the original cookie in the ClientHello packet and sends the packet to the RADIUS server again.</li><li>After receiving the cookie, the RADIUS server verifies the validity of the cookie. If the cookie is valid, the RADIUS server sends a series of packets to the RADIUS client.<ul><li>SeverHello packet:<ul><li>32-byte random number: used to generate a shared key.</li><li>Subsequent session encryption mode selected by the server.</li><li>Subsequent session compression mode selected by the server.</li></ul>
+</li><li>Certificate packet: contains the server certificate and public key of the certificate.</li><li>ServerKeyExchange packet: contains the key negotiation information of the server.</li><li>(Optional) CertificateRequest packet: requests a certificate from the client.</li><li>ServerHelloDone packet: It is only used as a flag to indicate that the server has sent all packets in the current phase.</li></ul>
+</li><li>After receiving the packet from the RADIUS server, the RADIUS client generates a shared key using the negotiated encryption method based on the negotiation information of the RADIUS server and the 32-byte random number generated by the RADIUS client and RADIUS server. The RADIUS client sends a series of packets to the RADIUS server:<ul><li>(Optional) Certificate packet: indicates that the RADIUS client sends a certificate. This action is performed after the RADIUS server requests the certificate.</li><li>ClientKeyExchange packet: contains the same information as a ServerKeyExchange packet.</li><li>(Optional) CertificateVerify packet: authenticates the server certificate.</li><li>ChangeCipherSpec packet: is encrypted using the shared key.</li><li>Finished packet: indicates the end flag.</li></ul>
+</li><li>The RADIUS server calculates the shared key based on the negotiation information from the RADIUS client. After decrypting the ChangeCipherSpec packet, the RADIUS server uses the key to encrypt its own ChangeCipherSpec packet, indicating that the shared key is found.</li><li>After receiving and decrypting the ChangeCipherSpec packet, the RADIUS client knows that the server has obtained the shared key. Then, the RADIUS client and server use the shared key to encrypt communication.</li></ol>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../galaxy_aaa_cfg_0021.html">Understanding RADIUS-based AAA
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../galaxy_aaa_cfg_0027.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../galaxy_aaa_cfg_0028.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

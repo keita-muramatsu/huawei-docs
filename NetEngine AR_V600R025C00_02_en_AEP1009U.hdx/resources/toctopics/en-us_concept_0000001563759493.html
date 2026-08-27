@@ -1,0 +1,264 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="PPP Packet Format">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001564119237.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001563879145.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563759493">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>PPP Packet Format</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563759493"></a><a name="EN-US_CONCEPT_0000001563759493"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">PPP Packet Format</h1>
+<div><div class="section"><h4 class="sectiontitle">PPP Architecture</h4><p>PPP is used at the data link layer of the TCP/IP protocol suite, as shown in <a href="#EN-US_CONCEPT_0000001563759493__fig189815546273">Figure 1</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563759493__fig189815546273"><a name="EN-US_CONCEPT_0000001563759493__fig189815546273"></a><a name="fig189815546273"></a><span class="figcap"><b>Figure 1 </b>Location of PPP in the protocol suite</span><br><span><img src="../images/en-us_image_0000001563759521.png"></span></div>
+<p>PPP consists of three types of protocols:</p>
+<ul><li>LCP: used to establish, monitor, and tear down PPP data links.</li><li>NCP: used to negotiate the format and type of packets transmitted on data links.</li><li>CHAP and PAP: used for network security authentication.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">PPP Packet Format</h4><p><a href="#EN-US_CONCEPT_0000001563759493__fig144486617499">Figure 2</a> shows the PPP packet format.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563759493__fig144486617499"><a name="EN-US_CONCEPT_0000001563759493__fig144486617499"></a><a name="fig144486617499"></a><span class="figcap"><b>Figure 2 </b>PPP packet format</span><br><span><img src="../images/en-us_image_0000001512680022.png"></span></div>
+<p>The meanings of the fields are as follows:</p>
+<ul><li>Flag field<p>The Flag field identifies the start and end of a physical frame and is always 0x7E.</p>
+</li><li>Address field<p>The Address field identifies a peer. Two communicating devices that are connected through PPP do not need to know the data link layer address of each other because PPP is used on point-to-point links. As such, this field must be filled with a broadcast address of all 1s and is of no significance to PPP.</p>
+</li><li>Control field<p>The Control field value defaults to 0x03, indicating unnumbered information. By default, PPP does not use sequence numbers or acknowledgement mechanisms to ensure transmission reliability.</p>
+<p>The Address and Control fields together identify a PPP packet. That is, the PPP packet header value is FF03.</p>
+</li><li>Protocol field<p>The Protocol field identifies the protocol of the data encapsulated in the Information field of a PPP packet.</p>
+<p>The structure of this field complies with the ISO 3309 extension mechanism for address fields. All Protocol field values must be odd, meaning that the least significant bit of the least significant byte must be 1, and the least significant bit of the most significant byte must be 0.</p>
+<p>If a receiver receives a PPP data packet that does not comply with these rules from a sender, the receiver considers the packet unrecognizable and sends a Protocol-Reject packet padded with the protocol code of the rejected packet to the sender.</p>
+<p><a href="#EN-US_CONCEPT_0000001563759493__table612674416516">Table 1</a> lists the common protocol codes in packets.</p>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001563759493__table612674416516"></a><a name="table612674416516"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001563759493__table612674416516" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Common protocol codes</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="20%" id="mcps1.3.2.5.4.5.2.3.1.1" liSelected="liSelected"><p>Protocol Code</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="80%" id="mcps1.3.2.5.4.5.2.3.1.2" liSelected="liSelected"><p>Protocol Type</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>0021</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Internet Protocol</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>002b</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Novell IPX</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>002d</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Van Jacobson Compressed TCP/IP</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>002f</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Van Jacobson Uncompressed TCP/IP</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>8021</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Internet Protocol Control Protocol</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>802b</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Novell IPX Control Protocol</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>8031</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Bridging NC</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>C021</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Link Control Protocol</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>C023</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Password Authentication Protocol</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.2.5.4.5.2.3.1.1 "><p>C223</p>
+</td>
+<td class="cellrowborder" valign="top" width="80%" headers="mcps1.3.2.5.4.5.2.3.1.2 "><p>Challenge Handshake Authentication Protocol</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li><li>Information field<p>The Information field contains data. The maximum length for the Information field, including the padding, is the maximum receive unit (MRU). The MRU defaults to 1500 bytes and can be negotiated.</p>
+<p>Padding is required only when the length of the Information field does not meet the MRU requirements. To ensure proper communication, both communicating parties must be able to identify and distinguish the padding bytes from real information.</p>
+</li><li>FCS field<p>The frame check sequence (FCS) field checks the correctness of PPP packet transmission.</p>
+<p>Some mechanisms are used to ensure correct data packet transmission. However, they increase the cost and delay in data exchange at the application layer.</p>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">LCP Packet Format</h4><p>Communicating devices exchange LCP packets to negotiate with each other before establishing a PPP link. The LCP packets are encrypted in the Information field of a PPP data packet as the payload, and the Protocol field of the PPP data packet is fixed to 0xC021.</p>
+<p>While a PPP link is being established, the Information field is variable and contains various packets, which need to be identified by corresponding fields.</p>
+<ul><li>Code field<p>The Code field is 1 byte in length and identifies the LCP packet type.</p>
+<div class="p">If a receiver receives an LCP packet with an invalid Code field from a sender, the receiver sends a Code-Reject packet to the sender. For common values of the Code field, see <a href="#EN-US_CONCEPT_0000001563759493__table19887143024614">Table 2</a>.
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001563759493__table19887143024614"></a><a name="table19887143024614"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001563759493__table19887143024614" frame="border" border="1" rules="all"><caption><b>Table 2 </b>Common values of the Code field</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="20.97%" id="mcps1.3.3.4.1.2.2.2.3.1.1" liSelected="liSelected"><p>Value</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="79.03%" id="mcps1.3.3.4.1.2.2.2.3.1.2" liSelected="liSelected"><p>Packet Type</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x01</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Configure-Request</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x02</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Configure-Ack</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x03</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Configure-Nak</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x04</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Configure-Reject</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x05</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Terminate-Request</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x06</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Terminate-Ack</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x07</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Code-Reject</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x08</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Protocol-Reject</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x09</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Echo-Request</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x0A</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Echo-Reply</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x0B</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Discard-Request</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.97%" headers="mcps1.3.3.4.1.2.2.2.3.1.1 "><p>0x0C</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.03%" headers="mcps1.3.3.4.1.2.2.2.3.1.2 "><p>Reserved</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</li><li>Identifier field<p>The Identifier field is 1 byte long and is used to match and respond to requests. A packet with an invalid Identifier field will be discarded.</p>
+<p>The sequence number of a Configure-Request packet usually begins with 0x01 and increments by 1 each time a Configure-Request packet is sent. After a receiver receives a Configure-Request packet, it sends a reply packet of which the sequence number must be the same as that of the received Configure-Request packet, regardless of which type of the reply it sends.</p>
+</li><li>Length field<p>The Length field indicates the total number of bytes in the LCP packet, which equals the total length of the Code, Identifier, Length and Data fields.</p>
+<p>The Length field value cannot exceed the MRU of the link. Bytes outside the range of the Length field are treated as padding and are ignored after the packet is received.</p>
+</li><li>Data field<div class="p">The Data field contains the contents of a negotiation packet, including the following fields:<ul><li>Type field: indicates the negotiation option type. For details about the negotiation option types, see <a href="#EN-US_CONCEPT_0000001563759493__table1432417018121">Table 3</a>.</li><li>Length field: indicates the total length of the Data field. That is, the total length of Type, Length, and Data fields.</li><li>Data field: contains the contents of the negotiation option.</li></ul>
+</div>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001563759493__table1432417018121"></a><a name="table1432417018121"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001563759493__table1432417018121" frame="border" border="1" rules="all"><caption><b>Table 3 </b>Negotiation options in the Type field</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="20.74%" id="mcps1.3.3.4.4.2.2.3.1.1" liSelected="liSelected"><p>Negotiation Option Value</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="79.25999999999999%" id="mcps1.3.3.4.4.2.2.3.1.2" liSelected="liSelected"><p>Negotiation Packet Type</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="20.74%" headers="mcps1.3.3.4.4.2.2.3.1.1 "><p>0x01</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.25999999999999%" headers="mcps1.3.3.4.4.2.2.3.1.2 "><p>Maximum-Receive-Unit</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.74%" headers="mcps1.3.3.4.4.2.2.3.1.1 "><p>0x02</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.25999999999999%" headers="mcps1.3.3.4.4.2.2.3.1.2 "><p>Async-Control-Character-Map</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.74%" headers="mcps1.3.3.4.4.2.2.3.1.1 "><p>0x03</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.25999999999999%" headers="mcps1.3.3.4.4.2.2.3.1.2 "><p>Authentication-Protocol</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.74%" headers="mcps1.3.3.4.4.2.2.3.1.1 "><p>0x04</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.25999999999999%" headers="mcps1.3.3.4.4.2.2.3.1.2 "><p>Quality-Protocol</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.74%" headers="mcps1.3.3.4.4.2.2.3.1.1 "><p>0x05</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.25999999999999%" headers="mcps1.3.3.4.4.2.2.3.1.2 "><p>Magic-Number</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.74%" headers="mcps1.3.3.4.4.2.2.3.1.1 "><p>0x06</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.25999999999999%" headers="mcps1.3.3.4.4.2.2.3.1.2 "><p>Reserved</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.74%" headers="mcps1.3.3.4.4.2.2.3.1.1 "><p>0x07</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.25999999999999%" headers="mcps1.3.3.4.4.2.2.3.1.2 "><p>Protocol-Field-Compression</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.74%" headers="mcps1.3.3.4.4.2.2.3.1.1 "><p>0x08</p>
+</td>
+<td class="cellrowborder" valign="top" width="79.25999999999999%" headers="mcps1.3.3.4.4.2.2.3.1.2 "><p>Address-and-Control-Field-Compression</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_concept_0000001564119237.html">Understanding PPP and MP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_concept_0000001563879145.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

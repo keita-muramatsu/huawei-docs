@@ -1,0 +1,527 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="pimGroupMappingTable">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../../v6r25c00/MIB/dc_AR_PIM-STD-MIB_mibtablecatalog.html">
+<meta name="DC.Relation" scheme="URI" content="../../v6r25c00/MIB/dc_AR_PIM-STD-MIB_mibtable_1.3.6.1.2.1.157.1.12.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Audience.Job" content="Reference">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Creator" content="PIM-STD-MIB">
+<meta name="Omsys Path" content="VRP-V800R025C00">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000002169026992">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../../public_sys-resources/browseVersion.js"></script>
+<title>pimGroupMappingTable</title>
+</head>
+<body><a name="EN-US_TOPIC_0000002169026992"></a><a name="EN-US_TOPIC_0000002169026992"></a>
+
+<div class="articleBoxWithoutHead">
+
+    <h1 class="topicTitle-h1">pimGroupMappingTable</h1>
+
+    
+	
+    <div> <p>The (conceptual) table listing mappings from multicast group prefixes to the PIM mode and RP address to use for groups within that group prefix.</p>
+<p>Rows in this table are created for a variety of reasons, indicated by the value of the pimGroupMappingOrigin object.</p>
+<ul><li>  Rows with a pimGroupMappingOrigin value of 'fixed' are created automatically by the router at startup, to correspond to the well-defined prefixes of link-local and unroutable group addresses.  These rows are never destroyed.</li><li>  Rows with a pimGroupMappingOrigin value of 'embedded' are created by the router to correspond to group prefixes that are to be treated as being in Embedded-RP format.</li><li>  Rows with a pimGroupMappingOrigin value of 'configRp' are created and destroyed as a result of rows in the pimStaticRPTable being created and destroyed.</li><li>  Rows with a pimGroupMappingOrigin value of 'configSsm' are created and destroyed as a result of configuration of SSM address ranges to the local router.</li><li>  Rows with a pimGroupMappingOrigin value of 'bsr' are created as a result of running the PIM Bootstrap Router (BSR) mechanism.  If the local router is not the elected BSR, these rows are created to correspond to group prefixes in the PIM Bootstrap messages received from the elected BSR.  If the local router is the elected BSR, these rows are created to correspond to group prefixes in the PIM Bootstrap messages that the local router sends.</li></ul>
+<p>In either case, these rows are destroyed when the group prefixes are timed out by the BSR mechanism.</p>
+<ul><li>  Rows with a pimGroupMappingOrigin value of 'other' are created and destroyed according to some other mechanism not specified here.</li></ul>
+<p>Given the collection of rows in this table at any point in time, the PIM mode and RP address to use for a particular group is determined using the following algorithm.</p>
+<p>1. From the set of all rows, the subset whose group prefix contains the group in question are selected.</p>
+<p>2. If there are no such rows, then the group mapping is undefined.</p>
+<p>3. If there are multiple selected rows, and a subset is defined by pimStaticRPTable (pimGroupMappingOrigin value of 'configRp') with pimStaticRPOverrideDynamic set to TRUE, then this subset is selected.</p>
+<p>4. From the selected subset of rows, the subset that have the greatest value of pimGroupMappingGrpPrefixLength are selected.</p>
+<p>5. If there are still multiple selected rows, the subset that has the highest precedence (the lowest numerical value for pimGroupMappingPrecedence) is selected.</p>
+<p>6. If there are still multiple selected rows, the row selected is implementation dependent; the implementation might or might not apply the PIM hash function to select the row.</p>
+<p>7. The group mode to use is given by the value of pimGroupMappingPimMode from the single selected row; the RP to use is given by the value of pimGroupMappingRPAddress, unless pimGroupMappingOrigin is 'embedded', in which case, the RP is extracted from the group address in question.</p>
+ <p>The indexes of the table are pimGroupMappingOrigin,pimGroupMappingAddressType,pimGroupMappingGrpAddress,pimGroupMappingGrpPrefixLength,pimGroupMappingRPAddressType,pimGroupMappingRPAddress.</p>
+
+		
+		
+        
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all">
+                
+                
+                
+                
+                
+                
+                <thead align="left">
+                    <tr>
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.15.1.7.1.1" liSelected="liSelected">
+                            <p>
+                                <strong>OID</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.15.1.7.1.2" liSelected="liSelected">
+                            <p>
+                                <strong>Object</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.15.1.7.1.3" liSelected="liSelected">
+                            <p>
+                                <strong>Syntax</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.15.1.7.1.4" liSelected="liSelected">
+                            <p>
+                                <strong>Max Access</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.15.1.7.1.5" liSelected="liSelected">
+                            <p>
+                                <strong>Description</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.15.1.7.1.6" liSelected="liSelected">
+                            <p>
+                                <strong>Implemented Specifications</strong>
+                            </p>
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.1 ">
+                                <p>1.3.6.1.2.1.157.1.13.1.1</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.2 ">
+                                <p>pimGroupMappingOrigin</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.3 ">
+                                <p>INTEGER{fixed(1),configRp(2),configSsm(3),bsr(4),autoRP(5),embedded(6),other(7)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.4 ">
+                                <p>not-accessible</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.5 ">
+							    <p>The mechanism by which this group mapping was learned.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.6 ">
+                                        <p></p>
+ <p><p>The actually supported value range is bsr(4);autoRP(5)</p>
+</p>
+ <p></p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.1 ">
+                                <p>1.3.6.1.2.1.157.1.13.1.2</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.2 ">
+                                <p>pimGroupMappingAddressType</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.3 ">
+                                <p>INTEGER{unknown(0),ipv4(1),ipv6(2),ipv4z(3),ipv6z(4),dns(16)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.4 ">
+                                <p>not-accessible</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.5 ">
+							    <p>The address type of the IP multicast group prefix.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.1 ">
+                                <p>1.3.6.1.2.1.157.1.13.1.3</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.2 ">
+                                <p>pimGroupMappingGrpAddress</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.3 ">
+                                <p>OCTET STRING{(4,4),(8,8),(16,16),(20,20)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.4 ">
+                                <p>not-accessible</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.5 ">
+							    <p>The IP multicast group address that, when combined with
+</p>
+<p>            pimGroupMappingGrpPrefixLength, gives the group prefix for
+</p>
+<p>            this mapping.  The InetAddressType is given by the
+</p>
+<p>            pimGroupMappingAddressType object.
+</p>
+<p>            This address object is only significant up to
+</p>
+<p>            pimGroupMappingGrpPrefixLength bits.  The remainder of the
+</p>
+<p>            address bits are zero.  This is especially important for
+</p>
+<p>            this index field, which is part of the index of this entry.
+</p>
+<p>            Any non-zero bits would signify an entirely different
+</p>
+<p>            entry.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.1 ">
+                                <p>1.3.6.1.2.1.157.1.13.1.4</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.2 ">
+                                <p>pimGroupMappingGrpPrefixLength</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.3 ">
+                                <p>Unsigned32{(4,128)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.4 ">
+                                <p>not-accessible</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.5 ">
+							    <p>The multicast group prefix length that, when combined
+</p>
+<p>            with pimGroupMappingGrpAddress, gives the group prefix for
+</p>
+<p>            this mapping.  The InetAddressType is given by the
+</p>
+<p>            pimGroupMappingAddressType object.  If
+</p>
+<p>            pimGroupMappingAddressType is 'ipv4' or 'ipv4z', this
+</p>
+<p>            object must be in the range 4..32.  If
+</p>
+<p>            pimGroupMappingAddressType is 'ipv6' or 'ipv6z', this object
+</p>
+<p>            must be in the range 8..128.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.1 ">
+                                <p>1.3.6.1.2.1.157.1.13.1.5</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.2 ">
+                                <p>pimGroupMappingRPAddressType</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.3 ">
+                                <p>INTEGER{unknown(0),ipv4(1),ipv6(2),ipv4z(3),ipv6z(4),dns(16)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.4 ">
+                                <p>not-accessible</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.5 ">
+							    <p>The address type of the RP to be used for groups within
+</p>
+<p>            this group prefix, or unknown(0) if no RP is to be used or
+</p>
+<p>            if the RP address is unknown.  This object must be
+</p>
+<p>            unknown(0) if pimGroupMappingPimMode is ssm(2), or if
+</p>
+<p>            pimGroupMappingOrigin is embedded(6).</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.1 ">
+                                <p>1.3.6.1.2.1.157.1.13.1.6</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.2 ">
+                                <p>pimGroupMappingRPAddress</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.3 ">
+                                <p>OCTET STRING{(0,0),(4,4),(8,8),(16,16),(20,20)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.4 ">
+                                <p>not-accessible</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.5 ">
+							    <p>The IP address of the RP to be used for groups within this
+</p>
+<p>            group prefix.  The InetAddressType is given by the
+</p>
+<p>            pimGroupMappingRPAddressType object.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.1 ">
+                                <p>1.3.6.1.2.1.157.1.13.1.7</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.2 ">
+                                <p>pimGroupMappingPimMode</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.3 ">
+                                <p>INTEGER{none(1),ssm(2),asm(3),bidir(4),dm(5),other(6)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.4 ">
+                                <p>read-only</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.5 ">
+							    <p>The PIM mode to be used for groups in this group prefix.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.6 ">
+                                        <p></p>
+ <p><p>The actually supported value range is ASM(3)</p>
+</p>
+ <p><p>Currently; only ASM is supported.</p>
+</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.1 ">
+                                <p>1.3.6.1.2.1.157.1.13.1.8</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.2 ">
+                                <p>pimGroupMappingPrecedence</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.3 ">
+                                <p>Unsigned32</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.4 ">
+                                <p>read-only</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.5 ">
+							    <p>The precedence of this row, used in the algorithm that
+</p>
+<p>            determines which row applies to a given group address
+</p>
+<p>            (described above).  Numerically higher values for this
+</p>
+<p>            object indicate lower precedences, with the value zero
+</p>
+<p>            denoting the highest precedence.
+</p>
+<p>            The absolute values of this object have a significance only
+</p>
+<p>            on the local router and do not need to be coordinated with
+</p>
+<p>            other routers.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.15.1.7.1.6 ">
+                                        <p></p>
+ <p><p>The actually supported value range is bsr(2);OTHER(4)</p>
+</p>
+ <p><p>Auto-RP is 1; BSR-RP is 2.</p>
+</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                    </tbody>
+
+                </table>
+</div>
+
+            <div class="section"><h4 class="sectiontitle">Creation Restriction</h4>
+                
+ <p>The entries in this table cannot be created.</p>
+ 
+                </div>
+
+                <div class="section"><h4 class="sectiontitle">Modification Restriction</h4>
+                    
+ <p>The entries in this table cannot be modified.</p>
+ 
+                    </div>
+
+                    <div class="section"><h4 class="sectiontitle">Deletion Restriction</h4>
+                        
+ <p>The entries in this table cannot be deleted.</p>
+ 
+                        </div>
+
+                        <div class="section"><h4 class="sectiontitle">Access Restriction</h4>
+                            
+ <p>The entries in this table can be read.</p>
+ 
+                            </div>
+
+                        </div>
+
+                    
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../../v6r25c00/MIB/dc_AR_PIM-STD-MIB_mibtablecatalog.html">Description of MIB Tables
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../../v6r25c00/MIB/dc_AR_PIM-STD-MIB_mibtable_1.3.6.1.2.1.157.1.12.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

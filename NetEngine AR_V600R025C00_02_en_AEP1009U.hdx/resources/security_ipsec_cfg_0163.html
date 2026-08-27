@@ -1,0 +1,392 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Establishing IPsec Tunnels Between a Branch and the HQ with Redundant Gateways">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002220862652.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0106.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002476240226">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Establishing IPsec Tunnels Between a Branch and the HQ with Redundant Gateways</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002476240226"></a><a name="EN-US_TASK_0000002476240226"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Establishing IPsec Tunnels Between a Branch and the HQ with Redundant Gateways</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002476240226__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000002476240226__fig522810406411">Figure 1</a>, the HQ has two redundant gateways, DeviceA and DeviceB, while the branch deploys DeviceC as its gateway. Communication between the branch and HQ is carried over the Internet and needs to be protected.</p>
+<p>To meet this requirement, configure DeviceC to establish IPsec tunnels with both DeviceA and DeviceB. It first attempts to connect to DeviceA; if unsuccessful, it switches to DeviceB. This setup ensures redundant IPsec connectivity between the branch and HQ.</p>
+<div class="fignone" id="EN-US_TASK_0000002476240226__fig522810406411"><a name="EN-US_TASK_0000002476240226__fig522810406411"></a><a name="fig522810406411"></a><span class="figcap"><b>Figure 1 </b>Network diagram for establishing IPsec tunnels between a branch and the HQ with redundant gateways</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000002508560249.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002476240226__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This example uses default security algorithms of IPsec.</p>
+<p>For security purposes, you are advised not to use the weak security algorithm or weak security protocol of this feature. If you must use such a weak security algorithm or protocol, run the <strong id="EN-US_TASK_0000002476240226__en-us_task_0000001564113977_b17693740143715">install feature-software WEAKEA</strong> command to install the weak security algorithm or protocol feature package WEAKEA.</p>
+</div></div>
+<ol><li>Complete the basic configuration, including interface IP addresses and routes, to ensure connectivity between the HQ and branch.</li><li><p>Configure IPsec policies, including the data flows to be encrypted and negotiation parameters for both IKE and IPsec proposals.</p>
+<ul><li>Configure a template IPsec policy at the HQ to respond to requests from the branch.</li><li>Configure an ISAKMP IPsec policy at the branch to initiate requests.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When configuring an IKE peer on the branch gateway, specify both HQ gateway addresses as the remote addresses. This allows the branch gateway to automatically switch to DeviceB if it fails to establish an IPsec tunnel with DeviceA.</p>
+</div></div>
+</li></ul>
+</li><li>Apply IPsec policies to interfaces.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002476240226__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure DeviceA (HQ gateway 1).</span><ol type="a"><li class="substepexpand"><span>Configure IP addresses for interfaces.</span><p><div class="p"># Configure the Internet-facing interface <span>10GE</span> <span>0/0/1</span>.<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ip address 60.1.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure the private network interface <span>10GE</span> <span>0/0/2</span>.<pre class="screen">[DeviceA] <strong>interface <span>10GE</span><span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ip address 192.168.1.2 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</div>
+</p></li><li class="substepexpand"><span>Configure static routes to the remote end. In this example, the next-hop address of the route to the branch gateway is 60.1.1.2.</span><p><pre class="screen">[DeviceA] <strong>ip route-static 70.1.1.0 255.255.255.0 60.1.1.2</strong>
+[DeviceA] <strong>ip route-static 192.168.3.0 255.255.255.0 60.1.1.2</strong></pre>
+</p></li><li class="substepexpand"><span>Configure an IPsec policy and apply it to the required interface.</span><p><div class="note" id="EN-US_TASK_0000002476240226__note1134381111016"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002476240226__p143431311408">In this example, template IPsec policies are configured on the HQ gateways (DeviceA and DeviceB); therefore, configuring an ACL is optional on them. If you configure an ACL on the HQ gateways, you must specify the destination address in the ACL rule.</p>
+</div></div>
+<div class="p"># Configure an IPsec proposal. You can use the default parameter settings.<pre class="screen">[DeviceA] <strong>ipsec proposal tran1</strong>
+[DeviceA-ipsec-proposal-tran1] <strong>esp authentication-algorithm sha2-256</strong>
+[DeviceA-ipsec-proposal-tran1] <strong>esp encryption-algorithm aes-256-gcm-128</strong>
+[DeviceA-ipsec-proposal-tran1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an IKE proposal. You can use the default parameter settings.<pre class="screen">[DeviceA] <strong>ike proposal 5</strong>
+[DeviceA-ike-proposal-5] <strong>authentication-method pre-share</strong>
+[DeviceA-ike-proposal-5] <strong>prf hmac-sha2-256</strong>
+[DeviceA-ike-proposal-5] <strong>encryption-algorithm </strong><strong>aes-gcm-256</strong>
+[DeviceA-ike-proposal-5] <strong>dh group14</strong>
+[DeviceA-ike-proposal-5] <strong>integrity-algorithm hmac-sha2-256</strong>  
+[DeviceA-ike-proposal-5] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an IKE peer.<pre class="screen">[DeviceA] <strong>ike peer rut1</strong>
+[DeviceA-ike-peer-rut1] <strong>ike-proposal 5</strong>
+[DeviceA-ike-peer-rut1] <strong>pre-shared-key Test!1234</strong>
+[DeviceA-ike-peer-rut1] <strong>quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000002476240226__note202001561503"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002476240226__p1520025617015">The HQ gateways function as the responder during IKE negotiation and use a template IPsec policy. Therefore, there is no need to configure <strong id="EN-US_TASK_0000002476240226__b13491326145712">remote-address</strong> on them.</p>
+</div></div>
+</div>
+<div class="p"># Configure a template IPsec policy and apply an IPsec policy group to the outbound interface.<pre class="screen">[DeviceA] <strong>ipsec policy-template use1 10</strong> 
+[DeviceA-ipsec-policy-templet-use1-10] <strong>proposal tran1</strong> 
+[DeviceA-ipsec-policy-templet-use1-10] <strong>ike-peer rut1</strong>
+[DeviceA-ipsec-policy-templet-use1-10] <strong>quit</strong> 
+[DeviceA] <strong>ipsec policy policy1 10 isakmp template use1</strong>
+[DeviceA] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ipsec policy policy1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</div>
+</p></li></ol>
+</li><li><span>Configure DeviceB (HQ gateway 2).</span><ol type="a"><li class="substepexpand"><span>Configure IP addresses for interfaces.</span><p><div class="p"># Configure the Internet-facing interface <span>10GE</span> <span>0/0/1</span>.<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceB</strong>
+[DeviceB] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>ip address 60.1.2.1 24</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure the private network interface <span>10GE</span> <span>0/0/2</span>.<pre class="screen">[DeviceB] <strong>interface <span>10GE</span><span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>ip address 192.168.1.3 24</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</div>
+</p></li><li class="substepexpand"><span>Configure static routes to the remote end. In this example, the next-hop address of the route to the branch gateway is 60.1.2.2.</span><p><pre class="screen">[DeviceB] <strong>ip route-static 70.1.1.0 255.255.255.0 60.1.2.2</strong>
+[DeviceB] <strong>ip route-static 192.168.3.0 255.255.255.0 60.1.2.2</strong></pre>
+</p></li><li class="substepexpand"><span>Configure an IPsec policy and apply it to the required interface.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002476240226__en-us_task_0000002476240226_p143431311408">In this example, template IPsec policies are configured on the HQ gateways (DeviceA and DeviceB); therefore, configuring an ACL is optional on them. If you configure an ACL on the HQ gateways, you must specify the destination address in the ACL rule.</p>
+</div></div>
+<div class="p"># Configure an IPsec proposal. You can use the default parameter settings.<pre class="screen">[DeviceB] <strong>ipsec proposal tran1</strong>
+[DeviceB-ipsec-proposal-tran1] <strong>esp authentication-algorithm sha2-256</strong>
+[DeviceB-ipsec-proposal-tran1] <strong>esp encryption-algorithm aes-256-gcm-128</strong>
+[DeviceB-ipsec-proposal-tran1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an IKE proposal. You can use the default parameter settings.<pre class="screen">[DeviceB] <strong>ike proposal 5</strong>
+[DeviceB-ike-proposal-5] <strong>authentication-method pre-share</strong>
+[DeviceB-ike-proposal-5] <strong>prf hmac-sha2-256</strong>
+[DeviceB-ike-proposal-5] <strong>encryption-algorithm </strong><strong>aes-gcm-256</strong>
+[DeviceB-ike-proposal-5] <strong>dh group14</strong>
+[DeviceB-ike-proposal-5] <strong>integrity-algorithm hmac-sha2-256</strong>  
+[DeviceB-ike-proposal-5] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an IKE peer.<pre class="screen">[DeviceB] <strong>ike peer rut1</strong>
+[DeviceB-ike-peer-rut1] <strong>ike-proposal 5</strong>
+[DeviceB-ike-peer-rut1] <strong>pre-shared-key Test!1234</strong>
+[DeviceB-ike-peer-rut1] <strong>quit</strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002476240226__en-us_task_0000002476240226_p1520025617015">The HQ gateways function as the responder during IKE negotiation and use a template IPsec policy. Therefore, there is no need to configure <strong id="EN-US_TASK_0000002476240226__en-us_task_0000002476240226_b13491326145712">remote-address</strong> on them.</p>
+</div></div>
+</div>
+<div class="p"># Configure a template IPsec policy and apply an IPsec policy group to the outbound interface.<pre class="screen">[DeviceB] <strong>ipsec policy-template use1 10</strong> 
+[DeviceB-ipsec-policy-templet-use1-10] <strong>proposal tran1</strong> 
+[DeviceB-ipsec-policy-templet-use1-10] <strong>ike-peer rut1</strong>
+[DeviceB-ipsec-policy-templet-use1-10] <strong>quit</strong> 
+[DeviceB] <strong>ipsec policy policy1 10 isakmp template use1</strong>
+[DeviceB] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>ipsec policy policy1</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</div>
+</p></li></ol>
+</li><li><span>Configure the branch gateway DeviceC.</span><ol type="a"><li class="substepexpand"><span>Configure IP addresses for interfaces.</span><p><div class="p"># Configure the Internet-facing interface <span>10GE</span> <span>0/0/1</span>.<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceC</strong>
+[DeviceC] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong>ip address 70.1.1.1 24</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure the private network interface <span>10GE</span> <span>0/0/2</span>.<pre class="screen">[DeviceC] <strong>interface <span>10GE</span><span>0/0/2</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong>ip address 192.168.3.2 24</strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</div>
+</p></li><li class="substepexpand"><span>Configure a static route to the remote end. In this example, the next-hop address of the route to the HQ gateways is 70.1.1.2.</span><p><pre class="screen">[DeviceC] <strong>ip route-static 0.0.0.0 0.0.0.0 70.1.1.2</strong></pre>
+</p></li><li class="substepexpand"><span>Configure an IPsec policy and apply it to the required interface.</span><p><div class="p"># Configure an ACL to define the data flow from the subnet 192.168.3.0/24 to the subnet 192.168.1.0/24.<pre class="screen">[DeviceC] <strong>acl 3002</strong>
+[DeviceC-acl4-advance-3002] <strong>rule 5 permit ip source 192</strong><strong>.168.3.0</strong><strong> 0.0.0.255 destination 192.168.1.0 0.0.0.255</strong>
+[DeviceC-acl4-advance-3002] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an IPsec proposal. You can use the default parameter settings.<pre class="screen">[DeviceC] <strong>ipsec proposal tran1</strong>
+[DeviceC-ipsec-proposal-tran1] <strong>esp authentication-algorithm sha2-256</strong>
+[DeviceC-ipsec-proposal-tran1] <strong>esp encryption-algorithm aes-256-gcm-128</strong>
+[DeviceC-ipsec-proposal-tran1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an IKE proposal. You can use the default parameter settings.<pre class="screen">[DeviceC] <strong>ike proposal 5</strong>
+[DeviceC-ike-proposal-5] <strong>authentication-method pre-share</strong>
+[DeviceC-ike-proposal-5] <strong>prf hmac-sha2-256</strong>
+[DeviceC-ike-proposal-5] <strong>encryption-algorithm </strong><strong>aes-gcm-256</strong>
+[DeviceC-ike-proposal-5] <strong>dh group14</strong>
+[DeviceC-ike-proposal-5] <strong>integrity-algorithm hmac-sha2-256</strong>  
+[DeviceC-ike-proposal-5] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an IKE peer.<pre class="screen">[DeviceC] <strong>ike peer rut1</strong>
+[DeviceC-ike-peer-rut1] <strong>ike-proposal 5</strong>
+[DeviceC-ike-peer-rut1] <strong>pre-shared-key Test!1234</strong>
+[DeviceC-ike-peer-rut1] <strong>remote-address 60.1.1.1</strong>
+[DeviceC-ike-peer-rut1] <strong>remote-address 60.1.2.1</strong>
+[DeviceC-ike-peer-rut1] <strong>quit</strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When configuring an IKE peer on the branch gateway, specify both HQ gateway addresses as the remote addresses. This allows the branch gateway to automatically switch to DeviceB if it fails to establish an IPsec tunnel with DeviceA.</p>
+</div></div>
+</div>
+<div class="p"># Configure an IPsec policy and apply an IPsec policy group to the outbound interface.<pre class="screen">[DeviceC] <strong>ipsec policy policy1 10 isakmp</strong>
+[DeviceC-ipsec-policy-isakmp-policy1-10] <strong>security acl 3002</strong>
+[DeviceC-ipsec-policy-isakmp-policy1-10] <strong>proposal tran1</strong>
+[DeviceC-ipsec-policy-isakmp-policy1-10] <strong>ike-peer rut1</strong>
+[DeviceC-ipsec-policy-isakmp-policy1-10] <strong>sa trigger-mode auto</strong>
+[DeviceC-ipsec-policy-isakmp-policy1-10] <strong>quit</strong> 
+[DeviceC] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong>ipsec policy policy1</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</div>
+</p></li></ol>
+</li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002476240226__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol><li>After the configuration is complete, run the <strong>ping</strong> command on PC C at the branch to ping PC A at the HQ. The data between the PCs is encrypted and transmitted through an IPsec tunnel.</li><li>Run the <strong>display ike sa</strong> and <strong>display ipsec sa brief</strong> commands on DeviceC to check whether IKE SA and IPsec SA have been established.<pre class="screen">&lt;DeviceC&gt; <strong>display ike sa</strong>
+Total number of IKE SA in all CPU : 2 
+Total number of phase 1 SA in all CPU : 1                                                                                           Total number of phase 2 SA in all CPU : 1 
+Flag Description:                                                                
+  RD--READY   ST--STAYALIVE   RL--REPLACED   FD--FADING   TO--TIMEOUT              
+  HRT--HEARTBEAT   LKG--LAST KNOWN GOOD SEQ NO.   BCK--BACKED UP                   
+  M--ACTIVE   S--STANDBY   A--ALONE  NEG--NEGOTIATING  
+
+Slot 0, cpu 0 IKE SA information :  
+ Number of IKE SA : 2,  number of IKE SA1: 1,  number of IKE SA2: 1   
+  -----------------------------------------------------------------------------
+   Conn-ID     Peer            VPN   Flag(s)  Phase  RemoteType  RemoteID   
+  -----------------------------------------------------------------------------
+   117477243   60.1.1.1/4500         RD|ST|A  v2:2   IP          60.1.1.1    
+   117477245   60.1.1.1/4500         RD|ST|A  v2:1   IP          60.1.1.1   
+  -----------------------------------------------------------------------------</pre>
+<pre class="screen">&lt;DeviceA&gt; <strong>display ipsec sa brief</strong>
+Slot 0, cpu 0 IPSec SA information:                                                          
+  Src address   Dst address     SPI      VPN  Protocol     Algorithm       
+------------------------------------------------------------------------------- 
+  70.1.1.1      60.1.1.1        16423688      ESP          E:AES-256-GCM-128
+  60.1.1.1      70.1.1.1        274624862     ESP          E:AES-256-GCM-128
+Number of IPSec SA : 2
+-------------------------------------------------------------------------------
+Total number of IPSec SA in all CPU : 2</pre>
+</li><li>Run the <strong>display ike sa</strong> and <strong>run the display ipsec sa brief</strong> commands on DeviceA to check whether IKE SA and IPsec SA have been established.<pre class="screen">&lt;DeviceA&gt; <strong>display ike sa</strong>
+Total number of IKE SA in all CPU : 2 
+Total number of phase 1 SA in all CPU : 1                                                                                           Total number of phase 2 SA in all CPU : 1 
+Flag Description:                                                                
+  RD--READY   ST--STAYALIVE   RL--REPLACED   FD--FADING   TO--TIMEOUT              
+  HRT--HEARTBEAT   LKG--LAST KNOWN GOOD SEQ NO.   BCK--BACKED UP                   
+  M--ACTIVE   S--STANDBY   A--ALONE  NEG--NEGOTIATING  
+
+Slot 0, cpu 0 IKE SA information :  
+ Number of IKE SA : 2,  number of IKE SA1: 1,  number of IKE SA2: 1   
+  -----------------------------------------------------------------------------
+   Conn-ID     Peer            VPN   Flag(s)  Phase  RemoteType  RemoteID   
+  -----------------------------------------------------------------------------
+   117477244   70.1.1.1/4500         RD|ST|A  v2:2   IP          70.1.1.1    
+   117477242   70.1.1.1/4500         RD|ST|A  v2:1   IP          70.1.1.1   
+  -----------------------------------------------------------------------------</pre>
+<pre class="screen">&lt;DeviceA&gt; <strong>display ipsec sa brief</strong>
+Slot 0, cpu 0 IPSec SA information:                                                          
+  Src address   Dst address     SPI      VPN  Protocol     Algorithm       
+------------------------------------------------------------------------------- 
+  60.1.1.1      70.1.1.1        16423687      ESP          E:AES-256-GCM-128
+  70.1.1.1      60.1.1.1        274624861     ESP          E:AES-256-GCM-128
+Number of IPSec SA : 2
+-------------------------------------------------------------------------------
+Total number of IPSec SA in all CPU : 2</pre>
+</li><li>Disconnect <span>10GE</span> <span>0/0/1</span> on DeviceA, ping PC A at the HQ from PC C at the branch, and run the <strong>display ike sa</strong> and <strong>display ipsec sa</strong> commands on DeviceB to check whether a new SA is established.</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002476240226__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>DeviceA (HQ gateway 1)</p>
+<pre class="screen">#
+ sysname DeviceA
+#
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128                               
+#
+ike proposal 5
+  encryption-algorithm aes-gcm-256                                                   
+  dh group14                                                                      
+  authentication-algorithm sha2-256                                              
+  authentication-method pre-share                                                
+  integrity-algorithm hmac-sha2-256                                              
+  prf hmac-sha2-256                                               
+#                                                                               
+ike peer rut1                                                                   
+ ike-proposal 5                                                                                                          
+ pre-shared-key %$%$SP!UWlu=$B7`<font style="font-size:8pt" Face="Courier New" >~</font>B!@iRn+jvmd%$%$                                     
+#                                                                               
+ipsec policy-template use1 10
+ ike-peer rut1
+ proposal tran1
+#
+ipsec policy policy1 10 isakmp template use1
+#                                                                               
+interface <span>10GE</span><span>0/0/1</span>     
+ ip address 60.1.1.1 24                                             
+ ipsec policy policy1                                                               
+interface <span>10GE</span><span>0/0/2</span>      
+ ip address 192.168.1.2 24                                                                                               
+#
+ip route-static 70.1.1.0 255.255.255.0 60.1.1.2
+ip route-static 192.168.3.0 255.255.255.0 60.1.1.2
+  source-address 192.168.1.0 mask 255.255.255.0
+  destination-address 192.168.3.0 mask 255.255.255.0
+#                                                                               
+return</pre>
+</li><li><p>DeviceB (HQ gateway 2)</p>
+<pre class="screen">#
+ sysname DeviceB   
+#                                                                               
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128   
+#
+ike proposal 5
+  encryption-algorithm aes-gcm-256                                                   
+  dh group14                                                                      
+  authentication-algorithm sha2-256                                              
+  authentication-method pre-share                                                
+  integrity-algorithm hmac-sha2-256                                              
+  prf hmac-sha2-256                                               
+#                                                                               
+ike peer rut1                                                                  
+ pre-shared-key %@%@W[QD:1tV\'f"!1W&amp;yrX6v$B&gt;%@%@
+ ike-proposal 5                            
+#                                                                               
+ipsec policy-template use1 10
+ proposal tran1                                                                  
+ ike-peer rut1
+#
+ipsec policy policy1 10 isakmp template use1
+#                                                                               
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.1.3 24
+interface <span>10GE</span><span>0/0/1</span>  
+ ip address 60.1.2.1 24 
+ ipsec policy policy1
+#
+ip route-static 70.1.1.0 255.255.255.0 60.1.2.2
+ip route-static 192.168.3.0 255.255.255.0 60.1.2.2
+#                                                                               
+return</pre>
+</li><li><p>DeviceC (branch gateway)</p>
+<pre class="screen">#
+ sysname DeviceC
+#
+acl number 3002
+ rule 5 permit ip source 192.168.3.0 0.0.0.255 destination 192.168.1.0 0.0.0.255
+#                                                                               
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128   
+#
+ike proposal 5
+  encryption-algorithm aes-gcm-256                                                   
+  dh group14                                                                      
+  authentication-algorithm sha2-256                                              
+  authentication-method pre-share                                                
+  integrity-algorithm hmac-sha2-256                                              
+  prf hmac-sha2-256
+#                                                                               
+ike peer rut1                                                                  
+ pre-shared-key %@%@W[QD:1tV\'f"!1W&amp;yrX6v$B&gt;%@%@
+ ike-proposal 5
+ remote-address 60.1.1.1
+ remote-address 60.1.2.1
+#
+ipsec policy policy1 10 isakmp
+ security acl 3002
+ ike-peer rut1
+ sa trigger-mode auto
+ proposal tran1
+#                                                                               
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.3.2 24
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 70.1.1.1 24 
+ ipsec policy policy1
+#
+ip route-static 0.0.0.0 0.0.0.0 70.1.1.2
+  source-address 192.168.3.0 mask 255.255.255.0
+  destination-address 192.168.1.0 mask 255.255.255.0
+#                                                                               
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002220862652.html">Applications of IPsec in Multi-Link Scenarios
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0106.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

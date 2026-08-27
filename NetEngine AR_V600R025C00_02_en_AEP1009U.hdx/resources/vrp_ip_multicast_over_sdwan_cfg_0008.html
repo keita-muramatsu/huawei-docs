@@ -1,0 +1,108 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Multicast Traffic Transmission over SD-WAN Tunnels">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ip_multicast_over_sdwan_cfg_0006.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ip_multicast_over_sdwan_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ip_multicast_over_sdwan_cfg_0009.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IP Multicast over SD-WAN">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IP Multicast over SD-WAN">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="IP Multicast over SD-WAN">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002094010945">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Multicast Traffic Transmission over SD-WAN Tunnels</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002094010945"></a><a name="EN-US_TASK_0000002094010945"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Multicast Traffic Transmission over SD-WAN Tunnels</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002094010945__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Based on unicast SD-WAN, multicast SD-WAN uses extended BGP MVPN address family signaling (Type 8 routes) to establish SD-WAN tunnels and create (S, G) entries and advertises multicast source information to PEs through Source Active routes (Type 5 routes). This simplifies MVPN signaling exchange. Unicast SD-WAN tunnels are reused on the underlay network to carry multicast traffic.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000002094010945__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Perform the following steps on a sender PE:</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an MVPN ID.</span><p><pre class="screen"><b><span class="cmdqueryname">multicast mvpn</span></b> <i><span class="varname">mvpn-id</span></i></pre>
+<p>An MVPN ID is the IP address of the originator PE on an MVPN. The MVPN ID is used as the value of the Administrator field in the VRF Route Import extended community attribute. If no MVPN ID is configured, BGP EVPN routes and C-multicast routes sent by a PE cannot carry the VRF Route Import extended community attribute.</p>
+</p></li><li class="substepexpand"><span>Enter the VPN instance view.</span><p><pre class="screen"><b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance IPv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure multicast routing for the VPN instance IPv4 address family.</span><p><pre class="screen"><b><span class="cmdqueryname">multicast routing-enable</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance IPv4 address family MVPN view.</span><p><pre class="screen"><b><span class="cmdqueryname">mvpn</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure an MVPN target for the VPN instance MVPN address family.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn-target</span></b> { <em>vrfRT</em> } &amp; &lt;1-8&gt; [<em> <i><span class="varname">vrfRTType</span></i></em> ]</pre>
+<p>By default, no MVPN target is configured for the VPN instance MVPN address family. The VPN instance MVPN address family uses the VPN target configured in the VPN instance IPv4 address family view as the MVPN target. If an MVPN and a unicast VPN share the same network topology, an MVPN target does not need to be configured. Otherwise, configuring an MVPN target is required.</p>
+</p></li><li class="substepexpand"><span>Configure BGP as the signaling protocol for transmitting C-multicast routes.</span><p><pre class="screen"><b><span class="cmdqueryname">c-multicast signaling</span></b> <strong><span>bgp</span></strong></pre>
+</p><p><p>By default, no signaling protocol is configured for transmitting C-multicast routes. To configure a signaling protocol for a PE to transmit C-multicast routes, run the <b><span class="cmdqueryname">c-multicast signaling</span></b> command.</p>
+</p></li><li class="substepexpand"><span>Configure a PE as a sender PE.</span><p><pre class="screen"><b><span class="cmdqueryname">sender-enable</span></b></pre>
+<p>By default, a PE is a receiver PE.</p>
+</p></li><li class="substepexpand"><span>Enable PIM-SM RPTs to be set up not across the public network.</span><p><pre class="screen"><b><span class="cmdqueryname">spt-only mode</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Enable the function of advertising (S, G) entry information in MSDP SA messages to the remote PE through BGP Source Active A-D routes.</span><p><pre class="screen"><b><span class="cmdqueryname">import msdp</span></b></pre>
+</p><p><p>By default, (S, G) entry information in MSDP SA messages is not transmitted to the remote PE through BGP Source Active A-D routes.</p>
+<p>If PIM-SM RPT setup is not across the public network, you can deploy VPN RPs on PEs or CEs. If an RP is deployed on a CE, the CE needs to establish an MSDP peer relationship with its connected PE and transmit (S, G) entry information to the PE through MSDP SA messages. To enable this PE to transmit the (S, G) entry information to the remote PE through BGP Source Active A-D routes, perform this step.</p>
+</p></li><li class="substepexpand"><span>Configure the multicast SD-WAN function.</span><p><pre class="screen"><b><span class="cmdqueryname">sd-wan enable</span></b></pre>
+</p></li></ol>
+</li><li><span>Perform the following steps on a receiver PE:</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an MVPN ID.</span><p><pre class="screen"><b><span class="cmdqueryname">multicast mvpn</span></b> <i><span class="varname">mvpn-id</span></i></pre>
+<p>An MVPN ID is the IP address of the originator PE on an MVPN. The MVPN ID is used as the value of the Administrator field in the VRF Route Import extended community attribute. If no MVPN ID is configured, BGP EVPN routes and C-multicast routes sent by a PE cannot carry the VRF Route Import extended community attribute.</p>
+</p></li><li class="substepexpand"><span>Enter the VPN instance view.</span><p><pre class="screen"><b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance IPv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure multicast routing for the VPN instance IPv4 address family.</span><p><pre class="screen"><b><span class="cmdqueryname">multicast routing-enable</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance IPv4 address family MVPN view.</span><p><pre class="screen"><b><span class="cmdqueryname">mvpn</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure an MVPN target for the VPN instance MVPN address family.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn-target</span></b> { <em>vrfRT</em> } &amp; &lt;1-8&gt; [<em> <i><span class="varname">vrfRTType</span></i></em> ]</pre>
+<p>By default, no MVPN target is configured for the VPN instance MVPN address family. The VPN instance MVPN address family uses the VPN target configured in the VPN instance IPv4 address family view as the MVPN target. If an MVPN and a unicast VPN share the same network topology, an MVPN target does not need to be configured. Otherwise, configuring an MVPN target is required.</p>
+</p></li><li class="substepexpand"><span>Configure BGP as the signaling protocol for transmitting C-multicast routes.</span><p><pre class="screen"><b><span class="cmdqueryname">c-multicast signaling</span></b> <strong><span>bgp</span></strong></pre>
+</p><p><p>By default, no signaling protocol is configured for transmitting C-multicast routes. To configure a signaling protocol for a PE to transmit C-multicast routes, run the <b><span class="cmdqueryname">c-multicast signaling</span></b> command.</p>
+</p></li><li class="substepexpand"><span>Enable PIM-SM RPTs to be set up not across the public network.</span><p><pre class="screen"><b><span class="cmdqueryname">spt-only mode</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Enable the function to advertise (S, G) entry information in BGP Source Active A-D routes to the RP through MSDP SA messages.</span><p><pre class="screen"><b><span class="cmdqueryname">export msdp</span></b></pre>
+<p>By default, (S, G) entry information in BGP Source Active A-D routes is not transmitted to the RP through MSDP SA messages.</p>
+<p>If PIM-SM RPT setup is not across the public network, you can deploy VPN RPs on PEs or CEs. If a CE is configured as an RP, the CE needs to establish an MSDP peer relationship with its connected PE. To enable this PE to transmit (S, G) entry information in BGP Source Active A-D routes to the CE, perform this step.</p>
+</p></li><li class="substepexpand"><span>Configure the multicast SD-WAN function.</span><p><pre class="screen"><b><span class="cmdqueryname">sd-wan enable</span></b></pre>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ip_multicast_over_sdwan_cfg_0006.html">Configuring Intra-AS Non-Segmented IP Multicast over SD-WAN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ip_multicast_over_sdwan_cfg_0007.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_ip_multicast_over_sdwan_cfg_0009.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

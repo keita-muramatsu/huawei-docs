@@ -1,0 +1,497 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring BGP4+ 6PE">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002195076502.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp6_cfg_0062.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp6_cfg_0130.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BGP4+">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BGP4+">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="BGP4+">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001933195252">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring BGP4+ 6PE</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001933195252"></a><a name="EN-US_TASK_0000001933195252"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring BGP4+ 6PE</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001933195252__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_section_dc_vrp_bgp_cfg_407101"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p217991713183248">On the network shown in <a href="#EN-US_TASK_0000001933195252__en-us_task_0000001888035345_fig14552438113611">Figure 1</a>, the link between CE1 and PE1 and the link between PE2 and CE2 are IPv6 links, and the link between PE1 and PE2 is an IPv4 link. BGP4+ runs between CE1 and PE1 and between PE2 and CE2. MPLS runs between PE1 and PE2. It is required that 6PE be configured to implement interworking between IPv6 networks.</p>
+<div class="fignone" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_fig14552438113611"><a name="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_fig14552438113611"></a><a name="en-us_task_0000001888035345_fig14552438113611"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring BGP4+ 6PE</span><div class="note" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_note726381156214038"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p426920782719">In this example, interface1, interface2, and interface3 represent VLANIF 100, VLANIF 200, and VLANIF 300, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_image45526384366" src="figure/en-us_image_0000001888051969.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001933195252__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_context396270919214038"><h4 class="sectiontitle">Precautions</h4><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p918085582214038">Note the following during the configuration:</p>
+<ul id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_ul1680215856214038"><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li20322142481511">To improve security, you are advised to deploy BGP4+ security measures. For details, see "Configuring BGP4+ Authentication." Keychain authentication is used as an example. For details, see Example for Configuring Keychain Authentication for BGP4+.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001933195252__1.3.3"></a><a name="1.3.3"></a>
+<div class="p" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_section_dc_vrp_bgp_cfg_407302"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p865729860183248">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_ol1962570210183248"><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li1071743122183248"><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1841304065183248"><a name="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li1071743122183248"></a><a name="en-us_task_0000001888035345_li1071743122183248"></a>Configure OSPF between PE1 and PE2 to ensure that they can learn the loopback interface addresses from each other.</p>
+</li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li629963048183248"><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p694568026183248"><a name="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li629963048183248"></a><a name="en-us_task_0000001888035345_li629963048183248"></a>Configure BGP4+ between CE1 and PE1 and between PE2 and CE2.</p>
+</li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li154829739183248"><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1620726856183248"><a name="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li154829739183248"></a><a name="en-us_task_0000001888035345_li154829739183248"></a>Configure MPLS between PE1 and PE2 to set up LSPs.</p>
+</li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li468201302183248"><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p679200106183248"><a name="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li468201302183248"></a><a name="en-us_task_0000001888035345_li468201302183248"></a>Configure 6PE between PE1 and PE2 to implement interworking between IPv6 networks.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001933195252__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_section_dc_vrp_bgp_cfg_407304"><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_step1637917652214038"><span id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_cmd2036589918214038">Assign IP addresses to interfaces. The configuration of PE1 is used as an example. The configurations of other devices are similar to the configuration of PE1.</span><p><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p152547213611"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen414511551264">&lt;<span class="keyword" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_keyword633123382019">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1733118333202">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_keyword12331143313203">HUAWEI</span>] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b63319336203">sysname PE1</strong>
+[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1733103316204">vlan batch 100 200</strong>
+[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b12331833102013">interface vlanif 100</strong>
+[PE1-Vlanif100] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1964341813583">ipv6 enable</strong>
+[PE1-Vlanif100] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b88573415587">ipv6 address 2001:db8:1::2 64</strong>
+[PE1-Vlanif100] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b8332533202019">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b9332193310206">interface vlanif 200</strong>
+[PE1-Vlanif200] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b6332153362015">ip address 10.0.0.1 30 </strong>  
+[PE1-Vlanif200] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b033273302019">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b133321933112017">interface <span>10ge</span> <span>0/0/1</span></strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b5333633102016">port link-type access</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1933323312204">port default vlan 100</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1233316336202">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1633353315208">interface <span>10ge</span> <span><span><span>0/0/2</span></span></span></strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b10333193311208">port link-type access</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1433323313204">port default vlan 200</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b93331633172012">quit</strong>
+[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1933573372013">interface loopback0</strong>
+[PE1-loopback0] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b4335733142011">ip address 10.2.2.2 32</strong>
+[PE1-loopback0] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b43351833122018">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_step364097907214038"><span id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_cmd1212612646214038">Configure OSPF between PE1 and PE2 so that they can learn routes from each other.</span><p><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p128726418214038"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen15643175283814">[PE1]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b6654752163810"> ospf 1</strong>
+[PE1-ospf-1]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b136541252183814"> area 0</strong>
+[PE1-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1165525293815"> network 10.2.2.2 0.0.0.0</strong>
+[PE1-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b91636382384"> network 10.0.0.0 0.0.0.3</strong>
+[PE1-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b965545273818"> quit</strong>
+[PE1-ospf-1]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b12655185293815"> quit</strong></pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p754084739214038"># Configure PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen159360464381">[PE2]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b794911467389"> ospf 1</strong>
+[PE2-ospf-1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b165391911102012">area 0</strong>
+[PE2-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b16875101811209">network 10.3.3.3 0.0.0.0</strong>
+[PE2-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1159542172011">network 10.0.0.0 0.0.0.3</strong>
+[PE2-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b869492782017">quit</strong>
+[PE2-ospf-1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b16441162913208">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_step920175112514"><span id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_cmd202125132510">Configure BGP4+.</span><p><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p38871819172716"># Configure CE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen677583312277">[CE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b33803463272">bgp 100</strong>
+[CE1-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b10932913122112">router-id 1.1.1.1</strong>
+[CE1-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b318419384183248">peer 2001:db8:1::2 as-number 200</strong>
+[CE1-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b618685412715">ipv6-family unicast</strong>
+[CE1-bgp-af-ipv6] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b181511444184418">peer 2001:db8:1::2 enable</strong>
+[CE1-bgp-af-ipv6] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b0673836204417">network 2001:db8:5::5 64</strong>
+[CE1-bgp-af-ipv6] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b15271105288">quit</strong>
+[CE1-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b283514252813">quit</strong></pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p15887191932710"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen18231039142719">[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b5177532817">bgp 200</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b846918199215">router-id 2.2.2.2</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b12781210152813">peer 2001:db8:1::1 as-number 100</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b3669164018465">ipv6-family unicast</strong>
+[PE1-bgp-af-ipv6] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b49008500469">peer 2001:db8:1::1 enable</strong>
+[PE1-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1175401222815">quit</strong></pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p150862817476"># Configure PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen1550842810472">[PE2] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b10508128104719">bgp 200</strong>
+[PE2-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b33995350218">router-id 3.3.3.3</strong>
+[PE2-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b350810288474">peer 2001:db8:2::1 as-number 300</strong>
+[PE2-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b9508122816470">ipv6-family unicast</strong>
+[PE2-bgp-af-ipv6] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b450812811475">peer 2001:db8:2::1 enable</strong>
+[PE2-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b3508102834719">quit</strong></pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1141202174819"># Configure CE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen1541212144819">[CE2] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b3412162118486">bgp 300</strong>
+[CE2-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b13461134952116">router-id 4.4.4.4</strong>
+[CE2-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1941212214487">peer 2001:db8:2::2 as-number 200</strong>
+[CE2-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b19412221184813">ipv6-family unicast</strong>
+[CE2-bgp-af-ipv6] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b7412521154812">peer 2001:db8:2::2 enable</strong>
+[CE2-bgp-af-ipv6] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b44122213482">network 2001:db8:6::6 64</strong>
+[CE2-bgp-af-ipv6] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b14412132124818">quit</strong>
+[CE2-bgp] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b144123217483">quit</strong></pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1427982335183248"># Check whether the peer relationship is established on PE1 and PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen1832692276183248">[PE1]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b713190388183248"> display bgp ipv6 peer</strong>
+
+ BGP local router ID : 10.2.2.2
+ Local AS number : 200
+ Total number of peers : 1                 Peers in established state : 1
+
+  Peer                      V    AS  MsgRcvd  MsgSent  OutQ  Up/Down          State PrefRcv
+
+  2001:DB8:1::1             4   100       32       35     0 00:27:20   <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1639975456183248">Established</strong>       1</pre>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen1767006534183248">[PE2] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b251003209183248">display bgp ipv6 peer</strong>
+
+ BGP local router ID : 10.3.3.3
+ Local AS number : 200
+ Total number of peers : 1                 Peers in established state : 1
+
+  Peer                      V    AS  MsgRcvd  MsgSent  OutQ  Up/Down          State PrefRcv
+  2001:DB8:2::1             4    300      31       37     0 00:28:08   <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b516511328183248">Established</strong>       1</pre>
+</p></li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_step1012752939214038"><span id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_cmd383259651214038">Configure MPLS between PE1 and PE2 to set up LSPs.</span><p><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1056744775214038"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen91651543394">[PE1]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b187317396383"> mpls lsr-id 10.2.2.2</strong>
+[PE1]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b181713412396"> mpls</strong>
+[PE1-mpls]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b617117412392"> lsp-trigger all</strong>
+[PE1-mpls]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b191723423916"> quit</strong>
+[PE1]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b15633615564"> mpls ldp</strong>
+[PE1-mpls-ldp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b102551976566"> quit</strong>
+[PE1]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1527411825611"> interface vlanif 200</strong>
+[PE1-Vlanif200]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b96561245115611"> mpls</strong>
+[PE1-Vlanif200]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b42151653574"> mpls ldp</strong>
+[PE1-Vlanif200]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1817264173919"> quit</strong></pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p17247143513571"># Configure PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen182471835175714">[PE2]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b13247535155718"> mpls lsr-id 10.3.3.3</strong>
+[PE2]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1224793519571"> mpls</strong>
+[PE2-mpls]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b162471035175720"> lsp-trigger all</strong>
+[PE2-mpls]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b3247153511578"> quit</strong>
+[PE2]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b9247103555714"> mpls ldp</strong>
+[PE2-mpls-ldp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b52471035205712"> quit</strong>
+[PE2]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b124716355575"> interface vlanif 200</strong>
+[PE2-Vlanif200]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b17247153516572"> mpls</strong>
+[PE2-Vlanif200]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b724715358572"> mpls ldp</strong>
+[PE2-Vlanif200]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1224815353577"> quit</strong></pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1665000679183248"># Take PE1 as an example. The command output shows that LSPs have been established.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen12358122012399">[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b163171475183248">display mpls lsp</strong>
+Flag after Out IF: (I) - RLFA Iterated LSP, (I*) - Normal and RLFA Iterated LSP  
+Flag after LDP FRR: (L) - Logic FRR LSP </pre>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen526891020530">----------------------------------------------------------------------
+                 LSP Information: LDP LSP
+----------------------------------------------------------------------
+FEC                In/Out Label  In/Out IF                      Vrf Name
+10.2.2.2/32        3/NULL        -/- 
+10.0.0.0/30        3/NULL        -/- 
+10.3.3.3/32        NULL/3        -/Vlanif200
+10.3.3.3/32        1024/3        -/Vlanif200
+----------------------------------------------------------------------
+                 LSP Information: BGP IPV6 LSP
+----------------------------------------------------------------------
+  FEC                 :  2001:DB8:1::/64
+  In Label            :  15360                 Out Label    :  -----
+  In Interface        :  -----                 OutInterface :  -----
+  Vrf Name            :
+  FEC                 :  2001:DB8:5::/64
+  In Label            :  15361                 Out Label    :  -----
+  In Interface        :  -----                 OutInterface :  -----
+  Vrf Name            :         </pre>
+</p></li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_step599866554214038"><span id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_cmd1668934060214038">Configure 6PE.</span><p><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1697667058214038"># Configure PE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen8233311134018">[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b9245211184016">bgp 200</strong>
+[PE1-bgp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b142131813555"> peer 10.3.3.3 as-number 200</strong>
+[PE1-bgp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1935811920551"> peer 10.3.3.3 connect-interface LoopBack0</strong>
+[PE1-bgp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b10245131114011"> ipv6-family unicast</strong>
+[PE1-bgp-af-ipv6]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b558835135512"> peer 10.3.3.3 enable</strong>
+[PE1-bgp-af-ipv6]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b19730752155517"> peer 10.3.3.3 label-route-capability</strong>
+[PE1-bgp-af-ipv6]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b324512112405"> import-route direct</strong>
+[PE1-bgp-af-ipv6]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b0242108183410"> quit</strong>
+[PE1-bgp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1424258103415"> quit</strong></pre>
+</p><p><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p178241930175614"># Configure PE2.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen1882410305567">[PE2] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b882414309569">bgp 200</strong>
+[PE2-bgp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b6824173013569"> peer 10.2.2.2 as-number 200</strong>
+[PE2-bgp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b8824163018567"> peer 10.2.2.2 connect-interface LoopBack0</strong>
+[PE2-bgp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b4824193025618"> ipv6-family unicast</strong>
+[PE2-bgp-af-ipv6]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b182413308567"> peer 10.2.2.2 enable</strong>
+[PE2-bgp-af-ipv6]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1382413055611"> peer 10.2.2.2 label-route-capability</strong>
+[PE2-bgp-af-ipv6]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b14824193035620"> import-route direct</strong>
+[PE2-bgp-af-ipv6]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b19825730145614"> quit</strong>
+[PE2-bgp]<strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b108251830165617"> quit</strong></pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1098518615815"># Check the connection status of 6PE peers.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen2076716873183248">[PE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b158941009183248">display bgp ipv6 peer</strong>
+
+ BGP local router ID : 10.2.2.2
+ Local AS number : 200
+ Total number of peers : 2                 Peers in established state : 2
+
+  Peer            V     AS  MsgRcvd  MsgSent   OutQ  Up/Down        State PrefRcv
+
+  10.3.3.3        4    200     1248     1342      0 18:06:28 <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b593634756183248">Established</strong>       1
+  2001:DB8:1::1   4    100       32       35      0 00:27:20 <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b157947281183248">Established</strong>       1</pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p155825695817">The command output shows that a BGP4+ 6PE connection has been established between PE1 and PE2.</p>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_section_dc_vrp_bgp_cfg_407305"><a name="EN-US_TASK_0000001933195252__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1387695467214038"># Take CE1 as an example. According to the following command outputs, CE1 learns the IP address of Loopback 1 on CE2 and pings CE2's Loopback 1 address successfully.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen34501826144014">[CE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b606585208183248">display ipv6 routing-table</strong></pre>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen1452615236011">Routing Table : Public
+         Destinations : 8        Routes : 8
+
+ Destination  : ::1                                     PrefixLength : 128
+ NextHop      : ::1                                     Preference   : 0
+ Cost         : 0                                       Protocol     : Direct
+ RelayNextHop : ::                                      Tunnel ID    : 0x0   
+ Interface    : InLoopBack0                             Flags        : D
+ 
+ Destination  : 2001:DB8:1::                            PrefixLength : 64
+ NextHop      : 2001:DB8:1::1                           Preference   : 0
+ Cost         : 0                                       Protocol     : Direct
+ RelayNextHop : ::                                      Tunnel ID    : 0x0   
+ Interface    : Vlanif100                               Flags        : D
+
+ Destination  : 2001:DB8:1::1                           PrefixLength : 128
+ NextHop      : ::1                                     Preference   : 0
+ Cost         : 0                                       Protocol     : Direct
+ RelayNextHop : ::                                      Tunnel ID    : 0x0   
+ Interface    : Vlanif100                               Flags        : D
+ 
+ Destination  : 2001:DB8:2::                            PrefixLength : 64
+ NextHop      : 2001:DB8:1::2                           Preference   : 255
+ Cost         : 0                                       Protocol     : EBGP
+ RelayNextHop : ::                                      Tunnel ID    : 0x0   
+ Interface    : Vlanif100                               Flags        : D
+ 
+ Destination  : 2001:DB8:5::                            PrefixLength : 64
+ NextHop      : 2001:DB8:5::5                           Preference   : 0
+ Cost         : 0                                       Protocol     : Direct
+ RelayNextHop : ::                                      Tunnel ID    : 0x0   
+ Interface    : LoopBack1                               Flags        : D
+ 
+ Destination  : 2001:DB8:5::5                           PrefixLength : 128
+ NextHop      : ::1                                     Preference   : 0
+ Cost         : 0                                       Protocol     : Direct
+ RelayNextHop : ::                                      Tunnel ID    : 0x0   
+ Interface    : LoopBack1                               Flags        : D
+ 
+ Destination  : 2001:DB8:6::                            PrefixLength : 64
+ NextHop      : 2001:DB8:1::2                           Preference   : 255
+ Cost         : 0                                       Protocol     : EBGP
+ RelayNextHop : ::                                      Tunnel ID    : 0x0   
+ Interface    : Vlanif100                               Flags        : D
+ 
+ Destination  : FE80::                                  PrefixLength : 10
+ NextHop      : ::                                      Preference   : 0
+ Cost         : 0                                       Protocol     : Direct
+ RelayNextHop : ::                                      Tunnel ID    : 0x0   
+ Interface    : NULL0                                   Flags        : D</pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p598915858214038"># Ping the IP address of Loopback 1 on CE2 from CE1.</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen1051964215402">[CE1] <strong id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_b1243016906183248">ping ipv6 -c 5 2001:DB8:6::6</strong>
+ PING 2001:DB8:6::6 : 56  data bytes, press CTRL_C to break
+    Reply from 2001:DB8:6::6
+    bytes=56 Sequence=1 hop limit=64  time = 80 ms
+    Reply from 2001:DB8:6::6
+    bytes=56 Sequence=2 hop limit=64  time = 80 ms
+    Reply from 2001:DB8:6::6
+    bytes=56 Sequence=3 hop limit=64  time = 90 ms
+    Reply from 2001:DB8:6::6
+    bytes=56 Sequence=4 hop limit=64  time = 90 ms
+    Reply from 2001:DB8:6::6
+    bytes=56 Sequence=5 hop limit=64  time = 60 ms
+
+  --- 2001:DB8:6::6 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 60/80/90 ms</pre>
+<p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1229536417183248">You can find that 6PE successfully connects discontinuous IPv6 networks for network interworking.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001933195252__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_ul2074341461214038"><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li1360654100214038"><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p2107585444214038"><a name="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li1360654100214038"></a><a name="en-us_task_0000001888035345_li1360654100214038"></a>CE1</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen193911726143610">#
+sysname CE1
+#
+vlan batch 100
+#
+interface Vlanif100
+ ipv6 enable
+ ipv6 address 2001:DB8:1::1/64
+#
+interface <span>10GE</span><span>0/0/1</span>
+ port default vlan 100
+#
+interface LoopBack0
+ ip address 10.1.1.1 255.255.255.255
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:5::5/64
+#
+bgp 100
+ private-4-byte-as enable
+ router-id 10.1.1.1
+ peer 2001:DB8:1::2 as-number 200
+ #
+ ipv4-family unicast
+ #
+ ipv6-family unicast
+  network 2001:DB8:5:: 64
+  peer 2001:DB8:1::2 enable
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li1986095512214038"><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1968944863214038"><a name="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li1986095512214038"></a><a name="en-us_task_0000001888035345_li1986095512214038"></a>PE1</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen1685699173919">#
+sysname PE1
+#
+vlan batch 100 200
+#
+mpls lsr-id 10.2.2.2
+mpls
+  lsp-trigger all
+#
+mpls ldp
+#
+interface Vlanif100
+ ipv6 enable
+ ipv6 address 2001:DB8:1::2/64
+#
+interface Vlanif200
+ ip address 10.0.0.1 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ port default vlan 100
+#
+interface <span>10GE</span><span>0/0/2</span>
+ port default vlan 200 
+#
+interface LoopBack0
+ ip address 10.2.2.2 255.255.255.255
+#
+bgp 200
+ private-4-byte-as enable
+ router-id 10.2.2.2
+ peer 10.3.3.3 as-number 200
+ peer 10.3.3.3 connect-interface LoopBack0
+ peer 2001:DB8:1::1 as-number 100
+ #
+ ipv4-family unicast
+  peer 10.3.3.3 enable
+ #
+ ipv6-family unicast
+  import-route direct
+  peer 10.3.3.3 enable
+  peer 10.3.3.3 label-route-capability
+  peer 2001:DB8:1::1 enable
+#
+ospf 1
+ area 0.0.0.0
+  network 10.2.2.2 0.0.0.0
+  network 10.0.0.0 0.0.0.3
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li1929454783214038"><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1343468181214038"><a name="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li1929454783214038"></a><a name="en-us_task_0000001888035345_li1929454783214038"></a>PE2</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen20759912426">#
+sysname PE2
+#
+vlan batch 200 300
+#
+mpls lsr-id 10.3.3.3
+mpls
+  lsp-trigger all
+#
+mpls ldp
+#
+interface <span class="keyword" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_keyword963655915163">Vlanif</span>200
+ ip address 10.0.0.2 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface <span class="keyword" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_keyword7637559151616">Vlanif</span>300
+ ipv6 enable
+ ipv6 address 2001:DB8:2::2/64
+#
+interface <span>10GE</span><span>0/0/1</span>
+ port link-type trunk
+ port trunk allow-pass vlan 300
+#
+interface <span>10GE</span><span>0/0/2</span>
+ port link-type trunk
+ port trunk allow-pass vlan 200
+#
+interface LoopBack0
+ ip address 10.3.3.3 255.255.255.255
+#
+bgp 200
+ private-4-byte-as enable
+ router-id 10.3.3.3
+ peer 10.2.2.2 as-number 200
+ peer 10.2.2.2 connect-interface LoopBack0
+ peer 2001:DB8:2::1 as-number 300
+ #
+ ipv4-family unicast
+  peer 10.2.2.2 enable
+ #
+ ipv6-family unicast
+  import-route direct
+  peer 10.2.2.2 enable
+  peer 10.2.2.2 label-route-capability
+  peer 2001:DB8:2::1 enable
+#
+ospf 1
+ area 0.0.0.0
+  network 10.3.3.3 0.0.0.0
+  network 10.0.0.0 0.0.0.3
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li475130381214038"><p id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_p1172113921214038"><a name="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_li475130381214038"></a><a name="en-us_task_0000001888035345_li475130381214038"></a>CE2</p>
+<pre class="screen" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_screen719812884419">#
+sysname CE2
+#
+vlan batch 300
+#
+interface <span class="keyword" id="EN-US_TASK_0000001933195252__en-us_task_0000001888035345_keyword5899244201820">Vlanif</span>300
+ ipv6 enable
+ ipv6 address 2001:DB8:2::1/64
+#
+interface <span>10GE</span><span>0/0/1</span>
+ port link-type trunk
+ port trunk allow-pass vlan 300
+#
+interface LoopBack0
+ ipv6 enable
+ ip address 10.4.4.4 255.255.255.255
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:6::6/64
+#
+bgp 300
+ private-4-byte-as enable
+ router-id 10.4.4.4
+ peer 2001:DB8:2::2 as-number 200
+ #
+ ipv4-family unicast
+ #
+ ipv6-family unicast
+  network 2001:DB8:6:: 64
+  peer 2001:DB8:2::2 enable
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002195076502.html">Configuration Examples for BGP4+
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bgp6_cfg_0062.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_bgp6_cfg_0130.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,328 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring APs to Directly Report KPI Information">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_WLAN_Operation_and_Maintenance_Monitoring_cfg_0002.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_WLAN_Operation_and_Maintenance_Monitoring_cfg_0003.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="WLAN O&amp;M and Monitoring">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="WLAN O&amp;M and Monitoring">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="WLAN O&amp;M and Monitoring">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563754101">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring APs to Directly Report KPI Information</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563754101"></a><a name="EN-US_TASK_0000001563754101"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring APs to Directly Report KPI Information</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001563754101__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>The WAC has been configured to report information in Telemetry mode. For details, see "Telemetry Configuration" in <span>CLI Configuration Guide</span> &gt; System Monitoring Configuration.</p>
+<p>If KPI information reported by APs needs to be displayed on an analyzer, ensure that APs are configured on the WAC to report NE data through Telemetry. For details, run the <strong>sensor-path</strong> <strong>huawei-wlan-ap:wlan-ap/ap-instances</strong> command in the sensor group view.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563754101__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Only WMI-capable APs can report KPI information to a WMI server.</p>
+<p>To avoid waste of destination server resources, do not configure multiple report channels with the same destination address and port number.</p>
+<p>Ensure that the system time on the device is the same as that on the WMI server. Otherwise, the reported data may fail to be displayed on the WMI server.</p>
+<p>The primary/backup WMI server scheme is supported. In the primary/backup scheme, you must configure the destination address and port number of the primary WMI server and then configure the backup WMI server. If the primary/backup scheme is not used, you only need to configure the primary WMI server. Do not configure the backup server before configuring the primary server.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563754101__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">wlan</span></b></pre>
+</p></li><li><span>Create a WMI profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">wmi-server</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, no WMI profile is created.</p>
+</p></li><li><span>Configure the destination address and port number of the primary WMI server to which APs report KPI information.</span><p><pre class="screen"><b><span class="cmdqueryname">server</span></b> { <strong><span>ip-address</span></strong> <i><span class="varname">ip-address</span></i> | <strong><span>ipv6-address</span></strong> <i><span class="varname">ipv6-address</span></i> } <strong><span>port</span></strong> <i><span class="varname">port</span></i></pre>
+<p>By default, no destination address or port number of the primary WMI server is configured for APs to report KPI information.</p>
+</p></li><li><strong>Optional: </strong><span>Configure the destination address and port number of the backup WMI server to which APs report KPI information.</span><p><pre class="screen"><b><span class="cmdqueryname">server backup</span></b> { <strong><span>ip-address</span></strong> <i><span class="varname">ip-address</span></i> | <strong><span>ipv6-address</span></strong> <i><span class="varname">ipv6-address</span></i> } <strong><span>port</span></strong> <i><span class="varname">port</span></i></pre>
+<p>By default, no destination address or port number of the backup WMI server is configured for APs to report KPI information.</p>
+</p></li><li><strong>Optional: </strong><span>Configure a PKI realm for interconnection between APs and a WMI server.</span><p><pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <i><span class="varname">realm-name</span></i></pre>
+<p>By default, the PKI realm <strong>default</strong> is used for interconnection between APs and a WMI server.</p>
+</p></li><li><strong>Optional: </strong><span>Set parameters for interconnection between the APs and WMI server.</span><p><pre class="screen"><b><span class="cmdqueryname">keepalive</span></b> { <strong><span>interval</span></strong> <i><span class="varname">interval</span></i> | <strong><span>retry-interval</span></strong> <i><span class="varname">retry-interval</span></i> | <strong><span>retry-number</span></strong> <i><span class="varname">retry-number</span></i> } <sup>*</sup></pre>
+<p>By default, the heartbeat interval is 3 minutes, the reconnection interval is 5 minutes, and the number of reconnection attempts is 0.</p>
+<p>The value <strong>0</strong> for the number of reconnection attempts indicates that the server and APs always attempt to reconnect to each other.</p>
+</p></li><li><strong>Optional: </strong><span>Configure the maximum data length of KPI information reported by APs to the WMI server.</span><p><pre class="screen"><b><span class="cmdqueryname">max-packet-size</span></b> <i><span class="varname">size</span></i></pre>
+<p>By default, the maximum data length of KPI information reported by APs to the WMI server is 5 KB.</p>
+</p></li><li><strong>Optional: </strong><span>Configure the interval at which APs report KPI information to the WMI server.</span><p><pre class="screen"><b><span class="cmdqueryname">report-interval</span></b> <i><span class="varname">interval</span></i></pre>
+<p>By default, the interval at which APs report KPI information to the WMI server is 60 seconds.</p>
+</p></li><li><strong>Optional: </strong><span>Configure APs to report logs of a module with the specified ID to the WMI server.</span><p><pre class="screen"><b><span class="cmdqueryname">ap log module</span></b> <strong><span>mid</span></strong> <i><span class="varname">mid</span></i> [ <strong><span>name</span></strong> <i><span class="varname">name</span></i> ]</pre>
+<p>By default, an AP is not configured to report logs of a module with the specified ID.</p>
+<p>If APs need to report logs to a WMI server, specify the ID of a module whose logs are to be reported and enable the log report function. Otherwise, the APs do not report logs of this module.</p>
+</p></li><li><strong>Optional: </strong><span>Enable APs to report collected data to a WMI server and configure the data collection interval.</span><p><p>You can process this configuration multiple times to enable APs to report different types of data to a WMI server. The default values are recommended.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Operations performed to enable APs to report collected data and configure the data collection interval</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="34.19%" id="mcps1.3.3.11.2.2.2.6.1.1" liSelected="liSelected"><p>Operation</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="29.709999999999997%" id="mcps1.3.3.11.2.2.2.6.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="6.6000000000000005%" id="mcps1.3.3.11.2.2.2.6.1.3" liSelected="liSelected"><p>Default State</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="11.709999999999999%" id="mcps1.3.3.11.2.2.2.6.1.4" liSelected="liSelected"><p>Default Collection Interval (Seconds)</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="17.79%" id="mcps1.3.3.11.2.2.2.6.1.5" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report site guest data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>application-statistics-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">app-interval</span></i> | <strong><span>disable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>300</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report CPCAR data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>cpcar-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">cpcar-interval</span></i> | <strong><span>disable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>300</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report DNS data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>dns-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">dns-interval</span></i> | <strong><span>enable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Disabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>60</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>Ensure that DNS snooping has been enabled using the <b><span class="cmdqueryname">dns-snooping enable</span></b> command in the VAP profile view.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report non-Wi-Fi device data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>non-wifi-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">non-wifi-interval</span></i> | <strong><span>enable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Disabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>60</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report DHCP option (options 12, 55, and 60) information of STAs to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>terminal-dhcp-option-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">term-pk-interval</span></i> | <strong><span>enable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Disabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>300</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report user agent (UA) information in HTTP packets of STAs to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>terminal-http-ua-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">term-pk-interval</span></i> | <strong><span>enable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Disabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>300</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report service information in mDNS packets of STAs to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>terminal-mdns-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">term-pk-interval</span></i> | <strong><span>enable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Disabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>300</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>Ensure that mDNS snooping has been enabled using the <b><span class="cmdqueryname">mdns-snooping enable</span></b> command in the VAP profile view.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report IFIT measurement information and LLDP neighbor data to a WMI server.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> { <strong><span>flow-learning</span></strong> | <strong><span>lldp-data</span></strong> } <strong><span>disable</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>Real time</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report device monitoring data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>device-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">device-interval</span></i> | <strong><span>disable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>10</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report interface monitoring data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>interface-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">interface-interval</span></i> | <strong><span>disable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>60</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report log data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>log-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">log-interval</span></i> | <strong><span>disable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>300</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report radio data of wireless neighbors to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>neighbor-device-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">neighbor-interval</span></i> | <strong><span>disable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>60</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report radio monitoring data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>radio-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">radio-interval</span></i> | <strong><span>disable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>10</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report SSID monitoring data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>ssid-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">ssid-interval</span></i> | <strong><span>disable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>60</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report terminal data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>terminal-data</span></strong> { <strong><span>interval</span></strong> <i><span class="varname">terminal-interval</span></i> | <strong><span>disable</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>10</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report spectrum analysis data to a WMI server.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>spectrum-data</span></strong> <strong><span>enable</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Disabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>Real time</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report CSI data to a WMI server.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>csi-data</span></strong> <strong><span>enable</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Disabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>Real time</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p><span>Only some APs running V600 support the CSI sensing function. For details, query the specifications on <span>Info-Finder (<a href="https://info.support.huawei.com/info-finder/vue/en/enterprise/index" target="_blank" rel="noopener noreferrer">Enterprise Network</a> or <a href="https://info.support.huawei.com/info-finder/vue/en/carrier/index" target="_blank" rel="noopener noreferrer">Carrier</a>)</span>.</span></p>
+<p>CSI data is only used with <span class="keyword">iMaster NCE-CampusInsight</span> to implement functions related to human sensing.</p>
+<p>Ensure that the CSI sensing data collection function has been configured. For details, see <a href="galaxy_WLAN_Operation_and_Maintenance_Monitoring_cfg_0016.html">Configuring CSI Sensing Data Collection and Reporting</a>.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.19%" headers="mcps1.3.3.11.2.2.2.6.1.1 "><p>Enable an AP to report AI roaming data to a WMI server and configure the data collection interval.</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.709999999999997%" headers="mcps1.3.3.11.2.2.2.6.1.2 "><p><b><span class="cmdqueryname">collect-item</span></b> <strong><span>ai-roam-data</span></strong> { <strong><span>disable</span></strong> | <strong><span>interval</span></strong> <i><span class="varname">ai-roam-interval</span></i> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="6.6000000000000005%" headers="mcps1.3.3.11.2.2.2.6.1.3 "><p>Enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.709999999999999%" headers="mcps1.3.3.11.2.2.2.6.1.4 "><p>300</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.79%" headers="mcps1.3.3.11.2.2.2.6.1.5 "><p>-</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li><li><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Create an AP system profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">ap-system-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the AP system profile <strong>default</strong> exists on the device.</p>
+</p></li><li><span>Bind the specified WMI profile to the AP system profile.</span><p><pre class="screen"><b><span class="cmdqueryname">wmi-server</span></b> <i><span class="varname">profile-name</span></i> <strong><span>index</span></strong> <i><span class="varname">index</span></i></pre>
+<p>By default, no WMI profile is bound to an AP system profile.</p>
+</p></li><li><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Enter the AP view or AP group view.</span><ul><li>Enter the AP group view.<pre class="screen"><b><span class="cmdqueryname">ap-group</span></b> <strong><span>name</span></strong> <i><span class="varname">group-name</span></i></pre>
+</li><li>Enter the AP view.<pre class="screen"><b><span class="cmdqueryname">ap-id</span></b> <i><span class="varname">ap-id</span></i></pre>
+</li></ul>
+</li><li><span>Bind the AP system profile to an AP group or a specific AP.</span><p><pre class="screen"><b><span class="cmdqueryname">ap-system-profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the AP system profile <strong>default</strong> is bound to an AP group, but no AP system profile is bound to an AP.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563754101__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display wmi-server</span></b> { <strong><span>all</span></strong> | <strong><span>name</span></strong> <i><span class="varname">wmi-server-name</span></i> } command to check configuration and reference information about a WMI profile.</li><li>Run the <b><span class="cmdqueryname">display references wmi-server</span></b> <strong><span>name</span></strong> <i><span class="varname">wmi-server-name</span></i> command to check reference information about a WMI profile.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_WLAN_Operation_and_Maintenance_Monitoring_cfg_0002.html">Configuring the KPI Reporting Function
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_WLAN_Operation_and_Maintenance_Monitoring_cfg_0003.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

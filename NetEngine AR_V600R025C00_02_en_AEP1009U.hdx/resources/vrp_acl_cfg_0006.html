@@ -1,0 +1,107 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="ACL Configuration Guidelines">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0005.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001130782816">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>ACL Configuration Guidelines</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001130782816"></a><a name="EN-US_CONCEPT_0000001130782816"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">ACL Configuration Guidelines</h1>
+<div><p>When configuring ACL rules, follow these guidelines:</p>
+<ol><li><p>Some rules in an ACL may overlap, and matching stops for a packet once the packet matches a rule in an ACL. To prevent a packet from matching a rule with loose conditions earlier than a rule with strict conditions in the same ACL, ensure that rules with strict conditions are arranged above those with loose conditions.</p>
+</li><li><p>The ACL configuration guidelines vary according to the default ACL actions (permit or deny) taken by service modules. Take a service module whose default action is permit as an example. If the module must deny packets from only some IPv4 addresses, you can configure a deny rule only for these IPv4 addresses. Because the default action is permit, you do not need to add a permit rule for other IPv4 addresses as the last rule in the ACL. The opposite is true for a service module whose default action is deny. <a href="#EN-US_CONCEPT_0000001130782816__tab_dc_cfg_acl_101101">Table 1</a> describes the ACL configuration guidelines.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The following rules are for reference only. The command line syntax shall prevail when you configure ACL rules.</p>
+<p>The <strong>rule permit</strong> and <strong>rule deny</strong> commands permit and deny packets, respectively. In <a href="#EN-US_CONCEPT_0000001130782816__tab_dc_cfg_acl_101101">Table 1</a>, <em>a</em> and <em>b</em> indicate packet attributes, with <em>b</em> covering a wider range of packets than <em>a</em>.</p>
+</div></div>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001130782816__tab_dc_cfg_acl_101101"></a><a name="tab_dc_cfg_acl_101101"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001130782816__tab_dc_cfg_acl_101101" frame="border" border="1" rules="all"><caption><b>Table 1 </b>ACL configuration guidelines</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="12.8012801280128%" id="mcps1.3.2.2.3.2.6.1.1" liSelected="liSelected"><p>Default ACL Action</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="21.79217921792179%" id="mcps1.3.2.2.3.2.6.1.2" liSelected="liSelected"><p>Permit All Packets</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="21.79217921792179%" id="mcps1.3.2.2.3.2.6.1.3" liSelected="liSelected"><p>Deny All Packets</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="21.79217921792179%" id="mcps1.3.2.2.3.2.6.1.4" liSelected="liSelected"><p>Permit a Few Packets and Deny Most Packets</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="21.822182218221823%" id="mcps1.3.2.2.3.2.6.1.5" liSelected="liSelected"><p>Deny a Few Packets and Permit Most Packets</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="12.8012801280128%" headers="mcps1.3.2.2.3.2.6.1.1 "><p><strong>permit</strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="21.79217921792179%" headers="mcps1.3.2.2.3.2.6.1.2 "><p>No ACL is required.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21.79217921792179%" headers="mcps1.3.2.2.3.2.6.1.3 "><p>Configure <strong>rule deny</strong>.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21.79217921792179%" headers="mcps1.3.2.2.3.2.6.1.4 "><p>Configure <strong>rule permit</strong> <em>a</em> first, and then <strong>rule deny</strong> <em>b</em> or <strong>rule deny</strong>.</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p>This guideline applies to packet filtering. When an ACL is applied to traffic policing or traffic statistics collection in a traffic policy, configure <strong>rule permit</strong> <em>a</em> if you only need to count rate or collect statistics on the specified packets.</p>
+</div></div>
+</td>
+<td class="cellrowborder" valign="top" width="21.822182218221823%" headers="mcps1.3.2.2.3.2.6.1.5 "><p>Only <strong>rule deny</strong> <em>a</em> is required, and <strong>rule permit</strong> <em>b</em> or <strong>rule permit</strong> is not required.</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p>If <strong>rule permit</strong> is configured and an ACL is applied to a traffic policy in which the traffic behavior's action is <strong>deny</strong>, all packets are rejected and all services are interrupted.</p>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="12.8012801280128%" headers="mcps1.3.2.2.3.2.6.1.1 "><p><strong>deny</strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="21.79217921792179%" headers="mcps1.3.2.2.3.2.6.1.2 "><p>Configure <strong>rule permit</strong>.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21.79217921792179%" headers="mcps1.3.2.2.3.2.6.1.3 "><p>No ACL is required.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21.79217921792179%" headers="mcps1.3.2.2.3.2.6.1.4 "><p>Only <strong>rule permit</strong> <em>a</em> is required, and <strong>rule deny</strong> <em>b</em> or <strong>rule deny</strong> is not required.</p>
+</td>
+<td class="cellrowborder" valign="top" width="21.822182218221823%" headers="mcps1.3.2.2.3.2.6.1.5 "><p>Configure <strong>rule deny</strong> <em>a</em> first, and then <strong>rule permit</strong> <em>b</em> or <strong>rule permit</strong>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li></ol>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_acl_cfg_0003.html">Understanding ACL
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_acl_cfg_0005.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

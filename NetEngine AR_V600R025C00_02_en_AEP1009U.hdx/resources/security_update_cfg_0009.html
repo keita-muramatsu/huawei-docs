@@ -1,0 +1,102 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring the Device to Communicate with the Huawei Intelligent Security Center">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_update_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="security_update_cfg_0008.html">
+<meta name="DC.Relation" scheme="URI" content="security_update_cfg_0010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Signature Database Update">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Signature Database Update">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="Signature Database Update">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="Signature Database Update">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513167534">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring the Device to Communicate with the Huawei Intelligent Security Center</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513167534"></a><a name="EN-US_TASK_0000001513167534"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring the Device to Communicate with the Huawei Intelligent Security Center</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001513167534__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>The operations in <a href="security_update_cfg_0006.html">Preparations for Signature Database Update</a> have been completed.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513167534__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>When the device connects to the update center through the Internet for online signature database update, the device needs to directly connect to the update server at the Huawei Intelligent Security Center. Therefore, you need to set parameters for communication with the Huawei Intelligent Security Center.</p>
+<p></p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513167534__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Set parameters for connecting the device to the update server at the Huawei Intelligent Security Center.</span><p><pre class="screen"><b><span class="cmdqueryname">update server</span></b> { <b><span class="cmdqueryname">domain</span></b> <i><span class="varname">domain-name</span></i> | <b><span class="cmdqueryname">ip</span></b> <i><span class="varname">ip-address</span></i> } [ <b><span class="cmdqueryname">port</span></b> <i><span class="varname">port-number</span></i> ]
+<b><span class="cmdqueryname">update server</span></b> <strong><span>ca-certificate</span></strong> <i><span class="varname">certificate-file-name</span></i></pre>
+<p>By default, the domain name of the update server at the Huawei Intelligent Security Center is <strong>sec.huawei.com</strong>, the HTTPS protocol uses port 443, and the device uses the initial CA certificate to communicate with the Huawei Intelligent Security Center through HTTPS.</p>
+<p>The initial CA certificate is stored in the NVRAM. Run the <strong>pki import-certificate default_ca realm default</strong> command to load the initial CA certificate to the default domain.</p>
+<p>To connect the device to the update server at the Huawei Intelligent Security Center, you can specify the IP address of the update server using the <b><span class="cmdqueryname">ip</span></b> <i><span class="varname">ip-address</span></i> parameter. The IP address specified by <i><span class="varname">ip-address</span></i> cannot be an IPv6 address. You are advised to preferentially use the domain name of the update server at the Huawei Intelligent Security Center for the interconnection. The IP address of the update server needs to be obtained from Huawei.</p>
+<p>If the initial CA certificate is used for communication with the Huawei Intelligent Security Center and the message "Connecting to the security server failed" is displayed during a signature database update, check whether the failure is caused by a network fault. If not, the initial certificate file may be manually replaced with an abnormal file. In this case, you are advised to enter the backend <strong>flash:/default-sdb/</strong> directory to delete related files from the directory, restart the device, and then update the signature database.</p>
+</p></li><li><strong>Optional: </strong><span>Configure a DNS server.</span><p><p>If the interconnection parameters include the domain name of the update server at the Huawei Intelligent Security Center, you must configure a DNS server to resolve the domain name.</p>
+</p><ol type="a"><li class="substepexpand"><span>Enable the domain name resolution function of the DNS server.</span><p><pre class="screen"><b><span class="cmdqueryname">dns resolve</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an IP address for the DNS server.</span><p><pre class="screen"><b><span class="cmdqueryname">dns server</span></b> <em>ip-address</em> [ <strong><strong><span>vpn-instance</span></strong> </strong><em><i><span class="varname">vpn-instance-name</span></i></em> ]</pre>
+<p>If the device connects to the DNS server through a VPN instance, you must run the <b><span class="cmdqueryname">dns server</span></b> <em>ip-address</em> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> command to bind the VPN instance to the DNS server.</p>
+</p></li></ol>
+</li><li><strong>Optional: </strong><span>Configure the outbound interface or source IP address of online update request packets.</span><p><pre class="screen"><b><span class="cmdqueryname">update host source</span></b> { <strong><span>ip</span></strong> <i><span class="varname">ip-address</span></i> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance</span></i> ] } <strong><span>interface</span></strong> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number\ </span></i><i><span class="varname">interface-name</span></i> } }</pre>
+<p>By default, the source IP address of online update request packets is not configured. Generally, this command is optional. If the administrator does not configure this command, the system searches a route based on the IP address of the update server and uses the IP address of the outbound interface as the source IP address of update request packets.</p>
+<p>If the interface has multiple IP addresses, you are advised to run the <b><span class="cmdqueryname">update host source</span></b> <strong><span>ip</span></strong> <i><span class="varname">ip-address</span></i> command to configure the source IP address of online update request packets and ensure that the device can receive response packets. Otherwise, online update may fail. The source IP address of update request packets cannot be the address of a loopback interface.</p>
+<div class="p">If the device connects to the Internet through a VPN instance, the <b><span class="cmdqueryname">update host source</span></b> command must be configured to ensure that the device can receive response packets. Otherwise, the update may fail.<ul><li>When configuring the <strong><b><span class="cmdqueryname">update host source</span></b></strong><em> </em><strong><span>interface</span></strong><em> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> </em>| <em><i><span class="varname">interface-name</span></i> }</em> command, ensure that the interface is bound to the corresponding VPN instance.</li><li>When configuring the <strong><b><span class="cmdqueryname">update host source</span></b> <strong><span>ip</span></strong></strong><em> <i><span class="varname">ip-address</span></i></em> command, you must specify <strong><strong><span>vpn-instance</span></strong></strong><em> <i><span class="varname">vpn-instance</span></i></em>.</li></ul>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When both the <strong>update host source</strong><em> </em><strong><span>interface</span></strong><em> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> </em>|<em> <i><span class="varname">interface-name</span></i> }</em> and <strong><b><span class="cmdqueryname">update host source</span></b> ip</strong><em> ip-address</em> [ <strong>vpn-instance</strong><em> vpn-instance</em> ] commands are configured, the system preferentially uses the value of <em>ip-address</em> as the source address of update request packets. That is, the <strong>update host source</strong><em> </em><strong><span>interface</span></strong><em> interface-type interface-number</em> command does not take effect.</p>
+</div></div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513167534__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">ping</span></b> <i><span class="varname">host</span></i> command to test the connectivity between the device and the updater server at the Huawei Intelligent Security Center. The <i><span class="varname">host</span></i> parameter specifies the domain name or IP address of the update server at the Huawei Intelligent Security Center.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001513167534__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>After the device connects successfully to the update server at the Huawei Intelligent Security Center, the device performs automatic online signature database updates at fixed update intervals. You can also configure manual online signature database update. For details, see <a href="security_update_cfg_0011.html">Configuring Manual Online Signature Database Update</a>.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_update_cfg_0007.html">Configuring Online Signature Database Update
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_update_cfg_0008.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_update_cfg_0010.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

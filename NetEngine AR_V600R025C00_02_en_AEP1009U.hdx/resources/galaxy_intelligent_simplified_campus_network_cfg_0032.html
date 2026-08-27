@@ -1,0 +1,176 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="RU Authentication Failure">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0033.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001568395176">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>RU Authentication Failure</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001568395176"></a><a name="EN-US_TOPIC_0000001568395176"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">RU Authentication Failure</h1>
+<div><div class="section"><h4 class="sectiontitle">Symptom</h4><ul><li>After the <strong>display remote-unit</strong> <strong>verbose</strong> command is run in the user view of the central device to check information about a connected RU, the following information is displayed (showing that <strong>Version match</strong> is <strong>NO</strong> and <strong>Authen Result</strong> is <strong>Fail</strong>):<pre class="screen">&lt;HUAWEI&gt;<strong>display remote-unit verbose</strong>  
+Total number: 1 
+---------------------------------------------------------------------------- 
+ESN                  : QU2276XXXXXX 
+Name                 : - 
+ID                   : - 
+Device mac           : XXXX-XXXX-XXXX 
+Device type          : S5731-L4P2HT-RUA 
+Item                 : 98011776 
+Manufacture Date     : 2022-07-19 
+Up time              : 0 day, 0 hour, 1 minute, 54 seconds 
+APP version          : 220818011 
+POE version          : 7692 
+BIOS version         : 220225001 
+Connect interface    : <span>10GE</span><span>0/0/1</span> 
+Disk usage           : 44% 
+Memory usage         : 30% 
+Temperature          : 50(Celsius) 
+Mac usage            : 0% 
+Disk space(MB)       : 16 
+Status               : Normal 
+Version match        : NO 
+Version support      : YES 
+Authen Result        : Fail  
+----------------------------------------------------------------------------</pre>
+</li><li>After the <strong>display alarm active</strong> command is run in the user view of the central device to query alarms, the following information is displayed:<pre class="screen">&lt;HUAWEI&gt;<strong>display alarm active</strong>          
+----------------------------------------------------------------------------------------------
+Sequence   AlarmId    Severity    Date Time    Description                            
+---------------------------------------------------------------------------------------------- 
+62        0x4092014    Major      2023-04-26   The authentication to the remote unit failed.          
+                                   07:47:36    (RemoteUnitEsn=QU2276013135) 
+61        0xF1FFFF     Major      2023-04-26   Remote unit certificate version does not match                                
+                                   07:47:36    the central switch. (RemoteUnitEsn=QU2276013135)</pre>
+</li><li>Configurations cannot be delivered to an RU, such as restarting the RU, configuring interface isolation, and adding an RU interface to a VLAN. For example, running the <strong>reboot all</strong> command in the RU view cannot restart the RU; instead, the following error information is displayed:<pre class="screen">[HUAWEI-remote-unit]<strong>reboot all</strong>  
+Warning: This Command will restart the remote-unit. Continue? [Y/N]:<strong>y</strong> 
+Error: Unable to restart the device QU2276013135, please check the authentication state.</pre>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Possible Causes</h4><ul><li>The firmware version of the RU is too early. The RU can be managed by the central device running V600R023C00 or later only after being upgraded.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><p><strong>The firmware version of the RU is too early. The RU can be managed by the central device running V600R023C00 or later only after being upgraded.</strong></p>
+<p><strong>Scenario 1:</strong> A central device running V200R022C00 or later is available.</p>
+<ol><li><span>Connect the RU running an earlier version to the central device running V200R022C00 or later. Then, run the <strong>upgrade right-now</strong> command. After the RU is upgraded and restarted, it can be connected to a central device running V600R023C00 or later.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>remote-unit</strong>
+[HUAWEI-remote-unit]<strong>upgrade right-</strong><strong>now</strong>  
+Warning: After the upgrade is successful, the connected RUs will restart, causing service interruption. Do not power off the RUs during the upgrade. Otherwise, they may fail to start.  
+Continue? [Y/N]:<strong>y</strong> </pre>
+</p></li></ol>
+<p><strong>Scenario 2:</strong> No central device running V200R022C00 or later is available, and the RU uses local power supply.</p>
+<ol><li><span>Run the <strong>upgrade right-now</strong> command to upgrade the RU.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>remote-unit</strong>
+[HUAWEI-remote-unit]<strong>upgrade right-</strong><strong>now</strong>  
+Warning: After the upgrade is successful, the connected RUs will restart, causing service interruption. Do not power off the RUs during the upgrade. Otherwise, they may fail to start.  
+Continue? [Y/N]:<strong>y</strong> </pre>
+</p></li><li><span>(Optional) Run the <strong>display remote-unit upgrade information</strong> command to check the upgrade progress.</span><p><pre class="screen">[HUAWEI-remote-unit]<strong>display remote-unit upgrade information</strong>  
+Firmware information:  
+--------------------------------------------------------------------------------
+Device Series      Type       Name           Version            From
+--------------------------------------------------------------------------------
+S5731              APP        APP            240327011          Startup software
+S5731              POE        POE            7812               Startup software
+S5731              BIOS       BIOS           231214011          Startup software
+
+Remote-unit during cooling down:
+--------------------------------------------------------------------------------
+Type                 ConnectInterface          FailCnt    CoolDownInSeconds  
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Waiting for restart to apply new firmware's remote-unit information:
+--------------------------------------------------------------------------------
+Type                 ConnectInterface          NextVersion(APP/POE/BIOS)     
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Upgrading remote-unit information:
+--------------------------------------------------------------------------------
+Type                 ConnectInterface          Firmware   Percent            
+--------------------------------------------------------------------------------
+S5731-L8T2ST-RUA       <span>10GE</span><span>0/0/1</span>                 APP        3%
+--------------------------------------------------------------------------------</pre>
+</p></li><li><span>Run the <strong>display remote-unit upgrade record</strong> command to check the status of uploading the system software package. It may take several minutes for the upload to complete.</span><p><pre class="screen">[HUAWEI-remote-unit]<strong>display remote-unit upgrade record</strong>  
+----------------------------------------------------------------------------- 
+StartTime            ConnectInterface          Firmware   UpdateResult        
+----------------------------------------------------------------------------- 
+2023/04/26 07:59:47    <span>10GE</span><span>0/0/1</span>                  POE        Success             
+2023/04/26 07:59:23    <span>10GE</span><span>0/0/1</span>                  APP        Success             
+-----------------------------------------------------------------------------</pre>
+</p></li><li><span>Restart the RU. Manually power off the RU from the equipment room. After 10 seconds, manually power on the RU so that it restarts to load the new firmware.</span></li><li><span>After the RU is restarted, run the <strong>display remote-unit verbose</strong> command to check whether the authentication is successful and whether the firmware version is the new version.</span><p><pre class="screen">[HUAWEI-GE2/0/35]<strong>display remote-unit verbose</strong>                                                                                         
+Total number: 1                                                                                                                      
+----------------------------------------------------------------------------                                                         
+ESN                  : QU2276XXXXXX                                                                                                  
+Name                 : -                                                                                                             
+ID                   : -                                                                                                             
+Device mac           : XXXX-XXXX-XXXX                                                                                                
+Device type          : S5731-L4P2HT-RUA                                                                                              
+Item                 : 98011776                                                                                                      
+Manufacture Date     : 2022-07-19                                                                                                    
+Up time              : 0 day, 0 hour, 1 minute, 34 seconds                                                                           
+APP version          : 230403022                                                                                                     
+POE version          : 7812                                                                                                          
+BIOS version         : 220225001                                                                                                     
+Connect interface    : <span>10GE</span><span>0/0/1</span>                                                                                                      
+Disk usage           : 44%                                                                                                           
+Memory usage         : 30%                                                                                                           
+Temperature          : 44(Celsius)                                                                                                   
+Mac usage            : 0%                                                                                                            
+Disk space(MB)       : 16                                                                                                            
+Status               : Normal                                                                                                        
+Version match        : YES                                                                                                           
+Version support      : YES                                                                                                           
+Authen Result        : Success                                                                                                       
+----------------------------------------------------------------------------</pre>
+</p></li><li><span>Restart the RU again and check whether the configuration is successfully delivered.</span><p><pre class="screen">[HUAWEI-remote-unit]<strong>reboot all</strong>                                                                                                      
+Warning: This Command will restart the remote-unit. Continue? [Y/N]:<strong>y</strong>                                                               
+Info: Successfully restarted the device.</pre>
+</p></li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">Common Configuration Errors for Intelligent Simplified Campus Networks
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0033.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring TE-Class-based Traffic Steering into an SRv6 TE Policy">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0162.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0164.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001218181089">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring TE-Class-based Traffic Steering into an SRv6 TE Policy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001218181089"></a><a name="EN-US_TASK_0000001218181089"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring TE-Class-based Traffic Steering into an SRv6 TE Policy</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001218181089__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In TE-Class-based traffic steering, the headend recurses traffic based on the next hop of the corresponding route in compliance with the configured tunnel policy. If traffic recursion to an SRv6 TE flow group is configured, the headend matches the traffic with an SRv6 mapping policy that has the same color value as the route. If such an SRv6 mapping policy exists, the headend dynamically generates an SRv6 TE flow group that contains multiple SRv6 TE Policies with the same endpoint but different color values.</p>
+<p>If there is no such SRv6 mapping policy, the headend does not dynamically create an SRv6 TE flow group.</p>
+<p>If multiple flows with the same color value but different next-hop addresses need to recurse to SRv6 TE flow groups, multiple dynamic SRv6 TE flow groups with different endpoints are created based on the configuration of the matching SRv6 mapping policy.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001218181089__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enable Segment Routing in the IPv6 forwarding plane and enter the SRv6 view.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6</span></b></pre>
+</p></li><li><span>Create an SRv6 mapping policy and enter the SRv6 mapping policy view.</span><p><pre class="screen"><b><span class="cmdqueryname">mapping-policy</span></b><strong> </strong><em>name-value</em> <strong><span>color</span></strong><strong> </strong><em>color-value</em></pre>
+</p></li><li><span>(Optional) Configure a description for the SRv6 mapping policy.</span><p><pre class="screen"><b><span class="cmdqueryname">description </span></b><em>description-value</em></pre>
+</p></li><li><span>Set the mapping type of the SRv6 mapping policy to TE-Class.</span><p><pre class="screen"><b><span class="cmdqueryname">match-type te-class</span></b></pre>
+</p></li><li><span>Configure a rule for the mapping between SPR policies, SRv6 TE Policies, or native IP links in an SRv6 TE flow group and TE-Class values.</span><p><ul><li>Configure a rule for the mapping between SPR policies in an SRv6 TE flow group and TE-Class values.</li></ul>
+<pre class="screen"><b><span class="index te-class match">index</span></b><strong> </strong><em>index-value</em> <strong>te-class</strong> <em>te-class-id</em> <strong>match</strong> <strong>spr-policy</strong> <em>spr-name</em></pre>
+<pre class="screen"><strong><b><span class="cmdqueryname">default match spr-policy</span></b> </strong><em>spr-name</em></pre>
+</p><p><ul><li>Configure a rule for the mapping between SRv6 TE Policies in an SRv6 TE flow group and TE-Class values.</li></ul>
+<pre class="screen"><strong><b><span class="index te-class match">index</span></b> </strong><em>index-value</em> <strong>te-class</strong> <em>te-class-id</em> <strong>match</strong> <strong>srv6-te-policy</strong> <strong>color</strong> <em>color-value</em></pre>
+<pre class="screen"><b><span class="cmdqueryname">default match srv6-te-policy color</span></b> <em>color-value</em></pre>
+<ul><li>Configure a rule for the mapping between native IP links in an SRv6 TE flow group and TE-Class values. Note that only one such rule can be configured in an SRv6 TE flow group.</li></ul>
+<pre class="screen"><strong><b><span class="index te-class match">index</span></b> </strong><em>index-value</em> <strong>te-class</strong> <em>te-class-id</em> <strong>match</strong> <strong>native-ip</strong>
+Alternatively:
+<b><span class="cmdqueryname">default match native-ip</span></b></pre>
+<p>Each SRv6 TE Policy in an SRv6 TE flow group has its own color attribute.</p>
+<p>The <b><span class="cmdqueryname">index te-class match</span></b> and <b><span class="cmdqueryname">default match</span></b> commands are used together to specify the mapping between color and TE-Class values.</p>
+<p>In an SRv6 TE flow group, TE-Class values and SRv6 TE Policies are associated using the color attribute. IP packets can then be steered into the specified SRv6 TE Policy based on their TE-Class values.</p>
+<ul><li>The <b><span class="cmdqueryname">index te-class match spr-policy</span></b> and <b><span class="cmdqueryname">default match spr-policy</span></b> commands configure the mapping between SPR policies and TE-Class values.</li><li>The <b><span class="cmdqueryname">index te-class match srv6-te-policy color</span></b> and <b><span class="cmdqueryname">default match srv6-te-policy color</span></b> commands configure the mapping between SRv6 TE Policies and TE-Class values.</li><li>The <b><span class="cmdqueryname">index te-class match native-ip</span></b> and <b><span class="cmdqueryname">default match native-ip</span></b> commands configure the mapping between native IP links and TE-Class values.</li></ul>
+<p>During forwarding, IP packets are steered into the specified SRv6 TE Policy based on their TE-Class values. If no SRv6 TE Policy matching a specified TE-Class value is found, the packets are steered into the SRv6 TE Policy specified using the <b><span class="cmdqueryname">default match</span></b> command.</p>
+</p></li><li><span>Return to the Segment Routing IPv6 view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Create a tunnel policy and enter the tunnel policy view.</span><p><pre class="screen"><b><span class="cmdqueryname">tunnel-policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+</p></li><li><span>(Optional) Configure a description for the tunnel policy.</span><p><pre class="screen"><b><span class="cmdqueryname">description</span></b> <i><span class="varname">description-information</span></i></pre>
+</p></li><li><span>Configure a tunnel selection policy.</span><p><pre class="screen"><b><span class="cmdqueryname">tunnel select-seq</span></b> <strong><span>ipv6</span></strong> <strong><span>srv6-te-flow-group</span></strong> <strong><span>load-balance-number</span></strong> <em>loadBalanceNumber</em></pre>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Configure service recursion to an SRv6 TE Policy.</span><ul id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_choices208927073214048"><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_choice1669578253214048"><div class="p" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_p1580366469214048"><a name="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_choice1669578253214048"></a><a name="en-us_task_0000001141617186_choice1669578253214048"></a>Configure EVPN L3VPN service recursion to an SRv6 TE Policy.<ol type="a" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_ol636509373214048"><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_li773557016214048">Enter the VPN instance view.<pre class="screen" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_screen1840415306332"><b><span class="cmdqueryname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname1905393218214048">ip vpn-instance</span></b> <i><span class="varname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_varname848516282214048">vpn-instance-name</span></i></pre>
+</li><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_li1457056268214048">Enter the VPN instance IPv4/IPv6 address family view.<pre class="screen" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_screen8627447113312">IPv4:
+<b><span class="cmdqueryname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname69011238919">ipv4-family</span></b>
+IPv6:
+<b><span class="cmdqueryname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname1409705466214048">ipv6-family</span></b></pre>
+</li><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_li2048930369214048">Apply the tunnel policy to an EVPN L3VPN instance.<pre class="screen" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_screen3483207133416"><b><span class="cmdqueryname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname1712878985214048">tnl-policy</span></b> <i><span class="varname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_varname734496286214048">policy-name</span></i> <strong><span id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdparmname1791184484214048">evpn</span></strong></pre>
+</li></ol>
+</div>
+</li><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_choice668414424919">Configure public network IPv4/IPv6 service recursion to an SRv6 TE Policy.<ol type="a" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_ol451614337506"><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_li14517193313504">Create a tunnel selector and enter the tunnel selector view.<pre class="screen" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_screen636743313512"><b><span class="cmdqueryname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname972317196570">tunnel-selector</span></b><strong id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_b828171614571"> </strong><em id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_i1614213419519">name</em><em id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_i61427340512"> matchMode </em><strong id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_b10142634195111">node </strong><em id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_i1314273445114">node</em></pre>
+</li><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_li18876050115118">Apply the tunnel policy to the tunnel selector.<pre class="screen" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_screen107551928185217"><b><span class="cmdqueryname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname163461486578">apply tunnel-policy</span></b><strong id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_b09221457574"> </strong><em id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_i9937183116522">tunnel-policy-name</em></pre>
+</li><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_li795678135313">Return to the system view.<pre class="screen" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_screen5234161585318"><b><span class="cmdqueryname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname522324916214048">quit</span></b></pre>
+</li><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_li1785190487214048">Enter the BGP view.<pre class="screen" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_screen161021335172619"><b><span class="cmdqueryname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname159347087214048">bgp</span></b> <i><span class="varname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_varname28937322214048">as-number</span></i></pre>
+</li><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_li1187153294214048">Enter the IPv4/IPv6 unicast address family view.<pre class="screen" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_screen1584174492620">IPv4:
+<b><span class="ipv4-family unicast" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname168145201089">ipv4-family</span></b> <strong><span id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdparmname158141420788">unicast</span></strong>
+IPv6:
+<b><span class="ipv6-family unicast" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname26516341481">ipv6-family</span></b> <strong><span id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdparmname66583418817">unicast</span></strong></pre>
+</li><li id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_li1699293007214048">Enable the device to recurse IPv4/IPv6 unicast routes received from a BGP IPv6 peer to tunnels.<pre class="screen" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_screen214295052613"><b><span class="cmdqueryname" id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_cmdname2219195518567">unicast-route recursive-lookup tunnel-v6 tunnel-selector</span></b><strong id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_b1230705217566"> </strong><em id="EN-US_TASK_0000001218181089__en-us_task_0000001141617186_i135684915513">tunnel-selector-name</em></pre>
+</li></ol>
+</li></ul>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0162.html">Configuring TE-Class-based Traffic Steering into an SRv6 TE Policy
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0164.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

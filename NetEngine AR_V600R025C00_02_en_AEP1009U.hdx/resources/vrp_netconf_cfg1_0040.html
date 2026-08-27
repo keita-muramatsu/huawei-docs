@@ -1,0 +1,208 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="edit-config">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0037.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0039.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0041.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_system_setup_0009.xml">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001512682854">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>edit-config</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001512682854"></a><a name="EN-US_TOPIC_0000001512682854"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">edit-config</h1>
+<div><p>The &lt;edit-config&gt; operation loads all or some configurations to a specified target configuration database (&lt;running/&gt; or &lt;candidate/&gt;).</p>
+<p>The &lt;edit-config&gt; operation supports multiple modes for loading configurations. For example, you can load local and remote files, and edit files online. If a NETCONF server supports the URL capability, the &lt;url&gt; parameter (which identifies a local configuration file) can be used to replace the &lt;config&gt; parameter.</p>
+<div class="p">Parameters in an RPC message of the &lt;edit-config&gt; operation are described as follows:<ul><li><p>&lt;config&gt;: indicates a group of hierarchical configuration items defined in the data model.</p>
+<div class="p">The &lt;config&gt; parameter may contain the optional operation attribute, which is used to specify an operation type for a configuration item. If the operation attribute is not present, the &lt;merge&gt; operation is performed by default. The values of the operation attribute are as follows:<ul><li><strong>merge</strong>: modifies or creates data in the database. Specifically, if the target data exists, this operation modifies the data. If the target data does not exist, this operation creates the data. This is the default operation.</li><li><strong>create</strong>: adds configuration data to the configuration database only if the database does not already contain such data. If the configuration data already exists, &lt;rpc-error&gt; is returned, in which the &lt;error-tag&gt; value is <strong>data-exists</strong>.</li><li><strong>delete</strong>: deletes a specified configuration data record from the configuration database. If the data exists, it is deleted. If the data does not exist, &lt;rpc-error&gt; is returned, in which the &lt;error-tag&gt; value is <strong>data-missing</strong>.</li><li><strong>remove</strong>: removes a specified configuration data record from the configuration database. If the data exists, it is deleted. If the data does not exist, a success message is returned.</li><li><strong>replace</strong>: replaces existing data or creates data that does not exist in the database.</li></ul>
+</div>
+</li><li><p>&lt;target&gt;: indicates the configuration database to be edited. The configuration database can be set based on scenarios.</p>
+<ul><li><p>In immediate validation mode, set the database to &lt;running/&gt;.</p>
+</li><li><p>In two-phase validation mode, set the database to &lt;candidate/&gt;. After editing the database, perform the &lt;commit&gt; operation so that the modified configuration takes effect.</p>
+</li><li><p>In trial mode, set the database to &lt;candidate/&gt;.</p>
+</li></ul>
+</li><li><p>&lt;default-operation&gt;: sets a default operation for the &lt;edit-config&gt; operation.</p>
+<p>The &lt;default-operation&gt; parameter is optional. Its values are as follows:</p>
+<ul><li><p><strong>merge</strong>: merges the configuration data in the &lt;config&gt; parameter with that in the target configuration database. This is the default operation.</p>
+</li><li><p><strong>replace</strong>: completely replaces the configuration data in the target configuration database with the configuration data in the &lt;config&gt; parameter.</p>
+</li><li><p><strong>none</strong>: ensures that the configuration data in &lt;config&gt; does not affect that in the target configuration database, with the exception that the operation specified by the &lt;operation&gt; attribute is performed. If the &lt;config&gt; parameter contains configuration data that does not exist at the corresponding data level in the target configuration database, &lt;rpc-error&gt; is returned, in which the &lt;error-tag&gt; value is <strong>data-missing</strong>. This prevents redundant elements from being created when a specified operation is performed. For example, when a specified child element is deleted, &lt;config&gt; contains the parent hierarchical structure of the child element but the target database does not contain the configuration of the parent element. If the value of the &lt;default-operation&gt; parameter is not <strong>none</strong>, the configuration of the parent element is created in the database when the child element is deleted. Otherwise, the child element is deleted, and the configuration of the parent element is not created.</p>
+</li></ul>
+</li><li><p>&lt;error-option&gt;: sets a mode for processing subsequent instance configurations if an error occurs in the current instance configuration. Its values are as follows (the default value is <strong>stop-on-error</strong>):</p>
+<ul><li>If the target configuration database is &lt;running/&gt;:<ul><li><strong>stop-on-error</strong>: stops the operation if an error occurs and rolls back the configuration according to <strong>rollback-on-error</strong>.</li><li><strong>continue-on-error</strong>: records the error information and continues the execution after an error occurs. If an error occurs, the NETCONF server returns an RPC reply message to the client, indicating an operation failure.</li><li><strong>rollback-on-error</strong>: stops the operation after an error occurs and rolls back the configuration to the state before the &lt;edit-config&gt; operation is performed. This operation is supported only when the device supports the rollback-on-error capability.</li></ul>
+</li><li>If the target configuration database is &lt;candidate/&gt;, set the value of &lt;error-option&gt; to <strong>rollback-on-error</strong> for subsequent instances after an error occurs in the current instance configuration.</li></ul>
+<div class="p">The following example shows how to change the <strong>ifDescr</strong> value of <span><span><span>10GE</span><span>0/0/1</span></span></span> in the running configuration database to <strong>huawei</strong>.<ul><li>RPC request<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="15"&gt;
+  &lt;edit-config&gt;
+    &lt;target&gt;
+      &lt;running/&gt;
+    &lt;/target&gt;
+    &lt;config&gt;
+      &lt;ifm xmlns="urn:huawei:yang:huawei-ifm"&gt;
+        &lt;interfaces&gt;
+          &lt;interface&gt;
+            &lt;name&gt;<span><span><span>10GE</span><span>0/0/1</span></span></span>&lt;/name&gt;
+            &lt;class&gt;main-interface&lt;/class&gt;
+            &lt;type&gt;<span><span><span>10GE</span></span></span>&lt;/type&gt;
+            &lt;number&gt;<span><span><span>0/0/1</span></span></span>&lt;/number&gt;
+            &lt;admin-status&gt;up&lt;/admin-status&gt;
+          &lt;/interface&gt;
+        &lt;/interfaces&gt;
+      &lt;/ifm&gt;
+    &lt;/config&gt;
+  &lt;/edit-config&gt;
+&lt;/rpc&gt;</pre>
+</li><li>RPC reply<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc-reply xmlns:nc-ext="urn:huawei:yang:huawei-ietf-netconf-ext"
+           xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"
+           message-id="15"
+           nc-ext:flow-id="27"
+           nc-ext:flow-id-time="2022-05-11T10:19:30Z"&gt; 
+  &lt;ok/&gt;
+&lt;/rpc-reply&gt;</pre>
+</li></ul>
+</div>
+<div class="p">The following example shows how to delete the configuration of the interface named <strong>LoopBack1023</strong> from the running configuration database.<ul><li>RPC request<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="844"&gt;
+  &lt;edit-config&gt;
+    &lt;target&gt;
+      &lt;running/&gt;
+    &lt;/target&gt;
+    &lt;config&gt;
+      &lt;ifm xmlns="urn:huawei:yang:huawei-ifm"&gt;
+        &lt;interfaces&gt;
+          &lt;interface xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" nc:operation="delete"&gt;
+            &lt;name&gt;LoopBack1023&lt;/name&gt;
+          &lt;/interface&gt;
+        &lt;/interfaces&gt;
+      &lt;/ifm&gt;
+    &lt;/config&gt;
+  &lt;/edit-config&gt;
+&lt;/rpc&gt;</pre>
+</li><li>RPC reply<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc-reply xmlns:nc-ext="urn:huawei:yang:huawei-ietf-netconf-ext"
+           xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"
+           message-id="844"
+           nc-ext:flow-id="29"
+           nc-ext:flow-id-time="2022-05-11T10:19:30Z"&gt;
+  &lt;ok/&gt;
+&lt;/rpc-reply&gt;</pre>
+</li></ul>
+</div>
+</li></ul>
+</div>
+<div class="p">If the validate capability is supported, the &lt;test-option&gt; parameter can be specified for the &lt;edit-config&gt; operation. If the &lt;test-option&gt; parameter is not specified, the system processes the &lt;edit-config&gt; operation based on the <strong>test-then-set</strong> process by default.<ul><li><p>If the &lt;test-option&gt; parameter value is <strong>test-then-set</strong> or the parameter is not specified, nodes at any layer support the &lt;replace&gt; operation, which replaces the configuration in the target database with that in the current RPC request.</p>
+<p>RPC request</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id=""&gt;
+  &lt;edit-config&gt;
+    &lt;target&gt;
+      &lt;running/&gt;
+    &lt;/target&gt;
+    &lt;config&gt;
+      &lt;acl xmlns="urn:huawei:yang:huawei-acl"&gt;
+        &lt;groups&gt;
+          &lt;group nc:operation="replace" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+            &lt;identity&gt;2000&lt;/identity&gt;
+            &lt;type&gt;basic&lt;/type&gt;
+            &lt;match-order&gt;config&lt;/match-order&gt;
+            &lt;step&gt;5&lt;/step&gt;
+          &lt;/group&gt;
+        &lt;/groups&gt;
+      &lt;/acl&gt;
+    &lt;/config&gt;
+  &lt;/edit-config&gt;
+&lt;/rpc&gt;</pre>
+<p>RPC reply</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc-reply xmlns:nc-ext="urn:huawei:yang:huawei-ietf-netconf-ext"
+           xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"
+           message-id="849"
+           nc-ext:flow-id="31"
+           nc-ext:flow-id-time="2022-05-11T10:19:30Z"&gt; 
+  &lt;ok/&gt;
+&lt;/rpc-reply&gt;</pre>
+</li><li><p>If the &lt;test-option&gt; parameter value is <strong>test-then-set</strong> or the parameter is not specified, nodes at any layer support the &lt;delete&gt; and &lt;remove&gt; operations, which delete all configuration data of a specified node in the configuration database.</p>
+<p>The following example shows how to delete the access control group configuration.</p>
+<div class="p">RPC request<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="849"&gt;
+  &lt;edit-config&gt;
+    &lt;target&gt;
+      &lt;running/&gt;
+    &lt;/target&gt;
+    &lt;config&gt;
+      &lt;nacm xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-acm"&gt;
+        &lt;groups xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" nc:operation="delete"/&gt;
+      &lt;/nacm&gt;
+    &lt;/config&gt;
+  &lt;/edit-config&gt;
+&lt;/rpc&gt;</pre>
+</div>
+<p>RPC reply</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc-reply xmlns:nc-ext="urn:huawei:yang:huawei-ietf-netconf-ext"
+           xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"
+           message-id="849"
+           nc-ext:flow-id="31"
+           nc-ext:flow-id-time="2022-05-11T10:19:30Z"&gt; 
+  &lt;ok/&gt;
+&lt;/rpc-reply&gt;</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_netconf_cfg1_0037.html">Basic NETCONF Operations
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_netconf_cfg1_0039.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_netconf_cfg1_0041.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

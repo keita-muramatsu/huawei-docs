@@ -1,0 +1,69 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding Static BFD for IPv6 Static Routes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ipv6-static-route_cfg_0515.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ipv6-static-route_cfg_0717.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv6 Static Route">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv6 Static Route">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="IPv6 Static Route">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001643394434">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding Static BFD for IPv6 Static Routes</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001643394434"></a><a name="EN-US_CONCEPT_0000001643394434"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding Static BFD for IPv6 Static Routes</h1>
+<div><p id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_p456337137214010">Unlike dynamic routes, static routes do not have a dedicated fault detection mechanism. If a link fault occurs on a network, the fault must be manually rectified. BFD for IPv6 static route allows an IPv6 static route to be bound to a BFD session so that the BFD session monitors the status of the link related to the IPv6 static route.</p>
+<p id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_p928666458214010">In BFD for IPv6 static route, each IPv6 static route can be bound to a BFD session. If an IPv6 static route is eligible for route selection, whether the static route participates in route selection is also affected by the BFD session status.</p>
+<ul id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_ul448416688214010"><li id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li657139179214010"><p id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_p29784932214010"><a name="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li657139179214010"></a><a name="en-us_concept_0000001176743137_li657139179214010"></a>If the BFD session that monitors an IPv6 static route detects a link fault (the BFD session status is down), the BFD session reports the fault to the system. Then, the system removes the static route from the IP routing table.</p>
+</li><li id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li301543545214010"><p id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_p2128437542214010"><a name="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li301543545214010"></a><a name="en-us_concept_0000001176743137_li301543545214010"></a>After the BFD session finds that the link is re-established successfully (the BFD session is up), the BFD session reports the event to the system. Then, the system adds the IPv6 static route to the IP routing table.</p>
+</li><li id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li1492317668214010"><p id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_p921532763214010"><a name="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li1492317668214010"></a><a name="en-us_concept_0000001176743137_li1492317668214010"></a>By default, when a BFD session is in the AdminDown state (triggered using the <strong id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_b1788305918312">shutdown</strong> command) or a BFD peer is in the AdminDown state, the IPv6 static route bound to the BFD session can participate in route selection. However, if the system is restarted, the BFD session needs to be re-negotiated. Whether the IPv6 static route can participate in route selection depends on the re-negotiated BFD status.</p>
+<p id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_p6586850135016">In static BFD for IPv6 static route, static BFD sessions are established to monitor the link status for IPv6 static routes. When the link related to an IPv6 static route is disconnected, the IPv6 static route that depends on the BFD session is withdrawn from the forwarding table and the active route is re-calculated.</p>
+</li></ul>
+<p id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_p353067787214010">BFD for IPv6 static route works in single-hop detection or multi-hop detection mode.</p>
+<ul id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_ul183546057214010"><li id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li773479619214010"><p id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_p1153441242214010"><a name="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li773479619214010"></a><a name="en-us_concept_0000001176743137_li773479619214010"></a>Single-hop detection: Single-hop BFD monitors an IPv6 static route with the configured outbound interface and IP address of a directly connected next hop. The outbound interface name associated with a single-hop BFD session is the outbound interface name carried in the static route, and the peer address is the next-hop address carried in the static route.</p>
+</li><li id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li37798572214010"><p id="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_p1772923739214010"><a name="EN-US_CONCEPT_0000001643394434__en-us_concept_0000001176743137_li37798572214010"></a><a name="en-us_concept_0000001176743137_li37798572214010"></a>Multi-hop detection: Multi-hop BFD monitors a static route in which only a next-hop IP address is specified. Such a route needs to recurse to a directly connected next hop, and then a corresponding outbound interface is found. In this case, the peer address of the BFD session is set to the original next-hop address of the route, regardless of which outbound interface is used. Generally, the original next hop to which an IPv6 static route recurses is an indirect next hop. In this situation, multi-hop detection can be used to monitor the recursive static route.</p>
+</li></ul>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ipv6-static-route_cfg_0515.html">Configuring Static BFD for IPv6 Static Route
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ipv6-static-route_cfg_0717.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

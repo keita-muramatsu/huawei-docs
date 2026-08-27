@@ -1,0 +1,288 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring LDP GR">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_example_1001.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0050.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001397870913">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring LDP GR</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001397870913"></a><a name="EN-US_TASK_0000001397870913"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring LDP GR</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001397870913__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001397870913__fig_dc_vrp_ldp-p2p_cfg_004401">Figure 1</a>, LSRA, LSRB, and LSRC each contain a single main control board. During an active/standby switchover or system upgrade, if GR is not enabled, the neighbor deletes the LSP because the session goes down. As a result, traffic and services are interrupted for a short time. In this case, you can configure LDP GR to ensure that labels remain unchanged before and after an unexpected active/standby switchover or protocol restart. In addition, you can restore the establishment of LDP sessions and LSPs after the active/standby switchover or system upgrade is complete. This ensures uninterrupted MPLS forwarding and does not affect services.</p>
+<div class="fignone" id="EN-US_TASK_0000001397870913__fig_dc_vrp_ldp-p2p_cfg_004401"><a name="EN-US_TASK_0000001397870913__fig_dc_vrp_ldp-p2p_cfg_004401"></a><a name="fig_dc_vrp_ldp-p2p_cfg_004401"></a><span class="figcap"><b>Figure 1 </b>Configuring LDP GR</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interfaces 1 and 2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001398074441.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001397870913__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>During the configuration, note the following:</p>
+<ul><li><p>Enabling or disabling LDP GR causes an LDP session to be reestablished. </p>
+</li><li><p>Changing the value of an LDP GR timer causes an LDP session to be reestablished.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001397870913__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Assign an IP address to each interface and configure OSPF to advertise the route to the network segment to which each interface is connected and the host route to each LSR ID.</p>
+</li><li><p>Enable MPLS and MPLS LDP globally on each node.</p>
+</li><li><p>Enable MPLS and MPLS LDP on each interface.</p>
+</li><li><p>Enable LDP GR.</p>
+</li><li><p>Set LDP GR parameters on a GR Restarter.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001397870913__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IP address to each interface and configure OSPF to advertise the route to the network segment to which each interface is connected and the host route to each LSR ID.</span></li><li><span>Enable MPLS and MPLS LDP globally on each node.</span><p><p># Configure LSRA.</p>
+<pre class="screen">[LSRA] <strong>mpls lsr-id 1.1.1.9</strong>
+[LSRA] <strong>mpls</strong>
+[LSRA-mpls] <strong>quit</strong>
+[LSRA] <strong>mpls ldp</strong>
+[LSRA-mpls-ldp] <strong>quit</strong></pre>
+<p># Configure LSRB.</p>
+<pre class="screen">[LSRB]<strong> mpls lsr-id 2.2.2.9</strong>
+[LSRB]<strong> mpls</strong>
+[LSRB-mpls] <strong>quit</strong>
+[LSRB] <strong>mpls ldp</strong>
+[LSRB-mpls-ldp] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">[LSRC]<strong> mpls lsr-id 3.3.3.9</strong>
+[LSRC]<strong> mpls</strong>
+[LSRC-mpls] <strong>quit</strong>
+[LSRC] <strong>mpls ldp</strong>
+[LSRC-mpls-ldp] <strong>quit</strong></pre>
+</p></li><li><span>Enable MPLS and MPLS LDP on each interface.</span><p><p># Configure LSRA.</p>
+<pre class="screen">[LSRA]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRA-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[LSRA-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong>
+[LSRA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure LSRB.</p>
+<pre class="screen"><strong></strong>[LSRB]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRB-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[LSRB-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong>
+[LSRB-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[LSRB]<strong> interface </strong><span>10GE</span><span>0/0/2</span>
+[LSRB-<span>10GE</span><span>0/0/2</span>] <strong>undo portswitch</strong>
+[LSRB-<span>10GE</span><span>0/0/2</span>] <strong>mpls</strong>
+[LSRB-<span>10GE</span><span>0/0/2</span>] <strong>mpls ldp</strong>
+[LSRB-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">[LSRC]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRC-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[LSRC-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong>
+[LSRC-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p>After completing the preceding configuration, check whether a local LDP session is successfully established between LSRA and LSRB and between LSRB and LSRC.</p>
+<p># Run the <b><span class="cmdqueryname">display mpls ldp session</span></b> command on each node to check LDP session information. The following example uses the command output on LSRA.</p>
+<pre class="screen">[LSRA] <strong>display mpls ldp session</strong>
+ LDP Session(s) in Public Network 
+  Codes: LAM(Label Advertisement Mode), SsnAge Unit(DDD:HH:MM) 
+  An asterisk (*) before a session means the session is being deleted. 
+ -------------------------------------------------------------------------- 
+  PeerID             Status      LAM  SsnRole  SsnAge       KASent/Rcv 
+ -------------------------------------------------------------------------- 
+ 2.2.2.9:0          <strong>Operational</strong> DU   Passive  000:00:02   9/9 
+ -------------------------------------------------------------------------- 
+ TOTAL: 1 Session(s) Found.</pre>
+</p></li><li><span>Enable LDP GR.</span><p><p># Configure LSRA.</p>
+<pre class="screen">[LSRA] <strong>mpls ldp</strong>
+[LSRA-mpls-ldp] <strong>graceful-restart</strong>
+Warning: All the related sessions will be deleted if the operation is performed! 
+ Continue? [Y/N]:<strong>y</strong>
+[LSRA-mpls-ldp] <strong>quit</strong></pre>
+<p># Configure LSRB.</p>
+<pre class="screen">[LSRB] <strong>mpls ldp</strong>
+[LSRB-mpls-ldp] <strong>graceful-restart</strong>
+Warning: All the related sessions will be deleted if the operation is performed! 
+ Continue? [Y/N]:<strong>y</strong>
+[LSRB-mpls-ldp] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">[LSRC] <strong>mpls ldp</strong>
+[LSRC-mpls-ldp] <strong>graceful-restart</strong>
+Warning: All the related sessions will be deleted if the operation is performed! 
+ Continue? [Y/N]:<strong>y</strong>
+[LSRC-mpls-ldp] <strong>qui</strong><strong>t</strong></pre>
+</p></li></ol></div>
+<div class="result"><a name="EN-US_TASK_0000001397870913__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Result</h4>
+<div class="p"><p># After completing the preceding configuration, run the <b><span class="cmdqueryname">display mpls ldp session verbose</span></b> command. The command output shows that the value of the <strong>Session FT Flag</strong> field is <strong>On</strong>. The following example uses the command output on LSRA.</p>
+<pre class="screen">[LSRA] <strong>display mpls ldp session verbose</strong>
+ LDP Session(s) in Public Network 
+ ------------------------------------------------------------------------ 
+ Peer LDP ID     : 2.2.2.9:0            Local LDP ID   : 1.1.1.9:0 
+ TCP Connection  : 1.1.1.9 &lt;- 2.2.2.9 
+ Session State   : Operational          Session Role   : Passive 
+ <strong>Session FT Flag</strong> : <strong>On</strong>                   MD5 Flag       : Off 
+ Reconnect Timer : 300 Sec              Recovery Timer : 300 Sec 
+ Keychain Name   : kc1 
+ Tcpao Name      : ---  
+ Authentication applied : Peer-group list1
+ 
+ Negotiated Keepalive Hold Timer   : 45 Sec 
+ Configured Keepalive Send Timer   : 30 Sec 
+ Keepalive Message Sent/Rcvd       : 1/1 (Message Count) 
+ Label Advertisement Mode          : Downstream Unsolicited 
+ Label Resource Status(Peer/Local) : Available/Available 
+ Session Age                       : 0000:00:00  (DDDD:HH:MM) 
+ 
+ 
+ Outbound Policies applied: NULL 
+  
+ Addresses received from peer: ( Count: 3 ) 
+ 2.2.2.9           10.1.1.2          10.2.1.1           
+ ------------------------------------------------------------------------</pre>
+<p>Run the <b><span class="cmdqueryname">display mpls ldp peer verbose</span></b> command on each LSR. The command output shows that the value of the <strong>Peer FT Flag</strong> field is <strong>On</strong>. The following example uses the command output on LSRA.</p>
+<pre class="screen">[LSRA] <strong>display mpls ldp peer verbose</strong>
+ LDP Peer Information in Public network 
+ ------------------------------------------------------------------------------- 
+ Peer LDP ID            : 2.2.2.9:0 
+ Peer Max PDU Length    : 4096         Peer Transport Address : 2.2.2.9 
+ Peer Loop Detection    : Off          Peer Path Vector Limit : -- 
+ <strong>Peer FT Flag</strong>           : <strong>On</strong>           Peer Keepalive Timer   : 45 Sec 
+ Recovery Timer         : 300 Sec      Reconnect Timer        : 300 Sec 
+ Peer Type              : Local 
+ Peer Label Advertisement Mode : Downstream Unsolicited 
+ Distributed   ID       : 0 
+ Peer Discovery Source  : <span>10GE</span><span>0/0/1</span> 
+ Capability-Announcement       : On  
+ -------------------------------------------------------------------------------</pre>
+</div></div>
+<div class="example"><a name="EN-US_TASK_0000001397870913__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>LSRA</p>
+<pre class="screen">#
+sysname LSRA
+#
+mpls lsr-id 1.1.1.9
+#
+mpls
+#
+mpls ldp
+ graceful-restart
+ # 
+  ipv4-family
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack1
+ ip address 1.1.1.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 1.1.1.9 0.0.0.0
+  network 10.1.1.0 0.0.0.3
+#
+return</pre>
+</li><li><p>LSRB</p>
+<pre class="screen">#
+sysname LSRB
+#
+mpls lsr-id 2.2.2.9
+#
+mpls
+#
+mpls ldp
+ graceful-restart
+ # 
+  ipv4-family
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.2 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.2.1.1 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack1
+ ip address 2.2.2.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 2.2.2.9 0.0.0.0
+  network 10.1.1.0 0.0.0.3
+  network 10.2.1.0 0.0.0.3
+#
+return</pre>
+</li><li><p>LSRC</p>
+<pre class="screen">#
+sysname LSRC
+#
+mpls lsr-id 3.3.3.9
+#
+mpls
+#
+mpls ldp
+ graceful-restart
+ # 
+  ipv4-family
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.2.1.2 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack1
+ ip address 3.3.3.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 3.3.3.9 0.0.0.0
+  network 10.2.1.0 0.0.0.3
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_example_1001.html">Configuration Examples for MPLS LDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0050.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="IPv6 Secure Neighbor Discovery">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0031.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0040.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0071.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513171790">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>IPv6 Secure Neighbor Discovery</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513171790"></a><a name="EN-US_TASK_0000001513171790"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">IPv6 Secure Neighbor Discovery</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513171790__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>In the IPv6 protocol suite, ND is significant in ensuring the availability of neighbors on the local link. However, as network security problems intensify, the security of ND becomes a concern. Standards define several threats to ND security, some of which are described as follows.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>IPv6 ND attacks</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="19%" id="mcps1.3.1.3.2.3.1.1" liSelected="liSelected"><p>Attack Method</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="81%" id="mcps1.3.1.3.2.3.1.2" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="19%" headers="mcps1.3.1.3.2.3.1.1 "><p>NS/NA spoofing</p>
+</td>
+<td class="cellrowborder" valign="top" width="81%" headers="mcps1.3.1.3.2.3.1.2 "><p>An attacker sends an authorized node either an NS message with a bogus source link-layer address option or an NA message with a bogus target link-layer address option. Packets from the authorized node are then sent to this link-layer address.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19%" headers="mcps1.3.1.3.2.3.1.1 "><p>Neighbor unreachability detection (NUD) failure</p>
+</td>
+<td class="cellrowborder" valign="top" width="81%" headers="mcps1.3.1.3.2.3.1.2 "><p>An attacker repeatedly sends forged NA messages in response to an authorized node's NUD NS messages so that the authorized node cannot detect neighbor unreachability. The consequences of this attack depend on why the neighbor became unreachable and how the authorized node would behave if it knew that the neighbor has become unreachable.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19%" headers="mcps1.3.1.3.2.3.1.1 "><p>Duplicate address detection (DAD) attack</p>
+</td>
+<td class="cellrowborder" valign="top" width="81%" headers="mcps1.3.1.3.2.3.1.2 "><p>An attacker responds to every DAD attempt made by a host that accesses the network, claiming that the address is already in use. This is performed to ensure that the host will never obtain an address.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19%" headers="mcps1.3.1.3.2.3.1.1 "><p>Spoofed Redirect message</p>
+</td>
+<td class="cellrowborder" valign="top" width="81%" headers="mcps1.3.1.3.2.3.1.2 "><p>An attacker uses the link-local address of the first-hop routing device to send a Redirect message to an authorized host. The authorized host accepts this message because it mistakenly considers that the message came from the first-hop routing device.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19%" headers="mcps1.3.1.3.2.3.1.1 "><p>Replay attack</p>
+</td>
+<td class="cellrowborder" valign="top" width="81%" headers="mcps1.3.1.3.2.3.1.2 "><p>An attacker obtains valid messages and replays them. Even if NDP messages are cryptographically protected so that their contents cannot be forged, they are still prone to replay attacks.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19%" headers="mcps1.3.1.3.2.3.1.1 "><p>Bogus address prefix</p>
+</td>
+<td class="cellrowborder" valign="top" width="81%" headers="mcps1.3.1.3.2.3.1.2 "><p>An attacker sends a bogus RA message specifying that some prefixes are on-link. If a prefix is on-link, a host will not send any packets that contain this prefix to the routing device. Instead, the host will send NS messages to attempt address resolution, but the NS messages are not responded to. As a result, the host is denied services.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19%" headers="mcps1.3.1.3.2.3.1.1 "><p>Malicious last-hop routing device</p>
+</td>
+<td class="cellrowborder" valign="top" width="81%" headers="mcps1.3.1.3.2.3.1.2 "><p>An attacker multicasts bogus RA messages, or unicasts them in response to multicast RS messages, to a host attempting to discover a last-hop routing device. If the host selects the attacker as its default routing device, the attacker is able to function as a man-in-the-middle and intercept all messages exchanged between the host and its destination.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>To counter these threats, Secure Neighbor Discovery (SEND) specifies security mechanisms to extend ND. SEND defines cryptographically generated addresses (CGAs), CGA option, and Rivest Shamir Adleman (RSA) Signature option, which are used to ensure that the sender of an ND message is the owner of the message's source address. SEND also defines Timestamp and Nonce options to prevent replay attacks.</p>
+<ul><li>CGA: contains an IPv6 interface identifier that is generated from a one-way hash of the public key and associated parameters.</li><li>CGA option: contains information used to verify the sender's CGA, including the public key of the sender. This option is used to check the validity of source IPv6 addresses carried in ND messages.</li><li>RSA Signature option: contains the hash value of the sender's public key and contains the digital signature generated from the sender's private key and ND messages. This option is used to check the integrity of ND messages and authenticate the identity of the sender.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If an attacker uses an address that belongs to an authorized node, the attacker must use the node's public key for encryption. Otherwise, the receiver can detect the attempted attack after checking the CGA option. Even if the attacker obtains the public key of the authorized node, the receiver can still detect the attempted attack after checking the digital signature, which is generated from the sender's private key.</p>
+</div></div>
+</li><li>Timestamp option: a 64-bit unsigned integer field containing a timestamp. The value indicates the number of seconds since January 1, 1970, 00:00 UTC. This option prevents unsolicited advertisement messages and Redirect messages from being replayed. The receiver is expected to ensure that the timestamp of the recently received message is the latest.</li><li>Nonce option: contains a random number selected by the sender of a solicitation message. This option prevents replay attacks during message exchange. For example, a sender sends an NS message carrying the Nonce option and receives an NA message as a response that also carries the Nonce option; the sender verifies the NA message based on the Nonce option.</li></ul>
+<p>To enable IPv6 SEND to protect ND messages that carry CGA and RSA options, configure a CGA IPv6 address on an interface that sends ND messages.</p>
+<p>If an interface needs to reject insecure ND messages, you can configure IPv6 SEND for it.</p>
+<h4 class="sectiontitle">Impact on the System</h4><p>After IPv6 SEND is configured, constructing and parsing NS, NA, RS, and RA messages will consume extra time, which is used to construct and verify CGA and RSA options.</p>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001513171790__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure a CGA IPv6 address.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Create an RSA key pair.</span><p><pre class="screen"><b><span class="cmdqueryname">rsa key-pair label</span></b> <i><span class="varname">label-name</span></i> <strong><span>modulus</span></strong> <i><span class="varname">modulus-bits</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the view of the interface on which a CGA IPv6 address needs to be configured.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Switch the interface working mode to Layer 3.</span><p><pre class="screen" id="EN-US_TASK_0000001513171790__en-us_task_0228023023_screen132321812144720"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513171790__en-us_task_0228023023_cmdname42322122476">undo portswitch</span></b></pre>
+<p id="EN-US_TASK_0000001513171790__en-us_task_0228023023_p64817191519">Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li class="substepexpand"><span>Enable IPv6.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 enable</span></b></pre>
+</p></li><li class="substepexpand"><span>Bind the RSA key pair to the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 security rsakey-pair</span></b> <i><span class="varname">key-label</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure a modifier value and security level for a CGA address.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 security modifier</span></b> <strong><span>sec-level</span></strong> <i><span class="varname">sec-value</span></i> [ <i><span class="varname">modifier-value</span></i> ]</pre>
+</p></li><li class="substepexpand"><span>Configure a CGA IPv6 address.</span><p>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 2 </b>Configure a CGA IPv6 address.</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.2.1.2.8.2.1.2.4.1.1" liSelected="liSelected"><p>Operation</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.2.1.2.8.2.1.2.4.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.2.1.2.8.2.1.2.4.1.3" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.1.2.8.2.1.2.4.1.1 "><p>Configure a CGA IPv6 global unicast address.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.1.2.8.2.1.2.4.1.2 "><p><b><span class="cmdqueryname">ipv6 address</span></b> { <i><span class="varname">ipv6-address</span></i> <i><span class="varname">prefix-length</span></i> | <i><span class="varname">ipv6-address</span></i>/<i><span class="varname">prefix-length</span></i> } <strong><span>cga</span></strong> [ <strong><span>tag</span></strong> <i><span class="varname">tag-value</span></i> ]</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.1.2.8.2.1.2.4.1.3 "><p>After the command is run, a CGA IPv6 global unicast address is generated.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.1.2.8.2.1.2.4.1.1 "><p>Configure a CGA IPv6 link-local address.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.1.2.8.2.1.2.4.1.2 "><p><b><span class="cmdqueryname">ipv6 address</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>link-local</span></strong> <strong><span>cga</span></strong> [ <strong><span>tag</span></strong> <i><span class="varname">tag-value</span></i> ]</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.1.2.8.2.1.2.4.1.3 "><p>Link-local addresses are used for the communication between nodes on the same local link in ND or stateless address autoconfiguration. The packets with link-local addresses being the source or destination addresses are not forwarded to other links, that is, link-local addresses are valid only on local links.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li></ol>
+</li><li><span>Enable IPv6 SEND.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Set a rate limit for the system to compute or verify the RSA signature in a specified period (1s).</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 nd security rate-limit</span></b> <i><span class="varname">ratelimit-value</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Switch the interface working mode to Layer 3.</span><p><pre class="screen" id="EN-US_TASK_0000001513171790__en-us_task_0228023023_screen132321812144720_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513171790__en-us_task_0228023023_cmdname42322122476_1">undo portswitch</span></b></pre>
+<p id="EN-US_TASK_0000001513171790__en-us_task_0228023023_p64817191519_1">Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li class="substepexpand"><span>Enable IPv6.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 enable</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Set the key length allowed on the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 nd security key-length</span></b> { <strong><span>minimum</span></strong> <i><span class="varname">keylen-value</span></i> | <strong><span>maximum</span></strong> <i><span class="varname">keylen-value</span></i> } <sup>*</sup></pre>
+</p></li><li class="substepexpand"><span>(Optional) Set timestamp parameters for ND messages.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 nd security timestamp </span></b>{ <strong><span>delta</span></strong> <i><span class="varname">delta-value</span></i> | <strong><span>drift</span></strong> <i><span class="varname">drift-value</span></i> | <strong><span>fuzz-factor</span></strong> <i><span class="varname">fuzz-value</span></i> } <sup>*</sup></pre>
+</p></li><li class="substepexpand"><span>Enable the strict security mode on the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 nd security strict</span></b></pre>
+</p><p><p>If an interface needs to reject insecure ND messages, you can configure IPv6 SEND for it. An ND message is considered insecure if any of the following conditions is met:</p>
+<ul><li>The received ND message does not carry a CGA or RSA option, meaning that the interface that sent the ND message does not have a CGA address.</li><li>The key length in the received ND message is out of the range allowed on the interface.</li><li>The rate of processing the received ND message exceeds the rate limit of the system.</li><li>The difference between the receive time and the send time of the ND message is out of the range allowed on the interface.</li></ul>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001513171790__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><ul><li>Run the <b><span class="cmdqueryname">display ipv6 security interface</span></b> { <i><span class="varname">interface-name</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-num</span></i> } command to check the IPv6 SEND configuration.</li><li>Run the <b><span class="cmdqueryname">display ipv6 nd security timestamp</span></b> { <i><span class="varname">interface-name</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-num</span></i> } command to check the timestamp of an IPv6 SEND message.</li><li>Run the <b><span class="cmdqueryname">display ipv6 nd security nonce</span></b> { <i><span class="varname">interface-name</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-num</span></i> } command to check the nonce value of an IPv6 SEND message.</li><li>Run the <b><span class="cmdqueryname">display ipv6 nd security statistics</span></b> { <i><span class="varname">interface-name</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-num</span></i> } command to check statistics on IPv6 SEND messages.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0031.html">Control Plane Security (Level-2)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0040.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0071.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="iCSSR">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_radio_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_radio_cfg_0051.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_radio_cfg_1051.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="RRM">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="RRM">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000002423865718">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>iCSSR</title>
+</head>
+<body><a name="EN-US_TOPIC_0000002423865718"></a><a name="EN-US_TOPIC_0000002423865718"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">iCSSR</h1>
+<div><div class="section"><h4 class="sectiontitle">Overview</h4><p>Intelligent Coordinated Scheduling and Spatial Reuse (iCSSR) combines enhanced spatial reuse (SR) and dynamic-zoom smart antenna technologies.</p>
+<p>As Wi-Fi generations evolve, the focus has gradually shifted from single-AP capacity improvement to large-bandwidth development. The conventional 20 MHz deployment model can no longer accommodate the growing need for high-concurrency access. Ultra-large-bandwidth networking has become an inevitable trend. However, if the channel width is set 40 MHz or 80 MHz, the number of available channels decreases. For example, only three 80 MHz channels are available in some countries or regions. In this case, co-channel APs are close to each other, leading to severe co-channel interference in some high-density scenarios. As a result, the throughput of the entire network is significantly affected and user experience deteriorates.</p>
+<p>This is where Huawei's iCSSR technology comes into play. iCSSR enables APs to exchange coordination packets over the air interface to eliminate co-channel interference, achieving efficient concurrent data transmission.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Implementation</h4><div class="p">iCSSR is implemented through three phases:<ol><li>Coordinated measurement<p>An AP periodically measures the signal strengths of associated and non-associated STAs on the same channel. Additionally, the AP exchanges measurement information with co-channel neighboring APs, and sends measurement information about STAs associated with neighboring APs to the neighboring APs. As shown in <a href="#EN-US_TOPIC_0000002423865718__fig172491700527">Figure 1</a>, AP1 measures the signal strengths of STA1 (associated STA) and STA2 (non-associated STA) on the same channel concurrently, and synchronizes the signal strength of STA2 to AP2 (co-channel neighboring AP of AP1).</p>
+<div class="p">STAs are classified into inner-circle STAs (SINR &gt; 23 dB) and outer-circle STAs based on the signal strength in the uplink Block ACK frames they send.<div class="fignone" id="EN-US_TOPIC_0000002423865718__fig172491700527"><a name="EN-US_TOPIC_0000002423865718__fig172491700527"></a><a name="fig172491700527"></a><span class="figcap"><b>Figure 1 </b>Coordinated measurement</span><br><span><img src="figure/en-us_image_0000002476989717.png"></span></div>
+</div>
+</li><li>Coordinated scheduling<p>The AP that preempts the air interface is considered as the sharing AP. The sharing AP selects one or two co-channel neighboring APs based on the measurement result as coordinated APs for concurrent transmission. The sharing AP first determines the target STA for transmission, and then selects the co-channel neighboring AP with the largest path loss relative to the STA. Ensure that the path loss between the STA and this neighboring AP is 23 dB greater than that between the STA and sharing AP.</p>
+</li><li>Coordinated transmission<p>Two coordinated transmission modes are available: concurrent coordination for inner-circle STAs and time-division coordination for outer-circle STAs.</p>
+<ol type="a"><li>The coordinated transmission process for inner-circle STAs is as follows:<ol class="substepthirdol"><li>The AP that preempts the air interface through carrier sense multiple access with collision avoidance (CSMA/CA) is the sharing AP.</li><li>The sharing AP sends coordination frames to instruct neighboring APs to concurrently send data with the allowed maximum transmit power at the specified time.</li><li>Each AP switches its antennas to the directional mode using dynamic-zoom smart antenna technology to make the signals more concentrated.</li><li>The sharing AP sends data to inner-circle STA connected to it.</li><li>The sharing AP selects the inner-circle STA with the strongest signal strength and the most packets to be sent among STAs connected to it, and sends data to the selected STA.</li><li>All APs continue to preempt the air interface for the subsequent coordination process.</li></ol>
+</li><li>The coordinated transmission process for outer-circle STAs is as follows:<ol class="substepthirdol"><li>The AP that preempts the air interface through CSMA/CA is the sharing AP.</li><li>Each AP switches its antennas to the omnidirectional mode using dynamic-zoom smart antenna technology. The sharing AP sends coordination frames to instruct the shared APs to perform time-division scheduling.</li><li>The sharing AP first schedules all outer-circle STAs connected to it.</li><li>Each shared AP constructs frames based on the instruction in the coordination frame sent from the sharing AP, and sends the frames in sequence to schedule outer-circle STAs connected to it.</li><li>All APs continue to preempt the air interface for the subsequent coordination process.</li></ol>
+</li></ol>
+</li></ol>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Dynamic-Zoom Smart Antenna</h4><p>A dynamic-zoom smart antenna can work in omnidirectional or directional mode. An AP determines its distances from STAs based on the signal strengths of the STAs and dynamically adjusts its antennas to the directional mode in real time. In high-density access scenarios where APs are densely deployed, antennas are switched to the directional mode. In directional mode, the coverage range is reduced and the antenna energy is concentrated in the vertical direction. This increases the signal strength in the coverage range.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_radio_cfg_0003.html">Understanding RRM
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_wlan_radio_cfg_0051.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_wlan_radio_cfg_1051.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,211 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="BGP/BGP4+">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0035.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0036.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0039.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564131877">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>BGP/BGP4+</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564131877"></a><a name="EN-US_TASK_0000001564131877"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">BGP/BGP4+</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564131877__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>The main BGP/BGP4+ security hardening policies are as follows:</p>
+<ul><li><p>BGP/BGP4+ MD5 authentication</p>
+<p>BGP/BGP4+ uses TCP as its transport layer protocol and considers a TCP packet valid as long as its source and destination addresses, source and destination port numbers, and TCP sequence number are correct. However, it is relatively easy for attackers to obtain most parameters in a TCP packet. To protect BGP/BGP4+ from attacks, you can configure TCP MD5 authentication for BGP/BGP4+ peers. For security purposes, you are advised to periodically change MD5 passwords configured for BGP/BGP4+ peers.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>As MD5 is insecure, you are advised to use keychain authentication, which is more secure.</p>
+<p>For security purposes, MD5 is not recommended. If MD5 is required, run the <b><span class="cmdqueryname">install feature-software WEAKEA</span></b> command first to install the weak security algorithm/protocol feature package WEAKEA.</p>
+</div></div>
+</li><li><p>Keychain authentication</p>
+<p>A keychain consists of multiple authentication keys, each of which contains an ID and a password. Each key in a keychain has a lifecycle, based on which keys are dynamically selected. After a keychain with the same rules is configured on the two ends of a BGP/BGP4+ session, authentication keys are dynamically selected to enhance BGP/BGP4+ attack defense.</p>
+</li><li><p>BGP GTSM</p>
+<p>GTSM checks TTL values to defend against attacks. Attackers may simulate BGP messages and continuously send them to a device. After receiving these messages, the device sends them directly to BGP/BGP4+ on the control plane for processing, without validating them, if they are destined for the device. This increases the workload on the control plane, resulting in high CPU usage.</p>
+<p>The GTSM mechanism protects a device by checking whether the TTL value in an IP packet header is within a pre-defined range to enhance the system security.</p>
+</li><li><p>CPCAR</p>
+<p>For enabled services and protocols, a device can limit the rate at which their packets are sent to the CPU. This helps protect the CPU from attacks and ensures proper network operating.</p>
+</li><li><p>Route threshold-crossing control</p>
+<p>In most cases, a BGP/BGP4+ routing table contains a large number of routes. However, excessive system resources may be consumed if a device receives many routes from a peer. To prevent this issue, you can set the maximum number of routes that the local BGP/BGP4+ device accepts from the peer.</p>
+<p>You can also use the BGP/BGP4+ PAF file to limit the maximum number of routes that the device accepts from all BGP peers. This prevents the device from consuming excessive memory resources to process a large number of received routes, which would otherwise cause the device to restart.</p>
+</li><li><p>Limitation on the number of AS numbers that can be contained in the AS_Path attribute</p>
+<p>When a BGP/BGP4+ device receives a route, the device checks whether the number of AS numbers in the AS_Path attribute exceeds a specified threshold. If the number exceeds the threshold, the device discards the route. The device also performs this check before advertising a route, and does not advertise the route if the number exceeds the threshold. This prevents attacks initiated using maliciously constructed error messages with an extra-long AS_Path attribute.</p>
+</li><li>BMP<p>The BGP Monitoring Protocol (BMP) monitors devices' BGP/BGP4+ running status in real time, such as the establishment and termination status of peer relationships and route update status.</p>
+<p>BMP is mainly applied to the networking where a monitoring server exists and the BGP/BGP4+ running status of devices on the network needs to be monitored. BMP greatly improves the efficiency of network monitoring, because without it, BGP/BGP4+ running status of devices can be obtained only through manual query.</p>
+</li><li>BGP TLS authentication<p>The Transport Layer Security (TLS) protocol is a security protocol based on the SSL protocol and ensures data integrity and privacy. SSL/TLS authentication can be configured on an SSL server so that BGP messages are encrypted to ensure data transmission security on the network.</p>
+</li></ul>
+<p>Common attack methods are as follows:</p>
+<ul><li><p>Denial of service (DoS) attacks</p>
+<p>To attack devices, attackers can send various types of packets. If the packets are manycast protocol packets or the destination IP address is the IP address of an interface (including a loopback interface) on a device, the device directly sends these packets to the CPU for processing. The processing consumes CPU and system resources, resulting in DoS attacks. <span>To address this problem, you can configure the whitelist function. When this function is enabled, the system delivers a whitelist after a BGP/BGP4+ session is created. For protocol messages that match the whitelist, the application-layer association module sends them to the CPU at a high bandwidth and rate; for those that do not match the whitelist, the module sends them to the CPU at the default bandwidth and rate. </span>You can also limit the rate at which BGP/BGP4+ messages are sent to the CPU by configuring CPCAR for interfaces. This helps protect the CPU from attacks and ensures proper network operating.</p>
+</li><li><p>Injection of a large number of BGP/BGP4+ routes</p>
+<p>BGP/BGP4+ runs on various types of devices, and the number of BGP/BGP4+ routes that a device supports depends on its CPU and memory resources. If a device receives more BGP/BGP4+ routes than it supports, the device will operate abnormally and fail to process services due to memory resource exhaustion. To prevent this issue, you can use the PAF file to limit the routes on the device or set the maximum number of BGP/BGP4+ routes that the device accepts from a single peer. In this case, the device discards excess routes, preventing resource exhaustion if attackers inject a large number of routes.</p>
+</li><li><p>Construction of error BGP/BGP4+ messages</p>
+<p>Attackers may initiate an attack on a device by constructing various types of error messages, such as messages with extra-long AS_Path attributes, with incorrect headers, with incorrect lengths, or with invalid next hops. To defend against such attacks, BGP/BGP4+ implements a policy of easy-in and difficult-out. This allows a device to discard error messages it receives without disconnecting peer relationships, ensuring service continuity. In addition, you can set the maximum number of AS numbers allowed in the AS_Path attribute of each message. This ensures that the device does not advertise or accept a route whose AS_Path attribute contains more than the maximum number of AS numbers. BGP/BGP4+ processes routes based on specified attributes of peers, reducing the possibility of attacks.</p>
+</li><li><p>Network packet attacks</p>
+<p>It is not difficult for attackers to obtain the majority of parameters in the 5-tuple of a packet. To protect BGP/BGP4+ from network packet attacks, take the following measures:</p>
+<ul><li><p>Use TCP MD5 authentication between BGP/BGP4+ peers to reduce the possibility of attacks.</p>
+</li><li><p>Configure keychain authentication for BGP/BGP4+ sessions to enhance BGP/BGP4+ attack defense.</p>
+</li><li><p>Configure GTSM to check TTLs to prevent attacks.</p>
+</li></ul>
+</li></ul>
+<h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001564131877__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure MD5 authentication.</span><p><p>You can set an MD5 authentication password for a TCP connection so that TCP implements MD5 authentication for BGP/BGP4+. If authentication fails, no TCP connection can be established.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> { <i><span class="varname">as-number-plain</span></i> | <i><span class="varname">as-number-dot</span></i> }</pre>
+</p></li><li class="substepexpand"><span>Configure an MD5 authentication password.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <b><span class="cmdqueryname">password</span></b> { <strong><span>cipher</span></strong> <i><span class="varname">cipher-password</span></i><span> | <strong><span>simple</span></strong> <i><span class="varname">simple-password</span></i></span> }</pre>
+<p>The password can be set in either of the following modes:</p>
+<ul><li><p><strong><span>cipher</span></strong> <i><span class="varname">cipher-password</span></i> indicates that a password is set using a ciphertext string.</p>
+</li><li><p><strong><span>simple</span></strong> <i><span class="varname">simple-password</span></i> indicates that a password is set using a cleartext string.</p>
+</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li><p>For security purposes, you are advised to configure a ciphertext password and change it periodically.</p>
+</li><li>It is recommended that the password be at least eight characters long and contain at least two of the following character types: uppercase letters, lowercase letters, digits, and special characters excluding question marks (?) and spaces.</li><li><p>If MD5 authentication is configured in the BGP view, the configuration also takes effect in the extended BGP address family view because they use the same TCP connection.</p>
+</li><li><p>BGP/BGP4+ MD5 authentication and BGP/BGP4+ keychain authentication are mutually exclusive.</p>
+</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure keychain authentication.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> { <i><span class="varname">as-number-plain</span></i> | <i><span class="varname">as-number-dot</span></i> }</pre>
+</p></li><li class="substepexpand"><span>Configure keychain authentication.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <b><span class="cmdqueryname">keychain</span></b> <i><span class="varname">keychain-name</span></i></pre>
+<p>Keychain authentication must be configured for TCP-based applications on both BGP/BGP4+ peers, and the encryption algorithms and passwords used by keychain authentication on both peers must be the same; otherwise, a TCP connection cannot be set up, and BGP/BGP4+ messages cannot be exchanged.</p>
+<p>The keychain specified by <i><span class="varname">keychain-name</span></i> must exist before you configure BGP/BGP4+ keychain authentication; otherwise, the TCP connection cannot be established.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li><p>If keychain authentication is configured in the BGP view, the configuration also takes effect in the extended BGP address family view because they use the same TCP connection.</p>
+</li><li><p>BGP/BGP4+ MD5 authentication and BGP/BGP4+ keychain authentication are mutually exclusive.</p>
+</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure BGP/BGP4+ GTSM.</span><p><p>Perform the following steps on both ends:</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> { <i><span class="varname">as-number-plain</span></i> | <i><span class="varname">as-number-dot</span></i> }</pre>
+</p></li><li class="substepexpand"><span>Configure BGP GTSM.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <b><span class="cmdqueryname">valid-ttl-hops</span></b> [ <i><span class="varname">hops</span></i> ]</pre>
+<p>The valid TTL range of detected messages is [255 – <i><span class="varname">hops</span></i> + 1, 255]. For example, the value of <i><span class="varname">hops</span></i> is 1 for an EBGP direct route, and the valid TTL value is 255. By default, the value of <i><span class="varname">hops</span></i> is 255, indicating that the valid TTL range is [1, 255].</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the GTSM function is configured in the BGP view, it also takes effect in the extended BGP address family view because they use the same TCP connection.</p>
+<p>Because GTSM and EBGP-max-hop both affect the TTL values in sent BGP messages, only one of them can be used for a peer or peer group.</p>
+<p>After a BGP/BGP4+ GTSM policy is configured, the device checks the TTL values of all BGP/BGP4+ messages. For the messages whose TTL values are not within a pre-defined range, you can set the default action that GTSM takes to drop or pass according to your networking requirements. If a valid TTL range is specified and the default action is set to drop, the device directly drops received BGP/BGP4+ messages whose TTL values are not within the valid range. This prevents bogus BGP/BGP4+ messages from consuming CPU resources.</p>
+</div></div>
+</p></li></ol>
+</li><li><span>Set the default GTSM action.</span><p><p>Perform the following configurations on a GTSM-enabled device:</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Set a default action taken on the messages that do not match the GTSM policy.</span><p><pre class="screen"><strong>gtsm default-action</strong> { <strong>drop</strong> | <strong>pass</strong> }</pre>
+<p>By default, the messages that do not match the GTSM policy can pass filtering.</p>
+</p></li></ol>
+</li><li><span>Configure BMP.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Start BMP and enter the BMP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bmp</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure an interval at which the BMP device sends BGP/BGP4+ running statistics to a monitoring server.</span><p><pre class="screen"><b><span class="cmdqueryname">statistics-timer</span></b> <i><span class="varname">time</span></i></pre>
+<p>You can configure the interval at which the BMP device sends BGP/BGP4+ running statistics to a monitoring server based on BGP/BGP4+ stability requirements. In most cases, a short interval is required on a network with high stability requirements, but more bandwidth resources will be consumed because the device sends statistics frequently.</p>
+<p>By default, the interval at which the BMP device reports BGP/BGP4+ running statistics to a monitoring server is 3600s. Using the default interval is recommended.</p>
+</p></li><li class="substepexpand"><span>Configure an IPv4 or IPv6 BMP session address for the TCP connection to be established between the device and monitoring server.</span><p><pre class="screen"><b><span class="cmdqueryname">bmp-session</span></b> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vrf-name</span></i> ] { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> } [ <strong><span>alias</span></strong> <i><span class="varname">alias-name</span></i> ]</pre>
+<p><strong><span>alias</span></strong> <i><span class="varname">alias-name</span></i> specifies an alias for a session. If the device needs to establish TCP connections with monitoring servers that have the same destination IP address but different destination port numbers, specify different values for the <strong><span>alias</span></strong> <i><span class="varname">alias-name</span></i> parameter to differentiate the connections.</p>
+</p></li><li class="substepexpand"><span>Configure the device to send statistics about routes of a specific type to the monitoring server.</span><p><ul><li>Configure the device to send the monitoring server the statistics about all received RIB-in routes or only accepted RIB-in routes from BGP/BGP4+ peers in a specified address family.<ol type="a"><li>Run any of the following commands as required to enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of BGP/BGP4+ peers.<div class="p">Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of all BGP/BGP4+ peers in public network address families.<pre class="screen"><b><span class="cmdqueryname">monitor</span></b> <strong><span>public</span></strong> </pre>
+</div>
+<p>Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of a specified BGP/BGP4+ peer in public network address families.</p>
+<pre class="screen"><b><span class="cmdqueryname">monitor</span></b> <strong><span>peer</span></strong> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> } </pre>
+<p>Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of all BGP/BGP4+ peers in VPN instance address families. </p>
+<pre class="screen"><b><span class="cmdqueryname">monitor all-vpn-instance</span></b></pre>
+<p>Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of a specified BGP/BGP4+ peer in a specified VPN instance.</p>
+<pre class="screen"><b><span class="cmdqueryname">monitor vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> <strong><span>peer</span></strong> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> }</pre>
+<p>Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of all BGP/BGP4+ peers in a specified VPN instance.</p>
+<pre class="screen"><b><span class="cmdqueryname">monitor vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</li><li><p>Configure the device to send the monitoring server the statistics about all received RIB-in routes or only accepted RIB-in routes from BGP/BGP4+ peers in a specified address family.</p>
+<pre class="screen"><b><span class="cmdqueryname">route-mode</span></b> { <strong><span>ipv4-family</span></strong> <strong><span>unicast</span></strong><span> | </span><strong><span>ipv6-family</span></strong> <strong><span>unicast</span></strong> } <strong><span>adj-rib-in</span></strong> { <strong><span>pre-policy</span></strong> | <strong><span>post-policy</span></strong> }</pre>
+<p>To configure the device to send statistics about all received routes to the monitoring server, specify <strong><span>pre-policy</span></strong> in the command. To configure the device to send statistics about only the routes that match the import policy (those delivered to the routing table) to the monitoring server, specify <strong><span>post-policy</span></strong> in the command.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If you specify the <strong><span>pre-policy</span></strong> parameter, you also need to run the <b><span class="cmdqueryname">keep-all-routes</span></b> command in the BGP view to save information about routes carried in BGP/BGP4+ Update messages that are received from all BGP/BGP4+ peers or peer groups after BGP/BGP4+ connections are established. Alternatively, run the <b><span class="cmdqueryname">peer keep-all-routes</span></b> command to save information about routes carried in the BGP/BGP4+ Update messages that are received from a specified BGP/BGP4+ peer or peer group after the BGP/BGP4+ connection is established.</p>
+</div></div>
+</li></ol>
+</li><li>Configure the device to send the monitoring server the statistics about all RIB-out routes to be advertised or only those advertised to BGP/BGP4+ peers in a specified address family.<ol type="a"><li>Run any of the following commands as required to enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of BGP/BGP4+ peers.<div class="p">Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of all BGP/BGP4+ peers in public network address families.<pre class="screen"><b><span class="cmdqueryname">monitor</span></b> <strong><span>public</span></strong> </pre>
+</div>
+<p>Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of a specified BGP/BGP4+ peer in public network address families.</p>
+<pre class="screen"><b><span class="cmdqueryname">monitor</span></b> <strong><span>peer</span></strong> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> } </pre>
+<p>Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of all BGP/BGP4+ peers in VPN instance address families. </p>
+<pre class="screen"><b><span class="cmdqueryname">monitor all-vpn-instance</span></b></pre>
+<p>Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of a specified BGP/BGP4+ peer in a specified VPN instance.</p>
+<pre class="screen"><b><span class="cmdqueryname">monitor vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> <strong><span>peer</span></strong> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> }</pre>
+<p>Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of all BGP/BGP4+ peers in a specified VPN instance.</p>
+<pre class="screen"><b><span class="cmdqueryname">monitor vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</li><li>Configure the device to send the monitoring server the statistics about all RIB-out routes to be advertised or only those advertised to BGP/BGP4+ peers in a specified address family.<pre class="screen"><b><span class="cmdqueryname">route-mode</span></b> { <strong><span>ipv4-family</span></strong> <strong><span>unicast</span></strong><span> | </span><strong><span>ipv6-family</span></strong> <strong><span>unicast</span></strong> } <strong><span>adj-rib-out</span></strong> { <strong><span>pre-policy</span></strong> | <strong><span>post-policy</span></strong> }</pre>
+<p>If you want the monitoring server to monitor all the routes to be advertised by the BMP device, regardless of whether they match the export policy, specify <strong><span>pre-policy</span></strong> in the command. If you want the monitoring server to monitor only the routes that match the export policy, specify <strong><span>post-policy</span></strong> in the command.</p>
+</li></ol>
+</li><li>Configure the device to send the monitoring server the statistics about Local-RIB routes of BGP/BGP4+ peers in a specified address family.<ol type="a"><li>Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of BGP/BGP4+ peers.<div class="p">Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of all BGP/BGP4+ peers in public network address families.<pre class="screen"><b><span class="cmdqueryname">monitor</span></b> <strong><span>public</span></strong> </pre>
+</div>
+<div class="p">Enter the BMP-Monitor view and configure BMP to monitor the BGP/BGP4+ running status of all BGP/BGP4+ peers in a specified VPN instance.<pre class="screen"><b><span class="cmdqueryname">monitor vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</div>
+</li><li>Configure the device to send the monitoring server the statistics about Local-RIB routes of BGP/BGP4+ peers in a specified address family.<pre class="screen"><b><span class="cmdqueryname">route-mode</span></b> { <strong><span>ipv4-family</span></strong> <strong><span>unicast</span></strong><span> | </span><strong><span>ipv6-family</span></strong> <strong><span>unicast</span></strong> } <strong><span>local-rib</span></strong> [ <strong><span>add-path</span></strong> ]</pre>
+</li></ol>
+</li></ul>
+</p></li><li class="substepexpand"><span>Return to the BMP session view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure parameters for a TCP connection to be established between the device and monitoring server.</span><p><pre class="screen"><b><span class="cmdqueryname">tcp</span></b> <strong><span>connect</span></strong> <strong><span>port</span></strong> <i><span class="varname">port-number</span></i> [ <strong><span>password md5</span></strong> <i><span class="varname">cipher-password</span></i> | <strong><span>keychain</span></strong> <i><span class="varname">keychain-name</span></i> ]</pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The MD5 algorithm is not recommended if high security is required.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>(Optional) Specify an SSL policy for BMP.</span><p><pre class="screen"><b><span class="cmdqueryname">ssl-policy name</span></b> <i><span class="varname">ssl-policy-name</span></i></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Ensure that the specified SSL policy has been created using the <b><span class="cmdqueryname">ssl policy</span></b> <i><span class="varname">policy-name</span></i> command in the system view.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>(Optional) Configure a source interface for sending BMP messages.</span><p><pre class="screen"><b><span class="cmdqueryname">connect-interface</span></b> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <i><span class="varname">ipv4-source-address</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> <i><span class="varname">ipv4-source-address</span></i> }</pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>After configuring BMP session parameters, run the <b><span class="cmdqueryname">reset bmp session</span></b> command to reset the BMP session for the new BMP session parameters to take effect.</p>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure BGP SSL/TLS authentication.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Create an SSL policy and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">ssl policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> { <i><span class="varname">as-number-plain</span></i> | <i><span class="varname">as-number-dot</span></i> }</pre>
+</p></li><li class="substepexpand"><span>Configure a peer or peer group as an SSL client or server.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">group-name</span></i> | <i><span class="varname">ipv4-address</span></i> } <strong><span>ssl-policy</span></strong> <strong><span>role</span></strong> { <strong><span>client</span></strong> | <strong><span>server</span></strong> }</pre>
+<p>Perform this step on both the client and the server. The configuration on a peer takes precedence over that on a peer group.</p>
+</p></li><li class="substepexpand"><span>Apply the SSL policy to the SSL client or server.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">group-name</span></i> | <i><span class="varname">ipv4-address</span></i> } <strong><span>ssl-policy</span></strong> <strong><span>name</span></strong> <i><span class="varname">ssl-policy-name</span></i></pre>
+<p>Perform this step on both the client and the server. The configuration on a peer takes precedence over that on a peer group.</p>
+</p></li><li class="substepexpand"><span>Configure SSL/TLS authentication on the SSL server.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">group-name</span></i> | <i><span class="varname">ipv4-address</span></i> } <strong><span>ssl-server</span></strong> <strong><span>certificate</span></strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This step can be performed only on the server.</p>
+</div></div>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001564131877__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><ul><li>Run the <b><span class="cmdqueryname">display bgp peer</span></b> [ <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> ] <strong><span>verbose</span></strong> command to check BGP/BGP4+ peer authentication information.</li></ul>
+<ul><li>Run the <b><span class="cmdqueryname">display bmp session</span></b> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vrf-name</span></i> ] [ <i><span class="varname">ip-address</span></i> [ <strong><span>alias</span></strong> <i><span class="varname">alias-name</span></i> ] <strong><span>verbose</span></strong> ] command to check BMP session configurations.</li><li>Run the <b><span class="cmdqueryname">display bgp bmp-monitor</span></b> { <strong><span>all</span></strong> | <strong><span>ipv4</span></strong> <i><span class="varname">ipv4-address</span></i> | <strong><span>ipv6</span></strong> <i><span class="varname">ipv6-address</span></i> } command to check information about all BGP/BGP4+ peers or a specified BGP/BGP4+ peer monitored by a BMP session.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0035.html">Routing Protocol Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0036.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0039.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

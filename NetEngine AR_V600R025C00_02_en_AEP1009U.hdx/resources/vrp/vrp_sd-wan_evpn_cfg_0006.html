@@ -1,0 +1,132 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Establishment of an SD-WAN Data Channel">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0005.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0117.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001176662779">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Establishment of an SD-WAN Data Channel</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001176662779"></a><a name="EN-US_CONCEPT_0000001176662779"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Establishment of an SD-WAN Data Channel</h1>
+<div><div class="section"><h4 class="sectiontitle">Channel Establishment Process</h4><p>In <a href="vrp_sd-wan_evpn_cfg_0005.html">Establishment of a BGP SD-WAN Control Channel</a>, an RR reflects BGP SD-WAN routes between CPEs so that CPEs can obtain necessary information such as TNPs and SA parameters required to establish SD-WAN data channels from each other. The following describes the process of establishing an SD-WAN data channel to transmit service traffic, as shown in <a href="#EN-US_CONCEPT_0000001176662779__fig1670514494418">Figure 1</a>.</p>
+<ol><li>Each CPE establishes a BGP EVPN peer relationship with the RR.</li><li>Each CPE generates an EVPN IP prefix route (Type 5 route) based on the route of the VPN instance for the local user service. This IP prefix route contains the NLRI, SD-WAN encapsulation extended community attribute, and color extended community attribute (containing Site ID).</li><li>Each CPE sends the IP prefix route to the RR, which then reflects the route to other CPEs.</li><li>After receiving a reflected IP prefix route, a CPE obtains the SD-WAN encapsulation extended community attribute and color extended community attribute (containing Site ID) carried in the route and triggers the establishment of an SD-WAN data channel with the peer CPE. Information such as the TNP and SA parameters is used for channel encapsulation. In addition, the IP prefix route recurses to the SD-WAN data channel based on Site ID to establish the service traffic forwarding path.</li></ol>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662779__fig1670514494418"><a name="EN-US_CONCEPT_0000001176662779__fig1670514494418"></a><a name="fig1670514494418"></a><span class="figcap"><b>Figure 1 </b>Process of establishing an SD-WAN data channel</span><br><span><img class="vsd" src="figure/en-us_image_0000001130623282.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">EVPN Routes</h4><p>In the SD-WAN EVPN Solution, service routes are EVPN IP prefix routes. These routes contain the NLRI, SD-WAN encapsulation extended community attribute, and color extended community attribute. The VN ID that identifies the VPN instance to which an EVPN IP prefix route belongs is carried in NLRI. <a href="#EN-US_CONCEPT_0000001176662779__fig16396351528">Figure 2</a> shows the NLRI format of an EVPN IP prefix route.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662779__fig16396351528"><a name="EN-US_CONCEPT_0000001176662779__fig16396351528"></a><a name="fig16396351528"></a><span class="figcap"><b>Figure 2 </b>NLRI format of an EVPN IP prefix route</span><br><span><img class="vsd" src="figure/en-us_image_0000001130783052.png"></span></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>NLRI fields of an EVPN IP prefix route</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="19.17%" id="mcps1.3.2.4.2.3.1.1" liSelected="liSelected"><p>Field</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="80.83%" id="mcps1.3.2.4.2.3.1.2" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="19.17%" headers="mcps1.3.2.4.2.3.1.1 "><p>Route Distinguisher</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.83%" headers="mcps1.3.2.4.2.3.1.2 "><p>Route distinguisher (RD) value of a VPN instance.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.17%" headers="mcps1.3.2.4.2.3.1.1 "><p>Ethernet Segment Identifier</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.83%" headers="mcps1.3.2.4.2.3.1.2 "><p>Unique ID of a connection between a CPE and a CE.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.17%" headers="mcps1.3.2.4.2.3.1.1 "><p>Ethernet Tag ID</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.83%" headers="mcps1.3.2.4.2.3.1.2 "><p>VLAN ID on a CPE. The value must be all 0s.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.17%" headers="mcps1.3.2.4.2.3.1.1 "><p>IP Prefix Length</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.83%" headers="mcps1.3.2.4.2.3.1.2 "><p>Length of the IP prefix address carried in a route.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.17%" headers="mcps1.3.2.4.2.3.1.1 "><p>IP Prefix</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.83%" headers="mcps1.3.2.4.2.3.1.2 "><p>IP prefix address carried in a route.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.17%" headers="mcps1.3.2.4.2.3.1.1 "><p>GW IP Address</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.83%" headers="mcps1.3.2.4.2.3.1.2 "><p>Default gateway address of a route.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.17%" headers="mcps1.3.2.4.2.3.1.1 "><p>MPLS Label</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.83%" headers="mcps1.3.2.4.2.3.1.2 "><p>Label used for Layer 3 service traffic forwarding. The value is a VN ID.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a href="#EN-US_CONCEPT_0000001176662779__fig178661217184915">Figure 3</a> shows the format of the SD-WAN encapsulation extended community attribute. The value of the <strong>Tunnel Type</strong> field is 200, indicating that SD-WAN tunnel encapsulation is used.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662779__fig178661217184915"><a name="EN-US_CONCEPT_0000001176662779__fig178661217184915"></a><a name="fig178661217184915"></a><span class="figcap"><b>Figure 3 </b>Format of the SD-WAN encapsulation extended community attribute</span><br><span><img class="vsd" src="figure/en-us_image_0000001130623284.png"></span></div>
+<p><a href="#EN-US_CONCEPT_0000001176662779__fig75754518245">Figure 4</a> shows the format of the color extended community attribute. The value of the <strong>Reserved</strong> field is the priority of the site to which a CPE belongs. The value of the <strong>Color Value</strong> field is a site ID, indicating the unique ID of the site to which a CPE belongs.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662779__fig75754518245"><a name="EN-US_CONCEPT_0000001176662779__fig75754518245"></a><a name="fig75754518245"></a><span class="figcap"><b>Figure 4 </b>Format of the color extended community attribute</span><br><span><img class="vsd" src="figure/en-us_image_0000001176742739.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Other Functions</h4><p>In an SD-WAN EVPN scenario, a routing policy can be used to adjust information including the color extended community attribute and next hop carried in EVPN routes so as to control and orchestrate service paths. Currently, the following application scenarios are supported:</p>
+<p><strong>Isolating Tenants</strong></p>
+<p>Carriers provide SD-WAN EVPN services for different enterprises, each considered as a tenant. In <a href="#EN-US_CONCEPT_0000001176662779__fig1193013443184">Figure 5</a>, CPE1 and CPE2 belong to tenant 1, CPE3 and CPE4 belong to tenant 2, and the RR is shared by multiple tenants. In this example, you need to configure a routing policy on the RR so it can reflect EVPN routes of a specific CPE of a tenant to other CPEs of the same tenant. This policy implements service communication between CPEs of the same tenant and service isolation between CPEs of different tenants. The following describes the routing policy configuration on the RR:</p>
+<ol><li>Add CPE1 and CPE2 to the BGP EVPN peer group <strong>Group1</strong>, and add CPE3 and CPE4 to the BGP EVPN peer group <strong>Group2</strong>.</li><li>Configure the import policy <strong>Group1_in</strong> and export policy <strong>Group1_out</strong> for the peer group <strong>Group1</strong> on the RR. The <strong>Group1_in</strong> policy sets the community attribute 100:1 for EVPN routes that are received by the RR. The <strong>Group1_out</strong> policy allows the RR to advertise only EVPN routes carrying the community attribute 100:1.</li><li>Configure the import policy <strong>Group2_in</strong> and export policy <strong>Group2_out</strong> for the peer group <strong>Group2</strong> on the RR. The <strong>Group2_in</strong> policy sets the community attribute 200:2 for EVPN routes that are received by the RR. The <strong>Group2_out</strong> policy allows the RR to advertise only EVPN routes carrying the community attribute 200:2.</li></ol>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662779__fig1193013443184"><a name="EN-US_CONCEPT_0000001176662779__fig1193013443184"></a><a name="fig1193013443184"></a><span class="figcap"><b>Figure 5 </b>Tenant isolation scenario</span><br><span><img class="vsd" src="figure/en-us_image_0000001130783058.png"></span></div>
+<p><strong>Adding a Redirect Site</strong></p>
+<p>A redirect site can be added between two sites to improve reliability. When the SD-WAN tunnel between the two sites is not operational, service traffic can be directed to the redirect site to prevent service interruptions. In <a href="#EN-US_CONCEPT_0000001176662779__fig135194916337">Figure 6</a>, redirect site 100 is added between site 1 and site 2. CPE3 establishes two SD-WAN tunnels, one with CPE1 and one with CPE2. The following describes the routing policy configuration on the RR:</p>
+<ol><li>Configure the export policy <strong>Evpn_export_policy</strong>.</li><li>Set the matching condition for the export policy: EVPN routes carry the route target (RT) value of the VPN instance for the user service on CPE2 and carry the color value of site 2.</li><li>Add the color value of the redirect site 100 to the matching EVPN route. The priority of the color value of the redirect site is lower than that of the primary path.</li></ol>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662779__fig135194916337"><a name="EN-US_CONCEPT_0000001176662779__fig135194916337"></a><a name="fig135194916337"></a><span class="figcap"><b>Figure 6 </b>Redirect site scenario</span><br><span><img class="vsd" src="figure/en-us_image_0000001130623276.png"></span></div>
+<p>After CPE2 sends the local EVPN route to the RR, the RR adds the color value of the redirect site 100 to the route based on the routing policy before reflecting the route to CPE1. When the primary path between CPE1 and CPE2 is operational, the EVPN route on CPE1 recurses to the SD-WAN tunnel on the primary path based on the color value of site 2. When the primary path is not operational, the EVPN route recurses to the SD-WAN tunnel of the best-effort path based on the color value of the redirect site 100.</p>
+<p><strong>Directing Traffic to a Hub Site</strong></p>
+<p>If you want all service traffic on the network to pass through a specific hub site, you can configure a routing policy on the RR. On the network shown in <a href="#EN-US_CONCEPT_0000001176662779__fig530516152074">Figure 7</a>, service traffic on CPE1 and CPE2 needs to be forwarded through the HUB-CPE. The following describes the routing policy configuration on the RR:</p>
+<ol><li>Configure the export policy <strong>Evpn_export_policy</strong>.</li><li>Set the matching condition for the export policy: EVPN routes carry the RT values of the VPN instances for the user services on CPE1 and CPE2 and carry the color value of site 1 or 2.</li><li>Enable the RR to change the next hops of the matching EVPN routes to the system IP of the HUB-CPE and change the color value carried in the routes to the color value of the hub site.</li></ol>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662779__fig530516152074"><a name="EN-US_CONCEPT_0000001176662779__fig530516152074"></a><a name="fig530516152074"></a><span class="figcap"><b>Figure 7 </b>Directing traffic to a hub site</span><br><span><img class="vsd" src="figure/en-us_image_0000001176662817.png"></span></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0003.html">Understanding SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0005.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0117.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

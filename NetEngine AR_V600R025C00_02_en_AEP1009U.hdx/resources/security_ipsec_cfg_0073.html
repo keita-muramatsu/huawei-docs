@@ -1,0 +1,106 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Certificate Validity Check">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0070.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0072.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0074.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563994097">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Certificate Validity Check</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563994097"></a><a name="EN-US_TASK_0000001563994097"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Certificate Validity Check</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001563994097__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><ul><li>Certificate validity check takes effect only for RSA-based digital signature certificate authentication.</li><li>Certificate validity check takes effect only for the following IPsec types:<ul><li>ACL-based IPsec (involving ISAKMP IPsec policies and template IPsec policies)</li><li>Route-based IPsec (involving IPsec profiles)</li></ul>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563994097__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In some scenarios, tunnel negotiation may fail because the certificate on the remote device is unavailable or the local device cannot validate the remote certificate.</p>
+<p>The device can use the Online Certificate Status Protocol (OCSP) verification result or Certificate Revocation List (CRL) sent by the remote end to validate the remote certificate. To ensure that an invalid certificate can still be used for tunnel negotiation, the device can have certificate validity check disabled.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001563994097__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure the local end to use the OCSP verification result sent by the remote end to validate the remote certificate.</span><p><p>When IPsec uses RSA signature authentication for IKEv2 negotiation and uses OCSP for certificate validity check, if the OCSP server is located in the private network of the headquarters, a branch cannot directly communicate with the OCSP server to validate the certificate at the headquarters. You can configure the local end to use IKEv2 to obtain the OCSP verification result from the headquarters to validate the certificate at the headquarters. If the OCSP verification result is valid, the certificate is valid and identity authentication is successful. An IPsec tunnel can then be established between the branch and headquarters through negotiation.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the local end to use the OCSP verification result sent by the remote end to validate the remote certificate.</span><p><pre class="screen"><b><span class="cmdqueryname">inband ocsp</span></b></pre>
+<p>By default, the local end is not configured to use the OCSP verification result sent by the remote end to validate the remote certificate.</p>
+</p></li></ol>
+</li><li><span>Configure the local end to use the CRL sent by the remote end to verify the validity of the remote certificate.</span><p><p>When IPsec uses RSA signature authentication for IKEv2 negotiation and the CRL is used for certificate validity check, if the CA server is located in the private network of the headquarters, a branch cannot directly communicate with the CA server to obtain the latest CRL to validate the certificate at the headquarters. You can configure the local end to use IKEv2 to obtain the CRL from the headquarters to validate the certificate at the headquarters. If the certificate is not in the CRL, the certificate is valid and identity authentication is successful. An IPsec tunnel can then be established between the branch and headquarters through negotiation.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the local end to use the CRL sent by the remote end to validate the remote certificate.</span><p><pre class="screen"><b><span class="cmdqueryname">inband crl</span></b></pre>
+<p>By default, the local end is not configured to use the CRL sent by the remote end to validate the remote certificate.</p>
+</p></li></ol>
+</li><li><span>Disable certificate validity check.</span><p><div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>Security risks exist if certificate validity check is not performed.</p>
+</div></div>
+<p>When IPsec uses RSA signature authentication for IKE negotiation, the remote device cannot update its certificate if the certificate becomes invalid. As a result, the certificate becomes unavailable and IPsec authentication fails. If the remote device wants to continue to use an invalid certificate, you need to disable certificate validity check. Certificate validity check can be configured globally in the public system or configured for a specific IKE peer.</p>
+<p><strong>Disable certificate validity check globally.</strong></p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Disable certificate validity check globally.</span><p><pre class="screen"><b><span class="cmdqueryname">ike certificate-check disable</span></b></pre>
+<p>By default, the device validates all IKE peers' certificates.</p>
+</p></li></ol>
+<p><p><strong>Disable certificate validity check for a single IKE peer.</strong></p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Disable certificate validity check for the IKE peer.</span><p><pre class="screen"><b><span class="cmdqueryname">certificate-check disable</span></b></pre>
+<p>By default, the device validates an IKE peer's certificate.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0070.html">IPsec Certificate Management
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0072.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0074.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

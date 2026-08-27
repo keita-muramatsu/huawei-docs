@@ -1,0 +1,143 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding MPLS QoS">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_mpls-qos_cfg_001.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_mpls-qos_cfg_002.html">
+<meta name="DC.Relation" scheme="URI" content="spec/MPLS_QoS_limitation_all.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563880445">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding MPLS QoS</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563880445"></a><a name="EN-US_CONCEPT_0000001563880445"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding MPLS QoS</h1>
+<div><p></p>
+<p>On an MPLS network, MPLS QoS distinguishes data flows based on the EXP field in the MPLS header and provides differentiated services. This is known as the E-LSP solution. For packets that enter an MPLS network or pass from an MPLS network to an IP network, you need to configure the device to determine whether to trust the original IP precedence, DSCP value, 802.1p value, or EXP value carried in the packets. Based on this, related standards define three MPLS DiffServ tunnel modes: uniform, pipe, and short pipe.</p>
+<div class="section"><h4 class="sectiontitle">E-LSP Solution</h4><p>IP QoS implements differentiated services by classifying traffic at the network edge. Traffic is classified into multiple priorities or service classes. If packets are marked using the IP precedence in the IP header, they can be classified into a maximum of eight classes; if the DSCP value is used, they can be classified into a maximum of 64 classes. On each node through which packets pass, the IP precedence or DSCP value is checked to determine QoS requirements of the packets.</p>
+<p>On an MPLS network, however, a device does not check the contents of IP headers. Therefore, traffic classification cannot be implemented based on the IP precedence or DSCP value. Currently, the device uses the E-LSP solution to classify traffic on an MPLS network.</p>
+<p>The E-LSP solution uses the EXP field in the MPLS header (shown in <a href="#EN-US_CONCEPT_0000001563880445__fig_dc_fd_mpls_000501">Figure 1</a>) to carry differentiated service information. The device forwards packets based on their labels and determines forwarding behaviors such as scheduling and policing — otherwise known as per-hop behaviors (PHBs) — based on the EXP field. The EXP value can be copied from the DSCP value or IP precedence of IP packets transmitted over a label switched path (LSP), or alternatively be configured.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880445__fig_dc_fd_mpls_000501"><a name="EN-US_CONCEPT_0000001563880445__fig_dc_fd_mpls_000501"></a><a name="fig_dc_fd_mpls_000501"></a><span class="figcap"><b>Figure 1 </b>MPLS packet encapsulation format</span><br><span><img class="vsd" src="figure/en-us_image_0000001563760837.png" width="NaN" height="NaN"></span></div>
+<p>In <a href="#EN-US_CONCEPT_0000001563880445__fig_dc_fd_mpls-qos_000401">Figure 2</a>, when MPLS packets enter LSR2, the packets are classified and EXP values in the packets are mapped to internal class of service (CoS) values and drop priorities of the device. After traffic classification is performed, QoS operations such as traffic shaping, traffic policing, and congestion avoidance are implemented on the MPLS network in the same manner as those on an IP network. When packets leave LSR2, the EXP values carried in the packets are retained.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880445__fig_dc_fd_mpls-qos_000401"><a name="EN-US_CONCEPT_0000001563880445__fig_dc_fd_mpls-qos_000401"></a><a name="fig_dc_fd_mpls-qos_000401"></a><span class="figcap"><b>Figure 2 </b>E-LSP solution</span><br><span><img class="vsd" src="figure/en-us_image_0000001513160474.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">MPLS DiffServ Tunnel Modes</h4><p>The DiffServ model allows intermediate nodes in a DiffServ domain to check and modify the IP precedence, DSCP value, 802.1p value, or EXP value, which are called CoS values. As a result, the CoS values of packets may change during packet transmission on both IP and MPLS networks. Therefore, when a packet enters an MPLS network or passes from an MPLS network to an IP network, the MPLS edge router needs to determine whether to trust the CoS information carried in the IP/MPLS packet based on the configuration. Related standards define three MPLS DiffServ tunnel modes: uniform, pipe, and short pipe.</p>
+<ul><li>Uniform mode<p>When the CoS value (IP precedence, DSCP value, or 802.1p value) carried in a packet from an IP network can be trusted, you can use the uniform mode. In this mode, the MPLS ingress node copies the CoS value carried in the packet to the EXP field in the outer MPLS label. In this manner, the same QoS guarantee is provided on the MPLS network. When the packet leaves the MPLS network, the egress node maps the EXP value to the IP precedence, DSCP value, or 802.1p value in the IP packet.</p>
+<p>On the L3VPN network shown in <a href="#EN-US_CONCEPT_0000001563880445__fig112813273720">Figure 3</a>, PE_1 maps the DSCP value of an IP packet to the outer and inner MPLS EXP values (5); P_1 changes the outer MPLS EXP value to 6; P_2 removes the outer MPLS label and sets the inner MPLS EXP value to the outer MPLS EXP value; PE_2 changes the DSCP value of the packet to 48 based on the mapping.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880445__fig112813273720"><a name="EN-US_CONCEPT_0000001563880445__fig112813273720"></a><a name="fig112813273720"></a><span class="figcap"><b>Figure 3 </b>Uniform mode</span><br><span><img src="figure/en-us_image_0000001513160478.png" width="NaN" height="NaN"></span></div>
+<p>As its name implies, uniform mode ensures the same priority of packets on the IP and MPLS networks. That is, priority mapping is performed for packets entering and leaving an MPLS network. However, if the EXP value of a packet changes on an MPLS network, the PHB for the packet also changes after the packet leaves the MPLS network. As a result, the original CoS value of the packet cannot be retained.</p>
+<p>On the network shown in <a href="#EN-US_CONCEPT_0000001563880445__fig1536421874116">Figure 4</a>, two sites belong to different branches of the same enterprise. The enterprise network transmits voice, video, and data services, listed in descending order of priority. When traffic of different VPN services enters the MPLS network, the priorities of the three types of services need to be differentiated on the MPLS network to ensure services are correctly prioritized. In addition, different QoS services are provided for the three types of services based on their priorities. In this case, the priorities carried in the original packets can be trusted, and so the uniform mode is used.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880445__fig1536421874116"><a name="EN-US_CONCEPT_0000001563880445__fig1536421874116"></a><a name="fig1536421874116"></a><span class="figcap"><b>Figure 4 </b>Differentiating priorities of different services in a VPN</span><br><span><img src="figure/en-us_image_0000001563880473.png" width="NaN" height="NaN"></span></div>
+</li><li>Pipe mode<p>When the CoS value carried in a packet from an IP network cannot be trusted, you can use the pipe mode. In this mode, the CoS value carried in the packet is ignored, and the ingress node of an MPLS network assigns a new value to the EXP field in the outer MPLS label. The packet is scheduled from the ingress node to the egress node according to your requirements. After leaving the MPLS network, the packet is forwarded according to the original CoS value.</p>
+<p>On the L3VPN network shown in <a href="#EN-US_CONCEPT_0000001563880445__fig20521844143818">Figure 5</a>, PE_1 sets the outer MPLS EXP value to 1 and the inner MPLS EXP value to 2; P_2 removes the outer MPLS label and sets the inner MPLS EXP value to the outer MPLS EXP value; PE_2 does not change the IP DSCP value of the original packet, and selects a PHB based on the inner MPLS EXP value.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880445__fig20521844143818"><a name="EN-US_CONCEPT_0000001563880445__fig20521844143818"></a><a name="fig20521844143818"></a><span class="figcap"><b>Figure 5 </b>Pipe mode</span><br><span><img src="figure/en-us_image_0000001512840942.png" width="NaN" height="NaN"></span></div>
+<p>In pipe mode, the ingress node does not copy the IP precedence, DSCP value, or 802.1p value to the EXP field when a packet enters an MPLS network. Likewise, when the packet leaves the MPLS network, the egress node does not copy the EXP value to the IP precedence, DSCP value, or 802.1p value. If the EXP value of a packet is changed on an MPLS network, the change is valid only on the MPLS network. After the packet leaves the MPLS network, the original CoS value carried in the packet remains valid.</p>
+</li><li>Short pipe mode<p>The short pipe mode is an enhancement of the pipe mode. In short pipe mode, the ingress node of an MPLS network processes packets in the same way as that in pipe mode. Where this mode differs is that the egress node of an MPLS network removes the label before performing QoS scheduling. That is, the egress node of an MPLS network schedules packets based on the original CoS value carried in the packets, and performs QoS scheduling based on your requirements from when the packets enter the MPLS network to the penultimate hop.</p>
+<p>On the L3VPN network shown in <a href="#EN-US_CONCEPT_0000001563880445__fig27461759193916">Figure 6</a>, PE_1 sets the outer MPLS EXP value to 1 and the inner MPLS EXP value to 2; P_2 removes the outer MPLS label and sets the inner MPLS EXP value to the outer MPLS EXP value; PE_2 does not change the IP DSCP value of the original packet, and selects a PHB based on the IP DSCP value of the packet.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880445__fig27461759193916"><a name="EN-US_CONCEPT_0000001563880445__fig27461759193916"></a><a name="fig27461759193916"></a><span class="figcap"><b>Figure 6 </b>Short pipe mode</span><br><span><img src="figure/en-us_image_0000001564120565.png" width="NaN" height="NaN"></span></div>
+<p>In pipe or short pipe mode, you can plan QoS on the internal network based on your requirements, without changing the QoS on the customer edge (CE) side.</p>
+<p>The difference between pipe mode and short pipe mode lies in how QoS marking is implemented for outgoing traffic from a PE (PE_2 in this example) to a CE. In pipe mode, QoS marking configured by you is used; in short pipe mode, QoS marking configured on the CE side is used.</p>
+<p>In <a href="#EN-US_CONCEPT_0000001563880445__fig1144113810437">Figure 7</a>, CE_1 and CE_3 belong to VPN_1 and connect to two branches of enterprise A; CE_2 and CE_4 belong to VPN_2 and connect to two branches of enterprise B. When service flows from different VPNs enter the MPLS network, devices on the MPLS network must differentiate priorities of the services to ensure that service flows from enterprise A have higher priorities than those from enterprise B. The devices then provide differentiated QoS services to the service flows based on their priorities. In this case, you need to specify the EXP values of packets in different VPNs when the packets enter the MPLS network. Therefore, the pipe or short pipe mode is used.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563880445__fig1144113810437"><a name="EN-US_CONCEPT_0000001563880445__fig1144113810437"></a><a name="fig1144113810437"></a><span class="figcap"><b>Figure 7 </b>Differentiating priorities of services in different VPNs</span><br><span><img src="figure/en-us_image_0000001512681350.png" width="NaN" height="NaN"></span></div>
+</li></ul>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Comparison between three tunnel modes</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="7.19%" id="mcps1.4.3.4.2.7.1.1" liSelected="liSelected"><p>Tunnel Mode</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="27.250000000000004%" id="mcps1.4.3.4.2.7.1.2" liSelected="liSelected"><p>Whether the Ingress Node Trusts the Original CoS Value Carried in an IP Packet</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="20.03%" id="mcps1.4.3.4.2.7.1.3" liSelected="liSelected"><p>Whether the Egress Node Trusts the EXP Value or the Original CoS Value Carried in an IP Packet</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="20.71%" id="mcps1.4.3.4.2.7.1.4" liSelected="liSelected"><p>QoS Scheduling Behavior on the Egress Node</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="12.09%" id="mcps1.4.3.4.2.7.1.5" liSelected="liSelected"><p>Whether the Original CoS Value Carried in an IP Packet Changes</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="12.73%" id="mcps1.4.3.4.2.7.1.6" liSelected="liSelected"><p>Application Scenario</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="7.19%" headers="mcps1.4.3.4.2.7.1.1 "><p>Uniform</p>
+</td>
+<td class="cellrowborder" valign="top" width="27.250000000000004%" headers="mcps1.4.3.4.2.7.1.2 "><p>Trusted. The CoS value carried in an IP packet is copied to the EXP field in the outer MPLS label.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20.03%" headers="mcps1.4.3.4.2.7.1.3 "><p>The EXP value is trusted and mapped to the CoS value of an IP packet.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20.71%" headers="mcps1.4.3.4.2.7.1.4 "><p>Scheduling based on mapping of the EXP value</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.09%" headers="mcps1.4.3.4.2.7.1.5 "><p>Yes</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.73%" headers="mcps1.4.3.4.2.7.1.6 "><p>Differentiating priorities of different services in a VPN</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="7.19%" headers="mcps1.4.3.4.2.7.1.1 "><p>Pipe</p>
+</td>
+<td class="cellrowborder" valign="top" width="27.250000000000004%" headers="mcps1.4.3.4.2.7.1.2 "><p>Untrusted. A new value can be assigned to the EXP field in the outer MPLS label.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20.03%" headers="mcps1.4.3.4.2.7.1.3 "><p>The original CoS value carried in an IP packet is trusted and retained.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20.71%" headers="mcps1.4.3.4.2.7.1.4 "><p>Scheduling based on mapping of the EXP value</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.09%" headers="mcps1.4.3.4.2.7.1.5 "><p>No</p>
+</td>
+<td class="cellrowborder" rowspan="2" valign="top" width="12.73%" headers="mcps1.4.3.4.2.7.1.6 "><p>Differentiating priorities of services in different VPNs</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.4.3.4.2.7.1.1 "><p>Short pipe</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.4.3.4.2.7.1.2 "><p>Untrusted. A new value can be assigned to the EXP field in the outer MPLS label.</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.4.3.4.2.7.1.3 "><p>The original CoS value carried in an IP packet is trusted and retained.</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.4.3.4.2.7.1.4 "><p>Scheduling based on mapping of the original CoS value carried in a packet</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.4.3.4.2.7.1.5 "><p>No</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_mpls-qos_cfg_001.html">MPLS QoS Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_mpls-qos_cfg_002.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="spec/MPLS_QoS_limitation_all.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

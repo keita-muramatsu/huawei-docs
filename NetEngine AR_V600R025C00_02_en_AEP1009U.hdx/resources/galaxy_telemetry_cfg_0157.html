@@ -1,0 +1,300 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Writing Code">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_telemetry_cfg_0153.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_telemetry_cfg_0156.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000002538181771">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Writing Code</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000002538181771"></a><a name="EN-US_TOPIC_0000002538181771"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Writing Code</h1>
+<div><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This section only provides the code that you need to pay attention to. The code is for reference only.</p>
+<p>You need to develop all the code except for the auto-generated code by yourself.</p>
+</div></div>
+<p>After adding the auto-generated Python files to a Python project, use the data push RPC service to receive telemetry data from the device. The telemetry header is parsed first, and then sampled data is parsed according to the sampled data structure defined in the .proto file matching the <strong>sensor_path</strong> field.</p>
+<ol><li>Override the dataPublish method in the auto-generated RPC service and write code to retrieve sampled data.<ol type="a"><li>Override the dataPublish method in the RPC service.<p>The abstract class gRPCDataserviceServicer is defined in the auto-generated RPC service Python file <strong>huawei_grpc_dialout_pb2_grpc.py</strong>. You need to override this abstract class in the dataPublish method to implement the class.</p>
+<p>Create a class (for example, DialoutServicer) to override that abstract class. The sample code is as follows:</p>
+<pre class="screen">class DialoutServicer(huawei_grpc_dialout_pb2_grpc.gRPCDataserviceServicer):
+    # In dataPublish method, use the TelemetryParser class to decode the received data.
+    def dataPublish(self, request_iterator, context):
+        for req in request_iterator:
+            # Parse telemetry data.
+            try:
+                tel = telemetry_parser.TelemetryParser()
+                # The final sampled data is stored in sample_datas.
+                sample_datas = tel.parse_telemetry(req)           
+                if sample_datas is None:
+                    print("Parsing Wrong!")
+            except Exception as e:
+                logging.error(e)</pre>
+</li><li>Write code for data parsing.<p>The dataPublish method uses the input parameter <strong>request_iterator</strong> to obtain serviceArgs defined in the gRPC service. serviceArgs is triple-layered, carrying RPC parameters, a telemetry header, and sampled data, all of which must be parsed sequentially.</p>
+<ol class="substepthirdol"><li>The RPC parameters are defined in the <strong>huawei-grpc-dialout.proto</strong> file as follows:<pre class="screen">message serviceArgs {                       //Describes the message format.
+    int64 ReqId = 1;                        //Indicates the request ID.
+    oneof MessageData {
+        bytes data = 2;         //Indicates that sampled data is encoded in GPB.
+        string data_json = 4;   //Indicates that sampled data is encoded in JSON.
+    }
+    string errors = 3;         //Indicates error information.
+}</pre>
+<p>In this example, according to the sampled data format defined in <strong>huawei-cpu-memory.proto</strong>:</p>
+<p>Since the sampled data in this example is encoded in GPB, it is stored in the <strong>data</strong> field in binary form. If the sampled data is encoded in JSON, it is stored in the <strong>data_json</strong> field. The following sample code retrieves the GPB-encoded telemetry data from the <strong>data</strong> field and deserializes it using the ParseFromString method of the telemetry structure.</p>
+<pre class="screen"># Retrieve sampled data from the <strong>data</strong> field.
+tel_data = serArgs.data
+ 
+# Deserialize the data.
+telemetry = huawei_telemetry_pb2.Telemetry()
+telemetry.ParseFromString(tel_data)</pre>
+</li><li>The telemetry message structure is defined in the <strong>huawei-telemetry.proto</strong> file:<pre class="screen">message Telemetry {        //Defines the telemetry message structure.
+   string node_id_str = 1;    //Indicates the device name.
+   string subscription_id_str = 2;   //Indicates the name of a static subscription.
+   string sensor_path = 3;           //Indicates the sampling path.
+   string proto_path = 13;          //Indicates the message path that maps the sampling path in the .proto file.
+   uint64 collection_id = 4;         //Indicates the sampling round.
+   uint64 collection_start_time = 5;//Indicates the start time of a sampling round.
+   uint64 msg_timestamp = 6;        //Indicates the timestamp when the message is generated.
+   TelemetryGPBTable data_gpb = 7; //Indicates that the carried data is defined by TelemetryGPBTable.
+   uint64 collection_end_time = 8;  //Indicates the end time of a sampling round.
+   uint32 current_period = 9;       //Indicates sampling precision, in milliseconds.
+   string except_desc = 10;        //Indicates an exception description, which is reported when a sampling exception occurs.
+   string product_name = 11;       //Indicates the product name.
+   enum Encoding {
+    Encoding_GPB = 0;        //Indicates GPB encoding.
+    Encoding_JSON = 1;       //Indicates JSON encoding.
+  };
+   Encoding encoding = 12;          //If GPB encoding is used, the <strong>data_gpb</strong> field is valid. If another encoding format is used, the <strong>data_str</strong> field is valid.
+   string data_str = 14;            //This field is valid only when the data is not GPB encoded, and is empty if GPB encoding is used.
+  string ne_id = 15;               //Indicates the unique ID of the NE to which data belongs in the gateway scenario.
+  string software_version = 16;    //Indicates the software version number.
+}
+message TelemetryGPBTable {           //Defines the TelemetryGPBTable message structure.
+   repeated TelemetryRowGPB row = 1;  //Array indicating that the data consists of multiple TelemetryRowGPB structures.
+  repeated DataPath delete = 2;      //Deletes a data path.
+  Generator generator = 3;           //Indicates the data source description, which applies to the OnChange+ service that requires high reliability.
+}
+message TelemetryRowGPB {
+   uint64 timestamp = 1;            //Timestamp of the current sampling instance.
+   bytes content = 11;              //Indicates the sampled data. The <strong>sensor_path</strong> field must be used to determine which .proto file is used for data encoding.
+}</pre>
+<p>The telemetry message includes both the sampling information and the actual sampled data. The sampled data encoded in GPB is stored in the <strong>data_gpb</strong> field and needs to be retrieved and then deserialized using the ParseFromString method. The <strong>data_gpb</strong> field contains a list of TelemetryRowGPB structures, each of which carries sampled data in the <strong>content</strong> field.</p>
+<pre class="screen">tele_gpb_table = telemetry.data_gpb #Carries sampled data.
+tele_gpb_row = tele_gpb_table.row #Indicates the list of TelemetryRowGPB structures.
+for row_gpb in tele_gpb_row:
+    byte_content = row_gpb.content
+    sample_data = data_parser.SampleDataGPBParser()</pre>
+</li><li>The type of sampled data is determined by the <strong>sensor_path</strong> field in the telemetry header. An appropriate Python class must be selected based on <strong>sensor_path</strong> to deserialize the sampled data carried in <strong>content</strong>.<p>In this example, <strong>sensor_path</strong> is <strong>huawei-cpu-memory:cpu-memory/board-cpu-infos/board-cpu-info</strong>, so the sampled data must be deserialized using the Python class generated from <strong>huawei-cpu-memory.proto</strong>. If <strong>sensor_path</strong> is <strong>huawei-mac:mac/mac-statistics/mac-statistic</strong>, the Python class generated from <strong>huawei-mac.proto</strong> should be used instead.</p>
+<p>Since all .proto files corresponding to sampling paths have been compiled and added to the Python project, the appropriate Python class can be selected based on <strong>sensor_path</strong> when the telemetry header is parsed. For easy implementation, the following sample code identifies the required Python files based on <strong>proto_path</strong> and dynamically imports them to the Python project.</p>
+<pre class="screen">def parse_sample_data_gpb(self, byte_content, proto_path):
+    # Identify the required.proto files based on <strong>proto_path</strong>, along with message names in those files.
+    str_proto = re.split("\.", proto_path)
+    proto_file = str_proto[0]
+    proto_obj = str_proto[1]
+    import_file = 'protos.proto_py.' + proto_file + '_pb2'
+    pb2 = importlib.import_module(import_file)
+    sample_data = eval('pb2.' + proto_obj)()
+    sample_data.ParseFromString(byte_content)
+    return sample_data</pre>
+<p><strong>sample_data_gpb</strong> carries the deserialized sampled data. In this example, <strong>proto_path</strong> is <strong>huawei_cpu_memory.CpuMemory</strong> and corresponds to the <strong>huawei-cpu-memory.proto</strong> file which carries sampled data in the <strong>CpuMemory</strong> message. The data must be deserialized based on the format defined in <strong>CpuMemory</strong>. Then you can obtain the actual sampled data from <strong>sample_data</strong>.</p>
+<pre class="screen">message CpuMemory {
+   message BoardCpuInfos {
+      message BoardCpuInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 overload_threshold = 3 [json_name = "overload-threshold"];
+         uint32 unoverload_threshold = 4 [json_name = "unoverload-threshold"];
+         uint32 interval = 5 [json_name = "interval"];
+         uint32 system_cpu_usage = 6 [json_name = "system-cpu-usage"];
+         uint32 monitor_cycle = 7 [json_name = "monitor-cycle"];
+         string overload_state_change_time = 8 [json_name = "overload-state-change-time"];
+         enum CurrentOverloadState {
+            CurrentOverloadState_UNOVERLOAD = 0;
+            CurrentOverloadState_OVERLOAD = 1;
+         };
+         CurrentOverloadState current_overload_state = 9 [json_name = "current-overload-state"];
+         bool forward_is_deployed = 10 [json_name = "forward-is-deployed"];
+         uint32 forward_cpu_usage = 11 [json_name = "forward-cpu-usage"];
+         uint32 cpu_cores = 12 [json_name = "cpu-cores"];
+         uint32 dataplane_cpu_usage = 13 [json_name = "dataplane-cpu-usage"];
+      }
+      repeated BoardCpuInfo board_cpu_info = 1 [json_name = "board-cpu-info"];
+   }
+   BoardCpuInfos board_cpu_infos = 1 [json_name = "board-cpu-infos"];
+   message BoardCpuCoreInfos {
+      message BoardCpuCoreInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 core_id = 3 [json_name = "core-id"];
+         uint32 cpu_core_usage = 4 [json_name = "cpu-core-usage"];
+      }
+      repeated BoardCpuCoreInfo board_cpu_core_info = 1 [json_name = "board-cpu-core-info"];
+   }
+   BoardCpuCoreInfos board_cpu_core_infos = 2 [json_name = "board-cpu-core-infos"];
+   message BoardCpuServiceInfos {
+      message BoardCpuServiceInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         string service_name = 3 [json_name = "service-name"];
+         uint32 service_cpu_usage = 4 [json_name = "service-cpu-usage"];
+      }
+      repeated BoardCpuServiceInfo board_cpu_service_info = 1 [json_name = "board-cpu-service-info"];
+   }
+   BoardCpuServiceInfos board_cpu_service_infos = 3 [json_name = "board-cpu-service-infos"];
+   message BoardMemoryInfos {
+      message BoardMemoryInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 overload_threshold = 3 [json_name = "overload-threshold"];
+         uint32 unoverload_threshold = 4 [json_name = "unoverload-threshold"];
+         uint32 os_memory_total = 5 [json_name = "os-memory-total"];
+         uint32 os_memory_use = 6 [json_name = "os-memory-use"];
+         uint32 os_memory_free = 7 [json_name = "os-memory-free"];
+         uint32 os_memory_usage = 8 [json_name = "os-memory-usage"];
+         string overload_state_change_time = 9 [json_name = "overload-state-change-time"];
+         enum CurrentOverloadState {
+            CurrentOverloadState_UNOVERLOAD = 0;
+            CurrentOverloadState_OVERLOAD = 1;
+         };
+         CurrentOverloadState current_overload_state = 10 [json_name = "current-overload-state"];
+         uint32 hugepages_total = 11 [json_name = "hugepages-total"];
+         uint32 hugepages_free = 12 [json_name = "hugepages-free"];
+      }
+      repeated BoardMemoryInfo board_memory_info = 1 [json_name = "board-memory-info"];
+   }
+   BoardMemoryInfos board_memory_infos = 4 [json_name = "board-memory-infos"];
+   message BoardProcessMemoryInfos {
+      message BoardProcessMemoryInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 process_id = 3 [json_name = "process-id"];
+         string process_name = 4 [json_name = "process-name"];
+         uint32 vm_size = 5 [json_name = "vm-size"];
+         uint32 vm_rss_size = 6 [json_name = "vm-rss-size"];
+         uint32 vm_data_size = 7 [json_name = "vm-data-size"];
+         uint32 vm_stk_size = 8 [json_name = "vm-stk-size"];
+         uint32 vm_exe_size = 9 [json_name = "vm-exe-size"];
+         uint32 vm_lib_size = 10 [json_name = "vm-lib-size"];
+      }
+      repeated BoardProcessMemoryInfo board_process_memory_info = 1 [json_name = "board-process-memory-info"];
+   }
+   BoardProcessMemoryInfos board_process_memory_infos = 5 [json_name = "board-process-memory-infos"];
+   message BoardStoragePartitionInfos {
+      message BoardStoragePartitionInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         string partition_name = 3 [json_name = "partition-name"];
+         uint64 partition_size_all = 4 [json_name = "partition-size-all"];
+         uint64 partition_size_use = 5 [json_name = "partition-size-use"];
+         uint64 partition_memory_free = 6 [json_name = "partition-memory-free"];
+         uint32 partition_memory_usage = 7 [json_name = "partition-memory-usage"];
+         string partition_mounted_info = 8 [json_name = "partition-mounted-info"];
+      }
+      repeated BoardStoragePartitionInfo board_storage_partition_info = 1 [json_name = "board-storage-partition-info"];
+   }
+   BoardStoragePartitionInfos board_storage_partition_infos = 6 [json_name = "board-storage-partition-infos"];
+   message BoardStorageFlashEraseInfos {
+      message BoardStorageFlashEraseInfo {
+         uint32 flash_id = 1 [json_name = "flash-id"];
+         uint64 erase_number = 2 [json_name = "erase-number"];
+         string slot_id = 3 [json_name = "slot-id"];
+         string cpu_id = 4 [json_name = "cpu-id"];
+      }
+      repeated BoardStorageFlashEraseInfo board_storage_flash_erase_info = 1 [json_name = "board-storage-flash-erase-info"];
+   }
+   BoardStorageFlashEraseInfos board_storage_flash_erase_infos = 7 [json_name = "board-storage-flash-erase-infos"];
+   message BoardStorageFlashBadBlockInfos {
+      message BoardStorageFlashBadBlockInfo {
+         string partition_name = 1 [json_name = "partition-name"];
+         uint64 bad_number = 2 [json_name = "bad-number"];
+         string slot_id = 3 [json_name = "slot-id"];
+         string cpu_id = 4 [json_name = "cpu-id"];
+      }
+      repeated BoardStorageFlashBadBlockInfo board_storage_flash_bad_block_info = 1 [json_name = "board-storage-flash-bad-block-info"];
+   }
+   BoardStorageFlashBadBlockInfos board_storage_flash_bad_block_infos = 8 [json_name = "board-storage-flash-bad-block-infos"];
+   message BoardCpuProcessInfos {
+      message BoardCpuProcessInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 process_id = 3 [json_name = "process-id"];
+         string process_name = 4 [json_name = "process-name"];
+         uint32 process_cpu_usage = 5 [json_name = "process-cpu-usage"];
+      }
+      repeated BoardCpuProcessInfo board_cpu_process_info = 1 [json_name = "board-cpu-process-info"];
+   }
+   BoardCpuProcessInfos board_cpu_process_infos = 9 [json_name = "board-cpu-process-infos"];
+}</pre>
+</li></ol>
+</li></ol>
+</li><li>Register the created class with the gRPC service framework. After writing the code for data parsing, define a network service and port for the server and register the gRPC API with the network service so that the server can receive data from the device.<p>The sample Python code is as follows:</p>
+<pre class="screen">try:
+    grpcServer = grpc.server(futures.ThreadPoolExecutor(max_workers=4))  #Specifies the maximum number of worker threads that the server can use concurrently to handle requests.
+    grpcServer.add_insecure_port (host + ':' + port) #Specifies the address and port for establishing a connection with the server.
+except RuntimeError as e:
+    sys.exit(1)
+huawei_grpc_dialout_pb2_grpc.add_gRPCDataserviceServicer_to_server(DialoutServicer(), self.grpcServer) # Adds a function and the server. The server will deserialize data.
+grpcServer.start() #Start the server.
+grpcServer.wait_for_termination()
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    self.grpcServer.stop(0)</pre>
+</li></ol>
+<p>After the preceding operations are complete, the collector is interconnected. Process other service-specific .proto files in the same way.</p>
+<p>The overall development roadmap is the same if the collector software is developed using Java or C++.</p>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_telemetry_cfg_0153.html">Developing the Static Telemetry Subscription Function
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_telemetry_cfg_0156.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

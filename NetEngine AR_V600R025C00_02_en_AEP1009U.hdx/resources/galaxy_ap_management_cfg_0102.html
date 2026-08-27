@@ -1,0 +1,197 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Centralized License Control on a Multi-Branch Network">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0108.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0087.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebNext" content="ys_wlan@web_example/galaxy_ap_management_cfg_0102_web.xml">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002150138925">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring Centralized License Control on a Multi-Branch Network</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002150138925"></a><a name="EN-US_TASK_0000002150138925"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Centralized License Control on a Multi-Branch Network</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000002150138925__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>A large enterprise has branches in different areas. ACs are deployed at each branch to manage APs and provide WLAN access services for users. AC backup is required to save costs. In this scenario, the enterprise can deploy a high-performance AC at the headquarters as a standby AC to provide backup services for active ACs in the branches. In addition, license resources are centrally managed on the AC at the HQ and shared among ACs at all branches.</p>
+<ul><li>AC networking mode: Layer 3 bypass mode</li><li>DHCP deployment mode: Router_3 functions as a DHCP server to assign IP addresses to APs and STAs.</li><li>Service data forwarding mode: direct forwarding</li></ul>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Network diagram of centralized license control on a multi-branch network</span><br><span><img class="imgResize" src="images/fig_dc_cfg_wlan_lic_000901.png" width="526.6800000000001" title="Click to enlarge"></span></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>AC data planning</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="48%" id="mcps1.4.1.5.2.3.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="52%" id="mcps1.4.1.5.2.3.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="48%" headers="mcps1.4.1.5.2.3.1.1 "><p>License centralized control role</p>
+</td>
+<td class="cellrowborder" valign="top" width="52%" headers="mcps1.4.1.5.2.3.1.2 "><ul><li>AC_3 and AC_3b form a VRRP group and function as the license server.</li><li>AC_1, AC_1b, AC_2, and AC_2b function as license clients.</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="48%" headers="mcps1.4.1.5.2.3.1.1 "><p>License server address</p>
+</td>
+<td class="cellrowborder" valign="top" width="52%" headers="mcps1.4.1.5.2.3.1.2 "><p>Virtual VRRP group consisting of AC_3 and AC_3b: 10.23.203.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="48%" headers="mcps1.4.1.5.2.3.1.1 "><p>License client address</p>
+</td>
+<td class="cellrowborder" valign="top" width="52%" headers="mcps1.4.1.5.2.3.1.2 "><ul><li>AC_1: 10.23.201.3</li><li>AC_1b: 10.23.201.4</li><li>AC_2: 10.23.202.3</li><li>AC_2b: 10.23.202.4</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002150138925__1.4.2"></a><a name="1.4.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Enable centralized license control on the AC that functions as the license server.</li><li>Enable the centralized license control function on ACs that function as license clients, and configure the local addresses and license server address.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002150138925__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enable centralized license control on the AC that functions as the license server.</span><p><p># Enable centralized license control on AC_3.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname </strong><strong>AC_3</strong>
+[AC_3] <strong>wlan</strong>
+[AC_3-wlan] <strong>license centralized enable</strong></pre>
+<p># Enable centralized license control on AC_3b in the same way as the configuration on AC_3.</p>
+</p></li><li><span>Enable the centralized license control function on ACs that function as license clients, and configure the local addresses and license server address.</span><p><p># Enable the centralized license control function on AC_1 and configure the local address and license server address.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname </strong><strong>AC_1</strong>
+[AC_1] <strong>wlan</strong>
+[AC_1-wlan] <strong>license centralized enable</strong>
+[AC_1-wlan] <strong>license client source ip-address 10.23.201.3</strong>
+[AC_1-wlan] <strong>license server ip-address 10.23.203.1</strong></pre>
+<p># Enable centralized license control on AC_1b, AC_2, and AC_2b, and configure the license server address and local addresses. The configuration procedure is similar to that on AC_1.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002150138925__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Check the configuration of centralized license control on AC_3 functioning as the license server.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>display license centralized configuration</strong> 
+------------------------------------------------- 
+License centralized server enable :    enable                                    
+License server IP                 :    10.23.203.1   
+-------------------------------------------------</pre>
+<p># Check the configuration of centralized license control on AC_1 functioning as a license client.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>display license centralized configuration </strong>
+-------------------------------------------------
+License centralized server enable :    enable                                    
+License server IP                 :    10.23.203.1  
+License local IP                  :    10.23.201.3 
+-------------------------------------------------</pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>AC_1</p>
+<pre class="screen">#
+sysname AC_1
+#
+wlan
+ license centralized enable
+ license client source ip-address 10.23.201.3
+ license server ip-address 10.23.203.1
+#
+return</pre>
+</li><li><p>AC_1b</p>
+<pre class="screen">#
+sysname AC_1b
+#
+wlan
+ license centralized enable
+ license client source ip-address 10.23.201.4
+ license server ip-address 10.23.203.1
+#
+return</pre>
+</li><li><p>AC_2</p>
+<pre class="screen">#
+sysname AC_2
+#
+wlan
+ license centralized enable
+ license client source ip-address 10.23.202.3
+ license server ip-address 10.23.203.1
+#
+return</pre>
+</li><li><p>AC_2b</p>
+<pre class="screen">#
+sysname AC_2b
+#
+wlan
+ license centralized enable
+ license client source ip-address 10.23.202.4
+ license server ip-address 10.23.203.1
+#
+return</pre>
+</li><li><p>AC_3</p>
+<pre class="screen">#
+sysname AC_3
+#
+wlan
+ license centralized enable
+#
+return</pre>
+</li><li><p>AC_3b</p>
+<pre class="screen">#
+sysname AC_3b
+#
+wlan
+ license centralized enable
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ap_management_cfg_0108.html">Configuration Examples for AP Management
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ap_management_cfg_0087.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

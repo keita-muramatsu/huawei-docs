@@ -1,0 +1,118 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring LDP MD5 Authentication">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0070.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0071.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0073.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001388355633">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring LDP MD5 Authentication</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001388355633"></a><a name="EN-US_TASK_0000001388355633"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring LDP MD5 Authentication</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001388355633__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>MD5 authentication can be configured for a TCP connection over which an LDP session is established to improve security. Two peers of an LDP session can be configured with different authentication modes but must be configured with the same password.</p>
+<p>LDP MD5 authentication identifies LDP message modification by generating unique message digest for the same information segment. It is stricter than common TCP checksum-based authentication.</p>
+<div class="p">You can configure either LDP MD5 authentication or LDP keychain authentication to match your scenario:<ul><li><p>The MD5 algorithm is easy to configure and generates a single password, which can only be changed manually. MD5 authentication applies to networks requiring short-period encryption.</p>
+</li><li><p>Keychain authentication involves a set of passwords, which can be automatically switched based on the configuration. However, keychain authentication is complex to configure and applies to networks requiring high security.</p>
+</li></ul>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>LDP authentication configurations are prioritized in descending order: for a single peer, for a specified peer group, and for all peers. Both keychain and MD5 authentication can be configured. However, configurations with a higher priority override those with a lower priority, and those with the same priority are mutually exclusive. For example, if MD5 authentication is configured for Peer1 and keychain authentication is configured for all LDP peers, MD5 authentication takes effect on Peer1 and keychain authentication takes effect on other peers.</p>
+<p>As MD5 is insecure, you are advised to use a more secure authentication mode, such as keychain authentication.</p>
+</div></div>
+</div>
+<p>Perform the following configuration on the LSRs at both ends of an LDP session.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001388355633__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure LDP MD5 authentication for a single LDP peer.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable MD5 authentication and set an authentication password.</span><p><pre class="screen"><b><span class="cmdqueryname">md5-password</span></b> { <strong><span>plain</span></strong> | <strong><span>cipher</span></strong> } <i><span class="varname">peer-lsr-id</span></i> <i><span class="varname">password</span></i></pre>
+</p><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li><p>The password must be at least eight characters long and contain at least two of the following character types: uppercase letters, lowercase letters, digits, and special characters.</p>
+</li><li><p>For security purposes, you are advised to configure a ciphertext password and change the password periodically.</p>
+</li><li>For security purposes, MD5 is not recommended. If MD5 is required, run the <b><span class="cmdqueryname">install feature-software WEAKEA</span></b> command first to install the weak security algorithm/protocol feature package WEAKEA.</li></ul>
+</div></div>
+</p><p><p>A password can be set either in non-ciphertext or ciphertext. These two modes differ in how passwords are recorded in the configuration file. In non-ciphertext mode, a user-defined password is directly recorded in the configuration file; however, in ciphertext mode, a password is encrypted using a special algorithm and then recorded in the configuration file.</p>
+<p>By default, LDP MD5 authentication is not performed between LDP peers.</p>
+<div class="notice"><span class="noticetitle"><img src="../public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><ul><li><p>If you configure a password in non-ciphertext, the password will be saved in the same way in the configuration file. The non-ciphertext mode has high security risks, and therefore the ciphertext mode is recommended. To ensure device security, change the password periodically.</p>
+</li><li><p>Configuring LDP MD5 authentication causes an LDP session to be reestablished and deletes the LSP associated with the original LDP session.</p>
+</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure LDP MD5 authentication in a batch for a specified peer group.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable MD5 authentication for LDP peers in a specified LDP peer group and set a password.</span><p><pre class="screen"><b><span class="cmdqueryname">md5-password</span></b> { <strong><span>plain</span></strong> | <strong><span>cipher</span></strong> } <strong><span>peer-group</span></strong> <i><span class="varname">ip-prefix-name</span></i> <i><span class="varname">password</span></i></pre>
+</p><p><p>An IP prefix list can be specified using <i><span class="varname">ip-prefix-name</span></i> to define the range of peer IP addresses in a peer group. Ensure that the IP prefix list specified by <i><span class="varname">ip-prefix-name</span></i> has been configured before performing this step.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li><p>The password is at least eight characters long and contains at least two of the following types: upper-case letters, lower-case letters, digits, and special characters (except the question mark (?) and space).</p>
+</li><li><p>For security purposes, you are advised to configure a ciphertext password and change the password periodically.</p>
+</li><li>For security purposes, MD5 is not recommended. If MD5 is required, run the <b><span class="cmdqueryname">install feature-software WEAKEA</span></b> command first to install the weak security algorithm/protocol feature package WEAKEA.</li></ul>
+</div></div>
+</p></li><li class="substepexpand"><span>(Optional) Exclude a specified peer from authentication.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication exclude</span></b> <strong><span>peer</span></strong> <i><span class="varname">peer-id</span></i></pre>
+</p><p><p>By default, after LDP keychain authentication is enabled for all LDP peers, keychain authentication takes effect on all LDP peers. Perform this step to disable the device from authenticating a specified LDP peer.</p>
+</p></li></ol>
+</li><li><span>Configure LDP MD5 authentication for all LDP peers.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable MD5 authentication for all LDP peers and set a password.</span><p><pre class="screen"><b><span class="cmdqueryname">md5-password</span></b> { <strong><span>plain</span></strong> | <strong><span>cipher</span></strong> } <strong><span>all</span></strong> <i><span class="varname">password</span></i></pre>
+</p><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li><p>The password is at least eight characters long and contains at least two of the following types: upper-case letters, lower-case letters, digits, and special characters (except the question mark (?) and space).</p>
+</li><li><p>For security purposes, you are advised to configure a ciphertext password and change the password periodically.</p>
+</li><li>For security purposes, MD5 is not recommended. If MD5 is required, run the <b><span class="cmdqueryname">install feature-software WEAKEA</span></b> command first to install the weak security algorithm/protocol feature package WEAKEA.</li></ul>
+</div></div>
+</p></li><li class="substepexpand"><span>(Optional) Exclude a specified peer from authentication.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication exclude</span></b> <strong><span>peer</span></strong> <i><span class="varname">peer-id</span></i></pre>
+</p><p><p>By default, after LDP keychain authentication is enabled for all LDP peers, keychain authentication takes effect on all LDP peers. Perform this step to disable the device from authenticating a specified LDP peer.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0070.html">Configuring LDP Security Features
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0071.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0073.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

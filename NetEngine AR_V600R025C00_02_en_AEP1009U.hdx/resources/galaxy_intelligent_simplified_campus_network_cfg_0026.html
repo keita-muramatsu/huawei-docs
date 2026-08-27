@@ -1,0 +1,80 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Upgrading an RU">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0023.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0025.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0027.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001619233825">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Upgrading an RU</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001619233825"></a><a name="EN-US_TASK_0000001619233825"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Upgrading an RU</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001619233825__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>An RU has the following types of firmware: APP firmware (performs operations such as controlling the forwarding process, parsing XLDP packets, and processing configurations), PoE firmware (implements the PoE function), and BIOS firmware (verifies and starts the APP firmware). All three types of firmware can be upgraded. System software packages or patches (containing firmware) of the central device can be used to upgrade RUs. If the firmware version of an RU is different from the firmware package version in the software or patch package of the central device, the RU's firmware requires an upgrade. By default, the RU upgrade function is disabled on the central device. If the firmware of RUs needs to be upgraded, you can enable the RU upgrade function on the central device. You can also specify the time for RUs to restart with firmware of the new version.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>After the upgrade is successful, the RU will restart, during which services will be interrupted. As such, properly plan the upgrade time.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001619233825__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the global RU view.</span><p><pre class="screen"><b><span class="cmdqueryname">remote-unit</span></b></pre>
+</p></li><li><span>Upgrade RUs.</span><p><ul><li>Run the following command to upgrade RUs immediately. After this command is run, RUs load firmware of the new version and restart immediately.<pre class="screen"><b><span class="cmdqueryname">upgrade right-now</span></b></pre>
+</li><li>Run the following command to set the time for RUs to restart with firmware of the new version. After this command is run, RUs immediately load firmware of the new version and restart at the specified time.<pre class="screen"><b><span class="cmdqueryname">upgrade start-time</span></b> <i><span class="varname">hh:mm:ss</span></i></pre>
+</li><li>Run the following command to set the RU deployment end time. The firmware of the RUs that go online before the specified time will be automatically upgraded, and automatic RU firmware upgrade is disabled after the specified time.<pre class="screen"><b><span class="cmdqueryname">upgrade cutoff-time</span></b><i><span class="varname"> yyyy/mm/dd hh:mm:ss</span></i></pre>
+</li></ul>
+</p></li><li><span>(Optional) If an RU fails to be upgraded and enters the cooldown period, it can be upgraded again only after the cooldown period ends. You can use the forcible upgrade function to upgrade the RU, no matter whether the cooldown period has ended or not.</span><ol type="a"><li class="substepexpand"><span>Enter the single RU view.</span><p><pre class="screen"><b><span class="cmdqueryname">remote-unit</span></b> {<em> <i><span class="varname">id</span></i></em> | <b><span class="cmdqueryname">connect-interface</span></b> <em>interface-type</em> <em>interface-number</em> | <b><span class="cmdqueryname">name</span></b> <em>remote-unit-name</em> }</pre>
+</p></li><li class="substepexpand"><span>Forcibly upgrade the firmware of an RU in the cooldown period as required.</span><p><pre class="screen"><b><span class="cmdqueryname">upgrade</span></b> { <strong>app</strong> | <strong>bios</strong> | <strong>poe</strong> | <strong>bios1</strong> | <strong>app1</strong> | <strong>app2</strong> | <strong>poe3</strong> | <strong>poe5</strong> | <strong>poe6</strong> | <strong>poe7</strong> | <strong>poe81 | poe82 | poe83</strong> } <b><span class="cmdqueryname">force</span></b></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>During the BIOS firmware upgrade of RUs, do not power off or disconnect the RUs. Otherwise, the RUs cannot be started.</p>
+</div></div>
+</p></li></ol>
+</li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001619233825__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <strong><b><span class="cmdqueryname">display remote-unit upgrade</span></b> </strong>{<strong> record </strong>|<strong> information </strong>} command to check the upgrade information.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0023.html">Maintaining an Intelligent Simplified Campus Network
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0025.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0027.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

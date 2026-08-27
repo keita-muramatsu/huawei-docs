@@ -1,0 +1,139 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an ISAKMP IPsec Policy">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0022.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0023.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0025.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513153894">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an ISAKMP IPsec Policy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513153894"></a><a name="EN-US_TASK_0000001513153894"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an ISAKMP IPsec Policy</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001513153894__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><ul><li>An advanced ACL has been configured to define the data flows to be protected by IPsec.</li><li>An IPsec proposal has been configured.</li><li>IKE peers have been configured.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513153894__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Negotiated IPsec parameters of an ISAKMP IPsec policy are defined in the IPsec policy view, and the negotiation initiator and responder must use the same IPsec parameter settings. The device that has an ISAKMP IPsec policy configured can initiate negotiation. This situation applies when the remote IP address is fixed and is often used for branch configuration in point-to-multipoint IPsec networking.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513153894__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an ISAKMP IPsec policy, and enter the ISAKMP IPsec policy view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec policy</span></b> <i><span class="varname">policy-name</span></i> <i><span class="varname">seq-number</span></i> <strong><span>isakmp</span></strong></pre>
+</p></li><li><strong>Optional: </strong><span>Configure an alias for the IPsec policy.</span><p><pre class="screen"><b><span class="cmdqueryname">alias</span></b> <i><span class="varname">alias</span></i></pre>
+<p>By default, the system uses the combination of the name and sequence number of an IPsec policy as the alias of the IPsec policy. If the default alias has been used by another IPsec policy, the system uses the combination of the name and sequence number of an IPsec policy as well as the current system time as the alias.</p>
+</p></li><li><span>Reference an advanced ACL.</span><p><pre class="screen"><b><span class="cmdqueryname">security acl</span></b> [ <strong><span>ipv6</span></strong> ] <i><span class="varname">acl-number</span></i></pre>
+</p><p><p>By default, an IPsec policy does not reference an ACL.</p>
+<p><i><span class="varname">acl-number</span></i> specifies an existing advanced ACL. For details about how to create an advanced ACL, see <a href="security_ipsec_cfg_0021.html">Creating an Advanced ACL</a>.</p>
+<p>An IPsec policy can reference only one ACL. Before an IPsec policy references a new ACL, you need to unbind the existing ACL from the IPsec policy.</p>
+</p></li><li><span>Reference an IPsec proposal.</span><p><pre class="screen"><b><span class="cmdqueryname">proposal</span></b> <i><span class="varname">proposal-name</span></i></pre>
+<p>By default, an IPsec policy does not reference an IPsec proposal.</p>
+<p><i><span class="varname">proposal-name</span></i> specifies an existing IPsec proposal. For details about how to configure an IPsec proposal, see <a href="security_ipsec_cfg_0013.html">Configuring an IPsec Proposal</a>.</p>
+<p>An ISAKMP IPsec policy can reference a maximum of 12 IPsec proposals. During IKE negotiation, the two ends of an IPsec tunnel first use the IPsec proposals with the same parameter settings. If such IPsec proposals cannot be found, an SA cannot be established. When an IPsec policy needs to reference multiple IPsec proposals, ensure that all the IPsec proposals referenced in the IPsec policies at both ends of an IPsec tunnel use the same IPsec encapsulation mode.</p>
+</p></li><li><span>Reference an IKE peer.</span><p><pre class="screen"><b><span class="cmdqueryname">ike-peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p><p><p>By default, an IPsec policy does not reference an IKE peer.</p>
+<p><i><span class="varname">peer-name</span></i> specifies an existing IKE peer. For details about how to configure an IKE peer, see <a href="security_ipsec_cfg_0019.html">Configuring an IKE Peer</a>.</p>
+<p>IPsec policies with different sequence numbers in the same IPsec policy group cannot reference IKE peers with the same IP address.</p>
+</p></li><li><strong>Optional: </strong><span>Configure the local IP address of an IPsec tunnel.</span><p><pre class="screen"><b><span class="cmdqueryname">tunnel local</span></b> { { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> } | <strong><span>applied-interface</span></strong> }</pre>
+<p>By default, no local IP address is configured for an IPsec tunnel.</p>
+<div class="p">For an IKE-negotiated IPsec policy, the local IPsec tunnel address configured using the <b><span class="cmdqueryname">tunnel local</span></b> command on the local end must be the same as the remote address configured using the <b><span class="cmdqueryname">remote-address</span></b> command on the remote end. In most cases, you do not need to manually configure the local IP address of an IPsec tunnel. During SA negotiation, the local IP address of an IPsec tunnel is automatically selected based on routes. In the following situations, however, you need to manually configure the local IP address of an IPsec tunnel:<ul><li>There are equal-cost routes between the local and remote ends.</li><li><p>The IP address of the interface to which an IPsec policy is applied is not fixed or unpredictable.</p>
+</li><li><p>Multiple IP addresses (one primary IP address and multiple secondary IP addresses) are configured on the interface to which an IPsec policy is applied.</p>
+</li><li><p>An IPsec policy is applied to a tunnel interface, and an IP address is configured for the interface using the <strong><b><span class="cmdqueryname">source</span></b></strong> { <i><span class="varname">source-ip-address</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> } command.</p>
+</li></ul>
+</div>
+</p></li><li><strong>Optional: </strong><span>Configure the mode in which IPsec tunnel setup is triggered.</span><p><pre class="screen"><b><span class="cmdqueryname">sa trigger-mode</span></b> { <strong><span>auto</span></strong> | <strong><span>traffic-based</span></strong> }</pre>
+<p>By default, IPsec tunnel setup is triggered in traffic-based mode.</p>
+</p></li><li><strong>Optional: </strong><span>Configure Perfect Forward Secrecy (PFS) used when the local end initiates negotiation.</span><p><pre class="screen"><span><b><span class="cmdqueryname">pfs</span></b> { <strong><span>dh-group1</span></strong> | <strong><span>dh-group2</span></strong><span> | <strong><span>dh-group5</span></strong> | <strong><span>dh-group14</span></strong></span></span> | <strong><span>dh-group15</span></strong> | <strong><span>dh-group16</span></strong> | <strong><span>dh-group18</span></strong> | <strong><span>dh-group19</span></strong> | <strong><span>dh-group20</span></strong> | <strong><span>dh-group21</span></strong> | <strong><span>dh-group24</span></strong> }</pre>
+</p><p><p>By default, PFS is not used when the local end initiates negotiation.</p>
+<p>When the local end initiates negotiation, there is an additional DH exchange in IKEv1 phase 2 or IKEv2 Create_Child_SA Exchange, which ensures security of the IPsec SA key and improves communication security. Group 1, Group 2, and Group 5 are not recommended because they cannot meet security requirements.</p>
+<p><a href="#EN-US_TASK_0000001513153894__table9989121013017">Table 1</a> lists the requirements for configuring PFS DH groups at both ends of an IPsec tunnel during PFS configuration.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000001513153894__table9989121013017"></a><a name="table9989121013017"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001513153894__table9989121013017" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Requirements for configuring PFS DH groups at both ends of an IPsec tunnel</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.9.3.4.2.3.1.1" liSelected="liSelected"><p>IPsec Policy Used at Both Ends</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.3.9.3.4.2.3.1.2" liSelected="liSelected"><p>Configuration Requirements</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.9.3.4.2.3.1.1 "><p>Both ends use ISAKMP IPsec policies.</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.9.3.4.2.3.1.2 "><p>The PFS DH groups specified on both ends must be the same. Otherwise, IPsec SA negotiation fails.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.9.3.4.2.3.1.1 "><p>One end uses a template IPsec policy, and the other end uses an ISAKMP IPsec policy.</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.3.9.3.4.2.3.1.2 "><ul><li><p>If the PFS function is configured in the IPsec policy template view, the PFS DH groups specified at both ends must be the same. Otherwise, IPsec SA negotiation fails.</p>
+</li><li><p>If the PFS function is not configured in the IPsec policy template view and the PFS DH groups specified at both ends are different, IPsec SA negotiation will succeed and the responder will use the DH group of the initiator.</p>
+</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li><li><strong>Optional: </strong><span>Configure the local end not to initiate negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">respond-only enable</span></b></pre>
+</p><p><p>By default, if the local end establishes an IPsec tunnel based on an ISAKMP IPsec policy, the local end will initiate IPsec negotiation.</p>
+<p>If both the local and remote ends establish an IPsec tunnel based on ISAKMP IPsec policies, both ends will initiate IPsec negotiation. In this case, configure one end as the responder that does not initiate negotiation, which can help you check packet processing and locate IPsec faults.</p>
+</p></li><li><strong>Optional: </strong><span>Enable an IPsec policy.</span><p><pre class="screen"><b><span class="cmdqueryname">policy enable</span></b></pre>
+<p>By default, IPsec policies in an IPsec policy group are enabled.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513153894__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display ipsec policy</span></b> [ <strong><span>brief</span></strong> | <strong><span>name</span></strong> <i><span class="varname">policy-name</span></i> [ <i><span class="varname">seq-number</span></i> ] ] [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] command to check the IPsec policy configuration.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001513153894__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p><a href="security_ipsec_cfg_0027.html">Applying an IPsec Policy Group</a> to an interface.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0022.html">Configuring an IPsec Policy
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0023.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0025.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

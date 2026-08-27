@@ -1,0 +1,79 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding SRv6 Path MTU">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0222.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0224.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Learning More">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001450859144">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Understanding SRv6 Path MTU</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001450859144"></a><a name="EN-US_CONCEPT_0000001450859144"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding SRv6 Path MTU</h1>
+<div><p></p>
+<p>Typically, only the source and destination IPv6 nodes parse IPv6 extension headers. Transit nodes forward IPv6 packets without performing IPv6 MTU-based packet fragmentation, which is performed only on the source node. If the length of an IPv6 packet is greater than the IPv6 MTU of a device's outbound interface, the device discards the packet and performs path MTU discovery. The impact of the MTU must therefore be considered, because SRv6 uses IPv6 as the forwarding plane.</p>
+<p>In addition, if the length of an IPv6 packet is less than the MTU value configured for an SRv6 BE path or SRv6 TE Policy, the bandwidth of the associated link is not fully utilized. Therefore, an appropriate SRv6 path MTU needs to be configured to prevent packet loss and maximize link bandwidth utilization.</p>
+<p>An SRv6 path MTU is the total length of a packet encapsulated with both the SRv6 header and IPv6 payload instead of only the IPv6 payload. For details, see <a href="#EN-US_CONCEPT_0000001450859144__fig_mtu_feature_00501">Figure 1</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001450859144__fig_mtu_feature_00501"><a name="EN-US_CONCEPT_0000001450859144__fig_mtu_feature_00501"></a><a name="fig_mtu_feature_00501"></a><span class="figcap"><b>Figure 1 </b>SRv6 path MTU</span><br><span><img class="imgResize" src="figure/en-us_image_0000001450539452.png" width="518.7" height="128.19723700000003" title="Click to enlarge"></span></div>
+<p>During SRv6 path MTU configuration, you can configure a reserved path MTU on the SRv6 ingress. The configured SRv6 path MTU minus the reserved path MTU is the active path MTU. The MTU applied to SRv6 packets is the smaller of either the active path MTU or the IPv6 MTU of physical interfaces. <a href="#EN-US_CONCEPT_0000001450859144__fig1950611718211">Figure 2</a> shows the relationships among the MTUs.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001450859144__fig1950611718211"><a name="EN-US_CONCEPT_0000001450859144__fig1950611718211"></a><a name="fig1950611718211"></a><span class="figcap"><b>Figure 2 </b>Relationships among the MTUs</span><br><span><img class="vsd" src="figure/en-us_image_0000001450859156.png" width="NaN" height="NaN"></span></div>
+<p>SRv6 path MTU configuration takes effect for packets forwarded through an SRv6 BE path or SRv6 TE Policy. You need to configure a proper SRv6 path MTU according to the size of SRv6-encapsulated packets.</p>
+<p>SRv6 BE paths and SRv6 TE Policies both support the global configuration of an SRv6 path MTU and reserved value. For example, if an SRv6 path MTU is set to 1600 bytes and the reserved value is set to 100 bytes globally, the active path MTU is 1500 bytes. In this case, if the IPv6 MTU of physical interfaces is greater than or equal to 1500 bytes, the MTU used by the ingress is 1500 bytes. However, if the IPv6 MTU of physical interfaces is less than 1500 bytes, the ingress uses this IPv6 MTU.</p>
+<p>SRv6 TE Policies also support the configuration of SRv6 path MTUs on a per segment list basis. An SRv6 path MTU configured for a segment list overrides the global SRv6 path MTU. For example, if an SRv6 path MTU is set to 1600 bytes globally, the SRv6 path MTU of all segment lists is 1600 bytes by default. If an SRv6 path MTU is set to a value other than 1600 bytes for a segment list, this segment list uses the newly configured value. The SRv6 path MTU of the segment list minus the globally configured reserved value is the active path MTU of the segment list. This active path MTU is then compared with the IPv6 MTU of physical interfaces. The smaller value between them is the MTU that the ingress actually uses.</p>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0222.html">Configuring an SRv6 Path MTU
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0224.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

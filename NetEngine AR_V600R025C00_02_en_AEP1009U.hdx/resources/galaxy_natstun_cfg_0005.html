@@ -1,0 +1,76 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="STUN Implementation">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_natstun_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_natstun_cfg_0004.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="STUN">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="STUN">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featurename" content="STUN">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001512838198">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>STUN Implementation</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001512838198"></a><a name="EN-US_CONCEPT_0000001512838198"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">STUN Implementation</h1>
+<div><div class="section"><h4 class="sectiontitle">Typical STUN Networking</h4><p><a href="#EN-US_CONCEPT_0000001512838198__fig183399475214">Figure 1</a> illustrates a typical STUN network where STUN clients on a private network are located behind NAT devices and the STUN server is located on a public network. STUN clients send requests to the STUN server for NAT detection if this is required by services, and will then receive responses from the STUN server. After successful detection, STUN clients send information about their transport network ports (TNPs) to the route reflector (RR), and obtain the TNP information (including the IP addresses and port numbers before and after NAT) of other STUN clients through the RR. When STUN clients need to communicate with each other, they will send BGP packets to instruct the peer end to perform hole punching and send STUN messages based on their TNP information to establish a data channel.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001512838198__fig183399475214"><a name="EN-US_CONCEPT_0000001512838198__fig183399475214"></a><a name="fig183399475214"></a><span class="figcap"><b>Figure 1 </b>Typical STUN networking</span><br><span><img class="vsd" src="figure/en-us_image_0000001563758109.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">STUN Message Exchange</h4><p><a href="#EN-US_CONCEPT_0000001512838198__fig139993705317">Figure 2</a> shows the STUN message exchange process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001512838198__fig139993705317"><a name="EN-US_CONCEPT_0000001512838198__fig139993705317"></a><a name="fig139993705317"></a><span class="figcap"><b>Figure 2 </b>STUN message exchange process</span><br><span><img src="figure/en-us_image_0000002327353529.png" width="NaN" height="NaN"></span></div>
+<p><strong>NAT detection</strong></p>
+<ol><li>Each STUN client sends a binding request to the STUN server.<p>When a service requires NAT detection (for example, NAT detection needs to be enabled prior to TNP advertisement), the STUN clients (STUN client1 and STUN client2 in this example) send binding requests to the STUN server.</p>
+</li><li id="EN-US_CONCEPT_0000001512838198__li1376184484410"><a name="EN-US_CONCEPT_0000001512838198__li1376184484410"></a><a name="li1376184484410"></a>After the STUN server receives the binding requests, if authentication is configured, the STUN server performs authentication and message integrity check, as follows. Otherwise, the STUN server proceeds to Step <a href="#EN-US_CONCEPT_0000001512838198__li18374938164515">3</a>.<ol type="a"><li>The STUN server searches for the password associated with the username carried in the USERNAME attribute of each STUN message.</li><li id="EN-US_CONCEPT_0000001512838198__li1980716614436"><a name="EN-US_CONCEPT_0000001512838198__li1980716614436"></a><a name="li1980716614436"></a>The STUN server uses the password (HMAC key) and the STUN message (including the message header and attributes preceding the MESSAGE-INTEGRITY attribute) as the input to calculate the HMAC value.</li><li>The STUN server obtains the HMAC value from the MESSAGE-INTEGRITY attribute of the STUN message and compares it with the HMAC value calculated in <a href="#EN-US_CONCEPT_0000001512838198__li1980716614436">b</a>. If they are the same, authentication and message integrity check succeed, and the STUN server proceeds to Step <a href="#EN-US_CONCEPT_0000001512838198__li18374938164515">3</a>. Otherwise, the STUN server returns an error code to the corresponding STUN client and records a log.</li></ol>
+</li><li id="EN-US_CONCEPT_0000001512838198__li18374938164515"><a name="EN-US_CONCEPT_0000001512838198__li18374938164515"></a><a name="li18374938164515"></a>The STUN server sends a binding response to each STUN client.<p><a name="EN-US_CONCEPT_0000001512838198__li18374938164515"></a><a name="li18374938164515"></a>The STUN server obtains the source IP address and port number from the binding request and sends a binding response to each STUN client. The binding response message carries the MAPPED-ADDRESS, XOR-MAPPED-ADDRESS, and RESPONSE-ORIGIN attributes. If authentication is enabled, the MESSAGE-INTEGRITY attribute is also carried in the message for authentication and message integrity check after the STUN client receives the binding response.</p>
+</li><li>Each STUN client confirms the NAT detection result and sends the result to the service module that requires NAT detection (such as the TNP module).<p>After receiving the binding response, each STUN client performs authentication and message integrity check according to Step <a href="#EN-US_CONCEPT_0000001512838198__li1376184484410">2</a> and then notifies the service module of the NAT detection result, if authentication is configured. Otherwise, the STUN clients just confirm the NAT detection result as follows and notify the service module of the result. The STUN client obtains an IP address and port number from the MAPPED-ADDRESS or XOR-MAPPED-ADDRESS attribute in the binding response, and compares the obtained IP address and port number with the source IP address and port number carried in the binding request. If they are different, a NAT device is used in front of the STUN client. After confirming the NAT detection result, each STUN client notifies the service module of the result.</p>
+</li></ol>
+<p><strong>Hole punching</strong></p>
+<p>Hole punching is a technique for establishing a direct connection between P2P communicating parties behind NAT devices. Specifically, it sets up a data channel between P2P STUN clients across intermediate devices (such as RRs and servers) by creating NAT session entries on NAT devices. The process of STUN hole punching is as follows:</p>
+<ol><li>A STUN client obtains the TNP information (including IP addresses and port numbers before and after NAT) of other STUN clients from an RR through BGP. When STUN client1 needs to communicate with STUN client2, it sends BGP packets to notify STUN client2 that hole punching is required to establish a data channel.<p>In the following example, the IP address and port number of STUN client1 before NAT are (IP1:Port1) and its post-NAT IP address and port number are (IP1':Port1'). The IP address and port number of STUN client2 before NAT are (IP2:Port2), and its post-NAT IP address and port number are (IP2':Port2').</p>
+</li><li>STUN client1 and STUN client2 send binding requests to each other for hole punching.<ol type="a"><li>STUN client1 sends two binding requests to STUN client2. Specifically, it sends message A containing (IP1, Port1) and (IP2, Port2) and message B containing (IP1, Port1) and (IP2', Port2'). If STUN client1 and STUN client2 are on the same private network (that is, behind the same NAT device), message A can be successfully sent to STUN client2, and the process moves to Step <a href="#EN-US_CONCEPT_0000001512838198__li1087171454918">3</a>. Otherwise, NAT device1 (which is in front of STUN client1) will discard message A.</li><li>After STUN client1 sends message B, NAT device1 generates an entry to record the session from STUN client1 to STUN client2. However, since NAT device2 (which is in front of STUN client2) does not have the corresponding session entry, NAT device2 will discard message B. Meanwhile, when STUN client2 is sending binding requests to STUN client1, NAT device2 also generates an entry to record the session from STUN client2 to STUN client1. As NAT device1 does not have the corresponding session entry either, it will discard message B from STUN client2.</li><li>The two STUN clients keep sending binding requests to each other. When session entries are generated on both NAT device1 and NAT device2, the two STUN clients can receive binding requests from each other.</li></ol>
+</li><li id="EN-US_CONCEPT_0000001512838198__li1087171454918"><a name="EN-US_CONCEPT_0000001512838198__li1087171454918"></a><a name="li1087171454918"></a>After receiving a binding request from STUN client1, STUN client2 sends a binding response to STUN client1. STUN client1 does the same.</li></ol>
+<p>After the preceding STUN messages are exchanged, a data channel is established between the STUN clients so that packets can traverse the NAT devices.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_natstun_cfg_0003.html">Understanding STUN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_natstun_cfg_0004.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

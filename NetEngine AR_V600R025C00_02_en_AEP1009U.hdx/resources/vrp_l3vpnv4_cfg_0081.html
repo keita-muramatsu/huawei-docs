@@ -1,0 +1,500 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring IPv4 L3VPN over MPLS Inter-AS Option B (Basic Networking)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0371.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0080.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0093.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001341451180">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring IPv4 L3VPN over MPLS Inter-AS Option B (Basic Networking)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001341451180"></a><a name="EN-US_TASK_0000001341451180"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring IPv4 L3VPN over MPLS Inter-AS Option B (Basic Networking)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001341451180__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle"></h4><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001341451180__fig_dc_vrp_mpls-l3vpn-v4_cfg_011201">Figure 1</a>, CE1 and CE2 belong to the same VPN. CE1 connects to PE1 in AS 100, and CE2 connects to PE2 in AS 200. It is required that an MP-EBGP peer relationship be established between the ASBRs to transmit VPNv4 routes, implementing inter-AS VPN Option B.</p>
+<div class="fignone" id="EN-US_TASK_0000001341451180__fig_dc_vrp_mpls-l3vpn-v4_cfg_011201"><a name="EN-US_TASK_0000001341451180__fig_dc_vrp_mpls-l3vpn-v4_cfg_011201"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_cfg_011201"></a><span class="figcap"><b>Figure 1 </b>Inter-AS VPN Option B (basic networking)</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001341134042.png" width="NaN" height="NaN"></span></div>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001341451180__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>Note the following during the configuration:</p>
+<ul><li><p>Configure an MP-EBGP peer relationship between ASBR1 and ASBR2, and disable the ASBRs from filtering received VPNv4 routes based on VPN targets.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001341451180__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Configure IGP on the backbone network for IP connectivity between the ASBR and PE in the same AS, and establish an MPLS LDP LSP between the ASBR and PE in the same AS.</p>
+</li><li><p>Set up EBGP peer relationships between PEs and CEs and MP-IBGP peer relationships between PEs and ASBRs.</p>
+</li><li><p>Configure VPN instances on the PEs rather than ASBRs.</p>
+</li><li><p>Enable MPLS on the interfaces that connect the ASBRs, establish an MP-EBGP peer relationship between the ASBRs, and configure the ASBRs not to filter received VPNv4 routes based on VPN targets.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001341451180__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IGP on the MPLS backbone networks in AS 100 and AS 200 for communication between PEs on each backbone network. OSPF is used as IGP in this example. For detailed configurations, see Configuration Scripts.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The 32-bit address of the loopback interface that functions as the LSR ID needs to be advertised using OSPF.</p>
+</div></div>
+<p>After completing the configuration, run the <strong>display ospf peer</strong> command on an ASBR or PE. The command output shows that the OSPF neighbor relationship is in the <strong>Full</strong> state, indicating that the OSPF neighbor relationship has been established between the ASBR and PE in the same AS.</p>
+<p>The ASBR and PE in the same AS can learn and ping the address of each other's loopback interface.</p>
+</p></li><li><span>Configure basic MPLS functions and MPLS LDP on the MPLS backbone networks in AS 100 and AS 200 respectively to establish MPLS LDP LSPs.</span><p><p># Configure PE1.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname PE1</strong> 
+[PE1] <strong>mpls lsr-id 1.1.1.1</strong>
+[PE1] <strong>mpls</strong>
+[PE1-mpls] <strong>quit</strong>
+[PE1]<strong> mpls ldp</strong>
+[PE1-mpls-ldp]<strong> </strong><strong>quit</strong>
+[PE1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong> 
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong> 
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure ASBR1.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname ASBR1</strong> 
+[ASBR1] <strong>mpls lsr-id 2.2.2.2</strong>
+[ASBR1] <strong>mpls</strong>
+[ASBR1-mpls] <strong>quit</strong>
+[ASBR1]<strong> mpls ldp</strong>
+[ASBR1-mpls-ldp]<strong> </strong><strong>quit</strong>
+[ASBR1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong> 
+[ASBR1-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[ASBR1-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong> 
+[ASBR1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure ASBR2.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname ASBR2</strong> 
+[ASBR2] <strong>mpls lsr-id 3.3.3.3</strong>
+[ASBR2] <strong>mpls</strong>
+[ASBR2-mpls] <strong>quit</strong>
+[ASBR2]<strong> mpls ldp</strong>
+[ASBR2-mpls-ldp]<strong> </strong><strong>quit</strong>
+[ASBR2] <strong>interface <span>10ge</span> <span>0/0/1</span></strong> 
+[ASBR2-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[ASBR2-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong> 
+[ASBR2-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure PE2.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname PE2</strong> 
+[PE2] <strong>mpls lsr-id 4.4.4.4</strong>
+[PE2] <strong>mpls</strong>
+[PE2-mpls] <strong>quit</strong>
+[PE2]<strong> mpls ldp</strong>
+[PE2-mpls-ldp]<strong> </strong><strong>quit</strong>
+[PE2] <strong>interface <span>10ge</span> <span>0/0/1</span></strong> 
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong> 
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p>After completing the configuration, run the <strong>display mpls ldp session</strong> command on a PE or ASBR. The command output shows that the session status is <strong>Operational</strong>, indicating that an LDP peer relationship has been established between the PE and ASBR in the same AS.</p>
+<p>The following example uses the command output on PE1.</p>
+<pre class="screen">&lt;PE1&gt; <strong>display mpls ldp session</strong>
+ LDP Session(s) in Public Network
+ Codes: LAM(Label Advertisement Mode), SsnAge Unit(DDDD:HH:MM)
+<span> An asterisk (*) before a session means the session is being deleted.</span>
+ -------------------------------------------------------------------------
+ PeerID             Status      LAM  SsnRole  SsnAge       KASent/Rcv
+--------------------------------------------------------------------------
+ 2.2.2.2:0          <strong>Operational</strong> DU   Passive  0000:02:30   604/604
+--------------------------------------------------------------------------
+TOTAL: 1 Session(s) Found.</pre>
+<p></p>
+</p></li><li><span>Configure basic IPv4 L3VPN functions on PE1 and PE2.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>PE1's import and export VPN targets must match PE2's export and import VPN targets, respectively.</p>
+</div></div>
+</p><p><p># Configure CE1 to establish an EBGP peer relationship with PE1.</p>
+<pre class="screen">[CE1] <strong>bgp 65001</strong>  
+[CE1-bgp] <strong>peer 10.1.1.2 as-number 100</strong>
+[CE1-bgp] <strong>network </strong><strong>5.5.5.5 255.255.255.255</strong>
+[CE1-bgp] <strong>ipv4-family unicast</strong>
+[CE1-bgp-af-ipv4] <strong>peer 10.1.1.2 enable</strong>
+[CE1-bgp-af-ipv4] <strong>quit</strong>
+[CE1-bgp] <strong>quit</strong></pre>
+<p># Configure PE1 to establish an EBGP peer relationship with CE1.</p>
+<pre class="screen">[PE1] <strong>ip vpn-instance vpn1</strong> 
+[PE1-vpn-instance-vpn1] <strong>ipv4-family</strong> 
+[PE1-vpn-instance-vpn1-af-ipv4] <strong>route-distinguisher 100:1</strong> 
+[PE1-vpn-instance-vpn1-af-ipv4] <strong>vpn-target 1:1 </strong><strong>both</strong>
+[PE1-vpn-instance-vpn1-af-ipv4] <strong>quit</strong> 
+[PE1-vpn-instance-vpn1] <strong>quit</strong> 
+[PE1]<strong> interface <span>10GE</span><span>0/0/2</span></strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong>ip binding vpn-instance vpn1</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.1.1.2 24</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[PE1] <strong>bgp 100</strong>  
+[PE1-bgp] <strong>ipv4-family vpn-instance vpn1</strong> 
+[PE1-bgp-vpn1] <strong>peer 10.1.1.1 as-number 65001</strong> 
+[PE1-bgp-vpn1] <strong>quit</strong> 
+[PE1-bgp] <strong>quit </strong></pre>
+<p># Configure PE1 to establish an MP-IBGP peer relationship with ASBR1.</p>
+<pre class="screen">[PE1] <strong>bgp 100</strong>  
+[PE1-bgp] <strong>peer 2.2.2.2 as-number 100</strong>
+[PE1-bgp] <strong>peer 2.2.2.2 connect-interface loopback 1</strong> 
+[PE1-bgp] <strong>ipv4-family vpnv4</strong> 
+[PE1-bgp-af-vpnv4] <strong>peer 2.2.2.2 enable</strong>
+<strong> </strong></pre>
+<p># Configure ASBR1 to establish an MP-IBGP peer relationship with PE1.</p>
+<pre class="screen">[ASBR1] <strong>bgp 100</strong>  
+[ASBR1-bgp] <strong>peer 1.1.1.1 as-number 100</strong>
+[ASBR1-bgp] <strong>peer 1.1.1.1 connect-interface loopback 1</strong> 
+[ASBR1-bgp] <strong>ipv4-family vpnv4</strong> 
+[ASBR1-bgp-af-vpnv4] <strong>peer 1.1.1.1 enable</strong>
+<strong> </strong></pre>
+<p>The configurations of CE2, PE2, and ASBR2 are similar to the configurations of CE1, PE1, and ASBR1, respectively.</p>
+<p>After completing the configuration, run the <strong>display bgp vpnv4 vpn-instance</strong> <em>vpn-instance-name</em> <strong>peer</strong> command on a PE. The command output shows that a BGP peer relationship has been established between the PE and CE and is in the <strong>Established</strong> state. Run the <strong>display bgp vpnv4 all peer</strong> command on a PE. The command output shows that the PE has established BGP peer relationships with the CE and ASBR in the same AS, and the BGP peer relationships are in the <strong>Established</strong> state.</p>
+<p>The following example uses the command output on PE1.</p>
+<pre class="screen">&lt;PE1&gt; <strong>display bgp vpnv4 vpn-instance vpn1 peer</strong>
+ BGP local router ID : 10.16.1.2
+ Local AS number : 100
+
+ VPN-Instance vpn1, Router ID 10.16.1.2:
+ Total number of peers : 1                 Peers in established state : 1
+
+  Peer            V          AS  MsgRcvd  MsgSent  OutQ  Up/Down        State  PrefRcv
+  10.1.1.1        4       65001       79       80     0 01:05:48 <strong>Established</strong>        1</pre>
+<pre class="screen">&lt;PE1&gt; <strong>display bgp vpnv4 all peer</strong>
+ BGP local router ID : 10.16.1.2
+ Local AS number : 100
+ Total number of peers : 2                 Peers in established state : 2
+
+  Peer            V          AS  MsgRcvd  MsgSent  OutQ  Up/Down       State  PrefRcv
+  2.2.2.2         4         100      180      180     0 02:33:25 <strong>Established</strong>       1
+
+  Peer of IPv4-family for vpn instance :
+
+  VPN-Instance vpn1, Router ID 10.16.1.2:
+  Peer            V          AS  MsgRcvd  MsgSent  OutQ  Up/Down        State  PrefRcv
+  10.1.1.1        4       65001       80       80     0 01:06:34 <strong>Established</strong>        1</pre>
+</p></li><li><span>Configure inter-AS VPN Option B.</span><p><p># On ASBR1, enable MPLS on <span>10GE</span> <span>0/0/2</span> connected to ASBR2.</p>
+<pre class="screen">[ASBR1]<strong> interface <span>10GE</span><span>0/0/2</span></strong>
+[ASBR1-<span>10GE</span><span>0/0/2</span>] <strong>ip address 192.168.1.1 24</strong>
+[ASBR1-<span>10GE</span><span>0/0/2</span>] <strong>mpls</strong>
+[ASBR1-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># On ASBR1, establish an MP-EBGP peer relationship with ASBR2, and disable ASBR1 from filtering received VPNv4 routes based on VPN targets.</p>
+<pre class="screen">[ASBR1] <strong>bgp 100</strong>  
+[ASBR1-bgp] <strong>peer 192.168.1.2 as-number 200</strong>
+[ASBR1-bgp]<strong> ipv4-family vpnv4</strong>
+[ASBR1-bgp-af-vpnv4]<strong> peer 192.168.1.2 enable</strong>
+[ASBR1-bgp-af-vpnv4] <strong>undo policy vpn-target</strong>
+<strong> </strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001341451180__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After the configuration is complete, the CEs can learn routes to the loopback interface of each other, and can ping each other successfully.</p>
+<p>The following example uses the command output on CE1.</p>
+<pre class="screen">&lt;CE1&gt; <strong>display ip routing-table</strong>
+Proto: Protocol        Pre: Preference
+<span class="keyword">Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route</span>
+------------------------------------------------------------------------------
+Routing Table: _public_
+         Destinations : 9        Routes : 9
+Destination/Mask    Proto  Pre  Cost      Flags  NextHop         Interface
+        5.5.5.5/32  Direct 0    0             D  127.0.0.1       LoopBack1
+       <strong>6.6.6.6/32</strong>  EBGP   255  0             D  10.1.1.2        <span>10GE</span><span>0/0/1</span>
+       10.1.1.0/24  Direct 0    0             D  10.1.1.1        <span>10GE</span><span>0/0/1</span>
+       10.1.1.1/32  Direct 0    0             D  127.0.0.1       <span>10GE</span><span>0/0/1</span>
+     10.1.1.255/32  Direct 0    0             D  127.0.0.1       <span>10GE</span><span>0/0/1</span>
+      127.0.0.0/8   Direct 0    0             D  127.0.0.1       InLoopBack0
+      127.0.0.1/32  Direct 0    0             D  127.0.0.1       InLoopBack0
+127.255.255.255/32  Direct 0    0             D  127.0.0.1       InLoopBack0
+255.255.255.255/32  Direct 0    0             D  127.0.0.1       InLoopBack0</pre>
+<pre class="screen">&lt;CE1&gt; <strong>ping -a 5.5.5.5 6.6.6.6</strong>
+  PING 6.6.6.6: 56  data bytes, press CTRL_C to break
+    Reply from 6.6.6.6: bytes=56 Sequence=1 ttl=252 time=120 ms
+    Reply from 6.6.6.6: bytes=56 Sequence=2 ttl=252 time=73 ms
+    Reply from 6.6.6.6: bytes=56 Sequence=3 ttl=252 time=111 ms
+    Reply from 6.6.6.6: bytes=56 Sequence=4 ttl=252 time=86 ms
+    Reply from 6.6.6.6: bytes=56 Sequence=5 ttl=252 time=110 ms
+  --- 6.6.6.6 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 73/100/120 ms </pre>
+<p>Run the <strong>display bgp vpnv4 all routing-table</strong> command on ASBRs to check VPNv4 routes.</p>
+<p>The following example uses the command output on ASBR1.</p>
+<pre class="screen">&lt;ASBR1&gt; <strong>display bgp vpnv4 all routing-table</strong>
+ BGP Local router ID is 2.2.2.2
+ Status codes: * - valid, &gt; - best, d - damped,<span> x - best external,</span><span> a - add path,</span>
+               h - history,  i - internal, s - suppressed, S - Stale
+               Origin : i - IGP, e - EGP, ? - incomplete<span>
+ RPKI validation codes: V - valid, I - invalid, N - not-found</span>
+
+ Total number of routes from all PE: 2
+ Route Distinguisher: 100:1
+
+      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn
+
+ *&gt;i  5.5.5.5/32         1.1.1.1         0          100        0      65001i
+ Route Distinguisher: 200:1
+
+      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn
+
+ *&gt;   6.6.6.6/32         192.168.1.2                             0    200 65002i</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001341451180__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>CE1</p>
+<pre class="screen">#
+sysname CE1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+interface LoopBack1
+ ip address 5.5.5.5 255.255.255.255
+#
+bgp 65001
+ peer 10.1.1.2 as-number 100
+ network 5.5.5.5 255.255.255.255
+ #
+ ipv4-family unicast
+  peer 10.1.1.2 enable
+#
+ip route-static 10.2.1.0 255.255.255.0 10.1.1.2
+#
+return</pre>
+</li><li><p>PE1</p>
+<pre class="screen">#
+sysname PE1
+#
+ip vpn-instance vpn1
+ ipv4-family
+  route-distinguisher 100:1
+  vpn-target 1:1 export-extcommunity
+  vpn-target 1:1 import-extcommunity
+#
+mpls lsr-id 1.1.1.1
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.16.1.2 255.255.255.0
+ mpls
+ mpls ldp
+# 
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpn1
+ ip address 10.1.1.2 255.255.255.0
+#
+#
+interface LoopBack1
+ ip address 1.1.1.1 255.255.255.255
+#
+bgp 100
+ peer 2.2.2.2 as-number 100
+ peer 2.2.2.2 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 2.2.2.2 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 2.2.2.2 enable
+ #
+ ipv4-family vpn-instance vpn1
+  peer 10.1.1.1 as-number 65001
+#
+ospf 1
+ area 0.0.0.0
+  network 1.1.1.1 0.0.0.0
+  network 10.16.1.0 0.0.0.255
+#
+return</pre>
+</li><li><p>ASBR1</p>
+<pre class="screen">#
+sysname ASBR1
+#
+mpls lsr-id 2.2.2.2
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.16.1.1 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.1.1 255.255.255.0
+ mpls
+#
+interface LoopBack1
+ ip address 2.2.2.2 255.255.255.255
+#
+bgp 100
+ peer 192.168.1.2 as-number 200
+ peer 1.1.1.1 as-number 100
+ peer 1.1.1.1 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 192.168.1.2 enable
+  peer 1.1.1.1 enable
+ #
+ ipv4-family vpnv4
+  undo policy vpn-target
+  peer 1.1.1.1 enable
+  peer 192.168.1.2 enable
+#
+ospf 1
+ area 0.0.0.0
+  network 2.2.2.2 0.0.0.0
+  network 10.16.1.0 0.0.0.255
+#
+return</pre>
+</li><li>ASBR2<pre class="screen">#
+sysname ASBR2
+#
+mpls lsr-id 3.3.3.3
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.17.1.1 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.1.2 255.255.255.0
+ mpls
+ #
+interface LoopBack1
+ ip address 3.3.3.3 255.255.255.255
+#
+bgp 200
+ peer 192.168.1.1 as-number 100
+ peer 4.4.4.4 as-number 200
+ peer 4.4.4.4 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 192.168.1.1 enable
+  peer 4.4.4.4 enable
+ #
+ ipv4-family vpnv4
+  undo policy vpn-target
+  peer 4.4.4.4 enable
+  peer 192.168.1.1 enable
+#
+ospf 1
+ area 0.0.0.0
+  network 3.3.3.3 0.0.0.0
+  network 10.17.1.0 0.0.0.255
+#
+return</pre>
+</li><li>PE2<pre class="screen">#
+sysname PE2
+#
+ip vpn-instance vpn1
+ ipv4-family
+  route-distinguisher 200:1
+  vpn-target 1:1 export-extcommunity
+  vpn-target 1:1 import-extcommunity
+#
+mpls lsr-id 4.4.4.4
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.17.1.2 255.255.255.0
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpn1
+ ip address 10.2.1.2 255.255.255.0
+#
+interface LoopBack1
+ ip address 4.4.4.4 255.255.255.255
+#
+bgp 200
+ peer 3.3.3.3 as-number 200
+ peer 3.3.3.3 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  peer 3.3.3.3 enable
+ #
+ ipv4-family vpnv4
+  policy vpn-target
+  peer 3.3.3.3 enable
+ #
+ ipv4-family vpn-instance vpn1
+  peer 10.2.1.1 as-number 65002
+#
+ospf 1
+ area 0.0.0.0
+  network 4.4.4.4 0.0.0.0
+  network 10.17.1.0 0.0.0.255
+#
+return</pre>
+</li><li>CE2<pre class="screen">#
+sysname CE2
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.2.1.1 255.255.255.0
+#
+interface Loopback 1
+ ip address 6.6.6.6 255.255.255.255
+#
+bgp 65002
+ peer 10.2.1.2 as-number 200
+ network 6.6.6.6 255.255.255.255
+ #
+ ipv4-family unicast
+  peer 10.2.1.2 enable
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0371.html">Configuration Examples for IPv4 L3VPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0080.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_L3VPNv4_cfg_0093.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

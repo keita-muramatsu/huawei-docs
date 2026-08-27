@@ -1,0 +1,140 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Traffic Policing Based on Application Identification">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0063.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0061.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0039.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Interface-based Rate Limiting">
+<meta name="featurename" content="Traffic Policing">
+<meta name="featurename" content="Traffic Shaping">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002010054437">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Traffic Policing Based on Application Identification</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002010054437"></a><a name="EN-US_TASK_0000002010054437"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Traffic Policing Based on Application Identification</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000002010054437__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000002010054437__fig_dc_ar_cfg_qos_04490201">Figure 1</a>, an enterprise uses DeviceA as the gateway to connect to the Internet. To ensure network quality, avoid bandwidth waste, and ensure normal running of services, DeviceA detects the packets of FileShare_P2P applications (such as BT and eDonkey_eMule) and limits the rate of FileShare_P2P packets within 4 Mbit/s.</p>
+<div class="fignone" id="EN-US_TASK_0000002010054437__fig_dc_ar_cfg_qos_04490201"><a name="EN-US_TASK_0000002010054437__fig_dc_ar_cfg_qos_04490201"></a><a name="fig_dc_ar_cfg_qos_04490201"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring traffic policing based on application identification</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 represents <span>10GE</span> <span>0/0/1</span>.</p>
+</div></div>
+<br><span><img src="images/fig_dc_ar_cfg_qos_04490501.png"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002010054437__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Create an application group named <strong>FileShare_P2P</strong> and add the BT and eDonkey_eMule applications to the application group.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[<span class="keyword">DeviceA</span>] <strong>application-group name FileShare_P2P</strong> 
+[<span class="keyword">DeviceA</span>-application-group-FileShare_P2P] <strong>add application BT</strong>
+[<span class="keyword">DeviceA</span>-application-group-FileShare_P2P] <strong>add application eDonkey_eMule</strong>
+[<span class="keyword">DeviceA</span>-application-group-FileShare_P2P] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic classifier to match the application group <strong>FileShare_P2P</strong>.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>] <strong>traffic classifier p2p</strong>
+[<span class="keyword">DeviceA</span>-classifier-p2p] <strong>if-match app-group FileShare_P2P</strong>
+[<span class="keyword">DeviceA</span>-classifier-p2p] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic behavior to limit the rate of identified FileShare_P2P packets.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>] <strong>traffic behavior p2p</strong>
+[<span class="keyword">DeviceA</span>-behavior-p2p] <strong>car cir 4096</strong>
+[<span class="keyword">DeviceA</span>-behavior-p2p] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic policy and apply it to <span>the inbound direction</span> of an interface.</span><p><p># On <span class="keyword">DeviceA</span>, create a traffic policy <strong>p2p</strong> and bind a traffic classifier to a traffic behavior in the traffic policy.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>] <strong>traffic policy p2p</strong>
+[<span class="keyword">DeviceA</span>-trafficpolicy-p2p] <strong>classifier p2p behavior p2p</strong>
+[<span class="keyword">DeviceA</span>-trafficpolicy-p2p] <strong>quit</strong></pre>
+<p># Apply the traffic policy <strong>p2p</strong> to <span>the inbound direction</span> of interface 1 and enable application identification on the interface.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>traffic-policy p2p inbound</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>sa enable</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002010054437__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Check the traffic classifier configuration.</p>
+<pre class="screen">&lt;<span class="keyword">DeviceA</span>&gt; <strong>display traffic classifier p2p</strong>
+  Traffic Classifier Information:
+    Classifier: p2p
+      Type: OR
+      Rule(s):
+        if-match app-group FileShare_P2P</pre>
+<p># Check the traffic policy configuration.</p>
+<pre class="screen">&lt;<span class="keyword">DeviceA</span>&gt; <strong>display traffic policy p2p</strong>                                             
+  Traffic Policy Information:                                                   
+    Policy: p2p                                                                 
+      Classifier: p2p                                                           
+        Type: OR                                                                
+      Behavior: p2p                                                             
+        Committed Access Rate:                                                  
+          CIR 4096 (Kbps), PIR 4096 (Kbps), CBS 32768 (Bytes), PBS 32768 (Bytes)
+          Color Mode: color blind                                               
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard  </pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><p><span class="keyword">DeviceA</span></p>
+<pre class="screen">#
+sysname <span class="keyword">DeviceA</span>
+#
+application-group name FileShare_P2P
+ add application BT
+ add application eDonkey_eMule
+#
+traffic classifier P2P type or
+ if-match app-group FileShare_P2P  
+#
+traffic behavior P2P
+ car cir 4096 kbps
+#
+traffic policy P2P 
+ classifier P2P behavior P2P precedence 5
+#
+interface <span>10GE</span><span>0/0/1</span>
+ traffic-policy im inbound 
+ sa enable
+#
+return</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0063.html">Configuration Examples for Traffic Policing, Traffic Shaping, and Interface-based Rate Limiting
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0061.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0039.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring an L2TP Client to Initiate an L2TP Tunnel Connection Through Dial-up (Using a Cellular Interface)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000002207101264.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001884120722.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001897627010">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring an L2TP Client to Initiate an L2TP Tunnel Connection Through Dial-up (Using a Cellular Interface)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001897627010"></a><a name="EN-US_TASK_0000001897627010"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring an L2TP Client to Initiate an L2TP Tunnel Connection Through Dial-up (Using a Cellular Interface)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001897627010__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Network Requirements</h4><p>In <a href="#EN-US_TASK_0000001897627010__fig_dc_cfg_l2tp_002801">Figure 1</a>, the HQ and branch of an enterprise are located in different cities. The branch has an Ethernet network deployed and its gateway is connected to the Internet through a 3G/4G network.</p>
+<p>The HQ provides virtual private dial-up network (VPDN) access services for branch users and allows all branch users to access the network. The LNS only authenticates the L2TP client. In this case, you can configure the L2TP client to establish an L2TP connection with the LNS through dial-up.</p>
+<div class="fignone" id="EN-US_TASK_0000001897627010__fig_dc_cfg_l2tp_002801"><a name="EN-US_TASK_0000001897627010__fig_dc_cfg_l2tp_002801"></a><a name="fig_dc_cfg_l2tp_002801"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring an L2TP client to initiate an L2TP tunnel connection through dial-up (using a cellular interface)</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent 10GE0/0/1 and 10GE0/0/2, respectively.</p>
+</div></div>
+<br><span><img src="../images/en-us_image_0000002218352154.png" width="NaN" height="NaN"></span></div>
+<h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Configure the dial-up function on the cellular interface of the L2TP client.</p>
+</li><li><p>Configure L2TP on the L2TP client.</p>
+</li><li><p>On the L2TP client, configure a static route for accessing the public network, set the outbound interface of the route as a cellular interface, and enable the dial-up function.</p>
+</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001897627010__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure the L2TP client.</span><p><p>In this example, the IP address of the cellular interface on the L2TP client is automatically assigned by the carrier network.</p>
+<p># Configure the dial-up function on Cellular2/0/0.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname L2TP Client</strong>
+[L2TP Client] <strong>interface cellular 2/0/0:1</strong>
+[L2TP Client-Cellular2/0/0:1] <strong>ip address modem-alloc</strong>
+[L2TP Client-Cellular2/0/0:1] <strong>quit</strong></pre>
+<p># Configure a user-side IP address.</p>
+<pre class="screen">[L2TP Client] <strong>interface 10GE 0/0/1</strong>
+[L2TP Client-10GE0/0/1] <strong>ip address 192.168.1.1 255.255.255.0</strong>
+[L2TP Client-10GE0/0/1] <strong>quit</strong></pre>
+<p># Configure an L2TP group and specify related attributes.</p>
+<pre class="screen">[L2TP Client] <strong>l2tp enable</strong>
+[L2TP Client] <strong>l2tp-group 1</strong>
+[L2TP Client-l2tp-group-1] <strong>tunnel name L2TP-Client</strong>
+[L2TP Client-l2tp-group-1] <strong>start l2tp ip 12.1.1.1</strong>
+Warning: This operation may cause traffic interruption, Continue? [Y/N]:y</pre>
+<p># Enable tunnel authentication and set a password for tunnel authentication.</p>
+<pre class="screen">[L2TP Client-l2tp-group-1] <strong>tunnel authentication</strong>
+Warning: This operation may cause traffic interruption, Continue? [Y/N]:y
+[L2TP Client-l2tp-group-1] <strong>tunnel password cipher YsHsjx_123456</strong>
+Warning: This operation may cause traffic interruption, Continue? [Y/N]:y
+[L2TP Client-l2tp-group-1] <strong>quit</strong></pre>
+<p># Configure the user name and password, authentication mode, and IP address for the PPP user.</p>
+<pre class="screen">[L2TP Client] <strong>interface Dialer 1</strong>
+[L2TP Client-Dialer1] <strong>link-protocol ppp</strong>
+[L2TP Client-Dialer1] <strong>ppp chap user huawei</strong>
+[L2TP Client-Dialer1] <strong>ppp chap password cipher YsHsjx_202206</strong>
+[L2TP Client-Dialer1] <strong>ip address ppp-negotiate</strong>
+[L2TP Client-Dialer1] <strong>quit</strong></pre>
+<p># Configure a public network route so that the packets sent to the HQ are forwarded through the cellular interface.</p>
+<pre class="screen">[L2TP Client] <strong>ip route-static 0.0.0.0 0 Cellular2/0/0:1</strong></pre>
+<p># Trigger the L2TP client to establish an L2TP tunnel.</p>
+<pre class="screen">[L2TP Client] <strong>interface Dialer 1</strong>
+[L2TP Client-Dialer1] <strong>l2tp-auto-client l2tp-group 1</strong>
+[L2TP Client-Dialer1] <strong>quit</strong></pre>
+<div class="p"># Configure a private network route so that enterprise branch users can access the HQ private network.<pre class="screen">[L2TP Client] <strong>ip route-static 192.168.0.0 255.255.255.0 Dialer1</strong></pre>
+</div>
+</p></li><li><span>Configure the LNS.</span><p><p>The device cannot function as an LNS. The configuration procedure varies according to the device type. For details, see the related documentation of the device.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001897627010__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Run the <strong>display l2tp tunnel</strong> command on the L2TP client. The command output shows that an L2TP tunnel has been established.</p>
+<pre class="screen">[L2TP Client] <strong>display l2tp tunnel all</strong>
+------------------------------------------------------------------------
+Local Info:
+  Tunnel ID      : 1                  Tunnel Name      : L2TP-Client
+  Negotiation IP : 11.1.1.2           Negotiation Port : 1701
+  RWS            : 16                 State            : UP
+  Group Number   : 1                  Nego Interface   : Cellular2/0/0:1
+  Session Number : 1                  Last Fail Reason : --
+                                      Last Fail Time   : --
+Remote Info:
+  Tunnel ID      : 1                  Tunnel Name      : AR6121H-12-42
+  Tunnel IP      : 12.1.1.1           Tunnel Port      : 1701
+  RWS            : 16
+------------------------------------------------------------------------
+Total Number of L2TP Tunnel: 1
+------------------------------------------------------------------------</pre>
+<p># Run the <strong>display l2tp session</strong> command on the L2TP client. The command output shows that an L2TP session has been established.</p>
+<pre class="screen">[L2TP Client] <strong>display l2tp session all</strong>
+------------------------------------------------------------------------
+Local Info:
+  Session ID     : 1                  Tunnel Name      : L2TP-Client
+  Negotiation IP : 11.1.1.2           Negotiation Port : 1701
+  State          : UP                 Interface        : Dialer1
+  Tunnel Id      : 1                  Nego Interface   : Cellular2/0/0:1
+  Group Number   : 1                  Last Fail Reason : --
+                                      Last Fail Time   : --
+Remote Info:
+  Session ID     : 1                  Tunnel Name      : AR6121H-12-42
+  Tunnel IP      : 12.1.1.1           Tunnel Port      : 1701
+  Tunnel Id      : 1
+------------------------------------------------------------------------
+Total Number of L2TP Sessions: 1
+------------------------------------------------------------------------</pre>
+<p># PC1 in the branch can communicate with PC2 in the HQ.</p>
+<h4 class="sectiontitle">Configuration Scripts</h4><p># L2TP client</p>
+<pre class="screen">#
+ sysname L2TP Client
+#
+interface Cellular2/0/0:1
+ ip address modem-alloc
+#
+interface 10GE0/0/1
+ ip address 192.168.1.1 255.255.255.0
+#
+ l2tp enable
+#
+l2tp-group 1
+ tunnel name L2TP-Client
+ tunnel authentication
+ tunnel password cipher %+%##!!!!!!!!!"!!!!&amp;!!!!*!!!!7LTnVOK_g:ByAd"JO!6)ql@8O/Y{{YL"!tV!!!!!2jp5!!!!!!7!!!!fDK^&amp;qR0rG.#=5N@}LP-s]vF8{oyp&gt;!!!!!!!!!!%+%#
+ start l2tp ip 12.1.1.1
+#
+interface Dialer1
+ link-protocol ppp
+ ip address ppp-negotiate
+ ppp chap user huawei
+ ppp chap password cipher %+%##!!!!!!!!!"!!!!&amp;!!!!*!!!!7LTnVOK_g:%-^MAoOndRbGus;qF%r;vXygW!!!!!2jp5!!!!!!&gt;!!!!pT{P+K-mrAOWz++L&lt;3mSMogqWi.u'Oq=X\N0y=JQ%+%#
+ l2tp-auto-client l2tp-group 1
+#
+ip route-static 0.0.0.0 0 Cellular2/0/0:1
+ip route-static 192.168.0.0 255.255.255.0 Dialer1
+#
+return</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_task_0000002207101264.html">L2TP Configuration Examples
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_task_0000001884120722.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

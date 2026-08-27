@@ -1,0 +1,158 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="IS-IS GR">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000003.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000009.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IS-IS">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IS-IS">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001797841901">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>IS-IS GR</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001797841901"></a><a name="EN-US_CONCEPT_0000001797841901"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">IS-IS GR</h1>
+<div><p>IS-IS GR is an HA technology that implements non-stop data forwarding. Without GR, no neighbor information is saved upon a master/slave main control board switchover on a routing device. As a result, the first IIH that the routing device sends to its neighbors after the switchover does not contain any neighbor information. After receiving the IIH, the neighbors detect that they are not in its neighbor list and consider their neighbor relationships with the routing device to be interrupted. The neighbor then generates new LSPs and floods the topology changes to all other devices in the area. The other devices in the area then calculate routes based on their new LSDBs, leading to routing interruptions or flapping. The IETF formulated a standard for IS-IS GR, which prevents route flapping and traffic forwarding interruptions during IS-IS process restarts.</p>
+<div class="section"><h4 class="sectiontitle">Basic Concepts</h4><p>GR restarter: a GR-capable device that restarts in GR mode.</p>
+<p>GR helper: a GR-capable device that helps the GR restarter complete the GR process. The GR restarter must have the GR helper capability.</p>
+<p>An IS-IS GR involves both a GR restarter and GR helper.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The routing device can function as a GR helper, but not as a GR restarter.</p>
+</div></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Restart TLV</h4><p>The Restart TLV is included in the extension part of an IS-to-IS Hello (IIH) PDU. All IIH packets of a device that supports IS-IS GR contain the Restart TLV. The Restart TLV carries some parameters for the protocol restart. <a href="#EN-US_CONCEPT_0000001797841901__fig18987143216129">Figure 1</a> shows the restart TLV format.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001797841901__fig18987143216129"><a name="EN-US_CONCEPT_0000001797841901__fig18987143216129"></a><a name="fig18987143216129"></a><span class="figcap"><b>Figure 1 </b>Restart TLV format</span><br><span><img class="vsd" src="figure/en-us_image_0000001750921334.png"></span></div>
+<p><a href="#EN-US_CONCEPT_0000001797841901__table63171116457">Table 1</a> describes the fields in the restart TLV.</p>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001797841901__table63171116457"></a><a name="table63171116457"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001797841901__table63171116457" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Fields in the restart TLV</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="15.971597159715973%" id="mcps1.3.3.5.2.4.1.1" liSelected="liSelected"><p>Field</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="15.971597159715973%" id="mcps1.3.3.5.2.4.1.2" liSelected="liSelected"><p>Length</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="68.05680568056806%" id="mcps1.3.3.5.2.4.1.3" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.1 "><p>Type</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.2 "><p>1 octet</p>
+</td>
+<td class="cellrowborder" valign="top" width="68.05680568056806%" headers="mcps1.3.3.5.2.4.1.3 "><p>TLV type. Type value 211 indicates the restart TLV.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.1 "><p>Length</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.2 "><p>1 octet</p>
+</td>
+<td class="cellrowborder" valign="top" width="68.05680568056806%" headers="mcps1.3.3.5.2.4.1.3 "><p>Length of the TLV.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.1 "><p>RR</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.2 "><p>1 bit</p>
+</td>
+<td class="cellrowborder" valign="top" width="68.05680568056806%" headers="mcps1.3.3.5.2.4.1.3 "><p>Restart request (RR) bit. A GR restarter sends an IIH with the RR bit set to 1 to notify the GR helper that it is starting or restarting, and to instruct the GR helper to retain the current IS-IS neighbor relationship and respond with a CSNP.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.1 "><p>RA</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.2 "><p>1 bit</p>
+</td>
+<td class="cellrowborder" valign="top" width="68.05680568056806%" headers="mcps1.3.3.5.2.4.1.3 "><p>Restart acknowledgement (RA) bit. An IIH with the RA bit set to 1 is used to acknowledge the reception of an IIH with the RR bit set to 1.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.1 "><p>SA</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.2 "><p>1 bit</p>
+</td>
+<td class="cellrowborder" valign="top" width="68.05680568056806%" headers="mcps1.3.3.5.2.4.1.3 "><p>Suppress adjacency advertisement (SA) bit. It is used by a starting device to request its neighbors to suppress the broadcast of the neighbor relationships with the starting device to prevent routing black holes.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.1 "><p>Remaining Time</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.971597159715973%" headers="mcps1.3.3.5.2.4.1.2 "><p>2 octets</p>
+</td>
+<td class="cellrowborder" valign="top" width="68.05680568056806%" headers="mcps1.3.3.5.2.4.1.3 "><p>Period (in seconds) during which the neighbor relationship is not reset. </p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Timers</h4><p>IS-IS GR has three timers: T1, T2, and T3.</p>
+<p>T1: If the GR restarter has sent an IIH with the RR bit set to 1 but has not received any IIH carrying the restart TLV with the RA bit set to 1 from the GR helper when the T1 timer expires, the GR restarter resets the T1 timer and resends the IIH with the RR bit set to 1. When the GR restarter receives an IIH with the RA bit set to 1 from the GR helper, or when the T1 timer expires three times, the GR restarter cancels the T1 timer. Any interface enabled with IS-IS GR maintains a T1 timer. On Level-1-2 routing devices, broadcast interfaces maintain a T1 timer for each level of neighbor relationships.</p>
+<p>T2: This timer specifies the period from when the GR restarter restarts, to when the LSDBs on all devices with the same level as the GR restarter are synchronized. The T2 timer is the maximum time for the system to wait for the LSDB synchronization at both Level-1 and Level-2. Level-1 and Level-2 LSDBs maintain their respective T2 timers.</p>
+<p>T3: This timer specifies the maximum time allowed for the GR restarter to finish GR. The initial value of the T3 timer is 65535 seconds. After the IIH packet in which the RA is set is received from the neighbor, the value of the T3 timer becomes the smallest value among the Remaining Time fields of the IIH packets. If the T3 timer expires, GR fails. The entire system maintains only one T3 timer.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Session Mechanism</h4><p>GR minimizes the impact of control plane faults on the network and prevents route flapping, which ensures high reliability. For differentiation, the GR process triggered by a master/slave main control board switchover or by an IS-IS process restart is referred to as restarting. Throughout this process, the forwarding table remains unchanged. The GR process triggered by a device restart is referred to as starting, and the forwarding table is updated during this process. The IS-IS GR restarting and starting processes are described in the following section.</p>
+<div class="p"><a href="#EN-US_CONCEPT_0000001797841901__fig1535713317176">Figure 2</a> shows the IS-IS restarting process.<div class="fignone" id="EN-US_CONCEPT_0000001797841901__fig1535713317176"><a name="EN-US_CONCEPT_0000001797841901__fig1535713317176"></a><a name="fig1535713317176"></a><span class="figcap"><b>Figure 2 </b>IS-IS restarting process</span><br><span><img class="vsd" src="figure/en-us_image_0000001797721113.png"></span></div>
+<ol><li><p>After the GR restarter performs a master/slave main control board switchover, it starts the T1, T2, and T3 timers and sends an IIH containing the restart TLV through all interfaces. In the IIH, the RR bit is set to 1, and the RA and SA bits remain at 0.</p>
+</li><li><p>After receiving the IIH, the GR helper maintains the neighbor relationship with the GR restarter, updates the current holdtime, and replies with an IIH carrying the restart TLV. In this IIH, the RR bit is set to 0, the RA bit is set to 1, and the Remaining Time is the time left before the holdtime expires. In addition, the GR helper sends a CSNP and all LSPs to the GR restarter.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>On a P2P link, the GR helper must reply with a CSNP in the preceding scenario. On a broadcast link network, CSNPs are sent by the DIS. If the DIS is a GR restarter, a temporary DIS is elected from the other routing devices on the broadcast link network. If a neighbor does not have the GR helper capability, it ignores the restart TLV, returns to normal IS-IS processing, and resets the neighbor relationship with the GR restarter.</p>
+</div></div>
+</li><li><p>After receiving the IIH in which the RR bit is set to 0 and the RA bit is set to 1 from the GR helper, the GR restarter performs the following operations:</p>
+<ul><li><p>Compares the current value of the T3 timer with the Remaining Time in the IIH and uses the smaller value as the new T3 timer value.</p>
+</li><li><p>Cancels the T1 timer maintained by the local interface if the interface receives an acknowledgement packet and CSNP from the GR helper.</p>
+</li><li><p>Repeatedly resets the T1 timer and resends the IIH that contains the restart TLV if the interface receives no acknowledgement packet or CSNP from the GR helper. If the timeout count of the T1 timer exceeds the threshold, the GR restarter forcibly cancels the T1 timer and switches to normal IS-IS processing.</p>
+</li></ul>
+</li><li><p>After canceling the T1 timers on all its interfaces, clearing the CSNP list, and collecting all LSPs, the GR restarter considers LSDB synchronization with all neighbors as finished, and then cancels the T2 timer.</p>
+</li><li><p>When the T2 timer is canceled, LSDBs of the corresponding level are synchronized. If the GR restarter is a Level-1 or Level-2 device, it directly performs SPF calculation. If the GR restarter is a Level-1-2 device, it checks whether the T2 timer of the other level is also canceled. If both T2 timers are canceled, the GR restarter performs SPF calculation. Otherwise, the GR restarter waits for the T2 timer of the other level to expire.</p>
+</li><li><p>When both T2 timers are canceled, the GR restarter cancels the T3 timer and updates the FIB. In addition, the GR restarter re-generates the LSPs of each level and floods them. During LSDB synchronization, if the GR restarter receives the LSPs generated by itself before its restart, it deletes them.</p>
+</li><li><p>The GR restarter's IS-IS restarting process is now complete.</p>
+</li></ol>
+</div>
+<div class="p">Regarding the starting process, the starting device does not retain FIB entries. As a result, it expects the GR helper to reset their neighbor relationship that is up before the starting device starts, and not to advertise their neighbor relationship within a certain period. The IS-IS starting process, as shown in <a href="#EN-US_CONCEPT_0000001797841901__fig1150854673412">Figure 3</a>, is different from the IS-IS restarting process.<div class="fignone" id="EN-US_CONCEPT_0000001797841901__fig1150854673412"><a name="EN-US_CONCEPT_0000001797841901__fig1150854673412"></a><a name="fig1150854673412"></a><span class="figcap"><b>Figure 3 </b>IS-IS starting process</span><br><span><img class="vsd" src="figure/en-us_image_0000001750921330.png"></span></div>
+<ol><li><p>After the GR restarter starts, it starts the T2 timers for LSDB synchronization at each level and sends IIHs carrying the restart TLV through all interfaces. In the IIHs, the RR bit is set to 0, and the SA bit is set to 1.</p>
+</li><li><p>After receiving the IIH carrying the restart TLV, a neighbor performs the following operations based on whether GR is supported:</p>
+<p>If the neighbor supports GR, it re-initiates the neighbor relationship with the GR restarter, deletes the description of the neighbor relationship from the LSPs to be sent, and ignores the link connected to the GR restarter when performing SPF calculation until it receives an IIH in which the SA bit is set to 0 from the GR restarter.</p>
+<p>If the neighbor does not support GR, it ignores the restart TLV, resets the neighbor relationship with the GR restarter, replies with an IIH without the restart TLV, and switches to normal IS-IS processing. In this case, the neighbor still advertises its neighbor relationship with the GR restarter. If the link between the two ends is a P2P link, the neighbor also replies with a CSNP.</p>
+</li><li><p>After neighbor relationships are re-initiated, the GR restarter re-establishes them with its neighbors through all its interfaces. When a neighbor relationship set on an interface goes up, the GR restarter starts the T1 timer for the interface.</p>
+</li><li><p>When the T1 timer expires, the GR restarter sends an IIH in which both the RR and SA bits are set to 1.</p>
+</li><li><p>After the neighbor receives the IIH, it replies with an IIH in which the RR bit is set to 0 and the RA bit is set to 1, as well as a CSNP.</p>
+</li><li><p>After the GR restarter receives the IIH and CSNP from the neighbor, it cancels the T1 timer. If the GR restarter does not receive the IIH or CSNP, it repeatedly resets the T1 timer and resends the IIH in which both the RR and SA bits are set to 1. If the timeout count of the T1 timer exceeds the threshold, the GR restarter forcibly cancels the T1 timer and switches to normal IS-IS processing to complete LSDB synchronization.</p>
+</li><li><p>After receiving the CSNP from the GR helper, the GR restarter starts LSDB synchronization.</p>
+</li><li><p>After LSDBs of the corresponding level are synchronized, the GR restarter cancels the T2 timer.</p>
+</li><li><p>After T2 timers of both levels are canceled, the GR restarter performs SPF calculation and re-generates and floods LSPs.</p>
+</li><li><p>The GR restarter's IS-IS starting process is now complete.</p>
+</li></ol>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_isis_ipv4_cfg_000003.html">Understanding IS-IS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_isis_ipv4_cfg_000009.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

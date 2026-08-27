@@ -1,0 +1,297 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a DHCPv6 PD Server and DHCPv6 PD Client">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000002242192005.html">
+<meta name="DC.Relation" scheme="URI" content="../dc/dc_cfg_dhcpv6_1040.html">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_dhcpv6server_cfg_0020.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DHCPv6">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002050316524">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a DHCPv6 PD Server and DHCPv6 PD Client</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002050316524"></a><a name="EN-US_TASK_0000002050316524"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a DHCPv6 PD Server and DHCPv6 PD Client</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002050316524__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000002050316524__fig_dc_cfg_dhcpv6_006401">Figure 1</a>, DeviceA and DeviceB are located on the same link. DeviceB functions as the gateway of PC1 to PC<em>n</em> and connects to PC1 to PC<em>n</em> through <span>interface2 to interface<em>n</em></span>. DeviceA and DeviceB are required to function as the DHCPv6 PD server and DHCPv6 PD client, respectively. PC1 to PC<em>n</em> need to automatically generate IPv6 addresses through route advertisement based on the IPv6 address prefixes obtained by the DHCPv6 PD client. This implements hierarchical deployment of host IPv6 addresses.</p>
+<div class="fignone" id="EN-US_TASK_0000002050316524__fig_dc_cfg_dhcpv6_006401"><a name="EN-US_TASK_0000002050316524__fig_dc_cfg_dhcpv6_006401"></a><a name="fig_dc_cfg_dhcpv6_006401"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring the DHCPv6 PD server and client</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, Interface1 and Interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000002509029611.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002050316524__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="p">The configuration roadmap is as follows:<ol><li><p>Configure the DHCPv6 PD server function on DeviceA to dynamically assign IPv6 address prefixes to the DHCPv6 PD client. Specifically, configure an IPv6 address for the interface, configure an IPv6 address pool, and enable the DHCPv6 PD server function on the interface.</p>
+</li><li><p>Configure the DHCPv6 PD client function on DeviceB to dynamically obtain IPv6 address prefixes from the DHCPv6 PD server. Specifically, configure the IPv6 function and enable the DHCPv6 PD client function on the interface.</p>
+</li><li><p>Bind the obtained IPv6 address prefixes on DeviceB so that PC1 to PC<em>n</em> can automatically generate IPv6 addresses through route advertisement.</p>
+</li><li><p>Configure PC1 to PC<em>n</em> to automatically obtain IPv6 addresses.</p>
+</li></ol>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002050316524__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><ul><li>To enable a device to process STA IPv6 services in wireless scenarios, run the <strong>sta-ipv6-service enable</strong> command in the WLAN view.</li><li>Hosts connected to the DHCPv6 PD client can also be planned on multiple network segments.<p>In this example, the length of the prefixes obtained by the DHCPv6 PD client is 63 bits, and the hosts can be deployed on two network segments: ::0:0:0:0:1/64 and ::1:0:0:0:1/64. In addition, the downstream interfaces of the DHCPv6 PD client connected to the hosts are deployed in two VLANs, and on the two VLANIF interfaces corresponding to these VLANs, the <strong>ipv6 address myprefix ::0:0:0:0:1/64</strong> command is run on one and the <strong>ipv6 address myprefix ::1:0:0:0:1/64</strong> command is run on the other.</p>
+<p>The mappings between the planned prefixes and network segments are as follows:</p>
+<ul><li>If 63-bit prefixes are obtained, two network segments can be planned (the number of network segments is 2 to the power of [64 – 63]).</li><li>If 62-bit prefixes are obtained, four network segments can be planned (the number of network segments is 2 to the power of [64 – 62]).</li><li>If 61-bit prefixes are obtained, eight network segments can be planned (the number of network segments is 2 to the power of [64 – 61]).<p>The same rule applies to other scenarios.</p>
+</li></ul>
+</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002050316524__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure the DHCPv6 PD server function on DeviceA.</span><p><p># Configure an IPv6 address for the interface.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>vlan 100</strong>
+[DeviceA-vlan100] <strong>quit</strong>
+[DeviceA] <strong>interface </strong><strong><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface vlanif 100</strong>
+[DeviceA-Vlanif100] <strong>ipv6 enable</strong>
+[DeviceA-Vlanif100] <strong>ipv6 address fc00:3::1/64</strong>
+[DeviceA-Vlanif100] <strong>quit</strong></pre>
+</p><p><p># Configure an IPv6 PD address pool.</p>
+<pre class="screen">[DeviceA] <strong>dhcpv6 pool pool1</strong>
+[DeviceA-dhcpv6-pool-pool1] <strong>prefix-delegation fc00:2::/60 63</strong>
+[DeviceA-dhcpv6-pool-pool1] <strong>quit</strong></pre>
+</p><p><p># Enable the DHCPv6 PD server function on the interface.</p>
+<pre class="screen">[DeviceA] <strong>dhcp enable</strong>
+[DeviceA] <strong>interface vlanif 100</strong>
+[DeviceA-Vlanif100] <strong>dhcpv6 server pool1</strong>
+[DeviceA-Vlanif100] <strong>ipv6 nd ra halt disable</strong>
+[DeviceA-Vlanif100] <strong>ipv6 nd autoconfig managed-address-flag</strong>
+[DeviceA-Vlanif100] <strong>ipv6 nd autoconfig other-flag</strong>
+[DeviceA-Vlanif100] <strong>quit</strong></pre>
+<p># Configure an IPv6 static route to the network segment (FC00:2::) where the hosts reside, with the next-hop IPv6 address being the peer interface's IPv6 global unicast address (FC00:3::865B:12FF:FE36:595B).</p>
+<pre class="screen">[DeviceA] <strong>ipv6 route-static FC00:2:: 64 vlanif100 FC00:3::865B:12FF:FE36:595B</strong> </pre>
+</p></li><li><span>Configure the DHCPv6 PD client function on DeviceB.</span><p><p># Configure the IPv6 function on the interface.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceB</strong>
+[DeviceB] <strong>vlan 100</strong>
+[DeviceB-vlan100] <strong>quit</strong>
+[DeviceB] <strong>interface </strong><strong><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 100</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceB] <strong>interface vlanif 100</strong>
+[DeviceB-Vlanif100] <strong>ipv6 enable</strong>
+[DeviceB-Vlanif100] <strong>ipv6 address auto link-local</strong>
+[DeviceB-Vlanif100] <strong>ipv6 address auto global</strong></pre>
+</p><p><p># Enable the DHCPv6 PD client function on the interface.</p>
+<pre class="screen">[DeviceB-Vlanif100] <strong>dhcpv6 client pd myprefix</strong>
+[DeviceB-Vlanif100] <strong>quit</strong></pre>
+</p></li><li><span>Bind the obtained IPv6 address prefixes on DeviceB. The interface IPv6 address and the prefix obtained by the DHCPv6 PD client are combined into a 128-bit IPv6 address, and the 64-bit IPv6 prefix is advertised. The following uses <span>10GE</span><span>0/0/2</span> as an example.</span><p><pre class="screen">[DeviceB] <strong>vlan 200</strong>
+[DeviceB-vlan200] <strong>quit</strong>
+[DeviceB] <strong>interface </strong><strong><span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>port link-type access</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>port default vlan 200</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[DeviceB] <strong>interface vlanif 200</strong>
+[DeviceB-Vlanif200] <strong>ipv6 enable</strong>
+[DeviceB-Vlanif200] <strong>ipv6 address auto link-local</strong>
+[DeviceB-Vlanif200] <strong>ipv6 address myprefix ::0:0:0:0:1/64</strong>
+[DeviceB-Vlanif200] <strong>ipv6 nd ra halt</strong> <strong>disable</strong>
+[DeviceB-Vlanif200] <strong>quit</strong></pre>
+</p></li><li><span>Bind the obtained IPv6 address prefixes on DeviceB. The interface IPv6 address and the prefix obtained by the DHCPv6 PD client are combined into a 128-bit IPv6 address, and the 64-bit IPv6 prefix is advertised. The following uses <span>10GE</span><span>0/0/3</span> as an example.</span><p><pre class="screen">[DeviceB] <strong>vlan 300</strong>
+[DeviceB-vlan300] <strong>quit</strong>
+[DeviceB] <strong>interface </strong><strong><span>10ge</span> <span>0/0/3</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong>port link-type access</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong>port default vlan 300</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[DeviceB] <strong>interface vlanif 300</strong>
+[DeviceB-Vlanif300] <strong>ipv6 enable</strong>
+[DeviceB-Vlanif300] <strong>ipv6 address auto link-local</strong>
+[DeviceB-Vlanif300] <strong>ipv6 address myprefix </strong><strong>::1:0:0:0:1/64</strong>
+[DeviceB-Vlanif300] <strong>ipv6 nd ra halt</strong> <strong>disable</strong>
+[DeviceB-Vlanif300] <strong>quit</strong></pre>
+</p></li><li><span>Configure the PCs to automatically obtain IPv6 addresses.</span></li><li><span>Verify the configuration.</span><p><p># Run the <b><span class="cmdqueryname">display dhcpv6 pool</span></b> command on DeviceA to check the configuration and IPv6 address prefix allocation of the IPv6 PD address pool <strong>pool1</strong>.</p>
+<pre class="screen">[DeviceA] <strong>display dhcpv6 pool pool1</strong>
+DHCPv6 pool: pool1
+-------------------------------------------------------------------------------
+  Prefix delegation: 
+    FC00:1::/60 63
+    Lifetime valid 172800 seconds, preferred 86400 seconds
+    0 in use
+-------------------------------------------------------------------------------
+  Information refresh time    : 86400(s)
+  Conflict-address expire-time: 172800(s)
+  Renew-time-percent          : 50
+  Rebind-time-percent         : 80
+  Active normal clients       : 0
+  Active pd clients           : 0
+  Logging                     : Disable
+  VPN instance                : _public_
+  VPN match                   : Enable </pre>
+<pre class="screen">[DeviceA] <strong>display dhcpv6 pool pool1 allocated prefix</strong>
+Allocated Prefix/length                    Valid    Expires             Left
+-------------------------------------------------------------------------------
+FC00:2::/63                                <samp class="codeph">172800   2024-10-24 11:45:24 172462</samp>
+-------------------------------------------------------------------------------
+Total : 1 </pre>
+</p><p><p># On DeviceB, run the <b><span class="cmdqueryname">display dhcpv6 client</span></b> command to check the DHCPv6 PD client configuration and run the <b><span class="cmdqueryname">display ipv6 interface</span></b> command to check the IPv6 address information on the host-side interface VLANIF 200.</p>
+<pre class="screen">[DeviceB] <strong>display dhcpv6 client</strong>
+Vlanif100 is in DHCPv6-PD client mode.
+<span>DHCPv6-PD client is in BOUND state.</span>
+Preferred server DUID   : <samp class="codeph">00030001000B0923198D</samp>
+  Reachable via address : <samp class="codeph">FE80::20B:9FF:FEED:14D4</samp>
+<samp class="codeph">IA PD IA ID 0x00000751 T1 43200 T2 69120</samp>
+  Prefix name  : <strong>myprefix</strong>
+  Obtained     : <samp class="codeph">2024-10-24 09:36:38</samp>
+  Renews       : <samp class="codeph">2024-10-24 21:36:38</samp>
+  Rebinds      : <samp class="codeph">2024-10-25 04:48:38</samp>
+  Prefix       : <strong>FC00:2::/63</strong>
+    <samp class="codeph">Lifetime valid 172800 seconds, preferred 86400 seconds</samp>
+    <samp class="codeph">Expires at 2067-09-26 09:36:37(172286 seconds left)</samp></pre>
+<pre class="screen">[DeviceB] <strong>display ipv6 interface vlanif 200</strong>
+Vlanif200 current state : UP
+IPv6 protocol current state : UP
+IPv6 is enabled, link-local address is <samp class="codeph">FE80::200:FF:FE00:212</samp>
+  Global unicast address(es):
+<strong>    FC00:2::1, subnet is FC00:2::/64  </strong>
+  Joined group address(es):
+    FF02::1:FF00:1
+    <samp class="codeph">FF02::1:FF00:212</samp>
+    FF02::2
+    FF02::1
+  MTU is 1500 bytes
+  ND DAD is enabled, number of DAD attempts: 1
+  ND reachable time is 30000 milliseconds
+  ND retransmit interval is 1000 milliseconds
+<span>  ND stale time is 1200 seconds</span>
+<span>  ND stale time is 1200 seconds</span>
+  ND advertised reachable time is 0 milliseconds
+  ND advertised retransmit interval is 0 milliseconds
+  ND router advertisement max interval 600 seconds, min interval 200 seconds
+  ND router advertisements live for 1800 seconds
+  ND router advertisements hop-limit 64
+  ND default router preference medium
+  Hosts use stateless autoconfig for addresses</pre>
+<p># Run the <b><span class="cmdqueryname">display ipv6 interface</span></b> command on DeviceB to check the IPv6 address information of the server-side interface VLANIF 100.</p>
+<pre class="screen">[DeviceB] <strong>display ipv6 interface vlanif 100</strong>
+Vlanif100 current state : UP                                                                                                        
+IPv6 protocol current state : UP                                                                                                    
+IPv6 is enabled, link-local address is FE80::865B:12FF:FE36:595B                                                                    
+  Global unicast address(es):                                                                                                       
+    <strong>FC00:3::865B:12FF:FE36:595B</strong>,                                                                                                    
+    subnet is FC00:3::/64 [SLAAC 2018-11-15 10:33:50 2592000S]                                                                      
+  Joined group address(es):                                                                                                         
+    FF02::1:FF36:595B                                                                                                               
+    FF02::2                                                                                                                         
+    FF02::1                                                                                                                         
+  MTU is 1500 bytes                                                                                                                 
+  ND DAD is enabled, number of DAD attempts: 1                                                                                      
+  ND reachable time is 30000 milliseconds                                                                                           
+  ND retransmit interval is 1000 milliseconds                                                                                       
+  ND stale time is 1200 seconds </pre>
+<p># Check the IPv6 address configuration on the PCs. In this example, the IPv6 address fc00:2::d5b2:274:370b:4c6e obtained by PC1 is displayed in the <strong>Network Connection Details</strong> window of PC1.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002050316524__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+vlan batch 100
+#
+dhcp enable
+#
+dhcpv6 pool pool1
+ prefix-delegation FC00:2::/60 63
+#
+interface Vlanif100
+ ipv6 enable
+ ipv6 address FC00:3::1/64
+ ipv6 nd ra halt disable
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ dhcpv6 server pool1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ port link-type trunk
+ port trunk allow-pass vlan 100
+#
+ipv6 route-static FC00:2:: 64 Vlanif100 FC00:3::865B:12FF:FE36:595B
+#
+return</pre>
+</li><li><p>DeviceB</p>
+<pre class="screen">#
+sysname DeviceB
+#
+vlan batch 100 200 300
+#
+interface Vlanif100
+ ipv6 enable
+ ipv6 address auto link-local
+ ipv6 address auto global
+ dhcpv6 client pd myprefix
+#
+interface Vlanif200
+ ipv6 enable
+ ipv6 address myprefix ::0:0:0:0:1/64
+ ipv6 address auto link-local
+ ipv6 nd ra halt disable
+#
+interface Vlanif300
+ ipv6 enable
+ ipv6 address myprefix ::1:0:0:0:1/64
+ ipv6 address auto link-local
+ ipv6 nd ra halt disable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ port link-type trunk
+ port trunk allow-pass vlan 100
+#
+interface <span>10GE</span><span>0/0/2</span>
+ port link-type access
+ port default vlan 200
+#
+interface <span>10GE</span><span>0/0/3</span>
+ port link-type access
+ port default vlan 300
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_concept_0000002242192005.html">Configuration Examples for DHCPv6
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../dc/dc_cfg_dhcpv6_1040.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../galaxy_dhcpv6server_cfg_0020.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

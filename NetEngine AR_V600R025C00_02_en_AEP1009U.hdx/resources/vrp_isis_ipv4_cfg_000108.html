@@ -1,0 +1,94 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring BFD for an Interface">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000105.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000107.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000109.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IS-IS">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IS-IS">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001750762230">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring BFD for an Interface</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001750762230"></a><a name="EN-US_TASK_0000001750762230"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring BFD for an Interface</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001750762230__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p id="EN-US_TASK_0000001750762230__en-us_task_0000001797720877_p779086568214037">IS-IS detects neighbor state changes through Hello packet exchanges. By default, if no response is received to three consecutive Hello packets within a specified period (30 seconds by default), a neighbor is considered down. For networks that require fast convergence and zero packet loss, IS-IS cannot meet link fault detection requirements. To address this problem, you can configure BFD for IS-IS.</p>
+<p id="EN-US_TASK_0000001750762230__en-us_task_0000001797720877_p1990224451214037">Sessions of dynamic BFD for IS-IS are dynamically established by IS-IS, preventing manual misconfigurations. Dynamic BFD is easy to configure and applies to the scenarios where BFD needs to be configured on the entire network. Dynamic BFD helps IS-IS detect link faults rapidly and implement fast route convergence.</p>
+<p id="EN-US_TASK_0000001750762230__en-us_task_0000001797720877_p541333483117">Dynamic BFD for IS-IS can be configured in an IS-IS process or on a specified interface as required. If dynamic BFD for IS-IS is configured both in an IS-IS process and on an interface, the configuration on the interface takes precedence. By configuring BFD for an IS-IS process, you can set parameters for dynamic BFD sessions and enable dynamic BFD for IS-IS on all interfaces in the IS-IS process. To configure BFD only on some interfaces or configure different dynamic BFD session parameters for some interfaces, configure BFD on the interfaces.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001750762230__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enable BFD globally.</span><p><pre class="screen"><b><span class="cmdqueryname">bfd</span></b></pre>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>(Optional) Configure BFD session check for the IS-IS process.</span><p><pre class="screen"><b><span class="cmdqueryname">isis</span></b> <i><span class="varname">process-id</span></i>
+<b><span class="cmdqueryname">bfd session-up check</span></b></pre>
+</p><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When the Layer 2 network is normal, IS-IS neighbor relationships can be established and routes can be delivered. However, if the Layer 3 network is unreachable, upper-layer traffic loss occurs. To resolve this problem, configure BFD session check for an IS-IS process by running the <b><span class="cmdqueryname">bfd session-up check</span></b> command. This ensures that an IS-IS neighbor relationship is established only when the BFD session is up on corresponding interfaces. After this function is configured, it applies only to the neighbor relationships to be established (it does not apply to existing neighbor relationships).</p>
+</div></div>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Switch the working mode of the interface from Layer 2 to Layer 3.</span><p><pre class="screen"><b><span class="cmdqueryname">undo portswitch</span></b></pre>
+<p> Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li><span>Enable BFD on the interface.</span><ul><li>For IPv4 IS-IS:<pre class="screen"><b><span class="cmdqueryname">isis bfd enable</span></b></pre>
+</li><li>For IPv6 IS-IS:<pre class="screen"><b><span class="cmdqueryname">isis ipv6 bfd enable</span></b></pre>
+</li></ul>
+<p><p>If BFD is enabled globally, this step is performed, and neighbors' status is up (the DIS is up in the case of a broadcast network), default BFD parameters are used by this interface to establish BFD sessions.</p>
+</p></li><li><span>(Optional) Configure parameters for BFD session establishment.</span><ul><li>For IPv4 IS-IS:<pre class="screen"><b><span class="cmdqueryname">isis bfd</span></b> { <strong><span>min-tx-interval</span></strong> <i><span class="varname">transmit</span></i>-<i><span class="varname">interval</span></i> | <strong><span>min-rx-interval</span></strong> <i><span class="varname">receive</span></i>-<i><span class="varname">interval</span></i> | <strong><span>detect-multiplier</span></strong> <i><span class="varname">multiplier-value</span></i><span> | <strong><span>frr-binding</span></strong></span> } <sup>*</sup></pre>
+</li><li>For IPv6 IS-IS:<pre class="screen"><b><span class="cmdqueryname">isis ipv6 bfd</span></b> { <strong><span>min-tx-interval</span></strong> <i><span class="varname">transmit</span></i>-<i><span class="varname">interval</span></i> | <strong><span>min-rx-interval</span></strong> <i><span class="varname">receive</span></i>-<i><span class="varname">interval</span></i> | <strong><span>detect-multiplier</span></strong> <i><span class="varname">multiplier-value</span></i><span> | <strong><span>frr-binding</span></strong></span> } <sup>*</sup> </pre>
+</li></ul>
+<p><p>The BFD configurations on an interface take precedence over those of a process. That is, if BFD session parameters are configured for both a process and an interface, the parameters on the interface will be used to establish BFD sessions.</p>
+</p></li><li><span>(Optional) Enable the interface to adjust the cost based on the status of an associated BFD session.</span><ul><li>For IPv4 IS-IS:<pre class="screen"><b><span class="cmdqueryname">isis bfd incr-cost</span></b> { <i><span class="varname">cost-value</span></i> | <strong><span>max-reachable</span></strong> }</pre>
+</li><li>For IPv6 IS-IS:<pre class="screen"><b><span class="cmdqueryname">isis ipv6 bfd incr-cost</span></b> { <i><span class="varname">cost-value</span></i> | <strong><span>max-reachable</span></strong> }</pre>
+</li></ul>
+<p><p>If the function of adjusting the cost based on the status of an associated BFD session is configured both for a process and an interface, the configuration on the interface takes precedence.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_isis_ipv4_cfg_000105.html">Configuring Dynamic BFD for IS-IS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_isis_ipv4_cfg_000107.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_isis_ipv4_cfg_000109.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

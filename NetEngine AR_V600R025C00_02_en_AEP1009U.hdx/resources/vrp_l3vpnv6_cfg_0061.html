@@ -1,0 +1,109 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring BGP4+ Between the PE and CE">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv6_cfg_0005.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv6_cfg_0060.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv6_cfg_0062.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featurename" content="IPv6 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featurename" content="IPv6 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featurename" content="IPv6 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001396517497">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring BGP4+ Between the PE and CE</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001396517497"></a><a name="EN-US_TASK_0000001396517497"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring BGP4+ Between the PE and CE</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001396517497__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>On an L3VPN, a routing protocol must be configured between PEs and CEs to allow them to communicate and allow one CE to obtain routes to other CEs.</p>
+<div class="p">The routing protocol configurations on CEs and PEs are different:<ul><li>A CE is located on the client side and unaware of the VPN. This means that you do not need to configure VPN parameters when configuring a routing protocol on the CE.</li><li>A PE is located at the carrier network edge and connects to CEs for route exchange. If the CEs connecting to a PE belong to different VPNs, the PE must maintain different VRF tables. When configuring a routing protocol on the PE, you need to specify the name of the VPN instance to which the routing protocol applies and configure the routing protocol and MP-BGP to import routes from each other.</li></ul>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001396517497__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Perform the following steps on the PE:</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i>  </pre>
+</p></li><li class="substepexpand"><span>Enter the BGP VPN instance IPv6 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6-family</span></b> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure a CE as an IPv6 VPN peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>as-number</span></strong> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure the maximum number of hops allowed for an EBGP connection.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>ebgp-max-hop</span></strong> [ <i><span class="varname">hop-count</span></i> ]</pre>
+<p>This step is mandatory if the PE and CE are not directly connected. In most cases, a directly connected physical link must be available between EBGP peers. If you want to establish an EBGP peer relationship between indirectly connected peers, run the <b><span class="cmdqueryname">peer ebgp-max-hop</span></b> command to configure the maximum number of hops allowed for an EBGP connection.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure the Site-of-Origin (SoO) attribute.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>soo</span></strong> <i><span class="varname">site-of-origin</span></i></pre>
+</p><p><p>Several CEs at a VPN site may establish BGP connections with different PEs. The VPN routes advertised from the CEs to the PEs may be re-advertised to the same VPN site after the routes traverse the backbone network. And this may cause routing loops at the VPN site.</p>
+<p>After the SoO attribute is configured, the PE adds the attribute to a route received from a CE before advertising the route to the peer PE. If the SoO attribute is the same as the local SoO attribute on the peer PE, the peer PE does not send the route to its attached CEs.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure the local device to allow routing loops.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>allow-as-loop</span></strong> [ <i><span class="varname">number</span></i> ]</pre>
+</p><p><p>This step applies to Hub-Spoke networking.</p>
+</p></li><li class="substepexpand"><span>(Optional) Enable BGP AS number substitution.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>substitute-as</span></strong></pre>
+</p><p><p>This step needs to be performed on PEs in a scenario where CEs at different sites use the same AS number.</p>
+<div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>Enabling BGP AS number substitution may cause routing loops on a CE multi-homing network.</p>
+</div></div>
+</p></li></ol>
+</li><li><span>Perform the following steps on the CE:</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i>  </pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure the ID of the local device.</span><p><pre class="screen"><b><span class="cmdqueryname">router-id</span></b> <i><span class="varname">ipv4-address</span></i></pre>
+<p>If no interface on the local CE is configured with an IPv4 address, you need to configure a router ID for the local CE.</p>
+</p></li><li class="substepexpand"><span>Configure a PE as a VPN peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>as-number</span></strong> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure the maximum number of hops allowed for an EBGP connection.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <b><span class="cmdqueryname">ebgp-max-hop</span></b> [ <i><span class="varname">hop-count</span></i> ]</pre>
+<p>In most cases, a directly connected physical link must be available between EBGP peers. If you want to establish an EBGP peer relationship between indirectly connected peers, run the <b><span class="cmdqueryname">peer ebgp-max-hop</span></b> command to configure the maximum number of hops allowed for an EBGP connection.</p>
+</p></li><li class="substepexpand"><span>Enter the BGP-IPv6 unicast address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6-family</span></b> <strong><span>unicast</span></strong></pre>
+</p></li><li class="substepexpand"><span>Enable the function to exchange BGP routing information with a BGP IPv6 peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>enable</span></strong></pre>
+</p></li><li class="substepexpand"><span>Import the routes of the local site.</span><p><pre class="screen"><b><span class="cmdqueryname">import-route</span></b> { <strong><span>direct</span></strong> | <strong><span>static</span></strong> | <strong><span>ripng</span></strong> <i><span class="varname">process-id</span></i> | <strong><span>ospfv3</span></strong> <i><span class="varname">process-id</span></i> | <strong><span>isis</span></strong> <i><span class="varname">process-id</span></i> } [ <strong><span>med</span></strong> <i><span class="varname">med</span></i> | <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ]<sup>*</sup></pre>
+<p>Configure the CE to advertise routes imported from the local site to the connected PE. The PE then advertises these routes to the peer CE. The type of route imported in this step may vary according to the networking mode.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv6_cfg_0005.html">Configuring Basic IPv6 L3VPN over MPLS Functions
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv6_cfg_0060.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_L3VPNv6_cfg_0062.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

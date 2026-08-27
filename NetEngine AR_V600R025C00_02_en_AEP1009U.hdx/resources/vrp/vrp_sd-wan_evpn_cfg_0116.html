@@ -1,0 +1,80 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Establishment of a DTLS Management Channel">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0004.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0005.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001176742679">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Establishment of a DTLS Management Channel</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001176742679"></a><a name="EN-US_CONCEPT_0000001176742679"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Establishment of a DTLS Management Channel</h1>
+<div><div class="section"><h4 class="sectiontitle">Network Model</h4><p>In an SD-WAN EVPN scenario, a DTLS connection needs to be established between a CPE and an RR so that a management channel can be established for their information exchange.</p>
+<p>In <a href="#EN-US_CONCEPT_0000001176742679__fig34701620151718">Figure 1</a>, the DTLS network model involves the following roles:</p>
+<ul><li>DTLS server: a device that provides DTLS services. In an SD-WAN EVPN scenario, an RR functions as a DTLS server.</li><li>DTLS client: a device that requests DTLS services. In an SD-WAN EVPN scenario, a CPE functions as a DTLS client.</li></ul>
+<div class="fignone" id="EN-US_CONCEPT_0000001176742679__fig34701620151718"><a name="EN-US_CONCEPT_0000001176742679__fig34701620151718"></a><a name="fig34701620151718"></a><span class="figcap"><b>Figure 1 </b>DTLS management channel</span><br><span><img class="vsd" src="figure/en-us_image_0000001130623266.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Process of Establishing a DTLS Management Channel</h4><p>DTLS uses a handshake mechanism to establish a handshake connection between the DTLS client and server. During the handshake process, the client and server authenticate each other and negotiate the key and cipher suite for data encryption in data transmission. <a href="#EN-US_CONCEPT_0000001176742679__fig35561524154811">Figure 2</a> shows the DTLS handshake process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176742679__fig35561524154811"><a name="EN-US_CONCEPT_0000001176742679__fig35561524154811"></a><a name="fig35561524154811"></a><span class="figcap"><b>Figure 2 </b>DTLS handshake process</span><p><span><img class="vsd" src="figure/en-us_image_0000001130783046.png"></span></p>
+</div>
+<p>The following describes the DTLS handshake process.</p>
+<ol><li>Hello negotiation<ol type="a"><li>ClientHello: The DTLS client sends a ClientHello message to the DTLS server, triggering a handshake. This message carries information such as the supported DTLS versions and cipher suites.</li><li>HelloVerifyRequest: The DTLS server responds to the DTLS client with a HelloVerifyRequest message, which carries the selected DTLS version, cipher suite, and cookie information. If the DTLS server allows the DTLS client to reuse the current session in subsequent communication, the DTLS server allocates a session ID to this session.</li></ol>
+</li><li>Secondary Hello negotiation<ol type="a"><li>ClientHello: The DTLS client sends a ClientHello message to the DTLS server again. This message carries the cookie sent by the server, random, and cipher suite used for negotiation.</li><li>ServerHello: The DTLS server responds to the DTLS client with a ServerHello message to verify the cookie. The DTLS server proceeds with the handshake only when the cookie is valid. Otherwise, the DTLS server refuses the connection.</li><li>Certificate: The DTLS server sends a Certificate message carrying a digital certificate containing its public key to the DTLS client so that the client can authenticate the server.</li><li>ServerKeyExchange: The DTLS server sends the DTLS client a ServerKeyExchange message carrying its ephemeral public key.</li><li>CertificateRequest: The DTLS server sends a CertificateRequest message to the DTLS client, requesting it to provide a certificate for identity authentication.</li><li>ServerHelloDone: The DTLS server sends a ServerHelloDone message to the DTLS client, which means DTLS version and cipher suite negotiation has finished and key exchange can begin.</li></ol>
+</li><li>Key negotiation<ol type="a"><li>Certificate: The DTLS client sends a Certificate message carrying its certificate to the DTLS server.</li><li>ClientKeyExchange: The DTLS client verifies the certificate of the DTLS server, encrypts the randomly generated key using the public key in the certificate, and sends the encrypted key to the DTLS server.</li><li>CertificateVerify: The DTLS client sends a CertificateVerify message to the DTLS server for identity authentication.</li><li>ChangeCipherSpec: The DTLS client sends a ChangeCipherSpec message to notify the DTLS server that subsequent messages will be encrypted using the negotiated key and cipher suite.</li><li>Finished: The DTLS client sends a Finished message to notify the DTLS server that the handshake process ends.</li><li>ChangeCipherSpec: The DTLS server sends a ChangeCipherSpec message to notify the DTLS client that subsequent messages will be encrypted using the negotiated key and cipher suite.</li><li>Finished: The DTLS server sends a Finished message to notify the DTLS client that the handshake process ends.</li></ol>
+</li></ol>
+<p>After successful DTLS handshake, the DTLS server has been successfully authenticated by the DTLS client. The DTLS server can decrypt the ClientKeyExchange message to obtain the key after it obtains the private key.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Data Transmission Process</h4><p>After successful DTLS handshake, the DTLS client and server can exchange application-layer data. In an SD-WAN EVPN scenario, application data includes TNP and SA information.</p>
+<p><a href="#EN-US_CONCEPT_0000001176742679__fig465814964414">Figure 3</a> shows the data transmission process. The local end receives application-layer data, encrypts it using an encryption algorithm, adds a DTLS header to it, and sends it to the peer end. The peer end decrypts the data once it is received.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176742679__fig465814964414"><a name="EN-US_CONCEPT_0000001176742679__fig465814964414"></a><a name="fig465814964414"></a><span class="figcap"><b>Figure 3 </b>Data transmission process</span><br><span><img class="vsd" src="figure/en-us_image_0000001176742707.png"></span></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0003.html">Understanding SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0004.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0005.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

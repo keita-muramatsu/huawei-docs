@@ -1,0 +1,348 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Example for Configuring Internet Access">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001538075105.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001538275217.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001998495833.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001961975540">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring Internet Access</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001961975540"></a><a name="EN-US_TOPIC_0000001961975540"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Internet Access</h1>
+<div><div class="section"><h4 class="sectiontitle">Applicable Products and Versions</h4><p>This example applies to AR routers running V600R022C10 and later versions.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Overview</h4><p>This document provides a typical example for configuring Internet access on an egress router. It presents a detailed plan of network deployment, traffic scheduling, and Internet access security policy configuration on an egress router, provides a configuration example based on the plan, and offers references for networking planning and device configuration.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TOPIC_0000001961975540__fig538344854512">Figure 1</a>, an enterprise has two departments A and B and deploys Router as an egress gateway. The gateway provides a WAN interface GE0/0/3, with the peer end at 2.1.1.1/24. It is required that department A reside on subnet 10.10.1.0/25 with 10.10.1.1/25 as the gateway address, and assign private addresses with a lease of 30 days to office PCs. Similarly, the enterprise wants department B to reside on subnet 10.10.1.128/25 with 10.10.1.129/25 as the gateway address, and to assign private addresses with a lease of 2 days to laptops of employees on business trips. Both departments need to use the domain name <strong>huawei.com</strong> and communicate with the DNS server at 10.10.1.2, and their terminals require Internet access. To meet this requirement, NAT can be deployed to translate private addresses to public addresses for them.</p>
+<div class="fignone" id="EN-US_TOPIC_0000001961975540__fig538344854512"><a name="EN-US_TOPIC_0000001961975540__fig538344854512"></a><a name="fig538344854512"></a><span class="figcap"><b>Figure 1 </b>Network diagram</span><br><span><img src="../images/en-us_image_0000002003894533.png" width="523.6875" height="271.859581" title="Click to enlarge" class="imgResize"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Enable the DNS relay function globally and specify the DNS server address.</li><li>Deploy a DHCP server on the LAN to assign addresses to PCs and laptops in the two departments. Deliver the DNS server address to the terminals together with the addresses assigned through DHCP.</li><li>Configure the MTU and TCP MSS for the WAN interface of Router, and configure source NAT to enable Internet access for intranet terminals.</li><li>Configure a default route with the gateway address of the WAN interface on Router as the next hop.</li><li>(Optional) Configure destination NAT on the WAN interface of Router, so that the enterprise can provide services for external users.</li><li>(Optional) Configure a security policy on Router and bind IPS, URL and antivirus profiles to this policy to detect and control Internet access of intranet users or intranet access of external users.</li><li>(Optional) Deploy a QoS policy on Router to preferentially guarantee high-priority services when the bandwidth is limited.</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Data Planning</h4>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Data</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.5.2.2.4.1.1" liSelected="liSelected"><p>Device</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.5.2.2.4.1.2" liSelected="liSelected"><p>Interface</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.5.2.2.4.1.3" liSelected="liSelected"><p>IP Address</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" rowspan="3" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.1 "><p>Router</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.2 "><p>GE0/0/1</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.3 "><p>10.10.1.1/25</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>GE0/0/2</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>10.10.1.129/25</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>GE0/0/3</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>2.1.1.2/24</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Precautions</h4><p>None</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li>Enable the DNS relay function globally and specify the DNS server address.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname Router</strong>
+[Router] <strong>dns relay enable</strong> 
+[Router] <strong>dns resolve</strong>
+[Router] <strong>dns server 10.10.1.2</strong></pre>
+</li><li>Deploy a DHCP server on the LAN to assign addresses to PCs and laptops in the two departments. Deliver the DNS server address to the terminals together with the addresses assigned through DHCP.<div class="p"># Configure a DHCP server.<pre class="screen">[Router] <strong>dhcp enable</strong>
+[Router] <strong>acl number 2000</strong>
+[Router-ac14-basic-2000] <strong>rule 5 permit source 10.10.1.0 0.0.0.255</strong>
+[Router] <strong>quit</strong>
+[Router] <strong>ip pool ip-pool1</strong>                                                                
+[Router-ip-pool-pool1] <strong>gateway-list 10.10.1.1</strong>
+[Router-ip-pool-pool1] <strong>network 10.10.1.0 mask 255.255.255.128</strong>
+[Router-ip-pool-pool1] <strong>excluded-ip-address 10.10.1.2</strong>
+[Router-ip-pool-pool1] <strong>dns-list 10.10.1.2</strong>
+[Router-ip-pool-pool1] <strong>lease day 30 hour 0 minute 0</strong>
+[Router-ip-pool-pool1] <strong>domain-name huawei.com</strong>
+[Router-ip-pool-pool1]<strong> quit</strong>
+[Router] <strong>ip pool ip-pool2</strong>                                                                
+[Router-ip-pool-pool2] <strong>gateway-list 10.10.1.129</strong>                                                   
+[Router-ip-pool-pool2] <strong>network  10.10.1.128 mask 255.255.255.128</strong>
+[Router-ip-pool-pool2] <strong>dns-list 10.10.1.2</strong>                                                 
+[Router-ip-pool-pool2] <strong>lease day 2 hour 0 minute 0</strong>
+[Router-ip-pool-pool2] <strong>domain-name huawei.com</strong>
+[Router-ip-pool-pool2] <strong>quit</strong></pre>
+</div>
+<p># Configure interfaces on Router.</p>
+<pre class="screen">[Router] <strong>interface GE0/0/1</strong>
+[Router-GE0/0/1] <strong>ip address 10.10.1.1 255.255.255.128</strong>
+[Router-GE0/0/1] <strong>dhcp select global</strong>
+[Router-GE0/0/1] <strong>quit</strong>
+[Router] <strong>interface GE0/0/2</strong>
+[Router-GE0/0/2] <strong>ip address 10.10.1.129 255.255.255.128</strong>
+[Router-GE0/0/2] <strong>dhcp select global</strong>
+[Router-GE0/0/2] <strong>quit</strong></pre>
+</li><li>Configure the MTU and TCP MSS for the WAN interface of Router, and configure source NAT to enable Internet access for intranet terminals.<pre class="screen">[Router] <strong>interface GE0/0/3</strong>
+[Router-GE0/0/3] <strong>mtu 9000</strong>
+[Router-GE0/0/3] <strong>tcp adjust-mss 1360</strong>
+[Router-GE0/0/3] <strong>ip address 2.1.1.2 255.255.255.</strong><strong>0</strong>                                            
+[Router-GE0/0/3] <strong>nat enabl</strong><strong>e</strong>
+[Router-GE0/0/3] <strong>quit</strong>
+[Router] <strong>nat-policy</strong>
+[Router-policy-nat] <strong>rule name 1</strong>
+[Router-policy-nat-rule-policy_1] <strong>egress-interface GE0/0/3</strong>
+[Router-policy-nat-rule-policy_1] <strong>source-address 2.1.1.0 mask 255.255.255.0</strong>
+[Router-policy-nat-rule-policy_1] <strong>action source-nat easy-ip</strong></pre>
+</li><li>Configure a default route.<pre class="screen">[Router] <strong>ip route-static 0.0.0.0 0.0.0.0 2.1.1.</strong><strong>1</strong></pre>
+</li><li>(Optional) Configure destination NAT on the WAN interface of Router, so that the enterprise can provide services for external users.<pre class="screen">[Router] <strong>nat server pca global 1.1.1.100 inside 10.10.1.7</strong>
+[Router] <strong>nat server pcb global 1.1.1.100 8080 inside 10.10.1.8</strong></pre>
+</li><li>(Optional) Configure a security policy on Router and bind IPS, URL and antivirus profiles to this policy to detect and control Internet access of intranet users or intranet access of external users.<pre class="screen">[Router] <strong>firewall zone trust</strong>
+[Router-zone-trust] <strong>set priority 85</strong>
+[Router-zone-trust] <strong>add interface GE0/0/3</strong>
+[Router-zone-trust] <strong>quit</strong>
+[Router] <strong>firewall zone untrust</strong>
+[Router-zone-untrust]<strong> set priority</strong> <strong>5</strong>
+[Router-zone-untrust] <strong>add interface GE0/0/1</strong>
+[Router-zone-untrust] <strong>add interface GE0/0/2</strong>
+[Router-zone-untrust] <strong>quit</strong>
+[Router]<strong> security-policy</strong>
+[Router-policy-security] <strong>rule name trust_untrust</strong>
+[Router-policy-security-rule-trust_untrust] <strong>source-zone trust</strong>
+[Router-policy-security-rule-trust_untrust] <strong>destination-zone untrust</strong>
+[Router-policy-security-rule-trust_untrust] <strong>profile av default</strong> 
+[Router-policy-security-rule-trust_untrust] <strong>profile ips default</strong>
+[Router-policy-security-rule-trust_untrust] <strong>profile url-filter url1</strong>
+[Router-policy-security-rule-trust_untrust] <strong>action permit</strong>
+[Router-policy-security-rule-trust_untrust] <strong>quit</strong></pre>
+</li><li>(Optional) Deploy a QoS policy on Router to preferentially guarantee high-priority services when the bandwidth is limited.<div class="p"># Configure a traffic behavior profile.<pre class="screen">[Router] <strong>flow-queue queue1</strong>
+[Router-queue-queue1] <strong>queue qos5 pq shaping 5000</strong>
+[Router-queue-queue1] <strong>queue af2 drr weight 30 shaping shaping-percentage 30</strong>
+[Router-queue-queue1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a traffic behavior.<pre class="screen">[Router] <strong>traffic behavior qos-50</strong>
+[Router-behavior-qos-50] <strong>statistics enable</strong>
+[Router-behavior-qos-50] <strong>flow-queue queue1 queue qos5</strong> 
+[Router-behavior-qos-50] <strong>quit</strong> 
+[Router] <strong>traffic behavior qos-af21</strong>
+[Router-behavior-qos-af21] <strong>statistics enable</strong>
+[Router-behavior-qos-af21] <strong>flow-queue queue1 queue af2</strong>
+[Router-behavior-qos-af21] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a traffic policy.<pre class="screen">[Router] <strong>traffic policy qos_toPC2andPC3</strong>
+[Router-trafficpolicy-qos_toPC2andPC3] <strong>classifier qos-50 behavior qos-50 precedence 5</strong>
+[Router-trafficpolicy-qos_toPC2andPC3] <strong>classifier qos-af21 behavior qos-af21 precedence 15</strong>
+[Router-trafficpolicy-qos_toPC2andPC3] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure the WAN interface of Router.<pre class="screen">[Router] <strong>interface GE0/0/3</strong>
+[Router-GE0/0/3] <strong>qos lr cir 1000000 kbps outbound</strong>
+[Router-GE0/0/3] <strong>traffic-policy qos_toPC2andPC3 outbound</strong>
+[Router-GE0/0/3] <strong>quit</strong></pre>
+</div>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Verifying the Configuration</h4><div class="p"># Run the <strong>display ip pool</strong> command on Router to view assignment information of addresses in IP address pools.<pre class="screen">&lt;Router&gt; <strong>display ip pool</strong>
+ -------------------------------------------------------------------------------
+------ 
+ Pool-name        : ip-pool1
+  Pool-No          : 2
+  Lease            : 30 Days 0 Hours 0 Minutes
+  Position         : Local
+  Status           : Unlocked
+  Gateway-0        : 10.10.1.1
+  Network          : 10.10.1.0
+  Mask             : 255.255.255.128
+  VPN instance     : --
+  Conflicted address recycle interval: -
+  Address Statistic: Total       :125       Used        :0
+                     Idle        :124       Expired     :0
+                     Conflict    :0         Disabled    :1
+
+ -------------------------------------------------------------------------------
+------
+  Pool-name        : ip-pool2
+  Pool-No          : 3
+  Lease            : 2 Days 0 Hours 0 Minutes
+  Position         : Local
+  Status           : Unlocked
+  Gateway-0        : 10.10.1.129
+  Network          : 10.10.1.128
+  Mask             : 255.255.255.128
+  VPN instance     : --
+  Conflicted address recycle interval: -
+  Address Statistic: Total       :125       Used        :0
+                     Idle        :125       Expired     :0
+                     Conflict    :0         Disabled    :0
+
+
+  IP address Statistic
+    Total       :757
+    Used        :0          Idle        :756
+    Expired     :0          Conflict    :0          Disabled  :1</pre>
+</div>
+<div class="p"># Run the <strong>display nat-policy rule</strong> command to view the NAT configuration. After the configuration is complete, terminals can dynamically obtain IP addresses and access the Internet.<pre class="screen">&lt;Router&gt; <strong>display nat-policy rule all</strong>
+Total:3
+RULE ID  RULE NAME        STATE     ACTION  HITS   
+-----------------------------------------------------
+1        1                enable    source-nat 0       
+----------------------------------------------------</pre>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4><ul><li>Router<pre class="screen">#                                                                               
+ sysname Router                                                                 
+ dhcp enable                                         
+#                                                                               
+acl number 2000
+ rule 5 permit source 10.10.1.0 0.0.0.255       
+#                                                                               
+ip pool ip-pool1                                                                
+ gateway-list 10.10.1.1                                                    
+ network 10.10.1.0 mask 255.255.255.128                                         
+ excluded-ip-address 10.10.1.2 
+ dns-list 10.10.1.2                                                  
+ lease day 30 hour 0 minute 0
+ domain-name huawei.com                                                 
+#                                                                               
+ip pool ip-pool2                                                                
+ gateway-list 10.10.1.129                                                       
+ network 10.10.1.128 mask 255.255.255.128 
+ dns-list 10.10.1.2                                         
+ lease day 2 hour 0 minute 0  
+ domain-name huawei.com                                                     
+#                                                                               
+interface GE0/0/1                                                  
+ ip address 10.10.1.1 255.255.255.128                                          
+ dhcp select global                                                              
+#                                                                               
+interface GE0/0/2                                                  
+ ip address 10.10.1.129 255.255.255.128                                            
+ dhcp select global                                                             
+#                                                                               
+interface GE0/0/3
+ mtu 9000 
+ tcp adjust-mss 1360                                                
+ ip address 2.1.1.2 255.255.255.0                                            
+ nat enable 
+#
+nat-policy  
+rule name 1
+  egress-interface GE0/0/3
+  source-address 2.1.1.0 mask 255.255.255.0
+  action source-nat easy-ip
+#                                                                               
+ip route-static 0.0.0.0 0.0.0.0 2.1.1.1  
+#
+return</pre>
+</li><li>(Optional) Destination NAT<pre class="screen">#
+nat server pca global 1.1.1.100 inside 10.10.1.7
+#
+nat server pcb global 1.1.1.100 8080 inside 10.10.1.8
+#
+return</pre>
+</li><li>(Optional) Security policy<pre class="screen">#
+firewall zone trust
+ set priority 85
+ add interface GE0/0/3
+#
+firewall zone untrust
+ set priority 5
+ add interface GE0/0/1
+ add interface GE0/0/2
+#
+security-policy
+ rule name trust_untrust
+  source-zone trust
+  destination-zone untrust
+  profile av default
+  profile ips default
+  profile url-filter url1
+  action permit
+#
+return</pre>
+</li><li>(Optional) QoS policy<pre class="screen">#
+flow-queue queue1
+ queue ef pq shaping 5000
+ queue af2 drr weight 30 shaping shaping-percentage 30
+#
+traffic behavior qos-50
+ statistics enable
+ flow-queue queue1 queue qos5 
+#
+traffic behavior qos-af21
+ statistics enable
+ flow-queue queue1 queue af2
+#
+traffic behavior qos-50
+ statistics enable
+ flow-queue queue1 queue qos5
+#
+traffic policy qos_toPC2andPC3 
+ classifier qos-50 behavior qos-50 precedence 10
+ classifier qos-af21 behavior qos-af21 precedence 15
+#
+interface GE0/0/3
+ qos lr cir 1000000 kbps outbound
+ traffic-policy qos_toPC2andPC3 outbound
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_topic_0000001538075105.html">Comprehensive Scenario Cases
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_topic_0000001538275217.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_topic_0000001998495833.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

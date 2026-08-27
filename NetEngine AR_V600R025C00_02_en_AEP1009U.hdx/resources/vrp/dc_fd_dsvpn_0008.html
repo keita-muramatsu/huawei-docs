@@ -1,0 +1,65 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding DSVPN over IPsec">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_vrp_dsvpn_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_cfg_dsvpn_0009.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001897193229">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Understanding DSVPN over IPsec</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001897193229"></a><a name="EN-US_CONCEPT_0000001897193229"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding DSVPN over IPsec</h1>
+<div><div class="p">Data transmitted between the hub and spokes, as well as between spokes, needs to be encrypted to increase data security. To meet this requirement, during DSVPN deployment, an IPsec profile can be bound to DSVPN so that mGRE and IPsec tunnels are dynamically established between spokes.<ul><li>The establishment of an mGRE tunnel immediately triggers that of an IPsec tunnel.</li><li>Typical IPsec technology uses Access Control Lists (ACLs) to identify unicast traffic to be encrypted. An IPsec policy requires a large number of ACLs to be defined, which is difficult to implement. DSVPN combines NHRP and mGRE with IPsec to provide ease of device configurations, while ensuring data transmission security and facilitating network deployment.</li><li>Because IPsec tunnels are dynamically established between spokes, IPsec data exchanged between spokes does not need to be decrypted or encrypted by the hub. This minimizes data transmission delay.</li></ul>
+</div>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>DSVPN over IPsec</span><br><span><img class="vsd" src="figure/en-us_image_0000002142173410.png" width="NaN" height="NaN"></span></div>
+<div class="p">On a DSVPN network, IPsec profiles are configured on the mGRE interfaces of the hub and spokes. DSVPN over IPsec works as follows:<ol><li>All spokes on the network send NHRP Registration Request messages to the hub and report NHRP peer information to IPsec. The Internet Key Exchange (IKE) modules of the spokes and hub negotiate IPsec tunnel parameters with their peer ends.</li><li>Based on the registration requests received, the hub generates NHRP mapping entries to record the mapping between the tunnel addresses and public addresses of the spokes. Following this, it sends registration replies to the spokes.</li><li>Spokes establish an mGRE tunnel when they need to transmit traffic. For details about how they set up an mGRE tunnel, see <a href="dc_fd_dsvpn_0005.html#EN-US_CONCEPT_0000001851072546__section_dc_fd_dsvpn_000501">DSVPN Fundamentals in a Non-Shortcut Scenario</a> and <a href="dc_fd_dsvpn_0005.html#EN-US_CONCEPT_0000001851072546__section_dc_fd_dsvpn_000502">DSVPN Fundamentals in a Shortcut Scenario</a>.</li><li>When spokes establish an mGRE tunnel, their IPsec module obtains NHRP peer information, adds or deletes IPsec peers based on the information, and triggers dynamic establishment of an IPsec tunnel.</li><li>When one spoke wants to send an IP packet to another spoke with which it has set up an IPsec tunnel, the source spoke looks for a matching route based on the packet's destination address. If the outbound interface of the matching route is an mGRE interface, the source spoke searches the NHRP mapping table for the public address of the route's next hop, and then searches for a matching IPsec security association (SA) to encrypt the packet.</li></ol>
+<div class="note" id="EN-US_CONCEPT_0000001897193229__note1963872910597"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_CONCEPT_0000001897193229__p112116402422">In a DSVPN over IPsec scenario, if a NAT device is deployed, you are advised to set the IPsec encapsulation mode to transport. If two spokes are situated behind different NAT devices or the hub is situated behind a NAT device, the IPsec encapsulation mode can only be transport.</p>
+</div></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/dc_vrp_dsvpn_cfg_0003.html">Configuring DSVPN over IPsec
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/dc_cfg_dsvpn_0009.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

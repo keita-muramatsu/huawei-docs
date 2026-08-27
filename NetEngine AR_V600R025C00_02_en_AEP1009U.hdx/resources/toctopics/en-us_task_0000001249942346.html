@@ -1,0 +1,103 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Configuring Connection-based QoS">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0132.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001857714593.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001249942346">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Configuring Connection-based QoS</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001249942346"></a><a name="EN-US_TASK_0000001249942346"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Configuring Connection-based QoS</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001249942346__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring connection-based QoS, configure a traffic policy for each application. For details, see "Configuring CBQ" in "HQoS Configuration" in <span>CLI-based Configuration</span> &gt; QoS Configuration.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This function is supported only on the AR6700-H series and AR8000 series.</p>
+<p>In the SD-WAN EVPN dual-gateway site scenario, connection-based QoS can be used only after smart policy routing is configured and the <strong><b><span class="cmdqueryname">local-network-prefer enable</span></b></strong> command is run to enable smart policy routing to preferentially select a local network link.</p>
+</div></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001249942346__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Connection-based QoS is also called dynamic QoS. In the SD-WAN EVPN scenario, the link bandwidth of the HQ/DC (hub) is usually much higher than that of a branch (spoke). Traffic sent from the hub side may cause congestion on a branch link, leading to random packet loss. As a result, experience of key applications cannot be ensured. In this case, QoS policies can be configured on the hub based on the bandwidth of each branch link to implement differentiated rate limiting in advance, preventing network congestion and random packet loss and ensuring lossless key applications.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001249942346__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure connection-based QoS on the hub.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Create a site group and enter the site group view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">evpn site-group</span></b> </strong><em>name</em></pre>
+</p></li><li class="substepexpand"><span>Add a peer site to the site group.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">peer-site</span></b> </strong>{ <em>site-id</em> | <strong>all</strong> } [ <strong>bandwidth </strong><strong>percentage</strong><em> <i><span class="varname">bandwidth-value</span></i></em> ]</pre>
+<p>By default, no peer site is added to a site group.</p>
+</p></li><li class="substepexpand"><span>Apply a traffic policy to the site group.</span><p><pre class="screen"><b><span class="cmdqueryname">traffic-policy</span></b> <i><span class="varname">policy-name</span></i> <strong><span>outbound</span></strong></pre>
+<p>By default, no traffic policy is applied to a site group.</p>
+</p></li><li class="substepexpand"><span>(Optional) Specify a transport network and enable connection-based QoS based on the transport network to which the source TNP belongs.</span><p><pre class="screen"><b><span class="cmdqueryname">transport-network</span></b> <i><span class="varname">transport-network-name</span></i></pre>
+<p>By default, no transport network is specified for a site group.</p>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the main interface view or create a sub-interface and then enter the sub-interface view.</span><p><pre class="screen"><strong>interface</strong><em> <i><span class="varname">interface-type</span></i></em><em> <i><span class="varname">interface-number</span></i></em></pre>
+</p></li><li class="substepexpand"><span>Configure the shaping rate for the interface.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">qos lr cir</span></b> </strong><em>cir-value</em> [ <strong>kbps</strong> | <strong>mbps</strong> | <strong>gbps</strong> ] [ <strong>cbs</strong><em> <i><span class="varname">cbs-value</span></i></em> [ <strong>bytes</strong> | <strong>kbytes</strong> | <strong>mbytes</strong> ] ] [ <strong>outbound</strong> ]</pre>
+<p>By default, the traffic shaping rate of an interface is the maximum bandwidth of the interface.</p>
+</p></li><li class="substepexpand"><span>Apply a traffic policy to the interface.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">traffic-policy</span></b> </strong><em>policy-name</em> { <strong>inbound</strong> | <strong>outbound</strong> } [ <strong>preprocess</strong> | <strong>firstprocess</strong> ]</pre>
+<p>By default, no traffic policy is applied to an interface.</p>
+</p><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The traffic policy specified in this step is an escape policy. When configuring an escape policy on a sub-interface, you need to run the <b><span class="cmdqueryname">qos queue-scheduling enable</span></b> command to enable the queue capability on the sub-interface.</p>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure the hub-side downlink bandwidth on the spoke.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the site view.</span><p><pre class="screen"><b><span class="cmdqueryname">evpn site</span></b> <i><span class="varname">site-id</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the TNP view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">transport-network-port</span></b> </strong><em><i><span class="varname">transport-network-port-id</span></i></em></pre>
+</p></li><li class="substepexpand"><span>Configure the TNP inbound bandwidth.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">bandwidth</span></b></strong> <strong><strong><span>input</span></strong></strong> <em><i><span class="varname">bandwidth-value</span></i></em></pre>
+<p>By default, the TNP inbound bandwidth is not configured.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0007.html">Configuring SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0132.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_task_0000001857714593.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

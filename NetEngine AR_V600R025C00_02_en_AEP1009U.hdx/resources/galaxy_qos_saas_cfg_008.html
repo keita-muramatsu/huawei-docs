@@ -1,0 +1,248 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring SaaS Traffic Steering">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_task_0000001805314550.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_saas_cfg_006.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001805314558">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring SaaS Traffic Steering</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001805314558"></a><a name="EN-US_TASK_0000001805314558"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring SaaS Traffic Steering</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001805314558__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000001805314558__fig184021822716">Figure 1</a>, DeviceA has two Internet access links to access Microsoft Teams. Interface 1 (link 1) obtains an IP address and DNS parameters through DHCP, and interface 2 (link 2) obtains an IP address and DNS parameters through PPPoE dialup. A user connected to DeviceA often uses Microsoft Teams to join audio and video conferences. To ensure the quality of video conferences, the optimal link needs to be selected for accessing the Microsoft Teams application. You can configure SaaS traffic steering to meet this requirement.</p>
+<p>SaaS traffic steering obtains the link detection result by tracking an NQA test instance. The detection mode is HTTP, the detection URL is the dedicated detection URL <strong>sdwan.measure.office.com</strong> provided by Microsoft, the detection period is 300s, the number of detection times is 10, and the detection interval is 10s. The optimal path mode is used for SaaS traffic steering to ensure that a new user can use the optimal link for video conferences when accessing the Teams application.</p>
+<div class="fignone" id="EN-US_TASK_0000001805314558__fig184021822716"><a name="EN-US_TASK_0000001805314558__fig184021822716"></a><a name="fig184021822716"></a><span class="figcap"><b>Figure 1 </b>SaaS traffic steering</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1, interface 2, and interface 3 represent 10GE0/0/1, 10GE0/0/2, and 10GE0/0/3, respectively.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000001851953477.png" width="NaN" height="NaN"></span></div>
+<h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Perform configurations on interfaces, including the VPN configuration, basic interface configuration, application identification configuration, and default route configuration.</li><li>Configure an NQA test instance.</li><li>Configure an application group for identifying service flows.</li><li>Specify path indexes and configure a SaaS path profile.</li><li>Configure a SaaS policy node.</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001805314558__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Perform configurations on interfaces.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>ip vpn-instance underlay_1</strong>
+[DeviceA-vpn-instance-underlay_1] <strong>ipv4-family</strong> 
+[DeviceA-vpn-instance-underlay_1-af-ipv4] <strong>quit</strong>
+[DeviceA-vpn-instance-underlay_1] <strong>quit</strong>
+[DeviceA] <strong>ip vpn-instance underlay_2</strong>
+[DeviceA-vpn-instance-underlay_2] <strong>ipv4-family</strong> 
+[DeviceA-vpn-instance-underlay_2-af-ipv4] <strong>quit</strong>
+[DeviceA-vpn-instance-underlay_2] <strong>quit</strong>
+[DeviceA] <strong>ip vpn-instance vpn1</strong>
+[DeviceA-vpn-instance-vpn1] <strong>ipv4-family</strong> 
+[DeviceA-vpn-instance-vpn1-af-ipv4] <strong>quit</strong>
+[DeviceA-vpn-instance-vpn1] <strong>quit</strong>
+[DeviceA] <strong>interface 10ge 0/0/3</strong>
+[DeviceA-10GE0/0/3] <strong>ip binding vpn-instance vpn1</strong>
+[DeviceA-10GE0/0/3] <strong>ip address 192.168.1.1 255.255.255.0</strong>
+[DeviceA-10GE0/0/3] <strong>sa enable</strong>
+[DeviceA-10GE0/0/3] <strong>sa application-statistic enable</strong>
+[DeviceA-10GE0/0/3] <strong>quit</strong>
+[DeviceA] <strong>interface 10ge 0/0/1</strong>
+[DeviceA-10GE0/0/1] <strong>ip binding vpn-instance underlay_1</strong>
+[DeviceA-10GE0/0/1] <strong>ip address dhcp-alloc</strong>
+[DeviceA-10GE0/0/1] <strong>quit</strong>
+[DeviceA] <strong>interface dialer 1</strong> 
+[DeviceA-Dialer1] <strong>link-protocol ppp</strong> 
+[DeviceA-Dialer1] <strong>ip binding vpn-instance underlay_2</strong>
+[DeviceA-Dialer1]<strong> ppp chap user user1@system</strong> 
+[DeviceA-Dialer1]<strong> ppp chap password cipher YsHsjx_202206  </strong>
+[DeviceA-Dialer1] <strong>ip address ppp-negotiate</strong>
+[DeviceA-Dialer1] <strong>ppp ipcp dns request</strong>
+[DeviceA-Dialer1] <strong>ppp ipcp default-route</strong>
+[DeviceA-Dialer1] <strong>quit</strong>
+[DeviceA] <strong>interface 10ge 0/0/2</strong>
+[DeviceA-10GE0/0/2] <strong>pppoe-client dialer 1 bundle-number 1</strong>
+[DeviceA-10GE0/0/2]<strong> quit</strong>
+[DeviceA] <strong>ip route-static vpn-instance vpn1 0.0.0.0 0 vpn-instance underlay_1</strong></pre>
+</p></li><li><span>Configure an NQA test instance.</span><p><pre class="screen">[DeviceA] <strong>nqa test-instance admin1 http1</strong>
+[DeviceD-nqa-admin1-http1] <strong>test-type http</strong>
+[DeviceD-nqa-admin1-http1] <strong>protocol http</strong>
+[DeviceD-nqa-admin1-http1] <strong>http-url ipv4 http://sdwan.measure.office.com</strong>
+[DeviceD-nqa-admin1-http1] <strong>probe-count 10</strong>
+[DeviceD-nqa-admin1-http1] <strong>interval seconds 10</strong>
+[DeviceD-nqa-admin1-http1] <strong>source-interface 10GE0/0/1</strong>
+[DeviceD-nqa-admin1-http1] <strong>vpn-instance underlay_1</strong>
+[DeviceD-nqa-admin1-http1] <strong>frequency 300</strong>
+[DeviceD-nqa-admin1-http1] <strong>start now</strong>
+[DeviceD-nqa-admin1-http1] <strong>quit</strong>
+[DeviceA] <strong>nqa test-instance admin2 http2</strong>
+[DeviceD-nqa-admin2-http2] <strong>test-type http</strong>
+[DeviceD-nqa-admin2-http2] <strong>protocol http</strong>
+[DeviceD-nqa-admin2-http2] <strong>http-url ipv4 http://sdwan.measure.office.com</strong>
+[DeviceD-nqa-admin2-http2] <strong>probe-count 10</strong>
+[DeviceD-nqa-admin2-http2] <strong>interval seconds 10</strong>
+[DeviceD-nqa-admin2-http2] <strong>source-interface Dialer1</strong>
+[DeviceD-nqa-admin2-http2] <strong>vpn-instance underlay_2</strong>
+[DeviceD-nqa-admin2-http2] <strong>frequency 300</strong>
+[DeviceD-nqa-admin2-http2] <strong>start now</strong>
+[DeviceD-nqa-admin2-http2] <strong>quit</strong></pre>
+</p></li><li><span>Configure an application group for identifying service flows.</span><p><pre class="screen">[DeviceA] <strong>application-group name app</strong>
+[DeviceA-application-group-app] <strong>add application Microsoft_Office_365</strong>
+[DeviceA-application-group-app] <strong>quit</strong></pre>
+</p></li><li><span>Specify path indexes and configure a SaaS path profile.</span><p><pre class="screen">[DeviceA] <strong>saas-cloud-express</strong>
+[DeviceA-saas-cloud-express] <strong>path-index 1 interface 10GE0/0/1 2.2.2.2</strong>
+[DeviceA-saas-cloud-express] <strong>path-index 2 interface Dialer1 3.3.3.2</strong>
+[DeviceA-saas-cloud-express] <strong>saas-path profile p1</strong>
+[DeviceA-saas-cloud-express-saas-path-profile-p1] <strong>path-index 1</strong>
+[DeviceA-saas-cloud-express-saas-path-profile-p1] <strong>path-index 2</strong>
+[DeviceA-saas-cloud-express-saas-path-profile-p1] <strong>quit</strong></pre>
+</p></li><li><span>Configure a SaaS policy node.</span><p><pre class="screen">[DeviceA-saas-cloud-express] <strong>saas-policy node 1</strong>
+[DeviceA-saas-cloud-express-saas-policy-node-1] <strong>binding application-group app</strong>
+[DeviceA-saas-cloud-express-saas-policy-node-1] <strong>track nqa admin1 http1</strong>
+[DeviceA-saas-cloud-express-saas-policy-node-1] <strong>track nqa admin2 http2</strong>
+[DeviceA-saas-cloud-express-saas-policy-node-1] <strong>best-path</strong>
+[DeviceA-saas-cloud-express-saas-policy-node-1] <strong>saas-path-profile p1 </strong>
+[DeviceA-saas-cloud-express-saas-policy-node-1] <strong>apply-to vpn-instance vpn1</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001805314558__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Run the <strong>display saas policy all</strong> command on DeviceA to check SaaS policy information.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>display saas policy all</strong>
+--------------------------------------------------------------------------------
+SaaS Policy Info:
+Policy Node           :  1
+Path Profile          :  p1
+Mode                  :  best-path
+Application Group     :  app
+Effective VPN         :  _public_, vpn1
+Path Info:
+Path Index            :  1                    Out Interface         :  10GE0/0/1
+Location              :  Local                Status                :  UP
+Loss                  :  0                    Delay                 :  19
+QoE                   :  100                  Last Update Time      :  2023-12-05 21:57:06
+
+Path Index            :  2                    Out Interface         :  Dialer1
+Location              :  Local                Status                :  UP
+Loss                  :  0                    Delay                 :  21
+QoE                   :  100                  Last Update Time      :  2023-12-05 21:57:06
+
+Chosen Path Info:
+  Best Path             :  1 
+--------------------------------------------------------------------------------
+Number of SaaS policies: 1
+--------------------------------------------------------------------------------</pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+ip vpn-instance underlay_1
+ ipv4-family 
+#
+ip vpn-instance underlay_2
+ ipv4-family 
+#
+ip vpn-instance vpn1
+ ipv4-family 
+#
+interface 10ge 0/0/3
+ ip binding vpn-instance vpn1
+ ip address 192.168.1.1 255.255.255.0
+ sa enable
+ sa application-statistic enable
+#
+interface 10ge 0/0/1
+ ip binding vpn-instance underlay_1
+ ip address dhcp-alloc
+#
+interface dialer 1 
+ link-protocol ppp 
+ ip binding vpn-instance underlay_2
+ ppp chap user user1@system 
+ ppp chap password cipher $1d$OwseVRh@LH}ZeTBm$1nH4$ab&gt;d(N{-%0!ab48y=Ic*xEUR4pVhR2"9-<font style="font-size:8pt" Face="Courier New" >~</font>,$ 
+ ip address ppp-negotiate
+ ppp ipcp dns request
+ ppp ipcp default-route
+#
+interface 10ge 0/0/2
+ pppoe-client dialer 1 bundle-number 1
+#
+ip route-static vpn-instance vpn1 0.0.0.0 0 vpn-instance underlay_1
+#
+nqa test-instance admin1 http1
+ test-type http
+ protocol http
+ http-url ipv4 http://sdwan.measure.office.com
+ probe-count 10
+ interval seconds 10
+ source-interface 10GE0/0/1
+ vpn-instance underlay_1
+ frequency 300
+ start now
+#
+nqa test-instance admin2 http2
+ test-type http
+ protocol http
+ http-url ipv4 http://sdwan.measure.office.com
+ probe-count 10
+ interval seconds 10
+ source-interface Dialer1
+ vpn-instance underlay_2
+ frequency 300
+ start now
+#
+application-group name app
+ add application Microsoft_Office_365
+#
+saas-cloud-express
+ path-index 1 interface 10GE0/0/1 2.2.2.2
+ path-index 2 interface Dialer1 3.3.3.2
+ saas-path profile p1
+  path-index 1
+  path-index 2
+ saas-policy node 1
+  binding application-group app
+  track nqa admin1 http1
+  track nqa admin2 http2
+  best-path
+  saas-path-profile p1 
+  apply-to vpn-instance vpn1
+#
+return</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_task_0000001805314550.html">SaaS Traffic Steering Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_qos_saas_cfg_006.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

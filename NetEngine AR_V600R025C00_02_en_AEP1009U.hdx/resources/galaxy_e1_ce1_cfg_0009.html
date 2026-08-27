@@ -1,0 +1,96 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an E1/CE1 Interface to Work in E1 Mode">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_E1_CE1_cfg_0008.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_E1_CE1_cfg_0010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="E1/CE1">
+<meta name="featuretype" content="Interface Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="E1/CE1">
+<meta name="featuretype" content="Interface Management">
+<meta name="featurename" content="E1/CE1">
+<meta name="featuretype" content="Interface Management">
+<meta name="featuretype" content="Interface Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512843210">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an E1/CE1 Interface to Work in E1 Mode</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512843210"></a><a name="EN-US_TASK_0000001512843210"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an E1/CE1 Interface to Work in E1 Mode</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512843210__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><div class="p">As shown in <a href="#EN-US_TASK_0000001512843210__fig9154954171417">Figure 1</a>, the branch and headquarters of an enterprise are connected through the transmission network of a carrier. The enterprise leases 2 Mbit/s E1 private lines from the carrier.<div class="fignone" id="EN-US_TASK_0000001512843210__fig9154954171417"><a name="EN-US_TASK_0000001512843210__fig9154954171417"></a><a name="fig9154954171417"></a><span class="figcap"><b>Figure 1 </b>Branch accessing the transmission network through E1 private lines</span><br><span><img class="vsd" src="figure/en-us_image_0000001513162762.png" width="NaN" height="NaN"></span></div>
+</div>
+<p>The E1/CE1 interface of the branch needs to be configured to work in E1 mode.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512843210__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the E1/CE1 interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">controller e1</span></b> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Configure the E1/CE1 interface to work in E1 mode.</span><p><pre class="screen"><b><span class="cmdqueryname">using e1</span></b></pre>
+<p>By default, an E1/CE1 interface works in CE1 mode. After the working mode of an E1/CE1 interface is changed to E1, the system creates a serial interface serial <i><span class="varname">interface-number</span></i>:0, where <i><span class="varname">interface-number</span></i> specifies the number of the E1/CE1 interface. The interface can be further configured, including configuring the IP address and PPP protocol.</p>
+<p>For example, after you run the <b><span class="cmdqueryname">controller e1</span></b> <strong>1/0/0</strong> command to enter the E1/CE1 interface view and configure the interface to work in E1 mode, the serial interface created by the system is serial 1/0/0:0.</p>
+</p></li><li><span>Configure other parameters for the E1/CE1 interface.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The parameters except the clock mode of the E1/CE1 interface on the local end must be the same as those on the peer end. Otherwise, the communication may be abnormal.</p>
+</div></div>
+</p><ol type="a"><li class="substepexpand"><span>Configure a clock mode for the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">clock</span></b> { <strong><span>master</span></strong> | <strong><span>slave</span></strong> }</pre>
+<p>By default, the clock mode of an interface is master.</p>
+</p></li><li class="substepexpand"><span>Enable or disable data inversion.</span><p><pre class="screen"><b><span class="cmdqueryname">data-coding inverted enable</span></b>
+<strong><b><span class="cmdqueryname">undo data-coding inverted enable</span></b></strong></pre>
+<p>By default, data inversion is disabled on an interface.</p>
+</p></li><li class="substepexpand"><span>Configure a line idle code for the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">idle-code</span></b> { <strong><span>7e</span></strong> | <strong><span>ff</span></strong> }</pre>
+<p>By default, the line idle code of an interface is <strong>7e</strong> (0x7e).</p>
+</p></li><li class="substepexpand"><span>Configure an interframe filling tag and the number of interframe filling tags for the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">itf type</span></b> { <strong><span>7e</span></strong> | <strong><span>ff</span></strong> }
+<b><span class="cmdqueryname">itf number</span></b> <i><span class="varname">number</span></i></pre>
+<p>By default, the interframe filling tag of an interface is <strong>7e</strong> (0x7e), and the number of interframe filling tags is 4.</p>
+</p></li><li class="substepexpand"><span>Configure a CRC mode for a serial interface.</span><p><pre class="screen"><b><span class="cmdqueryname">interface serial</span></b> <i><span class="varname">interface-number</span></i>
+<b><span class="cmdqueryname">crc</span></b> { <strong><span>16</span></strong> | <strong><span>32</span></strong> | <strong><span>none</span></strong> }</pre>
+<p>By default, a serial interface uses the 16-bit CRC mode.</p>
+</p></li></ol>
+</li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001512843210__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display controller e1</span></b> <i><span class="varname">interface-number</span></i> command to check the status and parameters of a specified E1/CE1 interface.</li><li>Run the <b><span class="cmdqueryname">display interface serial</span></b> <i><span class="varname">interface-number</span></i> command to check the status of and statistics about a specified serial interface.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_E1_CE1_cfg_0008.html">Configuring E1/CE1
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_E1_CE1_cfg_0010.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

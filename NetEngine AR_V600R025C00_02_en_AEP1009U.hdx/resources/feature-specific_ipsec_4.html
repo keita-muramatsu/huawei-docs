@@ -1,0 +1,513 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Establishing an IPsec Tunnel in ISAKMP Mode (Using SM Digital Envelope Authentication)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_ipsec_0.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_ipsec_3.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_ipsec_5.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebNext" content="ys_sec@sec_case_ipsec_0100.xml">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002361891146">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Establishing an IPsec Tunnel in ISAKMP Mode (Using SM Digital Envelope Authentication)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002361891146"></a><a name="EN-US_TASK_0000002361891146"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Establishing an IPsec Tunnel in ISAKMP Mode (Using SM Digital Envelope Authentication)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002361891146__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_context479162314493"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p155133462111">In <a href="#EN-US_TASK_0000002361891146__en-us_task_0000001639541618_fig85651940434">Figure 1</a>, networks A and B connect to the Internet through DeviceA and DeviceB respectively, and there are reachable routes between the two devices. An ISAKMP IPsec tunnel needs to be established between public network interfaces (interface 1 and interface 3) on the two devices. The two ends of the tunnel use SM digital envelope authentication to ensure secure transmission of data flows on specific network segments in networks A and B.</p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p7392150152813">DeviceA and DeviceB use the SM digital envelope for authentication. During the authentication, DeviceA sends its local certificate to DeviceB. DeviceB then uses the CA certificate obtained to authenticate the local certificate of DeviceA. If the authentication is successful, DeviceA is legitimate and allowed to establish an IPsec tunnel with DeviceB. IPsec authentication is bidirectional, so DeviceA also needs to authenticate DeviceB using the same procedure.</p>
+<div class="fignone" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_fig85651940434"><a name="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_fig85651940434"></a><a name="en-us_task_0000001639541618_fig85651940434"></a><span class="figcap"><b>Figure 1 </b>Establishing an IPsec tunnel in ISAKMP mode (using SM digital envelope authentication)</span><div class="note" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_note114262028164313"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p1049528123217">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span> on DeviceA, and interface 3 and interface 4 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span> on DeviceB.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_image1656504114318" src="figure/en-us_image_0000001687742337.png" width="NaN" height="NaN"></span></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_table1538553310180216" frame="border" border="1" rules="all"><thead align="left"><tr id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_row386471801180216"><th align="left" class="cellrowborder" valign="top" width="17.72%" id="mcps1.3.1.5.1.3.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1533088070180216">Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="82.28%" id="mcps1.3.1.5.1.3.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1193498945180216">Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_row1760762827180216"><td class="cellrowborder" rowspan="3" valign="top" width="17.72%" headers="mcps1.3.1.5.1.3.1.1 "><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p080411102203">DeviceA</p>
+</td>
+<td class="cellrowborder" valign="top" width="82.28%" headers="mcps1.3.1.5.1.3.1.2 "><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p50714680180216">Interface: <span>10GE</span> <span>0/0/1</span></p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1410983676180216">IP address: 1.1.1.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_row1329674333180216"><td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.3.1.1 "><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p0201181211210">Interface: <span>10GE</span> <span>0/0/2</span></p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1719986015180216">IP address: 10.1.1.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_row564580602180216"><td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.3.1.1 "><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1458733717180216"><strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1264267467180216">IPsec configuration</strong></p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p495088221180216">Remote address: 2.2.2.2</p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1129737606180216">Authentication mode: SM digital envelope authentication</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_row1300081696180216"><td class="cellrowborder" rowspan="3" valign="top" width="17.72%" headers="mcps1.3.1.5.1.3.1.1 "><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p2084215209204">DeviceB</p>
+</td>
+<td class="cellrowborder" valign="top" width="82.28%" headers="mcps1.3.1.5.1.3.1.2 "><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p19237175362115">Interface: <span>10GE</span> <span>0/0/1</span></p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p989397064180216">IP address: 2.2.2.2/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_row1566199057180216"><td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.3.1.1 "><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p184774240180216">Interface: <span>10GE</span> <span>0/0/2</span></p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p444794009180216">IP address: 10.1.2.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_row631895550180216"><td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.3.1.1 "><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1398780070180216"><strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b793152781180216">IPsec configuration</strong></p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1014344855180216">Remote address: 1.1.1.1</p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p322411092218">Authentication mode: SM digital envelope authentication</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002361891146__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_context1677625172748"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="note" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_note1258653244117"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p14586173220411">The tunnel negotiation parameter settings on DeviceA and DeviceB must be the same.</p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1733172415455">SM digital envelope authentication is defined by State Cryptography Administration of China and can be used only for IKEv1 negotiation in main mode. It cannot be used for IKEv1 negotiation in aggressive mode or for IKEv2 negotiation. By default, the device does not support SA negotiation through IKEv1. To use IKEv1-related functions, you need to load the IKEv1 feature package. For details about how to install the feature package, see "Upgrade Maintenance Configuration" in <span>CLI Configuration Guide</span> &gt; System Management Configuration.</p>
+</div></div>
+<div class="p" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p4863181194720">The configuration roadmap is as follows:<ol id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_ol84887318252"><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li124891315257">Configure interfaces.</li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li6518182017561">Configure static routes to divert tunnel negotiation packets and encrypted data packets transmitted through the tunnel.</li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li61494212479">Apply for the local certificate and CA certificate in offline mode and import the certificates to the devices.</li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li6183122942611">Configure an ISAKMP IPsec policy and apply an IPsec policy group to an interface.</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002361891146__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_steps10132325172748"><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_step5253145172748"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd7907968172748">Configure public and private network interfaces on DeviceA.</span><p><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p12605767406"># Configure the public network interface <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen111022405180216">&lt;<span class="keyword" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_keyword997514984413">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b5808950180216">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_keyword18402720442">HUAWEI</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b523482254180216">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1577378589180216">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b84181382014">undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1194099546180216">ip address 1.1.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1332938808180216">quit</strong></pre>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p145441343144020"># Configure the private network interface <span>10GE</span> <span>0/0/2</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen93228202474">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1322142054719">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b92441718152015">undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b932292024715">ip address 10.1.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1832272044713">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_step98116115314"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd48441536105014">Configure static routes on DeviceA to divert tunnel negotiation packets and encrypted data packets transmitted through the tunnel.</span><p><div class="note" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_note16149335183614"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p41491935153617">Assume that the next-hop IP address of the route from DeviceA to the Internet is 1.1.1.254.</p>
+</div></div>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p548614614335"># Configure a static route to DeviceB to divert tunnel negotiation packets.</p>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen1723858951180216">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1253212490180216">ip route-static 2.2.2.0 255.255.255.0 1.1.1.254</strong></pre>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p17592351143318"># Configure a static route to network B to divert encrypted data packets transmitted through the tunnel.</p>
+</p><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen1924718197355">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b2247161911352">ip route-static 10.1.2.0 255.255.255.0 1.1.1.254</strong></pre>
+</p></li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_step122193161538"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd321914163539"><a name="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd321914163539"></a><a name="en-us_task_0000001639541618_cmd321914163539"></a>Apply for certificates for DeviceA. In this example, apply for a local certificate and a CA certificate in offline mode and import the certificates to DeviceA.</span><ol type="a" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substeps20689174811258"><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep76890489255"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd11689848172518">Create an SM2 key pair and allow it to be exported from the device.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen1332551162614">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b764712822715">pki sm2 local-key-pair create sm2key exportable</strong>
+ Info: The name of the new key-pair will be: sm2key
+ Info: It will take a few seconds or more. Please wait a moment.
+ Generating key-pairs finished</pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep18908111142610"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd49081814265">Configure a PKI entity to identify a certificate applicant.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen675939021180217">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b330405731180217">pki entity user_a</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1138205674180217">common-name devicea</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1167879096180217">country cn</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1304256087180217">email testa@user.com</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b749462846180217">fqdn testa.abc.com</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b13920030180217">ip-address 1.1.1.1</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1992423555180217">state beijing</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b327025679180217">organization huawei</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1210469621180217">organization-unit dev</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b2043385445180217">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b972251212817">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep17154173417367"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd1215463453619">Configure a PKI realm.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen1817518214375">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b085813124375">pki realm user_a</strong>
+[DeviceA-pki-realm-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b191978108525">entity user_a</strong>
+[DeviceA-pki-realm-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1488213119521">key-usage signature</strong>
+[DeviceA-pki-realm-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b159211413195220">enrollment-request signature message-digest-method sm3</strong>
+[DeviceA-pki-realm-user_a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b732972018527">sm2 local-key-pair sm2key</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1017615214371">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep1660152920512"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd666012292517">Apply for a local certificate for the PKI entity in offline mode.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen145741131155214">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b855513423528">pki enroll-certificate realm user_a pkcs10 filename user_a.req</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep12757531134216"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd675716313429">Download the certificate request file using a file transfer protocol, and send the file to the CA server in out-of-band mode, such as through the web system, using a disk, or through an email, to apply for a local certificate from the CA server.</span><p><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p3148142123317">After the signature certificate application file is uploaded, the CA issues the signature certificate, encryption certificate, and encryption key pair at the same time.</p>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep112281552173318"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd12281052173316">Upload the certificate and encryption key pair to the storage medium of the device.</span><p><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1489904383418">In SM digital envelope authentication scenarios, the following certificates are required: CA certificate (<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b10231105261216">a_ca.cer</strong>), signature certificate (<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b523110528122">sig_cert.pem</strong>), signature key pair (<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1231175213127">sm2key</strong>), encryption certificate (<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b152318520128">enc_cert.pem</strong>), and encryption key pair (<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b72311852161210">enc_privkey_envelope.key</strong>). The signature key pair is created when the certificate application file is created and does not need to be imported to the device.</p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1997151112299"># The following uses the device as the SFTP client as an example to describe how to download the CA certificate (<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b870167193118">a_ca.cer</strong>), signature certificate (<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b2070119743113">sig_cert.pem</strong>), encryption certificate (<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b67012715313">enc_cert.pem</strong>), and encryption key pair (<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b13701197143116">enc_privkey_envelope.key</strong>) to the device.</p>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen30863335">&lt;DeviceA&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b9334561">cd flash:/pki/public/</strong> 
+&lt;DeviceA&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b712815356271">s</strong><strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b16902192">ftp 10.1.1.100</strong>  
+Trying 10.1.1.100 ...
+Press CTRL+K to abort
+Connected to 10.1.1.100 ...
+The server is not authenticated. Continue to access it? [Y/N]: <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b229692189175534">y</strong>
+Save the server's public key? [Y/N]: <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1020113717175534">n</strong>
+
+Please input the username:      <span>//Enter the SFTP user name.</span>
+Enter password:                 <span>//Enter the SFTP password.</span>
+sftp-client&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b26900310">get a_ca.cer</strong>
+Remote file: / <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b26967333613"> </strong>a_ca.cer ---&gt;  Local file: a_ca.cer
+Downloading the file. Please wait.../
+Downloading file successfully ended.
+File download is completed in 1 seconds.
+sftp-client&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b17712471263">get sig_cert.pem</strong> 
+Remote file: / <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b4771114718615"> </strong>sig_cert.pem ---&gt;  Local file: sig_cert.pem
+Downloading the file. Please wait.../
+Downloading file successfully ended.
+File download is completed in 1 seconds.
+sftp-client&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1558824511539">get enc_cert.pem</strong> 
+Remote file: / <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b165881845185316"> </strong>enc_cert.pem ---&gt;  Local file: enc_cert.pem
+Downloading the file. Please wait.../
+Downloading file successfully ended.
+File download is completed in 1 seconds.
+sftp-client&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b143511246175315">get enc_privkey_envelope.key</strong>
+Remote file: / <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b11351174615538"> </strong>enc_privkey_envelope.pem ---&gt;  Local file: enc_privkey_envelope.key
+Downloading the file. Please wait.../
+Downloading file successfully ended.
+File download is completed in 1 seconds.
+sftp-client&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1976462825175534">quit</strong>   </pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep13573123012530"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd5573830185312">Import the encryption key pair to the device memory.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen1824634935512">[DeviceA]<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1476884414408"> </strong><strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b14520183512413">pki import sm2-key-pair enc_privkey_envelope.key pem enc_privkey_envelope.key signkey sm2key</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep1895852983013"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd89581729133011">Create two PKI realms, one for signature and the other for encryption.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen872788024180204">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b749056518180204">pki realm sign</strong>
+[DeviceA-pki-realm-sign] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b3480181953414">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b863537925">pki realm enc</strong>
+[DeviceA-pki-realm-enc] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b17635207526">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep14270123610506"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd9270336115016">Import certificates to the PKI realms.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen91871163512">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b348121913410">pki import-certificate ca realm sign der filename a_ca.cer</strong>
+ The CA's Subject is /CN=ca_root 
+ The CA's fingerprint is:
+   MD5  fingerprint:1135 25D8 96D3 5936 C382 35EA 2CEE 80EB 
+   SHA1 fingerprint:6330 974F B2FE 3C52 D16B DAC4 0140 918B 4BCD 3EC7
+ Is the fingerprint correct?(Y/N):<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1183613329308">y</strong>
+ Info: Succeeded in importing file.
+ Warning: The file in the flash will be deleted. Please select 'N' if you want to keep it. Please select [Y/N]:<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b124475529364">y</strong> 
+ Info: Delete Success</pre>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen20525184415300">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b024004518304">pki import-certificate local realm sign pem filename sig_cert.pem no-check-same-name</strong>
+ Info: Succeeded in importing file.
+ Warning: The file in the flash will be deleted. Please select 'N' if you want to keep it. Please select [Y/N]:<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b82401045113020">y</strong> 
+ Info: Delete Success</pre>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen146440476307">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b2053935013015">pki import-certificate local realm enc pem filename enc_cert.pem no-check-same-name</strong>
+ Info: Succeeded in importing file.
+ Warning: The file in the flash will be deleted. Please select 'N' if you want to keep it. Please select [Y/N]:<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b9539175053011">y</strong> 
+ Info: Delete Success</pre>
+</p></li></ol>
+</li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_step3934105710503"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd99351574500">Configure an ISAKMP IPsec policy on DeviceA and apply an IPsec policy group to <span>10GE</span> <span>0/0/1</span>.</span><ol type="a" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substeps1918651763915"><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep1186171743918"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd10186117153914">Create the advanced ACL 3000, define the data flow to be protected, and allow devices on the network segment 10.1.1.0/24 to access the network segment 10.1.2.0/24.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen832176146180216">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b314493815180216">acl 3000</strong>
+[DeviceA-acl4-advance-3000] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1640303180216">rule 5 permit ip source 10.1.1.0 0.0.0.255 destination 10.1.2.0 0.0.0.255</strong>
+[DeviceA-acl4-advance-3000] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1498576137180216">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep6425122013393"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd1642692010394">Configure an IPsec proposal.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen1581867650180216">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b807674139180217">ipsec proposal tran1</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b5485731124611">transform esp</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1641283877180217">esp authentication-algorithm sm3</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b2058201038180217">esp encryption-algorithm sm4</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b116219933180217">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep55661223104720"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd19566172317473">Configure an IKE proposal.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen391116656180216">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1826436844180217">ike proposal 10</strong>
+[DeviceA--ike-proposal-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b2116994575180217">encryption-algorithm sm4</strong>
+[DeviceA--ike-proposal-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b728639653180217">dh group14</strong>
+[DeviceA--ike-proposal-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1817616571219">authentication-algorithm sm3</strong>
+[DeviceA--ike-proposal-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b6694978116">authentication-method</strong> <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b2694576117">sm2</strong><strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1969419718116"> digital-envelope</strong>
+[DeviceA--ike-proposal-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b772857348180217">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep224463210537"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd1124493217533">Configure an IKE peer.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen805221015180216">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1626254442180216">ike peer b</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b468015371054">undo version 2</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b845268418180216">ike-proposal 10</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b368951758180217">remote-address 2.2.2.2</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b2613978913">encryption-certificate pki realm enc</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b17950422111020">signature-certificate pki realm sign</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1455519709180216">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep5554162219547"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd165541922185410">Configure an IPsec policy.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen2035925425180216">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1637573442180216">ipsec policy map1 10 isakmp</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1618938794180216">security acl 3000</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1758292864180216">proposal tran1</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1535044863180216">ike-peer b</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1645542225919">sa trigger-mode auto</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b2070714920180216">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_note7328142818414"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0000001564113977_p751115311401">By default, the negotiation for IPsec tunnel establishment is triggered by traffic. To enable automatic negotiation for IPsec tunnel establishment, run the <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0000001564113977_b12265647152215"><b><span class="cmdqueryname" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0000001564113977_cmdname12472649317">sa trigger-mode auto</span></b></strong> command.</p>
+</div></div>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep7391431105419"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd203963115417">Apply an IPsec policy group to <span>10GE</span> <span>0/0/1</span>.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen717889205180216">[DeviceA] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1244832124180216">interface </strong><strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b629086262181341"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b648895037180216">ipsec policy map1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1637153962180216">quit</strong></pre>
+</p></li></ol>
+</li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_step1567716205319"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd693951845210">Configure public and private network interfaces on DeviceB.</span><p><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p137598114720"># Configure the public network interface <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen17759101110714">&lt;<span class="keyword" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_keyword19759611671">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b177597119711">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_keyword1975914116711">HUAWEI</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1175931114713">sysname DeviceB</strong>
+[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b27591711373">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b875981118713">undo portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b47592112074">ip address 2.2.2.2 24</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b11759181120715">quit</strong></pre>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p187602113711"># Configure the private network interface <span>10GE</span> <span>0/0/2</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen10760211176">[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b16760141111712">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b20760161112712">undo portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1776013119714">ip address 10.1.2.1 24</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b12760911978">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_step12383171113512"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd199397186529">Configure static routes on DeviceB to divert tunnel negotiation packets and encrypted data packets transmitted through the tunnel.</span><p><div class="note" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_note83820451068"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p143826452618">Assume that the next-hop IP address of the route from DeviceB to the Internet is 2.2.2.254.</p>
+</div></div>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p17382445568"># Configure a static route to DeviceA to divert tunnel negotiation packets.</p>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen133822451966">[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1638294517613">ip route-static 1.1.1.0 255.255.255.0 2.2.2.254</strong></pre>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_p63821045362"># Configure a static route to network A to divert encrypted data packets transmitted through the tunnel.</p>
+</p><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen1238213451568">[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b83821945767">ip route-static 10.1.1.0 255.255.255.0 2.2.2.254</strong></pre>
+</p></li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_step0100161910181"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd20100819131819">Configure certificates on DeviceB by referring to <a href="#EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd321914163539">step 4</a> of DeviceA. The detailed procedure is not described here.</span></li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_step680153812016"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd880153815209">Configure an ISAKMP IPsec policy on DeviceB and apply an IPsec policy group to <span>10GE</span> <span>0/0/1</span>.</span><ol type="a" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substeps880193817204"><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep1980193822013"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd115511315616">Create the advanced ACL 3000, define the data flow to be protected, and allow devices on the network segment 10.1.2.0/24 to access the network segment 10.1.1.0/24.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen85510312615">[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1556531564">acl 3000</strong>
+[DeviceB-acl4-advance-3000] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b1156531263">rule 5 permit ip source 10.1.2.0 0.0.0.255 destination 10.1.1.0 0.0.0.255</strong>
+[DeviceB-acl4-advance-3000] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b4563312615">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep380133812206"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd1256431562">Configure an IPsec proposal.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen105643119619">[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b135618317614">ipsec proposal tran1</strong>
+[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b5956182120522">transform esp</strong>
+[DeviceB]<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b198083467198"> esp authentication-algorithm sm3</strong>
+[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b16957182115527">esp encryption-algorithm sm4</strong>
+[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b15958621165212">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep58021938122015"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd1856631564">Configure an IKE proposal.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen35612319610">[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b8565313613">ike proposal 10</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b11230133315204">encryption-algorithm sm4</strong>
+[DeviceB-ike-proposal-10]<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b318959165313"> dh group14</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b18886205672018">a</strong><strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b161965910535">uthentication-algorithm sm3</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b19844910152217">authentication-method</strong> <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b19844310172218">sm2</strong><strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b484413107223"> digital-envelope</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b155714311263">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep880263819206"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmd780216385201">Configure an IKE peer.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen880316389204">[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b433165132218">ike peer a</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b733115118226">undo version 2</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b133205119227">ike-proposal 10</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b13355111227">remote-address 1.1.1.1</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b033651182215">encryption-certificate pki realm enc</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b11336511223">signature-certificate pki realm sign</strong>
+[DeviceB-ike-peer-ab] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b153314514226">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep28037385202"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd14579318616">Configure an IPsec policy.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen857531666">[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b16571431364">ipsec policy map1 10 isakmp</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b25716311064">security acl 3000</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b957203115614">proposal tran1</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b195703119610">ike-peer a</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b9328112814818">sa trigger-mode auto</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b16576314610">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_note781817456810"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0000001564113977_p751115311401_1">By default, the negotiation for IPsec tunnel establishment is triggered by traffic. To enable automatic negotiation for IPsec tunnel establishment, run the <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0000001564113977_b12265647152215_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0000001564113977_cmdname12472649317_1">sa trigger-mode auto</span></b></strong> command.</p>
+</div></div>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_substep17804138142020"><span id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_cmd0574311667">Apply an IPsec policy group to <span>10GE</span> <span>0/0/1</span>.</span><p><pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_screen1857531861">[DeviceB] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b8570310612">interface </strong><strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b101197155217"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b0582031264">ipsec policy map1</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_en-us_task_0200316860_b55833117619">quit</strong></pre>
+</p></li></ol>
+</li></ol></div>
+<div class="example" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_example121226172748"><a name="EN-US_TASK_0000002361891146__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_ol1521038484180217"><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li1859709577180217"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p1661862201180217"><a name="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li1859709577180217"></a><a name="en-us_task_0000001639541618_li1859709577180217"></a>After the configuration is complete, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cmdname186667373199">ping</span></b> command on a device in the protected network segment of network A or network B to trigger IKE negotiation.</p>
+<p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p253991383180217">If IKE negotiation succeeds, devices in the protected network segments at both ends of the tunnel can ping each other successfully. Otherwise, IKE negotiation fails.</p>
+</li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li1688946679180217"><p id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p687987907180217"><a name="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li1688946679180217"></a><a name="en-us_task_0000001639541618_li1688946679180217"></a>On DeviceA and DeviceB, run the <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b653730309113610">display ike sa</strong> and <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b704523136113610">display ipsec sa</strong> commands to check SA establishment information. The following example uses the command output on DeviceB, which shows that IKE SAs and IPsec SAs have been established successfully.</p>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_cfg_exa_dis_ike_sa_01">&lt;DeviceB&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b192396887180217">display ike sa</strong>
+Total number of IKE SA in all CPU : 2
+Total number of phase 1 SA in all CPU : 1
+Total number of phase 2 SA in all CPU : 1
+
+Flag Description:
+ RD--READY   ST--STAYALIVE   RL--REPLACED   FD--FADING   TO--TIMEOUT
+ HRT--HEARTBEAT   LKG--LAST KNOWN GOOD SEQ NO.   BCK--BACKED UP
+ M--ACTIVE   S--STANDBY   A--ALONE  NEG--NEGOTIATING
+
+Slot 0, cpu 0 IKE SA information :
+  Number of IKE SA : 2,  number of IKE SA1: 1,  number of IKE SA2: 1
+  -----------------------------------------------------------------------------  
+    Conn-ID     Peer            VPN   Flag(s)  Phase  RemoteType  RemoteID
+  -----------------------------------------------------------------------------
+    13960       1.1.1.1/500           RD|ST|A  v1:2   DN          /C=CN/ST=beijing/O=huawei/OU=dev/CN=devicea/testa@user.com
+    13788       1.1.1.1/500           RD|ST|A  v1:1   DN          /C=CN/ST=beijing/O=huawei/OU=dev/CN=devicea/testa@user.com
+  -------------------------------------------------------------------------------</pre>
+<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen471589460180217">&lt;DeviceB&gt; <strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b950269052180217">display ipsec sa</strong>
+
+Slot 0, cpu 0 ipsec sa information:                                                           
+
+===============================                                                 
+Interface: <span>10GE</span><span>0/0/1</span>
+
+===============================                                                 
+
+  -----------------------------                                                 
+  IPsec policy name: "map1"                                                     
+  Sequence number  : 10                                                         
+  Acl group        : 3000/IPv4                                                       
+  Acl rule         : 5                                                          
+  Mode             : ISAKMP                                                     
+  -----------------------------                                                 
+    Connection ID     : 83903371                                                
+    Encapsulation mode: Tunnel 
+    Holding time      : 0d 0h 29m 3s                                            
+    Tunnel local      : 2.2.2.2/500                                                 
+    Tunnel remote     : 1.1.1.1/500                                                 
+    Flow source       : 10.1.2.0/255.255.255.0 0/0-65535                              
+    Flow destination  : 10.1.1.0/255.255.255.0 0/0-65535                              
+
+    [Outbound ESP SAs]
+      SPI: 198624696(0xbd6c5b8)
+      Proposal: ESP-ENCRYPT-SM4-128 ESP-AUTH-SM3
+      SA remaining key duration(kilobytes/sec): 68785930/1209
+      SA remaining hard duration (kilobytes/sec): 83885425/1857
+      Max sent sequence-number: 1
+      UDP encapsulation used for NAT traversal: N
+      SA encrypted packets (number/bytes): 5885/670890
+
+    [Outbound AH SAs]
+      SPI: 190055665(0xb5404f1)
+      Proposal: AH-KEYED-SM3
+      SA remaining key duration(kilobytes/sec): 5242880/28
+      Max sent sequence-number: 1
+      UDP encapsulation used for NAT traversal: N
+      SA encrypted packets(number/bytes): 0/0
+
+    [Inbound AH SAs]
+      SPI: 188829305(0xb414e79)
+      Proposal: AH-KEYED-SM3
+      SA remaining key duration(kilobytes/sec): 5242880/28
+      Max received sequence-number: 0
+      UDP encapsulation used for NAT traversal: N
+      SA decrypted packets(number/bytes): 0/0
+      Anti-replay: Enable
+      Anti-replay window size: 1024
+
+    [Inbound ESP SAs]
+      SPI: 163241969 (0x9badff1)                                                
+      Proposal: ESP-ENCRYPT-AES-GCM-256
+      SA remaining soft duration (kilobytes/sec): 67947069/1173
+      SA remaining hard duration (kilobytes/sec): 83885425/1857
+      Max received sequence-number: 5885
+      UDP encapsulation used for NAT traversal: N 
+      SA decrypted packets (number/bytes): 5885/670890
+      Anti-replay : Enable
+      Anti-replay window size: 1024</pre>
+</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002361891146__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_ul954805358180217"><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li1929651494180217"><div class="p" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p354622664180217"><a name="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li1929651494180217"></a><a name="en-us_task_0000001639541618_li1929651494180217"></a>DeviceA<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen1345709955180217">#
+ sysname DeviceA
+#
+acl number 3000
+ rule 5 permit ip source 10.1.1.0 0.0.0.255 destination 10.1.2.0 0.0.0.255
+#                                                                               
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sm3
+ esp encryption-algorithm sm4
+#
+ike proposal 10
+ encryption-algorithm sm4
+ dh group14
+ authentication-algorithm sm3
+ authentication-method sm2 digital-envelope
+#
+ike peer b
+ undo version 2
+ ike-proposal 10
+ remote-address 2.2.2.2
+ encryption-certificate pki realm enc
+ signature-certificate pki realm sign
+#
+ipsec policy map1 10 isakmp
+ security acl 3000
+ ike-peer b
+ proposal tran1
+ sa trigger-mode auto
+#
+pki entity user_a
+ common-name devicea
+ country cn
+ email testa@user.com
+ fqdn testa.abc.com
+ ip-address 1.1.1.1
+ state beijing
+ organization huawei
+ organization-unit dev
+#
+pki realm user_a 
+ entity user_a
+ key-usage signature 
+ enrollment-request
+ signature message-digest-method sm3 
+ sm2 local-key-pair sm2key
+#
+ pki realm sign
+ pki realm enc
+#
+<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b1836912487369"> </strong>pki enroll-certificate realm user_a pkcs10 filename user_a.req
+ pki import sm2-key-pair enc_privkey_envelope.key pem enc_privkey_envelope.key signkey sm2key 
+ pki import-certificate ca realm sign der filename a_ca.cer
+ pki import-certificate local realm sign pem filename sig_cert.pem no-check-same-name
+ pki import-certificate local realm enc pem filename enc_cert.pem no-check-same-name
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.1.1 255.255.255.0
+ ipsec policy map1
+#
+ ip route-static 2.2.2.0 255.255.255.0 1.1.1.254
+ ip route-static 10.1.2.0 255.255.255.0 1.1.1.254
+#
+return</pre>
+</div>
+</li><li id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li2109938823180217"><div class="p" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_p344335250180217"><a name="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_li2109938823180217"></a><a name="en-us_task_0000001639541618_li2109938823180217"></a>DeviceB<pre class="screen" id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_screen1800437171180217">#
+ sysname DeviceB
+#
+acl number 3000
+ rule 5 permit ip source 10.1.2.0 0.0.0.255 destination 10.1.1.0 0.0.0.255
+#   
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sm3
+ esp encryption-algorithm sm4
+#
+ike proposal 10
+ encryption-algorithm sm4
+ dh group14
+ authentication-algorithm sm3
+ authentication-method sm2 digital-envelope
+#
+ike peer a
+ undo version 2
+ ike-proposal 10
+ remote-address 1.1.1.1
+ encryption-certificate pki realm enc
+ signature-certificate pki realm sign
+#
+ipsec policy map1 10 isakmp
+ security acl 3000
+ ike-peer a
+ proposal tran1
+ sa trigger-mode auto
+#
+pki entity user_b
+ common-name deviceb
+ country cn
+ email testb@user.com
+ fqdn testb.abc.com
+ ip-address 1.1.1.1
+ state beijing
+ organization huawei
+ organization-unit dev
+#
+ pki realm sign
+ pki realm enc
+#
+<strong id="EN-US_TASK_0000002361891146__en-us_task_0000001639541618_b162731015810"> </strong>pki enroll-certificate realm user_a pkcs10 filename user_a.req
+ pki import sm2-key-pair enc_privkey_envelope.key pem enc_privkey_envelope.key signkey sm2key
+ pki import-certificate ca realm sign der filename a_ca.cer
+ pki import-certificate local realm sign pem filename sig_cert.pem no-check-same-name
+ pki import-certificate local realm enc pem filename enc_cert.pem no-check-same-name
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 2.2.2.2 255.255.255.0
+ ipsec policy map1
+#
+ ip route-static 1.1.1.0 255.255.255.0 2.2.2.254
+ ip route-static 10.1.1.0 255.255.255.0 2.2.2.254
+#
+return</pre>
+</div>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_ipsec_0.html">IPsec
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_ipsec_3.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="feature-specific_ipsec_5.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

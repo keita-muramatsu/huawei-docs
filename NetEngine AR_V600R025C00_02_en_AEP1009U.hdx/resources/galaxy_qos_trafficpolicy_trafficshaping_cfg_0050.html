@@ -1,0 +1,104 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Traffic Shaping to Implement Interface-based Rate Limiting">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0048.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0049.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0051.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Interface-based Rate Limiting">
+<meta name="featurename" content="Traffic Policing">
+<meta name="featurename" content="Traffic Shaping">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Interface-based Rate Limiting">
+<meta name="featurename" content="Traffic Policing">
+<meta name="featurename" content="Traffic Shaping">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="Interface-based Rate Limiting">
+<meta name="featurename" content="Traffic Policing">
+<meta name="featurename" content="Traffic Shaping">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512850230">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Traffic Shaping to Implement Interface-based Rate Limiting</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512850230"></a><a name="EN-US_TASK_0000001512850230"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Traffic Shaping to Implement Interface-based Rate Limiting</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512850230__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>When a large amount of traffic is sent from the downstream device to its upstream device, to prevent congestion or packet loss, configure traffic shaping on the outbound interface of the device. Traffic shaping adjusts the rate of outgoing traffic on the interface to reduce traffic bursts so that outgoing packets can be transmitted at a stable rate. With traffic shaping, packets exceeding the rate limit enter the buffer queue, and are only sent out at an even rate when there are sufficient tokens in the token bucket. In addition, if the buffer queue is full, the system discards new packets.</p>
+<p>If packets are encapsulated through VPN tunnels, the calculated packet length during rate limiting or traffic statistics collection on a WAN-side interface includes the lengths of link-layer and physical-layer packet headers and the lengths of tunnel protocol encapsulation headers. As a result, the actual user bandwidth calculated using this method is smaller than the expected value. To minimize the difference between the actual bandwidth and the expected bandwidth, you can disable the device from counting the inter-frame gaps and preambles when it calculates the packet length, and configure the function of excluding the tunnel encapsulation length of packets on the tunnel interface. In this way, the calculated packet length excludes the lengths of the physical-layer packet header and tunnel protocol encapsulation header.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Currently, traffic shaping can only be used to rate-limit outgoing traffic on an interface.</p>
+<p>The system will generate an alarm when the rate of outgoing traffic on an interface exceeds the alarm threshold for rate-limiting outgoing traffic.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512850230__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>(Optional) Configure the method of calculating the packet length when the device calculates the traffic shaping rate.</span><p><pre class="screen"><b><span class="cmdqueryname">qos overhead layer link</span></b></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_p2072201235910">By default, the device counts the physical-layer and link-layer compensation information of packets when calculating the traffic shaping rate in the outbound direction or the traffic policing rate for interface-based rate limiting in the inbound direction.</p>
+<p id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_p12921256114118">After rate limiting is configured for traffic shaping in the outbound direction or traffic policing for interface-based rate limiting in the inbound direction, the device counts the inter-frame gaps and preambles of packets when calculating the traffic shaping rate in the outbound direction or the traffic policing rate for interface-based rate limiting in the inbound direction. As a result, the calculated rate is inaccurate. After this command is configured, the device does not count the inter-frame gaps and preambles when calculating the rate. This ensures the accuracy of the rate limit for traffic shaping in the outbound direction or traffic policing for interface-based rate limiting in the inbound direction.</p>
+<p id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_p112251932183417">The AR8700 series, AR6710-L26T2X4, AR6710-L26T2X4-T, AR6710-L50T2X4, and AR6710-L50T2X4-T do not support this command. Therefore, the device counts the inter-frame gaps and preambles when calculating the traffic shaping rate in the outbound direction or the traffic policing rate for interface-based rate limiting in the inbound direction. By default, the inter-frame gap is 12 bytes and the preamble is 8 bytes.</p>
+</div></div>
+</p></li><li><span>(Optional) Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <i><span class="varname">interface-name </span></i>}</pre>
+</p></li><li><span>(Optional) Enable the queue capability on the interface.</span><p><pre class="screen" id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_screen18237121810142"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_cmdname336518820175">qos queue-scheduling enable</span></b></pre>
+<p id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_p3191113149">By default, the queue capability is disabled on an interface.</p>
+<p id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_p3376139122520">After the queue capability is enabled on an Eth-Trunk interface or a tunnel interface, the loopback function is enabled by default.</p>
+<p id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_p872343613253">For other physical interfaces, when the queue capability is enabled on an interface, it is not enabled on a sub-interface of the interface. If the queue capability also needs to be used on a sub-interface, enable it in the sub-interface view.</p>
+<div class="note" id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_note228617293273"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_ul58801372278"><li id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_li9880123719278">Queue resources are not allocated to physical and logical interfaces by default for the AR5700 series, AR6710-L14T2X4, AR6710-L8T3TS1X2, and AR6710-L8T3TS1X2-T. This command can be configured on physical and logical interfaces. For other models, queue resources are allocated to physical interfaces, but are not allocated to logical interfaces by default. Therefore, this command can be configured only on logical interfaces.</li><li id="EN-US_TASK_0000001512850230__en-us_task_0000001563889757_li878424615534">This command cannot be configured on an MP-group interface or on a serial interface created on an E1 card. If queue resources are insufficient, creating these two types of interfaces will cause queue-related functions on the interfaces to become invalid. In this case, you need to create the interfaces again when queue resources are sufficient.</li></ul>
+</div></div>
+</p></li><li><span>(Optional) Configure the tunnel encapsulation length of packets on the tunnel interface.</span><p><pre class="screen"><b><span class="cmdqueryname">qos overhead encap-length</span></b> <i><span class="varname">encap-length-value</span></i>
+<b><span class="cmdqueryname">quit</span></b></pre>
+<p>By default, no tunnel encapsulation length of packets is configured on a tunnel interface.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Only the AR8100 series, AR5700 series, AR6700-H series, AR6710-L14T2X4, AR6710-L8T3TS1X2, and AR6710-L8T3TS1X2-T support this function.</p>
+</div></div>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <i><span class="varname">interface-name </span></i>}</pre>
+</p></li><li><span>Configure the rate limit for outgoing traffic on the interface.</span><p><pre class="screen"><span><b><span class="cmdqueryname">qos lr</span></b></span> <strong><span>cir</span></strong> <i><span class="varname">cir-value</span></i><span> [ <strong><span>kbps</span></strong> | <strong><span>mbps</span></strong> | <strong><span>gbps</span></strong> ]</span> [ <strong><span>cbs</span></strong> <i><span class="varname">cbs-value</span></i><span> [ <strong><span>bytes</span></strong> | <strong><span>kbytes</span></strong> | <strong><span>mbytes</span></strong> ]</span> ] <span>[ <strong><span>outbound</span></strong> ]</span></pre>
+<p>By default, the rate limit on an interface is the maximum bandwidth of the interface.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0048.html">Configuring Interface-based Rate Limiting
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0049.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0051.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

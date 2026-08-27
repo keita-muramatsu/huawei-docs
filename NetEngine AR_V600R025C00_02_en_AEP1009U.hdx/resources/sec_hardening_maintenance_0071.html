@@ -1,0 +1,99 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="ICMPv6 Security">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0031.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0070.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0032.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512852234">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>ICMPv6 Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512852234"></a><a name="EN-US_TASK_0000001512852234"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">ICMPv6 Security</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512852234__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>Under normal circumstances, a device can send and receive ICMPv6 messages properly. However, when network traffic is heavy, host unreachable or port unreachable events frequently occur, leading to a surge in ICMPv6 messages, which burdens the network and degrades device performance. Network attackers perform scans by using various types of packets, and devices reply to these packets with ICMPv6 messages. Network attackers then obtain network information from these received ICMPv6 messages and launch attacks on the network. In addition, when the device is busy sending ICMPv6 messages, transmission of normal service packets is affected.</p>
+<p>To reduce the device's pressure in processing ICMPv6 messages and prevent ICMPv6 message attacks, the device can be configured to:</p>
+<ul><li>Control the forwarding of ICMPv6 messages. The device can control the sending and receiving of ICMPv6 messages to control ICMPv6 traffic on the network.</li><li>Limit the rate of ICMPv6 messages. If the number of ICMPv6 messages sent to the CPU exceeds the threshold, the device discards excess ICMPv6 messages.</li></ul>
+<h4 class="sectiontitle">Impact on the System</h4><p>1. If the function of sending a certain type of ICMPv6 messages is disabled on a device, the device does not send ICMPv6 messages of the corresponding type. For example, if the function of sending ICMPv6 messages is disabled on a local device, when another device pings the local device, the local device sends the ICMPv6 Echo Request messages to the control plane for processing and does not respond to the messages. If a tracert is run from another device to the local device, the local device does not return error messages.</p>
+<p>2. If the function of receiving a certain type of ICMPv6 messages is disabled on a device, the device discards the ICMPv6 messages of the corresponding type. For example, if the function of receiving ICMPv6 messages is disabled on a local device, another device cannot ping the local device. If a tracert is run from another device to the local device, the local device does not return error messages.</p>
+<p>3. Configuring rate limiting for ICMPv6 error messages on a device reduces the rate at which the device responds to ICMPv6 error messages.</p>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001512852234__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure ICMPv6 message forwarding.</span><ul><li>Configure ICMPv6 message forwarding in the system view.<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Disable the device from sending or receiving ICMPv6 messages as required.<ul><li>Disable the device from sending ICMPv6 messages.<pre class="screen"><b><span class="cmdqueryname">ipv6 icmp</span></b> { <i><span class="varname">icmpv6Type</span></i> <i><span class="varname">icmpv6Code</span></i> | <i><span class="varname">icmpv6-name</span></i> | <strong><span>all-famous</span></strong> } <strong><span>send</span></strong> <strong><span>disable</span></strong></pre>
+</li><li>Disable the device from receiving ICMPv6 messages.<pre class="screen"><b><span class="cmdqueryname">ipv6 icmp</span></b> { <i><span class="varname">icmpv6Type</span></i> <i><span class="varname">icmpv6Code</span></i> | <i><span class="varname">icmpv6-name</span></i> | <strong><span>all-famous</span></strong> } <strong><span>receive</span></strong> <strong><span>disable</span></strong></pre>
+</li><li>Disable the device from responding to received ICMPv6 multicast Echo messages.<pre class="screen"><b><span class="ipv6 icmp multicast-address echo receive disable">ipv6 icmp multicast-address echo receive disable</span></b></pre>
+</li></ul>
+</li></ol>
+</li><li>Configure ICMPv6 message forwarding in the interface view.<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the interface view.<pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type interface-number</span></i></pre>
+</li><li>Switch the interface working mode to Layer 3.<pre class="screen" id="EN-US_TASK_0000001512852234__en-us_task_0228023023_screen939422415414"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512852234__en-us_task_0228023023_cmdname639432475414">undo portswitch</span></b></pre>
+<p id="EN-US_TASK_0000001512852234__en-us_task_0228023023_p159462012152">Determine whether to perform this step based on the current interface working mode.</p>
+</li><li>Enable IPv6.<pre class="screen"><b><span class="cmdqueryname">ipv6 enable</span></b></pre>
+</li><li>Disable the device from sending or receiving ICMPv6 messages.<ul><li>Disable the device from sending ICMPv6 Hop Limit Exceeded messages on the interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 icmp hop-limit-exceeded send disable</span></b></pre>
+</li><li>Disable the device from sending ICMPv6 Port Unreachable messages on the interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 icmp port-unreachable send disable</span></b></pre>
+</li><li>Disable the device from sending ICMPv6 Host Unreachable messages on the interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 icmp host-unreachable send disable</span></b></pre>
+</li><li>Disable the device from responding to received ICMPv6 multicast Echo messages.<pre class="screen"><b><span class="ipv6 icmp multicast-address echo receive disable">ipv6 icmp multicast-address echo receive disable</span></b></pre>
+</li><li>Disable the device from sending or receiving ICMPv6 Extended Echo Request messages on the interface.<pre class="screen"><strong>ipv6 icmp probe-echo-request </strong>{ <strong>send</strong> | <strong>receive</strong> } <strong>disable</strong></pre>
+</li><li>Disable the device from sending or receiving ICMPv6 Extended Echo Reply messages on the interface.<pre class="screen"><strong>ipv6 icmp probe-echo-reply </strong>{ <strong>send</strong> | <strong>receive</strong> } <strong>disable</strong></pre>
+</li></ul>
+</li><li>Exit the interface view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li></ol>
+</li></ul>
+</li><li><span>Configure rate limiting for ICMPv6 error messages.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure rate limiting for ICMPv6 error messages.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 icmp-error</span></b> { <strong><span>ratelimit</span></strong> <i><span class="varname">interval</span></i> | <strong><span>bucket</span></strong> <i><span class="varname">bucket-size</span></i> } <sup>*</sup></pre>
+</p></li><li class="substepexpand"><span>(Optional) Disable the device from suppressing ICMPv6 Packet Too Big messages.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 icmp rate-limit packet-too-big disable</span></b></pre>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001512852234__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <b><span class="cmdqueryname">display icmpv6 statistics</span></b> [ | <strong><span>interface</span></strong> <i><span class="varname">interface-name</span></i> | <strong><span>interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> ] command to check ICMPv6 traffic statistics.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0031.html">Control Plane Security (Level-2)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0070.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0032.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,119 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding FEC">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001554914034.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001605433261.html">
+<meta name="DC.Relation" scheme="URI" content="../spec/FEC_limitation_all.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001605712845">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Understanding FEC</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001605712845"></a><a name="EN-US_CONCEPT_0000001605712845"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding FEC</h1>
+<div><div class="section"><h4 class="sectiontitle">FEC Process</h4><p><a href="#EN-US_CONCEPT_0000001605712845__fig8511144717468">Figure 1</a> shows the FEC process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001605712845__fig8511144717468"><a name="EN-US_CONCEPT_0000001605712845__fig8511144717468"></a><a name="fig8511144717468"></a><span class="figcap"><b>Figure 1 </b>FEC process</span><br><span><img src="../images/en-us_image_0000001592621976.png" width="523.6875" height="197.042559" title="Click to enlarge" class="imgResize"></span></div>
+<ol><li>When receiving packets, the transmit end discovers that original packets 1 to 4 require FEC processing.</li><li>The transmit end performs FEC encoding on original packets.<ol type="a"><li>The transmit end encapsulates original packets 1 to 4 with a proprietary FEC header.</li><li>The transmit end treats original packets 1 to 4 as an encoding block, and performs FEC encoding on the encoding block to generate redundant packets R1, R2, and R3 based on the generator matrix G.</li></ol>
+</li><li>Original packets and redundant packets are transmitted on the network. During this process, some original packets and redundant packets may be lost. The lost packets in an encoding block can be recovered as long as the number of lost packets in the encoding block is less than or equal to the number of redundant packets received by the receive end.</li><li>The receive end performs FEC decoding on the received original packets and redundant packets.<ol type="a"><li>When receiving packets, the receive end detects that the received packets include original packets 2 and 4, as well as redundant packets R2 and R3. The receive end then recovers the lost original packets 1 and 3 based on recovery matrix R and received packets.</li><li>The receive end removes the proprietary header to obtain original packets 1 to 4.</li></ol>
+</li><li>The receive end sends original packets 1 to 4 in sequence to other devices.</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">FEC Classification</h4><p>FEC is classified as either Determined FEC (D-FEC) or Adaptive FEC (A-FEC) based on the algorithm used for generating redundant packets.</p>
+<p>D-FEC generates redundant packets based on a fixed redundancy rate, where:</p>
+<p>Redundancy rate = Number of redundant packets/Number of original packets</p>
+<p>As shown in <a href="#EN-US_CONCEPT_0000001605712845__fig323863995118">Figure 2</a>, a fixed redundancy rate may cause the following problems:</p>
+<ul><li>If the packet loss rate is less than the redundancy rate, bandwidth resources are wasted.<p>When the packet loss rate is low, more redundant packets than required are generated, wasting network bandwidth resources or even affecting other services in the case of network congestion.</p>
+</li><li>If the packet loss rate is greater than the redundancy rate, lost packets cannot be recovered.<p>Packet loss on the network may occur continuously for a short period of time. If the transient packet loss rate is greater than the redundancy rate of D-FEC, redundant packets generated in a short period of time will not be sufficient for recovering lost packets.</p>
+</li></ul>
+<div class="fignone" id="EN-US_CONCEPT_0000001605712845__fig323863995118"><a name="EN-US_CONCEPT_0000001605712845__fig323863995118"></a><a name="fig323863995118"></a><span class="figcap"><b>Figure 2 </b>Disadvantages of D-FEC</span><br><span><img src="../images/en-us_image_0000001560478688.png" height="290.27250000000004" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+<p>A-FEC, an improvement of D-FEC, dynamically generates redundant packets based on the packet loss information returned by the decoding end. It resolves the problems of D-FEC, such as bandwidth waste and failures to recover lost packets. As shown in <a href="#EN-US_CONCEPT_0000001605712845__fig28641733155910">Figure 3</a>, A-FEC dynamically adjusts the FEC redundancy rate based on the packet loss rate. If the packet loss rate is low, A-FEC decreases the redundancy rate to reduce bandwidth consumption. Conversely, if the packet loss rate is high, A-FEC increases the redundancy rate to correct for the packet loss. However, A-FEC takes time to detect packet loss changes and dynamically adjust the packet redundancy rate. As such, if the packet loss rate suddenly changes drastically, A-FEC cannot respond in time, meaning that some lost packets cannot be recovered.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001605712845__fig28641733155910"><a name="EN-US_CONCEPT_0000001605712845__fig28641733155910"></a><a name="fig28641733155910"></a><span class="figcap"><b>Figure 3 </b>A-FEC process</span><br><span><img src="../images/en-us_image_0000001610797933.png" height="175.56" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+<p>To improve application experience, you are advised to select the FEC mode based on the network bandwidth. If the network bandwidth is sufficient, the network quality is poor, and the packet loss rate keeps changing, use D-FEC. If the network bandwidth is low, the network quality is poor, and the packet loss rate does not fluctuate significantly, use A-FEC. <a href="#EN-US_CONCEPT_0000001605712845__table9880193816389">Table 1</a> compares A-FEC and D-FEC.</p>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001605712845__table9880193816389"></a><a name="table9880193816389"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001605712845__table9880193816389" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Comparison between A-FEC and D-FEC</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.2.11.2.4.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.2.11.2.4.1.2" liSelected="liSelected"><p>A-FEC</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.2.11.2.4.1.3" liSelected="liSelected"><p>D-FEC</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.1 "><p>Redundancy rate</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.2 "><p>Dynamically adjusted based on the detected packet loss rate</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.3 "><p>Manually configured</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.1 "><p>Scenario with a low packet loss rate</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.2 "><p>Conserves bandwidth</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.3 "><p>Wastes bandwidth</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.1 "><p>Scenario with a high packet loss rate</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.2 "><p>Redundant packets are sufficient to recover lost packets.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.3 "><p>Redundant packets are insufficient to recover lost packets.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.1 "><p>Scenario where the packet loss rate changes frequently</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.2 "><p>Occasional packet recovery failure</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.2.11.2.4.1.3 "><p>No packet recovery failure</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_concept_0000001554914034.html">FEC Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_concept_0000001605433261.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../spec/FEC_limitation_all.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

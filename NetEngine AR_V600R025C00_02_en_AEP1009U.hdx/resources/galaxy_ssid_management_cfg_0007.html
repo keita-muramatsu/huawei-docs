@@ -1,0 +1,117 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an Offline Management SSID">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ssid_management_cfg_0005.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ssid_management_cfg_0006.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ssid_management_cfg_0008.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SSID Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SSID Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="SSID Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564129897">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an Offline Management SSID</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564129897"></a><a name="EN-US_TASK_0000001564129897"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an Offline Management SSID</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564129897__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In most cases, APs are installed in unobtrusive or high positions. If an AP unexpectedly goes offline, maintenance personnel must connect to an Ethernet port on the AP to locate the fault, which is inconvenient.</p>
+<p>The offline management SSID function addresses this issue. With this function, to locate and rectify the fault, all maintenance personnel need to do is associate a STA with the offline management SSID of an AP and connect the STA to the AP wirelessly using STelnet. In this way, there is no need to connect to the AP through an Ethernet cable. To configure the offline management SSID function, use either of the following methods:</p>
+<ul><li>Configuring the default offline management SSID: Enable the offline management SSID function. Then when an AP goes offline unexpectedly, the offline management SSID named <strong>hw_manage_</strong><em>xxxx</em> is automatically created. Here, <em>xxxx</em> indicates the last 4 digits of the AP's MAC address.</li><li>Creating an offline management SSID: Create a VAP profile, and bind a new security profile with a high security level and a new SSID profile to the VAP profile. Configure the VAP as the offline management VAP. Then the SSID in the SSID profile is used as the offline management SSID, so the default offline management SSID will not be generated when an AP unexpectedly goes offline. After these configurations are completed, the default offline management SSID will not be generated when an AP goes offline unexpectedly.</li></ul>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001564129897__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configuring the default offline management SSID</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">wlan</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a login password for the offline management SSID.</span><p><pre class="screen"><b><span class="cmdqueryname">temporary-management</span></b> <strong><span>psk</span></strong> <i><span class="varname">psk</span></i></pre>
+</p><p><p>By default, no login password is configured for the offline management SSID.</p>
+<p>For security purposes, change the password periodically.</p>
+</p></li><li class="substepexpand"><span>Create an AP system profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">ap-system-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the AP system profile <strong>default</strong> exists on the device.</p>
+</p></li><li class="substepexpand"><span>Enable the offline management SSID function.</span><p><pre class="screen"><b><span class="temporary-management disable">undo temporary-management disable</span></b></pre>
+<p>By default, the offline management SSID function is enabled on APs.</p>
+</p></li><li class="substepexpand"><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the AP group view or AP view.</span><p><ul><li>Enter the AP group view.<pre class="screen"><b><span class="cmdqueryname">ap-group</span></b> <strong><span>name</span></strong> <i><span class="varname">group-name</span></i></pre>
+</li><li>Enter the AP view.<pre class="screen"><b><span class="cmdqueryname">ap-id</span></b> <i><span class="varname">ap-id</span></i></pre>
+</li></ul>
+</p></li><li class="substepexpand"><span>Bind the AP system profile to an AP group or a single AP.</span><p><pre class="screen"><b><span class="cmdqueryname">ap-system-profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the AP system profile <strong>default</strong> is bound to an AP group, but no AP system profile is bound to an AP.</p>
+</p></li></ol>
+</li><li><span>Creating an offline management SSID</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">wlan</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a security profile.</span><p><ol type="a"><li>Create a security profile and enter its view.<pre class="screen"><b><span class="cmdqueryname">security-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the system provides the security profile <strong>default</strong>.</p>
+</li><li>Configure a security policy. For details, see "<a href="galaxy_wlan_security_cfg_0006.html">Configuring Security Policies</a>" in WLAN Security Configuration.<p>If the VAP in a VAP profile is configured as the offline management VAP, the security profile referenced by the VAP profile supports only the WPA3 SAE, WPA2-WPA3 PSK-SAE, and WPA/WPA2/WPA-WPA2 PSK security policies.</p>
+</li><li>Return to the WLAN view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li></ol>
+</p></li><li class="substepexpand"><span>Create a VAP profile view and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">vap-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Bind a security profile to the VAP profile.</span><p><pre class="screen"><b><span class="cmdqueryname">security-profile</span></b> <i><span class="varname">profile-name</span></i> </pre>
+<p>By default, the security profile <strong>default</strong> is bound to a VAP profile.</p>
+</p></li><li class="substepexpand"><span>Configure the SSID generated by the VAP profile as the offline management SSID.</span><p><pre class="screen"><b><span class="cmdqueryname">temporary-management enable</span></b></pre>
+</p></li><li class="substepexpand"><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Create an AP system profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">ap-system-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the AP system profile <strong>default</strong> exists on the device.</p>
+</p></li><li class="substepexpand"><span>Enable the offline management SSID function.</span><p><pre class="screen"><b><span class="temporary-management disable">undo temporary-management disable</span></b></pre>
+<p>By default, the offline management SSID function is enabled on APs.</p>
+</p></li><li class="substepexpand"><span>Configure a login password for the offline management SSID.</span><p><pre class="screen"><b><span class="cmdqueryname">temporary-management psk</span></b> <em><i><span class="varname">psk</span></i></em></pre>
+<p>By default, no login password is configured, and the global login password is used.</p>
+<p>For security purposes, change the password periodically.</p>
+</p></li><li class="substepexpand"><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the AP group view or AP view.</span><p><ul><li>Enter the AP group view.<pre class="screen"><b><span class="cmdqueryname">ap-group</span></b> <strong><span>name</span></strong> <i><span class="varname">group-name</span></i></pre>
+</li><li>Enter the AP view.<pre class="screen"><b><span class="cmdqueryname">ap-id</span></b> <i><span class="varname">ap-id</span></i></pre>
+</li></ul>
+</p></li><li class="substepexpand"><span>Bind the AP system profile to an AP group or a single AP.</span><p><pre class="screen"><b><span class="cmdqueryname">ap-system-profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the AP system profile <strong>default</strong> is bound to an AP group, but no AP system profile is bound to an AP.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ssid_management_cfg_0005.html">Configuring SSID Management
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ssid_management_cfg_0006.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ssid_management_cfg_0008.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

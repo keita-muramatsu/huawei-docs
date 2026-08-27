@@ -1,0 +1,90 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring PAP Authentication">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001563879149.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001513159158.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001563999417.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563999425">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring PAP Authentication</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563999425"></a><a name="EN-US_TASK_0000001563999425"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring PAP Authentication</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001563999425__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring PAP authentication on an interface, you have completed the following task:</p>
+<ul><li>Configure PPP as the link layer protocol of the interface.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563999425__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>PPP supports PAP and CHAP authentication. PAP authentication is initiated by the peer. The authentication succeeds only when the PAP user name and password configured on the peer are the same as the local access user name and password configured on the authenticator.</p>
+<p>The user name and password of the peer can be added to the local user list of the authenticator in Authentication, Authorization and Accounting (AAA), Remote Authentication Dial-In User Service (RADIUS) authentication, or Huawei Terminal Access Controller Access Control System (HWTACACS) authentication mode. This section describes how to add the user name and password of the peer in AAA mode. For details about the configuration of RADIUS authentication and HWTACACS authentication, see "AAA Configuration" in Configuration Guide &gt; User Access and Authentication Configuration.</p>
+<p>PAP supports unidirectional and bidirectional authentication.</p>
+<ul><li>In unidirectional authentication, the device on one end functions as the authenticator, and the device on the other end functions as the peer.</li><li>In bidirectional authentication, each device functions as both the authenticator and peer.</li></ul>
+<p>The device supports unidirectional PAP authentication and can function as either the authenticator or peer.</p>
+<p></p>
+<p>In PAP authentication, passwords are transmitted in plain text on the network, presenting potential security risks. Therefore, CHAP authentication is recommended. For details about how to configure CHAP authentication, see <a href="en-us_task_0000001513159158.html">Configuring CHAP Authentication</a>.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563999425__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">interface</span></b></strong> <em><i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></em></pre>
+</p></li><li><span>Set the PPP authentication mode to PAP.</span><p><ul><li>Configure the device as the authenticator in PAP authentication.<ol type="a"><li>Set the authentication mode to PAP.<pre class="screen"><b><span class="cmdqueryname">ppp authentication-mode</span></b> <strong><span>pap</span></strong> </pre>
+</li><li>Return to the system view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Enter the AAA view.<pre class="screen"><b><span class="cmdqueryname">aaa</span></b></pre>
+</li><li>Create a local access user.<pre class="screen"><b><span class="cmdqueryname">local-access-user</span></b> <i><span class="varname">user-name</span></i> </pre>
+</li><li>Configure the password for the local access user.<pre class="screen"><strong><b><span class="cmdqueryname">password</span></b> <strong><span>cipher</span></strong> </strong><em><i><span class="varname">password</span></i></em></pre>
+</li><li>Configure PPP as the access type of the local access user.<pre class="screen"><b><span class="cmdqueryname">service-type</span></b> <strong><span>ppp</span></strong></pre>
+</li></ol>
+</li><li>Configure the device as the peer in PAP authentication.<ol type="a"><li>Configure the user name and password sent by the local device to the remote device during PAP authentication.<pre class="screen"><strong><b><span class="cmdqueryname">ppp pap local-user</span></b></strong> <em><i><span class="varname">user-name</span></i></em> <strong><strong><span>password</span></strong></strong> { <strong><strong><span>simple</span></strong></strong> <em><i><span class="varname">password</span></i></em> | <strong><strong><span>cipher</span></strong></strong> { <i><span class="varname">password1</span></i> | <i><span class="varname">password2</span></i> } } </pre>
+<p>The configured PAP user name and password must be the same as the local access user name and password configured on the authenticator.</p>
+</li></ol>
+</li></ul>
+</p><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>If <strong>simple</strong> is specified, the password is saved in plain text in the configuration file. This presents potential security risks. You are advised to specify <strong>cipher</strong> so that the password is saved in cipher text in the configuration file.</li><li>After the configuration, run the <strong>shutdown</strong> command followed by the <strong>undo shutdown</strong> command in the interface view for the configuration to take effect.</li></ul>
+</div></div>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_task_0000001563879149.html">Configuring PPP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_task_0000001513159158.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_task_0000001563999417.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

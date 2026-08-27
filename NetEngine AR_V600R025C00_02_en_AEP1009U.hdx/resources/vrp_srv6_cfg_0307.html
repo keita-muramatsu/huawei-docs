@@ -1,0 +1,144 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring EVPN L3VPNv6 over SRv6 TE Policy">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0300.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0302.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001472208270">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring EVPN L3VPNv6 over SRv6 TE Policy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001472208270"></a><a name="EN-US_TASK_0000001472208270"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring EVPN L3VPNv6 over SRv6 TE Policy</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001472208270__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring EVPN L3VPNv6 over SRv6 TE Policy, you have completed the following tasks:</p>
+<ul><li><p><a href="vrp_srv6_cfg_0102.html">Configure an SRv6 TE Policy manually</a> or <a href="vrp_srv6_cfg_0111.html">use a controller to dynamically deliver an SRv6 TE Policy</a>.</p>
+</li><li><a href="vrp_srv6_cfg_0160.html">Configuring Color-based Traffic Steering into an SRv6 TE Policy</a> or <a href="vrp_srv6_cfg_0162.html">Configuring TE-Class-based Traffic Steering into an SRv6 TE Policy</a>. In this task, you need to configure traffic steering for the EVPN L3VPNv6 instance.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001472208270__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>EVPN L3VPNv6 over SRv6 TE Policy uses public network SRv6 TE Policies to carry EVPN L3VPNv6 services.</p>
+<p>As shown in <a href="#EN-US_TASK_0000001472208270__fig_dc_vrp_evpn_cfg_015201">Figure 1</a>, PE1 and PE2 communicate through an IPv6 public network. An SRv6 TE Policy can be deployed on the IPv6 public network to carry EVPN L3VPNv6 services.</p>
+<div class="fignone" id="EN-US_TASK_0000001472208270__fig_dc_vrp_evpn_cfg_015201"><a name="EN-US_TASK_0000001472208270__fig_dc_vrp_evpn_cfg_015201"></a><a name="fig_dc_vrp_evpn_cfg_015201"></a><span class="figcap"><b>Figure 1 </b>Network diagram of EVPN L3VPNv6 over SRv6 TE Policy</span><br><span><img class="vsd" src="figure/en-us_image_0000001472208278.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001472208270__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an L3VPN instance.</span><p><ol type="a"><li><p>Create a VPN instance and enter the VPN instance view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</li><li><p>Enable the VPN instance IPv6 address family and enter the VPN instance IPv6 address family view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipv6-family</span></b></pre>
+</li><li><p>Configure an RD for the VPN instance IPv6 address family.</p>
+<pre class="screen"><b><span class="cmdqueryname">route-distinguisher</span></b> <i><span class="varname">route-distinguisher</span></i></pre>
+</li><li><p>Configure VPN targets for the VPN instance IPv6 address family to implement route leaking into the specified EVPN instance.</p>
+<pre class="screen"><b><span class="cmdqueryname">vpn-target</span></b> <i><span class="varname">vpn-target</span></i> &amp;&lt;1-8&gt; [ <strong><span>both</span></strong> | <strong><span>export-extcommunity</span></strong> | <strong><span>import-extcommunity</span></strong> ] <strong><span>evpn</span></strong></pre>
+</li><li><p>(Optional) Configure a default color for L3VPNv6 services to recurse to an SRv6 TE Policy.</p>
+<pre class="screen"><b><span class="cmdqueryname">default-color</span></b> <i><span class="varname">color-value</span></i> <strong><span>evpn</span></strong></pre>
+<p>If a remote EVPN route without carrying the color extended community is leaked to a local VPN instance, the default color value is used for the recursion to the SRv6 TE Policy.</p>
+</li><li><p>(Optional) Associate the VPN instance IPv6 address family with an import route-policy to filter the routes to be imported from the EVPN instance to the VPN instance IPv6 address family.</p>
+<pre class="screen"><b><span class="cmdqueryname">import route-policy</span></b> <i><span class="varname">policy-name</span></i> <strong><span>evpn</span></strong></pre>
+<p>Perform this step to associate the VPN instance IPv6 address family with an import route-policy and set attributes for eligible routes. This enables you to more precisely control the routes to be imported from the EVPN instance to the VPN instance IPv6 address family.</p>
+</li><li><p>(Optional) Associate the VPN instance IPv6 address family with an export route-policy to filter the routes to be advertised from the VPN instance IPv6 address family to the EVPN instance.</p>
+<pre class="screen"><b><span class="cmdqueryname">export route-policy</span></b> <i><span class="varname">policy-name</span></i> <strong><span>evpn</span></strong></pre>
+<p>Perform this step to associate the VPN instance IPv6 address family with an export route-policy and set attributes for eligible routes. This enables you to more precisely control the routes to be advertised from the VPN instance IPv6 address family to the EVPN instance.</p>
+</li><li><p>Exit the VPN instance IPv6 address family view.</p>
+<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li><p>Exit the VPN instance view.</p>
+<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li></ol>
+</p></li><li><span>Bind an access-side interface to the L3VPN instance.</span><ol type="a"><li class="substepexpand"><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Bind the interface to the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">ip binding vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Enable IPv6 on the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 enable</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an IPv6 address for the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 address</span></b> { <i><span class="varname">ipv6-address</span></i> <i><span class="varname">prefix-length</span></i> | <i><span class="varname">ipv6-address</span></i>/<i><span class="varname">prefix-length</span></i> }</pre>
+</p></li><li class="substepexpand"><span>Exit the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Configure BGP EVPN peer relationships.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If a BGP RR needs to be deployed on the network, establish BGP EVPN peer relationships between all the PEs and the RR.</p>
+</div></div>
+</p><ol type="a"><li class="substepexpand"><span>Enable BGP and enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> { <i><span class="varname">as-number-plain</span></i> | <i><span class="varname">as-number-dot</span></i> }</pre>
+</p></li><li class="substepexpand"><span>Specify the remote PE as a peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>as-number</span></strong> { <i><span class="varname">as-number-plain</span></i> | <i><span class="varname">as-number-dot</span></i> }</pre>
+</p></li><li class="substepexpand"><span>(Optional) Specify the source interface and source address used to establish a TCP connection with the BGP peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>connect-interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If loopback interfaces are used to establish a BGP connection, you are advised to run the <b><span class="cmdqueryname">peer connect-interface</span></b> command on both ends to ensure connectivity. If this command is run on only one end, the BGP connection may fail to be established.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>Enter the BGP-VPN instance IPv6 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6-family</span></b> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Import routes of other protocols to the BGP-VPN instance IPv6 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">import-route</span></b> { <strong><span>direct</span></strong> | <strong><span>isis</span></strong> <i><span class="varname">process-id</span></i> | <strong><span>static</span></strong> | <strong><span>ospfv3</span></strong> <i><span class="varname">process-id</span></i> | <strong><span>ripng</span></strong> <i><span class="varname">process-id</span></i> } [ <strong><span>med</span></strong> <i><span class="varname">med</span></i> | <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ] <sup>*</sup></pre>
+<p>To advertise host IP routes, you only need to configure import of direct routes. To advertise the subnet route of the host, use a dynamic routing protocol (such as OSPFv3) to advertise the route and then perform this step to import the routes of the dynamic routing protocol.</p>
+</p></li><li class="substepexpand"><span>Configure the device to advertise IP prefix routes.</span><p><pre class="screen"><b><span class="cmdqueryname">advertise l2vpn evpn</span></b></pre>
+<p>These routes can be either host IP routes or subnet routes.</p>
+</p></li><li class="substepexpand"><span>Exit the BGP-VPN instance IPv6 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP-EVPN address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">l2vpn-family evpn</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable the ability to exchange EVPN routes with a specified peer or peer group.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>enable</span></strong></pre>
+</p></li><li class="substepexpand"><span>Configure the device to advertise EVPN routes carrying SRv6 encapsulation attributes to a specified peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>advertise encap-type srv6</span></strong></pre>
+</p></li><li class="substepexpand"><span>Exit the BGP-EVPN address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Exit the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>On each PE, configure EVPN L3VPNv6 services to recurse to an SRv6 TE Policy.</span><ol type="a"><li class="substepexpand"><span>Enable Segment Routing in the IPv6 forwarding plane and enter the SRv6 view.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a source address for SRv6 EVPN encapsulation.</span><p><pre class="screen"><b><span class="cmdqueryname">encapsulation source-address</span></b> <i><span class="varname">ipv6-address</span></i></pre>
+<p>Alternatively:</p>
+<pre class="screen"><b><span class="cmdqueryname" id="EN-US_TASK_0000001472208270__en-us_task_0000001130782362_cmdname10488513573">encapsulation source-interface</span></b> { <i><span class="varname" id="EN-US_TASK_0000001472208270__en-us_task_0000001130782362_varname0729113313571">intfname</span></i> | <i><span class="varname" id="EN-US_TASK_0000001472208270__en-us_task_0000001130782362_varname17377153912578">interfaceType</span></i> <i><span class="varname" id="EN-US_TASK_0000001472208270__en-us_task_0000001130782362_varname1951134465716">interfaceNum</span></i> }</pre>
+<p>You only need to run one of the preceding commands. If they are both run, the later configuration overrides the previous one. If no IPv6 global address is configured for the interface specified using the <b><span class="cmdqueryname" id="EN-US_TASK_0000001472208270__en-us_task_0000001130782362_cmdname2054948195915">encapsulation source-interface</span></b> command, the source address for SRv6 encapsulation is not configured.</p>
+</p></li><li class="substepexpand"><span>Configure an SRv6 locator.</span><p><pre class="screen"><b><span class="cmdqueryname">locator</span></b> <i><span class="varname">locator-name</span></i> [ <strong><span>ipv6-prefix</span></strong> <i><span class="varname">ipv6-address</span></i> <i><span class="varname">mask-length</span></i> [ <strong><span>static</span></strong> <i><span class="varname">static-length</span></i> | <strong><span>args</span></strong> <i><span class="varname">args-length</span></i> ] <sup>*</sup> ]</pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure a static SID opcode.</span><p><pre class="screen"><b><span class="cmdqueryname">opcode</span></b> <i><span class="varname">func-opcode</span></i> <strong><span>end-dt6</span></strong> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> <strong><span>evpn</span></strong></pre>
+<p>The preceding type of SID can be dynamically allocated by BGP or manually configured. If you want to use the <span><b><span class="cmdqueryname">segment-routing ipv6 locator</span></b> <i><span class="varname">locator-name</span></i></span> command to enable dynamic SID allocation through BGP in the future, skip this step.</p>
+</p></li><li class="substepexpand"><span>Exit the SRv6 locator view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Exit the SRv6 view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> { <i><span class="varname">as-number-plain</span></i> | <i><span class="varname">as-number-dot</span></i> }</pre>
+</p></li><li class="substepexpand"><span>Enter the BGP-VPN instance IPv6 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6-family</span></b> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Enable the device to add SIDs to VPN routes to be sent to EVPN.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6 locator</span></b> <i><span class="varname">locator-name</span></i> <strong><span>evpn</span></strong></pre>
+</p></li><li class="substepexpand"><span>Enable the function of EVPN L3VPNv6 service recursion to SRv6 TE Policies.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6 traffic-engineer</span></b> [ <strong><span>best-effort</span></strong> ] <strong><span>evpn</span></strong></pre>
+<p>If an SRv6 BE path exists on the network, you can set the <strong><span>best-effort</span></strong> parameter, allowing the SRv6 BE path to function as a best-effort path in the case of an SRv6 TE Policy fault.</p>
+</p></li></ol>
+<ol type="a"></ol>
+</li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001472208270__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li><p>Run the <b><span class="cmdqueryname">display bgp vpnv6</span></b> { <strong>all</strong> | <strong>route-distinguisher</strong><em> route-distinguisher</em> | <strong>vpn-instance</strong><em> vpn-instance-name</em> } <strong>routing-table</strong> [ <em>network</em> [ <em>prefix-length</em> ] ] command to check BGP VPNv6 route information. The command output shows that the value of <strong>Relay Tunnel Out-Interface</strong> is <strong>SRv6 TE Policy</strong>.</p>
+</li><li>Run the <b><span class="cmdqueryname">display bgp evpn</span></b> <strong><span>all</span></strong> <strong><span>routing-table</span></strong> <strong><span>prefix-route</span></strong> <i><span class="varname">prefix</span></i> command to check EVPN IP prefix route information.</li><li>Run the <b><span class="cmdqueryname">display ipv6 routing-table vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> command to check IPv6 VPN route information received from the remote end.</li><li>Run the <b><span class="cmdqueryname">display ip routing-table vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> command to check IPv6 VPN route information received from the remote end.</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0300.html">Configuring EVPN L3VPN over SRv6 TE Policy
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0302.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

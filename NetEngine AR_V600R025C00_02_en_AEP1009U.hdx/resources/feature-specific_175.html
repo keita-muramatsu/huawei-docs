@@ -1,0 +1,263 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Dynamic BFD for RIP">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_173.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_174.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001623154193">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Dynamic BFD for RIP</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001623154193"></a><a name="EN-US_TASK_0000001623154193"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Dynamic BFD for RIP</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001623154193__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_context1677625172748"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1583211215321">As technologies develop, voice and video services continue to be widely applied. These services are sensitive to packet loss and delay, and prolonged fault detection will cause a large amount of data to be lost. As such, the high reliability requirements of carrier-class networks cannot be met. Dynamic BFD for RIP can be deployed to complete link fault detection within milliseconds, speeding up RIP convergence.</p>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p848731986214037">RIP periodically exchanges Update messages to monitor the status of neighbors. By default, if a local device does not receive any Update messages from its neighbor after six update intervals (180s) elapse, it considers the neighbor down.</p>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p744212849214037">In <a href="#EN-US_TASK_0000001623154193__en-us_task_0000001130782962_fig12972203819300">Figure 1</a>, the primary link (<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword800959955214037">Device</span>A -&gt; <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword27599573517">Device</span>B) and backup link (<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword57238167357">Device</span>A -&gt; <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword9315122383512">Device</span>C -&gt; <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword7612183163515">Device</span>B) are deployed on the network. In normal cases, service traffic is transmitted along the primary link. However, if the primary link goes faulty, it is expected that the fault is quickly detected and traffic is switched to the backup link. In this case, BFD for RIP can be configured. BFD is used to detect the RIP neighbor relationship between <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword8948138173616">Device</span>A and <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword132601941163618">Device</span>B, and when the link between <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword352774411361">Device</span>A and <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword311814480361">Device</span>B fails, BFD rapidly detects the failure and reports it to RIP, allowing service traffic to be quickly switched to the backup link. The minimum intervals at which <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword761681215377">Device</span>A and <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword2086051412373">Device</span>B send and receive BFD packets are 100 ms, and the local detection multiplier is 10.</p>
+<div class="fignone" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_fig12972203819300"><a name="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_fig12972203819300"></a><a name="en-us_task_0000001130782962_fig12972203819300"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring dynamic BFD for RIP</span><div class="note" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_note770209960214037"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p2034857251214037">In this example, interface 1, interface 2, and interface 3 represent <span>10GE</span> <span>0/0/1</span>, <span>10GE</span> <span>0/0/2</span>, and <span>10GE</span> <span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_image180114912484" src="figure/en-us_image_0000001176662739.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001623154193__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_context173819212283"><h4 class="sectiontitle">Precautions</h4><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p43711140112813">To improve security, you are advised to configure RIP-2 packet authentication. For details, see "Improving RIP Network Security." The following example describes how to configure an authentication mode for RIP-2 packets. For details, see "Example for Configuring Basic RIP Functions."</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001623154193__1.3.3"></a><a name="1.3.3"></a>
+<div class="p" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_context15948193845519"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1547622372214037">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_ol1489839147214037"><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li183570141214037"><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1476842695214037"><a name="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li183570141214037"></a><a name="en-us_task_0000001130782962_li183570141214037"></a>Enable basic RIP functions on each <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1271434184910">device</span> and ensure that RIP neighbor relationships are established.</p>
+</li><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li1519329256214037"><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1786242762214037"><a name="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li1519329256214037"></a><a name="en-us_task_0000001130782962_li1519329256214037"></a>Enable BFD globally.</p>
+</li><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li1502285187214037"><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p941900130214037"><a name="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li1502285187214037"></a><a name="en-us_task_0000001130782962_li1502285187214037"></a>Configure BFD on interfaces at both ends of the link between <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1896687694214037">Device</span>A and <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword697319313386">Device</span>B.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001623154193__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_steps10132325172748"><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_step93102712233"><span id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_cmd6322718236">Assign an IP address to each interface. For detailed configurations, see Configuration Scripts.</span></li><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_step857356441214037"><span id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_cmd2121916164214037">Configure basic RIP functions.</span><p><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1179182096214037"># Configure <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword813019771210">Device</span>A.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen1915919287214037">&lt;<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword585859568214037">Device</span>A&gt; <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b326020248214037">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1862706458214037">Device</span>A] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b956299353214037">rip 1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword938138582214037">Device</span>A-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b103178840214037">version 2</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1172938865214037">Device</span>A-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1995561784214037">network 192.168.0.0</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1604127234214037">Device</span>A-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b559581110214037">network 10.1.0.0</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword72926420214037">Device</span>A-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b2113122967214037">quit</strong></pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p330078696214037"># Configure <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword792599151214">Device</span>B.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen999696829214037">&lt;<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1504091298214037">Device</span>B&gt; <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b542480300214037">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1678311690214037">Device</span>B] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1111149481214037">rip 1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword739455097214037">Device</span>B-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1912485464214037">version 2</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword528733261214037">Device</span>B-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1438091248214037">network 192.168.0.0</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword737829693214037">Device</span>B-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1811555762214037">network 1.0.0.0</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1586640634214037">Device</span>B-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1233581113214037">network 172.16.0.0</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword785999423214037">Device</span>B-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1252465952214037">quit</strong></pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p108888201214037"># Configure <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword19145171211213">Device</span>C.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen1618251469214037">&lt;<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1914888735214037">Device</span>C&gt; <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1989594040214037">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword563750760214037">Device</span>C] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b73935624214037">rip 1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword311009054214037">Device</span>C-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b119525825214037">version 2</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1255548629214037">Device</span>C-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1212995038214037">network 10.1.0.0</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword837366635214037">Device</span>C-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b70407430214037">network 1.0.0.0</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1840884113214037">Device</span>C-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b970479009214037">quit</strong></pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p608235927214037"># Configure <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword127173153121">Device</span>D.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen341732230214037">&lt;<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1441888723214037">Device</span>D&gt; <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b49142643214037">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword322643260214037">Device</span>D] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1674394080214037">rip 1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword732057124214037">Device</span>D-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1901398298214037">version 2</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword957048594214037">Device</span>D-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b430113321214037">network 172.16.0.0</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1657684665214037">Device</span>D-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b586146007214037">quit</strong></pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p5632722311"># After completing the configurations, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_cmdname196142718237">display rip neighbor</span></b> command to check whether neighbor relationships among <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1868278231">Device</span>A, <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword827204011393">Device</span>B, and <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword12596342193914">Device</span>C are established. The following example uses the command output on <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword149761646173916">Device</span>A.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen12617279234">[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword19682762315">Device</span>A] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b106227142311">display rip 1 neighbor</strong>
+---------------------------------------------------------------------
+IP Address         Interface Type          Type       Last Heard Time 
+---------------------------------------------------------------------
+ 10.1.1.2             <span>10GE</span><span>0/0/2</span>               RIP        0:0:5
+ Number of RIP routes  :2
+ 192.168.2.2          <span>10GE</span><span>0/0/1</span>               RIP        0:0:5
+ Number of RIP routes  :4</pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1961127102319"># Run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_cmdname14682712320">display ip routing-table</span></b> command. The command output shows that the configured <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1967278237">devices</span> can import routes from each other. The following example uses the command output on <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1129895733215">Device</span>A.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen176112782320">[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword87132722311">Device</span>A] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1374271237">display ip routing-table</strong>
+<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword10722722313">Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route</span>
+------------------------------------------------------------------------------
+Routing Table : _public_
+         Destinations : 15       Routes : 16        
+
+Destination/Mask    Proto  Pre  Cost        Flags NextHop         Interface
+
+        10.1.0.0/8   RIP    100  3             D  10.1.1.2         <span>10GE</span><span>0/0/2</span>
+        10.1.1.0/24  Direct 0    0             D  10.1.1.1         <span>10GE</span><span>0/0/2</span>
+        10.1.1.1/32  Direct 0    0             D  127.0.0.1        <span>10GE</span><span>0/0/2</span>
+      10.1.1.255/32  Direct 0    0             D  127.0.0.1        <span>10GE</span><span>0/0/2</span>
+     192.168.0.0/8   RIP    100  3             D  192.168.2.2      <span>10GE</span><span>0/0/1</span>
+     192.168.2.0/24  Direct 0    0             D  192.168.2.1      <span>10GE</span><span>0/0/1</span>
+     192.168.2.1/32  Direct 0    0             D  127.0.0.1        <span>10GE</span><span>0/0/1</span>
+   192.168.2.255/32  Direct 0    0             D  127.0.0.1        <span>10GE</span><span>0/0/1</span>
+       127.0.0.0/8   Direct 0    0             D  127.0.0.1        InLoopBack0
+       127.0.0.1/32  Direct 0    0             D  127.0.0.1        InLoopBack0
+ 127.255.255.255/32  Direct 0    0             D  127.0.0.1        InLoopBack0
+      172.16.0.0/16  RIP    100  4             D  192.168.2.2      <span>10GE</span><span>0/0/1</span>
+      172.16.1.0/24  RIP    100  1             D  192.168.2.2      <span>10GE</span><span>0/0/1</span>
+         1.1.1.0/24  RIP    100  1             D  10.1.1.2         <span>10GE</span><span>0/2/0</span>
+                     RIP    100  1             D  192.168.2.2      <span>10GE</span><span>0/0/1</span>
+ 255.255.255.255/32  Direct 0    0             D  127.0.0.1       InLoopBack0</pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p149535970214037">As shown in the routing table, the next hop address of the route to 172.16.1.0/24 is 192.168.2.2, the outbound interface is <span>10GE</span><span>0/0/1</span>, and traffic is transmitted on the primary link <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword397182011418">Device</span>A -&gt; <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword14872710237">Device</span>B.</p>
+</p></li><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_step1818104154214037"><span id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_cmd331703115214037">Configure BFD for RIP.</span><p><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p975320651214037"># Configure BFD on all interfaces of <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword330814794112">Device</span>A.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen534324943214037">[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1529776649214037">Device</span>A] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1637509509214037">bfd</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword743217571214037">Device</span>A-bfd] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b855722014214037">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword840863529214037">Device</span>A] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1578222505214037">rip 1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword22684782214037">Device</span>A-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b104775536214037">bfd all-interfaces enable</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1853491596214037">Device</span>A-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1889328356214037">bfd all-interfaces min-rx-interval 100 min-tx-interval 100 detect-multiplier 10</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword684258980214037">Device</span>A-rip-1] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1602664956214037">quit</strong></pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p959506103214037">The configuration on <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword413325411419">Device</span>B is similar to the configuration on <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword19900958154113">Device</span>A. For detailed configurations, see Configuration Scripts.</p>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p226378573214037"># After completing the configuration, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_cmdname1665215285214037">display rip bfd session</span></b> command. The command output shows that a BFD session has been established between <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword11718112012423">Device</span>A and <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword16921171854210">Device</span>B, and <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1937514390428">BFDState</strong> is displayed as <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1064210362428">Up</strong>. The following example uses the command output on <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword2141730829214037">Device</span>A.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen218142706214037">[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1399357055214037">Device</span>A] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1797948538214037">display rip 1 bfd session all</strong>
+LocalIp      :192.168.2.1         RemoteIp   :192.168.2.2         <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b311970906214037">BFDState</strong> :<strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b2026379366214037">Up</strong>      
+ TX           :100             RX         :100             Multiplier:10       
+ BFD Local Dis:8192            Interface  :<span>10GE</span><span>0/0/1</span>                    
+ DiagnosticInfo: No diagnostic information                               
+ LocalIp       :10.1.1.1         RemoteIp  :10.1.1.2         BFDState :Up
+ TX            :0               RX        :0               Multiplier:0
+ BFD Local Dis :8200            Interface :<span>10GE</span><span>0/0/2</span>
+ Diagnostic Info:No diagnostic information                     </pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_example121226172748"><a name="EN-US_TASK_0000001623154193__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p302859442214037"># Run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_cmdname2130517392214037">shutdown</span></b> command on <span>10GE</span><span>0/0/1</span> of <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword255450791214037">Device</span>B to simulate a fault on the primary link.</p>
+<div class="note" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_note911138456214037"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1945626882214037">Link fault simulation is required for verification and does not need to be performed in actual applications.</p>
+</div></div>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen1310319586214037">[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword2057273334214037">Device</span>B] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b2062179765214037">interface <span>10ge</span><span>0/0/1</span></strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword873279739214037">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1070360313214037">shutdown</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword3444844236">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b8444134414317">quit</strong></pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1499364979214037"># Check the BFD session information of <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword2055109427214037">Device</span>A. The command output shows that a BFD session is not established between <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword128391332104412">Device</span>A and <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword206901534124418">Device</span>B.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen2042488855214037">[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword777473912214037">Device</span>A] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b1553692982214037">display rip 1 bfd session all</strong>
+ LocalIp       :10.1.1.1         RemoteIp  :10.1.1.2         BFDState  :Down
+ TX            :0               RX        :0               Multiplier:0
+ BFD Local Dis :8200            Interface :<span>10GE</span><span>0/0/2</span>
+ Diagnostic Info:No diagnostic information   </pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p114526378214037"># Check the routing table of <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword17532123817448">Device</span>A.</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen812639638214037">[<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1072550329214037">Device</span>A] <strong id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_b2037715562214037">display ip routing-table</strong>
+<span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1646783245214037">Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route</span>
+------------------------------------------------------------------------------
+Routing Table : _public_
+         Destinations : 8        Routes : 8         
+
+Destination/Mask    Proto  Pre  Cost        Flags NextHop         Interface
+
+        10.1.1.0/24  Direct 0    0             D  10.1.1.1        <span>10GE</span><span>0/0/2</span>
+        10.1.1.1/32  Direct 0    0             D  127.0.0.1       <span>10GE</span><span>0/0/2</span>
+      10.1.1.255/32  Direct 0    0             D  127.0.0.1       <span>10GE</span><span>0/0/2</span>
+       127.0.0.0/8   Direct 0    0             D  127.0.0.1       InLoopBack0
+       127.0.0.1/32  Direct 0    0             D  127.0.0.1       InLoopBack0
+ 127.255.255.255/32  Direct 0    0             D  127.0.0.1       InLoopBack0
+      172.16.1.0/24  RIP    100  2             D  10.1.1.2        <span>10GE</span><span>0/0/2</span>
+ 255.255.255.255/32  Direct 0    0             D  127.0.0.1       InLoopBack0</pre>
+<p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p15138244132413">As shown in the routing table, the backup link <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword12523446204411">Device</span>A -&gt; <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword12326252144417">Device</span>C -&gt; <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword125741554114416">Device</span>B is used after the primary link fails. The next hop address of the route to 172.16.1.0/24 is 10.1.1.2, and the outbound interface is <span>10GE</span><span>0/0/2</span>.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001623154193__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_ul1702894730214037"><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li482870888214037"><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p270312603214037"><a name="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li482870888214037"></a><a name="en-us_task_0000001130782962_li482870888214037"></a><span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1216005216214037">Device</span>A</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen1037649292214037">#
+sysname <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1430382488214037">Device</span>A
+#
+bfd
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.2.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+rip 1 
+ version 2 
+ network 192.168.0.0
+ network 10.1.0.0
+ bfd all-interfaces enable 
+ bfd all-interfaces min-tx-interval 100 min-rx-interval 100 detect-multiplier 10 
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li86833830214037"><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1274784497214037"><a name="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li86833830214037"></a><a name="en-us_task_0000001130782962_li86833830214037"></a><span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword2006178607214037">Device</span>B</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen1256102631214037">#
+sysname <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword896664059214037">Device</span>B
+#
+bfd
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.2.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 1.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 172.16.1.1 255.255.255.0
+#
+rip 1 
+ version 2 
+ network 192.168.0.0
+ network 1.0.0.0
+ network 172.16.0.0
+ bfd all-interfaces enable 
+ bfd all-interfaces min-tx-interval 100 min-rx-interval 100 detect-multiplier 10 
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li1121698786214037"><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1780042936214037"><a name="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li1121698786214037"></a><a name="en-us_task_0000001130782962_li1121698786214037"></a><span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword586938995214037">Device</span>C</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen380690676214037">#
+sysname <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1652332092214037">Device</span>C
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.1.2 255.255.255.0
+#
+rip 1 
+ version 2 
+ network 10.1.0.0
+ network 1.0.0.0
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li515887680214037"><p id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_p1132754821214037"><a name="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_li515887680214037"></a><a name="en-us_task_0000001130782962_li515887680214037"></a><span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword767745892214037">Device</span>D</p>
+<pre class="screen" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_screen1051584496214037">#
+sysname <span class="keyword" id="EN-US_TASK_0000001623154193__en-us_task_0000001130782962_keyword1758904919214037">Device</span>D
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 172.16.1.2 255.255.255.0
+#
+rip 1 
+ version 2 
+ network 172.16.0.0
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_173.html">RIP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_174.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

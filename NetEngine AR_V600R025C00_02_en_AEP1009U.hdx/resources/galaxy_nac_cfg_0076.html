@@ -1,0 +1,101 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring the Source Address of User Status Detection Packets">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_nac_cfg_0075.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_nac_cfg_0077.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="MAC Address Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="MAC Address Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="MAC Address Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564000425">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring the Source Address of User Status Detection Packets</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564000425"></a><a name="EN-US_TASK_0000001564000425"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring the Source Address of User Status Detection Packets</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001564000425__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The device sends an ARP probe packet to check the status of a user. If the user does not respond within a detection period, the device determines that the user is offline.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>This function takes effect only for wired users.</li><li><div class="p">In normal situations, after a device sends an ARP probe packet with the default source IP address, online clients will immediately respond with ARP reply packets. If clients are online but do not respond with ARP reply packets, the device logs them out. To resolve this problem, use either of the following methods:<ul><li>Run the <b><span class="cmdqueryname">access-user arp-detect</span></b> <strong>vlan</strong> <em>vlan-id</em> <strong>ip-address</strong> <em>ip-address</em> <strong>mac-address</strong> <em>mac-address</em> command to specify the VLAN ID, source IP address, and source MAC address of ARP probe packets.</li><li>Run the <b><span class="cmdqueryname">authentication timer handshake-period</span></b> <i><span class="varname">handshake-period</span></i> command to increase the handshake period. The device can identify the gratuitous ARP packets sent by clients, but these packets are sent at irregular intervals. To ensure that the device can detect the ARP packets sent by the clients that do not respond to ARP probe packets immediately, increase the handshake period properly.</li></ul>
+</div>
+</li></ul>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564000425__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Configure the source address of user status detection packets.</span><p><ul><li><p>Configure the default source IP address of user status detection packets.</p>
+<pre class="screen"><b><span class="cmdqueryname">access-user arp-detect default ip-address</span></b> <em>ip-address</em></pre>
+<p>By default, the default source IP address of user status detection packets is <span>0.0.0.0</span>.</p>
+</li><li><div class="p">Configure the source IP address and source MAC address of user status detection packets in a VLAN.<pre class="screen"><b><span class="cmdqueryname">access-user arp-detect</span></b> <strong>vlan</strong> <em>vlan-id</em> <strong>ip-address</strong> <em>ip-address</em> <strong>mac-address</strong> <em>mac-address</em></pre>
+</div>
+<p>By default, the source IP address and source MAC address of user status detection packets are not specified in a VLAN.</p>
+<p>You are advised to set the user gateway IP address and MAC address as the source IP address and source MAC address of user status detection packets.</p>
+</li><li><p>Configure the IP address required for calculating the source address of user status detection packets.</p>
+<pre class="screen"><b><span class="cmdqueryname">access-user arp-detect fallback</span></b> <i><span class="varname">ip-address</span></i> { <em>ip-mask</em> | <em>mask-length</em> }</pre>
+<p>By default, no IP address is configured for calculating the source address of user status detection packets.</p>
+</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The following source IP addresses used by user status detection packets are listed in descending order of priority:</p>
+<ol type="a"><li>IP address of the VLANIF interface corresponding to the VLAN to which the user belongs, which is on the same network segment as the user</li><li>Source IP address configured using the <b><span class="cmdqueryname">access-user arp-detect</span></b> <strong>vlan</strong> <em>vlan-id</em> <strong>ip-address</strong> <em>ip-address</em> <strong>mac-address</strong> <em>mac-address</em> command in a VLAN</li><li><span>Source address calculated based on the IP address configured using the <b><span class="cmdqueryname">access-user arp-detect fallback</span></b> <i><span class="varname">ip-address</span></i> { <em>mask</em> | <em>mask-length</em> } command</span></li><li>Default source IP address configured using the <b><span class="cmdqueryname">access-user arp-detect default ip-address</span></b> <em>ip-address</em> command</li></ol>
+</div></div>
+</p></li><li><span>(Optional) Configure the delay in sending user status detection packets.</span><p><pre class="screen"><b><span class="cmdqueryname">access-user arp-detect delay</span></b> <em>interval-value</em></pre>
+<p>By default, the delay in sending user status detection packets is 10s.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_nac_cfg_0075.html">(Optional) Configuring NAC Extended Functions
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_nac_cfg_0077.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

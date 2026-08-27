@@ -1,0 +1,294 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="XPath Capability">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0047.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0052.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0054.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_system_setup_0009.xml">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001513161986">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>XPath Capability</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001513161986"></a><a name="EN-US_TOPIC_0000001513161986"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">XPath Capability</h1>
+<div><p>This capability indicates that the device can use XPath expressions in the &lt;filter&gt; element as query conditions, and the &lt;get&gt; and &lt;get-config&gt; operations can query specified data through an XPath.</p>
+<p>XPath — XML Path Language — uses path expressions for the addressing of parts of an XML file. The XPath syntax is similar to the file path in the file management system.</p>
+<p>If an XPath expression is used as a filter criterion, the value of the type attribute in the &lt;filter&gt; element is <strong>xpath</strong>, and the value of the select attribute (which must exist) is the XPath expression.</p>
+<pre class="screen">&lt;filter xmlns:acm="urn:ietf:params:xml:ns:yang:ietf-netconf-acm" <strong>type="xpath"</strong> <strong>select="/acm:nacm/acm:rule-list</strong><strong>[acm:name='2000']</strong><strong>"</strong>/&gt;</pre>
+<div class="p">XPath syntax specifications are as follows:<ul><li>An XPath can only function as a basic absolute path, and steps are separated using slashes (/), for example, /acl/aclGroups/aclGroup.</li><li>Only predicates in the [node name='value'] format (for example, [genre='Computer']) are supported, and there can be multiple predicates in an AND relationship. In the following example, the predicate is [acm:name = '2000'].<pre class="screen">&lt;filter xmlns:acm="urn:ietf:params:xml:ns:yang:ietf-netconf-acm" type="xpath" select="/acm:nacm/acm:rule-list<strong>[acm:name='2000']</strong>"/&gt;</pre>
+</li><li>XPath supports the concat function, which can combine multiple character strings into one character string. The character string must be enclosed by single quotation marks (') or double quotation marks ("). Different character strings are separated by commas (,). For example, in [genre=concat('a"bc',"ef'g")], the character strings a"bc and ef'g are combined into the character string a"bcef'g. In the following example, 20 and 00 are combined into 2000.<pre class="screen">&lt;filter xmlns:acm="urn:ietf:params:xml:ns:yang:ietf-netconf-acm" type="xpath" select="/acm:nacm/acm:rule-list<strong>[acm:name=concat('20','00')]</strong>"/&gt;</pre>
+</li><li>XPath supports multiple namespaces, which are separated using colons.</li></ul>
+</div>
+<div class="p"><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>XPath expressions cannot be used as filter criteria for such operations as notifications, full synchronization, incremental synchronization, or copy-config.</p>
+</div></div>
+</div>
+<p>XPath expressions support the following operations:</p>
+<ul><li><p>Use the specified XPath as a filter criterion to query information about all nodes in the XPath.</p>
+<p>The following is an example of querying information about all nodes in the /acl:acl/acl:groups/acl:group XPath of the &lt;running/&gt; database.</p>
+<ul><li><p>RPC request</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="19"&gt;
+  &lt;get-config&gt;
+    &lt;source&gt;
+      &lt;running/&gt;
+    &lt;/source&gt;
+    &lt;filter xmlns:acl="urn:huawei:yang:huawei-acl" type="xpath"
+            select="/acl:acl/acl:groups/acl:group"/&gt;
+  &lt;/get-config&gt;
+&lt;/rpc&gt;</pre>
+</li><li><p>RPC reply</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="6"&gt;
+  &lt;data&gt;
+    &lt;acl xmlns="urn:huawei:yang:huawei-acl"&gt;
+      &lt;groups&gt;
+        &lt;group&gt;
+          &lt;identity&gt;2000&lt;/identity&gt;
+          &lt;type&gt;basic&lt;/type&gt;
+          &lt;match-order&gt;config&lt;/match-order&gt;
+          &lt;step&gt;5&lt;/step&gt;
+        &lt;/group&gt;
+      &lt;/groups&gt;
+    &lt;/acl&gt;
+  &lt;/data&gt;
+&lt;/rpc-reply&gt;</pre>
+</li><li><p>Use the value of a node in the specified XPath as a filter criterion to query information about the node that matches this value in the XPath.</p>
+<p>The following is an example of querying information about the node for which "identity" is set to 2000 in the /acl:acl/acl:groups/acl:group XPath of the &lt;running/&gt; database.</p>
+<ul><li><p>RPC request</p>
+<pre class="screen">&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="1"&gt;
+  &lt;get-config&gt;
+    &lt;source&gt;
+      &lt;running/&gt;
+    &lt;/source&gt;
+    &lt;filter type="xpath" xmlns:acl="urn:huawei:yang:huawei-acl" 
+                         select="<strong>/acl:acl/acl:groups/acl:group[acl:identity='2000']</strong>"/&gt;
+  &lt;/get-config&gt;
+&lt;/rpc&gt;</pre>
+</li><li><div class="p">RPC reply<pre class="screen">&lt;rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="1"&gt;
+  &lt;data&gt;
+  &lt;acl xmlns="urn:huawei:yang:huawei-acl"&gt;
+      &lt;groups&gt;
+        &lt;group&gt;
+          &lt;identity&gt;2000&lt;/identity&gt;
+          &lt;type&gt;basic&lt;/type&gt;
+          &lt;match-order&gt;config&lt;/match-order&gt;
+          &lt;step&gt;5&lt;/step&gt;
+        &lt;/group&gt;
+      &lt;/groups&gt;
+    &lt;/acl&gt;
+  &lt;/data&gt;
+&lt;/rpc-reply&gt;</pre>
+</div>
+</li></ul>
+</li></ul>
+</li><li><p>Use two or more XPaths in the OR relationship as filter criteria to query information about the same node in all expressions.</p>
+<p>The following is an example of querying information about the same node in the /nacm/rule-list/group and /nacm/rule-list/rule XPaths of the &lt;candidate/&gt; database.</p>
+<ul><li>RPC request<pre class="screen">&lt;rpc message-id="1" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+  &lt;get-config&gt;
+    &lt;source&gt;
+      &lt;candidate/&gt;
+    &lt;/source&gt;
+    &lt;filter type="xpath" select="<strong>/t:nacm/t:rule-list/t:group | /t:nacm/t:rule-list/t:rule</strong>" xmlns:t="urn:ietf:params:xml:ns:yang:ietf-netconf-acm"/&gt;
+  &lt;/get-config&gt;
+&lt;/rpc&gt;</pre>
+</li><li>RPC reply<pre class="screen">&lt;rpc-reply message-id="1" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+  &lt;data&gt;
+    &lt;nacm xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-acm"&gt;
+      &lt;rule-list&gt;
+        &lt;name&gt;list1&lt;/name&gt;
+        &lt;group&gt;group1&lt;/group&gt;
+        &lt;rule&gt;
+          &lt;name&gt;rule11&lt;/name&gt;
+          &lt;module-name&gt;*&lt;/module-name&gt;
+          &lt;access-operations&gt;create read update delete&lt;/access-operations&gt;
+          &lt;action&gt;permit&lt;/action&gt;
+          &lt;rpc-name&gt;commit&lt;/rpc-name&gt;
+        &lt;/rule&gt;
+        &lt;rule&gt;
+          &lt;name&gt;rule12&lt;/name&gt;
+          &lt;module-name&gt;*&lt;/module-name&gt;
+          &lt;access-operations&gt;read&lt;/access-operations&gt;
+          &lt;action&gt;deny&lt;/action&gt;
+          &lt;rpc-name&gt;edit-config&lt;/rpc-name&gt;
+        &lt;/rule&gt;
+      &lt;/rule-list&gt;
+      &lt;rule-list&gt;
+        &lt;name&gt;list2&lt;/name&gt;
+        &lt;group&gt;group2&lt;/group&gt;
+        &lt;rule&gt;
+          &lt;name&gt;rule21&lt;/name&gt;
+          &lt;module-name&gt;*&lt;/module-name&gt;
+          &lt;access-operations&gt;create read update delete&lt;/access-operations&gt;
+          &lt;action&gt;permit&lt;/action&gt;
+          &lt;rpc-name&gt;commit&lt;/rpc-name&gt;
+        &lt;/rule&gt;
+      &lt;/rule-list&gt;
+    &lt;/nacm&gt;
+  &lt;/data&gt;
+&lt;/rpc-reply&gt;</pre>
+</li></ul>
+</li><li><p>Use the /* symbol as a filter criterion to query information about all nodes in the specified XPath (before the * symbol).</p>
+<p>The following is an example of querying information about all nodes in the /nacm XPath of the &lt;candidate/&gt; database.</p>
+<ul><li>RPC request<pre class="screen">&lt;rpc message-id="1" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+  &lt;get-config&gt;
+    &lt;source&gt;
+      &lt;candidate/&gt;
+    &lt;/source&gt;
+    &lt;filter type="xpath" select="<strong>/t:nacm/*</strong>" xmlns:t="urn:ietf:params:xml:ns:yang:ietf-netconf-acm"/&gt;
+  &lt;/get-config&gt;
+&lt;/rpc&gt;</pre>
+</li><li>RPC reply<pre class="screen">&lt;rpc-reply message-id="1" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+  &lt;data&gt;
+    &lt;nacm xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-acm"&gt;
+      &lt;enable-nacm&gt;false&lt;/enable-nacm&gt;
+      &lt;read-default&gt;deny&lt;/read-default&gt;
+      &lt;write-default&gt;deny&lt;/write-default&gt;
+      &lt;exec-default&gt;deny&lt;/exec-default&gt;
+      &lt;groups&gt;
+        &lt;group&gt;
+          &lt;name&gt;group1&lt;/name&gt;
+          &lt;user-name&gt;puneeth1&lt;/user-name&gt;
+          &lt;user-name&gt;puneeth2&lt;/user-name&gt;
+          &lt;user-name&gt;puneeth3&lt;/user-name&gt;
+        &lt;/group&gt;
+        &lt;group&gt;
+          &lt;name&gt;group2&lt;/name&gt;
+          &lt;user-name&gt;puneeth1&lt;/user-name&gt;
+          &lt;user-name&gt;puneeth2&lt;/user-name&gt;
+          &lt;user-name&gt;puneeth3&lt;/user-name&gt;
+        &lt;/group&gt;
+      &lt;/groups&gt;
+      &lt;rule-list&gt;
+        &lt;name&gt;list1&lt;/name&gt;
+        &lt;group&gt;group1&lt;/group&gt;
+        &lt;rule&gt;
+          &lt;name&gt;rule11&lt;/name&gt;
+          &lt;module-name&gt;*&lt;/module-name&gt;
+          &lt;access-operations&gt;create read update delete&lt;/access-operations&gt;
+          &lt;action&gt;permit&lt;/action&gt;
+          &lt;rpc-name&gt;commit&lt;/rpc-name&gt;
+        &lt;/rule&gt;
+        &lt;rule&gt;
+          &lt;name&gt;rule12&lt;/name&gt;
+          &lt;module-name&gt;*&lt;/module-name&gt;
+          &lt;access-operations&gt;read&lt;/access-operations&gt;
+          &lt;action&gt;deny&lt;/action&gt;
+          &lt;rpc-name&gt;edit-config&lt;/rpc-name&gt;
+        &lt;/rule&gt;
+      &lt;/rule-list&gt;
+    &lt;/nacm&gt;
+  &lt;/data&gt;
+&lt;/rpc-reply&gt;</pre>
+</li></ul>
+</li><li>Pagination query is supported. That is, in the &lt;get-config&gt; and &lt;get&gt; operations, the optional parameter [position() &gt;= a and position() &lt;= b] is added to the XPath filter expression to query the data of the list/leaf-list nodes in the specified range [a, b].<ul><li>You can specify the left and right boundaries, which are interchangeable, for the pagination query.<p>For example, either of the following expressions is used to query the data of nodes 1 to 100 on the list node <strong>interface</strong>.</p>
+<p>select="/ifm:ifm/ifm:interfaces/ifm:interface[<strong>position() &gt;= 1</strong> and <strong>position() &lt;= 100</strong>] "</p>
+<p>select="/ifm:ifm/ifm:interfaces/ifm:interface[<strong>position() &lt;= 100</strong> and <strong>position() &gt;= 1</strong>] "</p>
+</li><li>You can specify the same left and right boundary values for the pagination query. If they are the same, the query range is a fixed value rather than a value range.<p>For example, the following expression is used to query the data of the first node on the list node <strong>interface</strong>.</p>
+<p>select="/ifm:ifm/ifm:interfaces/ifm:interface[<strong>position() &gt;= 1</strong> and <strong>position() &lt;= 1</strong>] "</p>
+</li><li>You can specify only one boundary (left or right) for the pagination query. If only the left boundary is specified, the data of the specified node and all the subsequent nodes is queried. Conversely, if only the right boundary is specified, the data of node 1 to the specified node is queried.<p>For example, the first of the following two expressions is used to query information about node 100 and all the subsequent nodes on the list node <strong>interface</strong>, and the second expression is used to query information about nodes 1 to 200 on the list node <strong>interface</strong>.</p>
+<p>select="/ifm:ifm/ifm:interfaces/ifm:interface[<strong>position() &gt;= 100</strong>] "</p>
+<p>select="/ifm:ifm/ifm:interfaces/ifm:interface[<strong>position() &lt;= 200</strong>] "</p>
+</li><li>The pagination query function verifies a specified query range, which must meet the following conditions:<ul><li>The left boundary value must be less than or equal to the right boundary value.</li><li>The left and right boundary values are integers ranging from 1 to 1000000000. If the left boundary of the specified query range exceeds the actual number of data records to be queried, no query result is displayed.</li></ul>
+</li><li>The pagination query function supports query based on multiple filter criteria, meaning that each query can contain more than one filter criterion.<p>For example, the following expression contains two filter criteria, indicating that the LoopBack port data of nodes 1 to 100 is queried.</p>
+<p>select="/ifm:ifm/ifm:interfaces/ifm:interface<strong>[ifm:type='LoopBack'][position() &gt;= 1 and position()&lt;= 100]</strong>"</p>
+</li><li>Only the list and leaf-list nodes support the pagination query function, and no other node can follow the position() parameter.<p>For example:</p>
+<p>select="/ifm:ifm/ifm:interfaces/<strong>ifm:interface</strong>[position() &gt;= 1 and position() &lt;= 100] "</p>
+<p>In the preceding expression, the node <strong>interface</strong> is a list node, and the expression [position() &gt;= 1 and position() &lt;= 100] is not followed by another node.</p>
+</li><li>Multiple position() parameters cannot be combined by the OR symbol (|) to deliver the pagination query operation. To query different services, you must therefore deliver the pagination query operations separately.</li><li>If a user sends two pagination query requests at a maximum interval of 3 minutes, the entered XPaths are the same (same prefix, namespace, and node), and the input numbers for the pagination query are consecutive, the device considers the later query request as part of the first one and preferentially obtains the data to be queried from the cache. If the input numbers for pagination query are not consecutive or the interval between two requests exceeds 3 minutes, the later query operation is processed as a new request. The queried content is obtained from the device configuration database.<p>For example:</p>
+<ul><li>A user delivers two pagination query requests within 3 minutes. The first queries the content of nodes 1 to 100 of a specified list/leaf-list node, and the second queries the content of nodes 101 to 200 of the same XPath. If the device configuration changes at any time between the two query operations, the data queried by the user is the data before the change, that is, the data in the cache.</li><li>If a user delivers two pagination query requests (with the first querying the content of nodes 1 to 100 and the second querying the content of nodes 301 to 400) and the device configuration changes at any time between the two query operations, the pre-change data is obtained for the first request and the post-change data is obtained for the second. This is true regardless of whether the interval between the two requests exceeds 3 minutes.</li><li>The same XPath indicates that the prefixes, namespaces, and nodes are identical. If one of them is different, the queries are considered to also be different. For example, the XPath prefixes of the following two expressions are considered different, meaning that the device processes them as two independent requests.<p>select="/<strong>t</strong>:ifm/<strong>t</strong>:interfaces/<strong>t</strong>:interface[<strong>t</strong>:type='LoopBack'][position() &gt;= 1 and position()&lt;= 100]"</p>
+<p>select="/<strong>l</strong>:ifm/<strong>l</strong>:interfaces/<strong>l</strong>:interface[<strong>l</strong>:type='LoopBack'][position() &gt;= 101 and position()&lt;= 200]"</p>
+</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>During packet delivery, the greater-than sign (&gt;) and less-than sign (&lt;) in the position() expression must be represented by the escape characters &amp;gt; and &amp;lt;.</p>
+</div></div>
+</li></ul>
+<p>For example, query information about the first and second NACM authentication user groups in the &lt;running/&gt; configuration database.</p>
+<ul><li>RPC request<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="827"&gt;
+ &lt;get-config&gt;
+  &lt;source&gt;
+    &lt;running/&gt;
+  &lt;/source&gt;
+  &lt;filter xmlns:t="urn:ietf:params:xml:ns:yang:ietf-netconf-acm" type="xpath"
+          select="/t:nacm/t:groups/t:group<strong>[position()&amp;gt;=1 and position()&amp;lt;=2]</strong>"/&gt;
+ &lt;/get-config&gt;
+&lt;/rpc&gt;</pre>
+</li><li>RPC reply<pre class="screen">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+  &lt;nacm xmlns="urn:ietf:params:xml:ns:yang:ietf-netconf-acm"&gt;
+    &lt;groups&gt;
+      &lt;group&gt;
+        &lt;name&gt;1&lt;/name&gt;
+        &lt;user-name&gt;test1&lt;/user-name&gt;
+        &lt;user-name&gt;test2&lt;/user-name&gt;
+        &lt;user-name&gt;test3&lt;/user-name&gt;
+        &lt;user-name&gt;test4&lt;/user-name&gt;
+      &lt;/group&gt;
+      &lt;group&gt;
+        &lt;name&gt;2&lt;/name&gt;
+        &lt;user-name&gt;test1&lt;/user-name&gt;
+        &lt;user-name&gt;test2&lt;/user-name&gt;
+        &lt;user-name&gt;test3&lt;/user-name&gt;
+      &lt;/group&gt;
+    &lt;/groups&gt;
+  &lt;/nacm&gt;
+&lt;/data&gt;</pre>
+</li></ul>
+</li></ul>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_netconf_cfg1_0047.html">NETCONF Standard Capability Set
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_netconf_cfg1_0052.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_netconf_cfg1_0054.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

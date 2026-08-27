@@ -1,0 +1,105 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring MQC-based Traffic Policing">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0030.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0060.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Interface-based Rate Limiting">
+<meta name="featurename" content="Traffic Policing">
+<meta name="featurename" content="Traffic Shaping">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Interface-based Rate Limiting">
+<meta name="featurename" content="Traffic Policing">
+<meta name="featurename" content="Traffic Shaping">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="Interface-based Rate Limiting">
+<meta name="featurename" content="Traffic Policing">
+<meta name="featurename" content="Traffic Shaping">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563889761">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring MQC-based Traffic Policing</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563889761"></a><a name="EN-US_TASK_0000001563889761"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring MQC-based Traffic Policing</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563889761__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>There are various services on a network. When a large amount of service traffic enters the network side, congestion may occur due to insufficient bandwidth. To control a specific type of service traffic in the inbound or outbound direction on an interface, MQC-based traffic policing can be configured. MQC-based traffic policing uses traffic classifiers to implement differentiated services. When the receive or transmit rate of packets matching traffic classification rules exceeds the specified limit, the device discards the packets.</p>
+<p>When both QoS CAR and MQC are used on an interface for traffic statistics collection, statistics about packets to which a QoS CAR profile is applied contain only the packets that do not match the traffic policy.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563889761__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure a traffic classifier.</span><p><p id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_p132031259104114">For details about how to configure a traffic classifier, see <a href="galaxy_mqc_cfg_0005.html">Configuring a Traffic Classifier</a> in "MQC Configuration".</p>
+</p></li><li><span>Configure a traffic behavior.</span><ol type="a"><li class="substepexpand"><span>(Optional) Disable the device from counting the inter-frame gaps and preambles when calculating the traffic policing rate.</span><p><pre class="screen"><b><span class="cmdqueryname">qos car ifg disable</span></b></pre>
+<p>Only Ethernet links support this function.</p>
+</p></li><li class="substepexpand"><span>Create a traffic behavior and enter the traffic behavior view, or enter the view of an existing traffic behavior.</span><p><pre class="screen"><b><span class="cmdqueryname">traffic behavior</span></b> <i><span class="varname">behavior-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure a CAR action.</span><p><pre class="screen"><b><span class="cmdqueryname">car</span></b> { <strong><span>cir</span></strong> <i><span class="varname">cir-value</span></i> [ <strong><span>kbps</span></strong> | <strong><span>mbps</span></strong> | <strong><span>gbps</span></strong> ] [ <strong><span>pir</span></strong> <i><span class="varname">pir-value</span></i> [ <strong><span>kbps</span></strong> | <strong><span>mbps</span></strong> | <strong><span>gbps</span></strong> ] ] } [ <strong><span>cbs</span></strong> <i><span class="varname">cbs-value</span></i> [ <strong><span>bytes</span></strong> | <strong><span>kbytes</span></strong> | <strong><span>mbytes</span></strong> ] <strong><span>pbs</span></strong> <i><span class="varname">pbs-value</span></i> [ <strong><span>bytes</span></strong> | <strong><span>kbytes</span></strong> | <strong><span>mbytes</span></strong> ] ] [ <strong><span>share</span></strong> ] [ <strong><span>mode</span></strong> <strong><span>color-blind</span></strong> ] [ <strong><span>green pass</span></strong> [ <strong><span>remark-8021p</span></strong> <i><span class="varname">8021p-value</span></i> | <strong><span>remark-dscp</span></strong> <i><span class="varname">dscp-value</span></i> ] | <strong><span>yellow</span></strong> { <strong><span>discard</span></strong> | <strong><span>pass</span></strong> [ <strong><span>remark-8021p</span></strong> <i><span class="varname">8021p-value</span></i> | <strong><span>remark-dscp</span></strong> <i><span class="varname">dscp-value</span></i> ] } | <strong><span>red</span></strong> { <strong><span>discard</span></strong> | <strong><span>pass</span></strong> [ <strong><span>remark-8021p</span></strong> <i><span class="varname">8021p-value</span></i> | <strong><span>remark-dscp</span></strong> <i><span class="varname">dscp-value</span></i> ] } ]<sup>*</sup></pre>
+<p>The CIR and PIR can be set in percentages (by specifying <i><span class="varname">cir-percentage</span></i> and <i><span class="varname">pir-percentage</span></i>). Their base value is the traffic shaping bandwidth value (configured using the <b><span class="cmdqueryname">qos lr cir</span></b> command) defined on an interface. If this bandwidth value is not configured, the base value is the interface bandwidth value. The percentage configuration can be applied only to the outbound direction and the corresponding command cannot be configured together with the preceding command for configuring absolute values.</p>
+<pre class="screen"><strong id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_b1046113116597"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_cmdname968121875916">car cir pct</span></b> </strong><em id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_i646171195919">cir-percentage</em> [ <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_b946161113596">pir</strong><strong id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_b15461161165917"> pct</strong><em id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_i104611911195910"> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_varname3672513017">pir-percentage</span></i></em> ] <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_b646111155913">hierarchical-bandwidth</strong> [ <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_b4461171175916">cbs</strong><em id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_i1246191115599"> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_varname199417221106">cbs-value</span></i></em><strong id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_b146121119591"> <strong><span id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_cmdparmname147153420015">pbs</span></strong></strong><em id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_i8461111113595"> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_varname978414422013">pbs-value</span></i></em> | <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_b8461151165916">share</strong> | <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_b446161175910">mode</strong> <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_b6461411185915">color-blind</strong> ]<sup id="EN-US_TASK_0000001563889761__en-us_task_0000001513040590_sup16181436152411">*</sup></pre>
+</p></li><li class="substepexpand"><span>Exit the traffic behavior view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Configure a traffic policy.</span><ol type="a" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_substeps1847014515257"><li class="substepexpand" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_substep1847024512515"><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_cmd3470164511250">Create a traffic policy and enter the traffic policy view, or enter the view of an existing traffic policy.</span><p><pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_screen12581214182617"><strong id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001512847490_b132061657174518"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001512847490_cmdname220555714451">traffic policy</span></b> </strong><i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001512847490_varname173177584617">policy-name</span></i></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_substep316613144271"><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_cmd51661614122711">Bind a traffic behavior and a traffic classifier to the traffic policy.</span><p><pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_screen6741455185420"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001512847490_cmdname979606411175340">classifier</span></b> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001512847490_varname1735113404175340">classifier-name</span></i> <strong><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001512847490_cmdparmname1448135958175340">behavior</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001512847490_varname272307595175340">behavior-name</span></i><span> [ <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001512847490_b795658152175340">precedence</strong> <em id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001512847490_i642236598175340">precedence-value</em> ]</span></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_substep18715857122710"><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_cmd271555752719">Exit the traffic policy view.</span><p><pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_screen19715105752711"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_cmdname17715357122713">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Apply a traffic policy.</span><p><div class="note" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_note268795365311"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_p146871353155312">The application direction supported by a traffic policy is related to the configured action in a traffic behavior. For details, see configuration precautions for the feature.</p>
+</div></div>
+</p><ul id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_choices19259145919192"><li id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_choice74001730152313">Apply a traffic policy to an interface.<ol type="a" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_ol1401330162315"><li id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_li640103015231">Enter the interface view.<pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_screen1327345082015"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdname6642163772919">interface</span></b> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_varname1064283713294">interface-type</span></i> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_varname16421374294">interface-number</span></i></pre>
+</li><li id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_li4885132412574">Apply a traffic policy to the interface.<pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_screen6671142133019"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdname313925976175340">traffic-policy</span></b> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_varname517264962175340">policy-name</span></i> { <strong><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdparmname584570000175340">inbound</span></strong> | <strong><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdparmname419941659175340">outbound</span></strong> } [ <strong><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdparmname15429201418246">preprocess</span></strong> | <strong><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdparmname1410220122413">firstprocess</span></strong>  ]</pre>
+<pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_screen14614218616"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdname513013461366">traffic-policy</span></b> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_varname413084611612">policy-name</span></i> <strong><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdparmname1313064613617">inbound</span></strong> <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_b513015468618">decap-process</strong> </pre>
+<p id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_p1818611124121">If the <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_b198569211123">decap-process</strong> parameter is specified, you need to run the <strong id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_b08515378122">qos car inbound decap-process</strong> command in the interface view to configure the bandwidth limit for the decapsulation service in the inbound direction of the interface.</p>
+</li><li id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_li93511129185920">Exit the interface view.<pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_screen15351129145912"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdname103514293593">quit</span></b></pre>
+</li></ol>
+</li><li id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_choice1133115361969">Apply a traffic policy to a site group.<p id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_p09826220102"><a name="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_choice1133115361969"></a><a name="en-us_task_0000001563993061_en-us_task_0000001513047058_choice1133115361969"></a>This command is supported only on the AR8100 series, AR6700-H series, and AR8700 series.</p>
+<ol type="a" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_ol97369551969"><li id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_li9736155469">Create a site group and enter the site group view.<pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_screen153711919811"><strong id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_b15870105280"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdname167195131093">evpn site-group</span></b> </strong><em id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_i287025883">name</em></pre>
+</li><li id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_li766471218816">Apply a traffic policy to the site group.<pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_screen769914471497"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdname72431757895">traffic-policy</span></b> <i><span class="varname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_varname5243185718916">policy-name</span></i> <strong><span id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdparmname1924314578911">outbound</span></strong></pre>
+</li><li id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_li320954718108">Exit the site group view.<pre class="screen" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_screen15209947141010"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563889761__en-us_task_0000001563993061_en-us_task_0000001513047058_cmdname12209194721019">quit</span></b></pre>
+</li></ol>
+</li></ul>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0030.html">Configuring Traffic Policing
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0060.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

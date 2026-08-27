@@ -1,0 +1,90 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Creating a Keychain">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_keychain_cfg_0009.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_keychain_cfg_0011.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Keychain">
+<meta name="featuretype" content="Security">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Keychain">
+<meta name="featuretype" content="Security">
+<meta name="featurename" content="Keychain">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001176662461">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Creating a Keychain</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001176662461"></a><a name="EN-US_TASK_0000001176662461"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Creating a Keychain</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001176662461__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>You have configured NTP for time synchronization between the transmit end and receive end.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001176662461__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Before configuring a keychain, create one first. You can create one or more keychains as required.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001176662461__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create a keychain and enter the keychain view.</span><p><pre class="screen"><b><span class="cmdqueryname">keychain</span></b> <i><span class="varname">keychain-name</span></i> <strong><span>mode</span></strong> { <strong><span>absolute</span></strong> | <strong><span>periodic</span></strong> { <strong><span>daily</span></strong> | <strong><span>weekly</span></strong> | <strong><span>monthly</span></strong> | <strong><span>yearly</span></strong> } }</pre>
+<p>When creating a keychain, the time mode is mandatory. After a keychain is created, you can directly run <b><span class="cmdqueryname">keychain</span></b> <i><span class="varname">Keychain-name</span></i> to enter the keychain view, without specifying the time mode.</p>
+</p></li><li><span>(Optional) Configure the acceptance tolerance of the keychain.</span><p><pre class="screen"><b><span class="cmdqueryname">receive-tolerance</span></b> { <i><span class="varname">value</span></i> | <strong><span>infinite</span></strong> <span>| <strong>seconds</strong><em> secvalue</em> </span>}</pre>
+<p>You are advised to set the acceptance tolerance time to prevent packet loss caused by clock jitter.</p>
+<p>The acceptance tolerance can be configured using either of the following methods:</p>
+<ul><li>Set a specific time, in minutes or seconds. The maximum value is 14400 minutes (10 days) or 864000 seconds (10 days). By default, the acceptance tolerance value is 0, which is no tolerance. You are advised to set a proper acceptance tolerance to prevent packet loss caused by clock jitter.</li><li><p>Set the <strong><span>infinite</span></strong> parameter so that an accept key is always valid.</p>
+</li></ul>
+</p></li><li><span>(Optional) Set the time format of the keychain to LMT or UTC.</span><p><pre class="screen"><b><span class="cmdqueryname">time mode</span></b> { <strong><span>lmt</span></strong> | <strong><span>utc</span></strong> }</pre>
+<p>The default format is LMT.</p>
+</p></li><li><span>To use a keychain in TCP applications, you also need to configure the TCP Kind and TCP Alg ID fields in the TCP Enhanced Authentication Option. Perform this step only when a keychain is used in TCP applications.</span><p><pre class="screen"><b><span class="cmdqueryname">tcp-kind</span></b> <i><span class="varname">kind-value</span></i>
+<b><span class="cmdqueryname">tcp-algorithm-id</span></b> { <strong><span>md5</span></strong> | <strong><span>sha-1</span></strong> | <strong><span>hmac-md5</span></strong> | <strong><span>hmac-sha1-12</span></strong> | <strong><span>hmac-sha1-20</span></strong> | <strong><span>hmac-sha-256</span></strong> | <strong><span>sha-256</span></strong> | <strong><span>sm3</span></strong> | <strong><span>hmac-sha-384</span></strong> | <strong><span>hmac-sha-512</span></strong> | <strong><span>hmac-sm3</span></strong> } <i><span class="varname">algorithm-id</span></i></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>MD5, HMAC-MD5, and SHA-1 algorithms are not recommended since they are less secure.</p>
+</div></div>
+</p></li><li><span>Exit the keychain view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_keychain_cfg_0009.html">Configuring a Keychain
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_keychain_cfg_0011.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

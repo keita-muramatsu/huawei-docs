@@ -1,0 +1,76 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="SD-WAN EVPN Fundamentals">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0116.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001130783032">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>SD-WAN EVPN Fundamentals</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001130783032"></a><a name="EN-US_CONCEPT_0000001130783032"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">SD-WAN EVPN Fundamentals</h1>
+<div><div class="section"><h4 class="sectiontitle">Key Components and Channels</h4><p>In <a href="#EN-US_CONCEPT_0000001130783032__fig_dc_vrp_tunnel-encap-ext_feature_000101">Figure 1</a>, SD-WAN EVPN involves the following key components:</p>
+<ul><li>Route reflector (RR): distributes BGP EVPN routes and SD-WAN tunnel information between customer-premises equipment (CPE) devices. In the current solution, an RR is usually used as a regional controller.</li><li>CPE: establishes an SD-WAN data channel based on the routes reflected by the RR and tunnel information carried in the routes, and forwards service traffic.</li></ul>
+<div class="fignone" id="EN-US_CONCEPT_0000001130783032__fig_dc_vrp_tunnel-encap-ext_feature_000101"><a name="EN-US_CONCEPT_0000001130783032__fig_dc_vrp_tunnel-encap-ext_feature_000101"></a><a name="fig_dc_vrp_tunnel-encap-ext_feature_000101"></a><span class="figcap"><b>Figure 1 </b>SD-WAN EVPN architecture</span><br><span><img class="vsd" src="figure/en-us_image_0000001130623362.png" width="NaN" height="NaN"></span></div>
+<p>In the SD-WAN EVPN architecture, each pair of RR and CPE establish a Datagram Transport Layer Security (DTLS) management channel with each other. Then, the RR and CPE establish a BGP SD-WAN control channel. Finally, CPEs establish an SD-WAN data channel with each other. The following describes these channels:</p>
+<ul><li>DTLS management channel: established between each pair of CPE and RR to notify each other of the parameters required for establishing an SD-WAN tunnel.</li><li>SD-WAN tunnel: is an SD-WAN overlay tunnel that uses the dedicated SD-WAN tunneling protocol. For two sites to be able to communicate with each other, a tunnel needs to be established between them. At both ends of the tunnel are the WAN interfaces of the CPEs at the two sites, and these WAN interfaces can communicate at the underlay network layer. The two sites can be interconnected through networks of different carriers, allowing them to establish multiple tunnels with each other. Packets of BGP SD-WAN control channels and SD-WAN data channels are forwarded through SD-WAN tunnels.</li><li>BGP SD-WAN control channel: established between the CPE and RR to exchange BGP packets. The CPE uses the BGP SD-WAN control channel to advertise local network information and service routes to the RR, which then reflects the network information and service routes to other CPEs.</li><li>SD-WAN data channel: established between CPEs to forward Layer 3 service traffic after the CPEs learn network information and service routes from each other through the RR.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Basic Concepts</h4><p>The SD-WAN EVPN Solution involves the following basic concepts:</p>
+<ul><li><p>Transport network (TN): a WAN network provided by carriers, including MPLS networks and the Internet. TN is the network foundation for the SD-WAN EVPN Solution.</p>
+</li><li><p>Transport network port (TNP): a special WAN interface for a CPE to access a TN. Key TNP information includes the Site ID, Transport Network-ID, Public IP, Private IP, and Tunnel Encapsulation.</p>
+</li><li><p>Site ID: a globally unique identifier of a site on an SD-WAN EVPN network. Generally, a site ID is a string of digits.</p>
+</li><li>Site system ID: a globally unique identifier of a site device on an SD-WAN EVPN network. A site usually contains one or two devices. Generally, a site system ID is a device's loopback IP address.</li><li><p>Security association (SA): An SA defines elements for secure communication between two IPsec peers using security services (such as encryption). The elements include security protocols, characteristics of data flows to be protected, encapsulation modes of data transmitted between peers, encryption and authentication algorithms, and lifetimes of keys (used for secure data conversion and transmission) and SAs.</p>
+</li><li>Routing domain: defines whether reachable routes exist between physical links for different TNs. In most cases, if the TNs that are of the same type and provided by different carriers can communicate with each other, these TNs are in the same routing domain.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">SD-WAN EVPN Implementation</h4><p>The following uses CPE1 as an example to describe SD-WAN EVPN implementation shown in <a href="#EN-US_CONCEPT_0000001130783032__fig7770155081">Figure 2</a>:</p>
+<ol><li>CPE1 initiates DTLS registration with the RR to establish a DTLS management channel with the RR. Through this channel, CPE1 notifies the RR of its TNP and SA information to establish an SD-WAN tunnel with the RR.</li><li>The RR notifies CPE1 of its TNP and SA information through the DTLS management channel to establish an SD-WAN tunnel with CPE1.</li><li>CPE1 and the RR exchange BGP messages through the SD-WAN tunnel to establish a BGP SD-WAN peer relationship using their site system IDs (<strong>system-ip-1</strong> of CPE1 and <strong>system-ip-rr</strong> of the RR).</li><li>CPE1 generates a BGP SD-WAN route based on its TNP information (including the TNP IP address used as the interface address of the SD-WAN data channel) and SA parameters required to establish an SD-WAN data channel, and sends the route to the RR. In addition, CPE1 generates a BGP EVPN IP prefix route based on a user-side service route it has learned, and sends the IP prefix route to the RR. The IP prefix route has the site system ID of CPE1 (system-ip-1) as its next-hop address and carries the priority-color extended community attribute.</li><li>The RR reflects the received BGP SD-WAN route to CPE2 and CPE3. Through this route, CPE2 and CPE3 obtain the TNP information of CPE1 and SA parameters required to establish the SD-WAN data channel. Additionally, the RR reflects the received IP prefix route to CPE2 and CPE3. Through this route, CPE2 and CPE3 obtain the site information of CPE1 and trigger the establishment of an SD-WAN data channel with CPE1.</li></ol>
+<div class="fignone" id="EN-US_CONCEPT_0000001130783032__fig7770155081"><a name="EN-US_CONCEPT_0000001130783032__fig7770155081"></a><a name="fig7770155081"></a><span class="figcap"><b>Figure 2 </b>SD-WAN EVPN implementation</span><br><span><img class="vsd" src="figure/en-us_image_0000001130783150.png" width="NaN" height="NaN"></span></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0003.html">Understanding SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0116.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

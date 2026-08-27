@@ -1,0 +1,80 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding LDP Security Features">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0070.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0072.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001388555177">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Understanding LDP Security Features</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001388555177"></a><a name="EN-US_CONCEPT_0000001388555177"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding LDP Security Features</h1>
+<div><div class="section"><h4 class="sectiontitle">LDP MD5 Authentication</h4><p>Message-Digest Algorithm 5 (MD5) is a digest algorithm defined in relevant standards. MD5 is typically used to calculate a message digest to prevent message spoofing. The MD5 message digest is a unique result calculated using an irreversible character string conversion algorithm. If the message has been modified during transmission, the receive end can determine this the moment the message arrives by checking if the newly calculated digest is different from the carried digest.</p>
+<p>LDP MD5 authentication identifies LDP message modification by generating unique message digest for the same information segment. It is stricter than common TCP checksum-based authentication.</p>
+<p>LDP MD5 authentication is performed before LDP messages are sent over TCP. A unique message digest is added following the TCP header in a message. The message digest is calculated using the MD5 algorithm based on the TCP header, LDP message, and user-defined password.</p>
+<p>When receiving the message, the receive end obtains the TCP header, message digest, and LDP message. MD5 generates the message digest based on the TCP header, LDP message and the locally saved password. Then, it compares the calculated message digest with the message digest carried in the LDP message. If they differ, the receive end interprets the LDP message as having been tampered with.</p>
+<p>A password can be set either in non-ciphertext or ciphertext. These two modes differ in how passwords are recorded in the configuration file. In non-ciphertext mode, a user-defined password is directly recorded in the configuration file; however, in ciphertext mode, a password is encrypted using a special algorithm and then recorded in the configuration file.</p>
+<p>Characters set by users are used in digest calculation, regardless of whether a password is recorded in non-ciphertext or ciphertext mode. Although the conversion algorithms of the non-ciphertext and ciphertext are proprietary to different vendors, those proprietary algorithms become transparent to other vendors by this way.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>As MD5 is insecure, you are advised to use a more secure authentication mode.</p>
+</div></div>
+</div>
+<div class="section"><h4 class="sectiontitle">LDP Keychain Authentication</h4><p>Keychain is an enhanced encryption algorithm. Similar to MD5, it calculates a digest for a piece of information to prevent LDP packets from being tampered with.</p>
+<p>Keychain allows users to define a group of passwords to form a password string. Each password is assigned encryption and decryption algorithms, such as MD5 and secure hash algorithm-1 (SHA-1), and a validity period. The system selects a valid password based on the user configuration before sending or receiving a packet. Within the validity period of the password, the system uses the encryption algorithm matching the password to encrypt the packet before sending it. The system also uses the decryption algorithm matching the password to decrypt the packet after accepting it. In addition, the system automatically switches to a new valid password based on the password validity period, which minimizes password decryption risks if the password is not changed for a long time. </p>
+<p>The password of keychain authentication, the encryption and decryption algorithms, and the expiration period of the password can be configured separately on a keychain configuration node. A keychain configuration node at least requires one password and has the encryption and decryption algorithms specified.</p>
+<p>To reference a keychain configuration node, specify a peer IP address and a node name in the MPLS-LDP view. The keychain configuration node is then used to encrypt an LDP session. Different peers can reference the same keychain configuration node.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">LDP GTSM</h4><p>LDP Generalized TTL Security Mechanism (GTSM) is the application of GTSM in LDP. GTSM determines whether a packet is valid by checking its TTL. This protects devices from attacks. GTSM for LDP involves applying GTSM to LDP messages between adjacent devices or devices close to each other (based on the number of next hops). A TTL value range is preset. The LDP messages with TTLs not within the specified value range are interpreted as attack messages and discarded.</p>
+<p>GTSM is used to protect the TCP/IP-based control plane against CPU utilization attacks, for example, CPU overload attacks. GTSM for LDP is used to verify all types of LDP packets to prevent LDP from suffering CPU utilization attacks when LDP receives and processes a large number of forged packets.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001388555177__fig_dc_vrp_ldp-p2p_feature_001501"><a name="EN-US_CONCEPT_0000001388555177__fig_dc_vrp_ldp-p2p_feature_001501"></a><a name="fig_dc_vrp_ldp-p2p_feature_001501"></a><span class="figcap"><b>Figure 1 </b>Networking topology of LDP GTSM</span><br><span><img class="vsd" src="figure/en-us_image_0000001395696349.png" width="NaN" height="NaN"></span><br></div>
+<p>As shown in <a href="#EN-US_CONCEPT_0000001388555177__fig_dc_vrp_ldp-p2p_feature_001501">Figure 1</a>, LSR1 to LSR5 are core devices on the backbone network. When LSR-A is indirectly connected to the core devices through other devices, LSR-A may forge LDP packets among the LSRs (LSR1 to LSR5) to launch attacks.</p>
+<p>After LSR-A accesses the network through another device, the TTL value carried in the forged packet cannot be forged. This is the prerequisite for GTSM.</p>
+<p>A GTSM policy is configured on LSR1 through LSR5 separately and is used to verify packets reaching possible neighbors. For example, on LSR5, the valid number of hops is set to 1 or 2, and the valid TTL is set to 254 or 255 for packets sent from LSR2. The forged packet sent by LSR-A to LSR5 through multiple intermediate devices contains a TTL value that is out of the preset TTL range. LSR5 discards the forged packet and prevents the attack.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0070.html">Configuring LDP Security Features
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0072.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

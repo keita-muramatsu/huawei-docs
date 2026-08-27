@@ -1,0 +1,215 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring 3-Tuple NAT for Intranet Users to Access the Internet">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_nat_cfg_0095.html">
+<meta name="DC.Relation" scheme="URI" content="security_nat_cfg_0021.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="NAT">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NAT">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002250196013">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring 3-Tuple NAT for Intranet Users to Access the Internet</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002250196013"></a><a name="EN-US_TASK_0000002250196013"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring 3-Tuple NAT for Intranet Users to Access the Internet</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002250196013__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p><span><span class="eudemon">DeviceA</span></span> is deployed at the border of an enterprise network. A source NAT policy needs to be configured on <span><span class="eudemon">DeviceA</span></span> so that intranet users on the 10.1.1.0/24 network segment can access the Internet. In addition to the public IP address of the WAN interface on <span><span class="eudemon">DeviceA</span></span>, the enterprise has obtained six public IP addresses (1.1.1.10 to 1.1.1.15) from the ISP for address translation. <a href="#EN-US_TASK_0000002250196013__fig_01">Figure 1</a> shows the network diagram, in which the router is the access gateway provided by the ISP.</p>
+<p>In addition, P2P services, such as file sharing, audio communication, and video transmission, are required between users on the intranet and hosts on the Internet, regardless of which side initiates the service. In this case, configure 3-tuple NAT to meet the service requirements.</p>
+<div class="fignone" id="EN-US_TASK_0000002250196013__fig_01"><a name="EN-US_TASK_0000002250196013__fig_01"></a><a name="fig_01"></a><span class="figcap"><b>Figure 1 </b>Network diagram of 3-tuple NAT</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interfaces 1 and 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000002266477257.png" width="NaN" height="NaN"></span></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" colspan="2" valign="top" id="mcps1.3.1.5.1.5.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.5.1.5.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.5.1.5.1.3" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.5.1.5.1.1 "><p><span>10GE</span><span>0/0/1</span></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.2 "><p>IP address: 10.1.1.1/24</p>
+<p>Security zone: Trust</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.3 "><p>Set the default gateway address on each intranet host to 10.1.1.1.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.5.1.5.1.1 "><p><span>10GE</span><span>0/0/2</span></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.2 "><p>IP address: 1.1.1.1/24</p>
+<p>Security zone: Untrust</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.3 "><p>Configure the interface IP address according to the ISP's requirements.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.5.1.5.1.1 "><p>Private network segment allowed to access the Internet</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.2 "><p>10.1.1.0/24</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.3 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.5.1.5.1.1 "><p>Post-NAT public addresses</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.2 "><p>1.1.1.10 to 1.1.1.15</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.3 "><p>Public IP addresses for full-cone NAT</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="2" valign="top" width="15%" headers="mcps1.3.1.5.1.5.1.1 "><p>Routes</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.1.5.1.5.1.1 "><p>Default route on <span><span class="eudemon">DeviceA</span></span></p>
+</td>
+<td class="cellrowborder" valign="top" width="30%" headers="mcps1.3.1.5.1.5.1.2 "><p>Destination address: 0.0.0.0</p>
+<p>Next-hop address: 1.1.1.254</p>
+</td>
+<td class="cellrowborder" valign="top" width="40%" headers="mcps1.3.1.5.1.5.1.3 "><p>Configure a default route to the Internet on <span><span class="eudemon">DeviceA</span></span>, enabling it to forward traffic from the intranet to the ISP router.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.1 "><p>Static route on the ISP router</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.1 "><p>Destination address: 1.1.1.10 to 1.1.1.15</p>
+<p>Next-hop address: 1.1.1.1</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.5.1.5.1.2 "><p>The post-NAT public addresses are not assigned to any interfaces. As a result, the ISP router is unable to use a routing protocol to discover routes to these public addresses. Therefore, contact the ISP network administrator to configure a static route to the addresses in the address pool on the ISP router.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002250196013__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure an IP address for each interface, and add interfaces to security zones.</li><li>Configure a NAT address pool.</li><li>Configure a source NAT policy to enable source address translation for intranet users on a specified network segment to access the Internet.</li><li>Configure a default route on <span><span class="eudemon">DeviceA</span></span> to enable it to forward traffic from intranet users to the ISP router.</li><li>Configure the default gateway address on each intranet host, enabling them to send traffic destined for the Internet to <span><span class="eudemon">DeviceA</span></span>.</li><li>Configure a static route on the ISP router, enabling it to forward traffic returned by the Internet to <span><span class="eudemon">DeviceA</span></span>.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002250196013__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IP addresses for interfaces and set basic network parameters.</span><p><p># Configure an IP address for <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.1.1.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure an IP address for <span>10GE</span> <span>0/0/2</span> and enable the NAT function.</p>
+<pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>ip address 1.1.1.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>nat enable</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Add <span>10GE</span> <span>0/0/1</span> to the Trust zone.</p>
+<pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>firewall zone trust</strong>
+[<span><span class="eudemon">DeviceA</span></span>-zone-trust] <strong>add interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-zone-trust] <strong>quit</strong></pre>
+<p># Add <span>10GE</span> <span>0/0/2</span> to the Untrust zone.</p>
+<pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>firewall zone untrust</strong>
+[<span><span class="eudemon">DeviceA</span></span>-zone-untrust] <strong>add interface <span>10ge</span> <span>0/0/2</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-zone-untrust] <strong>quit</strong></pre>
+</p></li><li><span>Configure a NAT address pool and enable port address translation so that public addresses can be reused.</span><p><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>nat address-group addressgroup1</strong>
+[<span><span class="eudemon">DeviceA</span></span>-address-group-addressgroup1] <strong>mode full-cone global</strong>
+[<span><span class="eudemon">DeviceA</span></span>-address-group-addressgroup1] <strong>route enable</strong>
+[<span><span class="eudemon">DeviceA</span></span>-address-group-addressgroup1] <strong>section 0 1.1.1.10 1.1.1.15</strong>
+[<span><span class="eudemon">DeviceA</span></span>-address-group-addressgroup1] <strong>quit</strong></pre>
+</p></li><li><span>Configure a source NAT policy to enable source address translation for intranet users on a specified network segment to access the Internet.</span><p><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>nat-policy</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat] <strong>rule name policy_nat1</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat-rule-policy_nat1] <strong>source-address 10.1.1.0 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat-rule-policy_nat1] <strong>action source-nat address-group addressgroup1 </strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat-rule-policy_nat1] <strong>quit</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat] <strong>quit</strong></pre>
+</p></li><li><span>Configure a default route on <span><span class="eudemon">DeviceA</span></span> to enable it to forward traffic from intranet users to the ISP router.</span><p><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>ip route-static 0.0.0.0 0.0.0.0 1.1.1.254</strong></pre>
+</p></li><li><strong>Optional: </strong><span>Enable the endpoint-independent filtering function. By default, the endpoint-independent filtering function is enabled. If this function is disabled, configure a security policy to permit traffic sent from the Internet to the intranet.</span><p><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>firewall endpoint-independent filter enable</strong></pre>
+</p></li><li><span>Configure the default gateway address on each intranet host, enabling them to send traffic destined for the Internet to <span><span class="eudemon">DeviceA</span></span>. The detailed configuration process is not provided here.</span></li><li><span>On the ISP router, configure a static route to addresses in the NAT address pool (1.1.1.10 to 1.1.1.15), with the next-hop address set to 1.1.1.1. The ISP router can then forward traffic returned by the Internet to <span><span class="eudemon">DeviceA</span></span>.</span><p><p>Contact the ISP network administrator to perform this step.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002250196013__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol><li>Verify that intranet PCs can access the Internet.</li><li>Run the <b><span class="cmdqueryname">display nat-policy rule name</span></b> <i><span class="varname">rule-name</span></i> command on DeviceA to check the number of times traffic matches the source NAT policy.</li><li>Run the <b><span class="cmdqueryname">display session all verbose</span></b> command on DeviceA to check for the session entries with the source addresses being the private addresses of intranet PCs. If the entry exists and the post-NAT IP address exists in the NAT address pool, the NAT policy has been configured successfully.<pre class="screen">&lt;<span><span class="eudemon">DeviceA</span></span>&gt; <strong>display session all verbose</strong>
+  Session Table Information:
+    Protocol          : 6(TCP)
+    SrcAddr  Port Vpn : 10.1.1.3 2474
+    DestAddr Port Vpn : 3.3.3.3 80
+    Time To Live      : 60s
+    NAT Info
+      New SrcAddr     : 1.1.1.10
+      New SrcPort     : 3761
+      New DestAddr    : -
+      New DestPort    : -
+
+  Total : 1</pre>
+</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002250196013__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#
+ sysname <span><span class="eudemon">DeviceA</span></span>
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0 
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 1.1.1.1 255.255.255.0 
+ nat enable
+#
+firewall zone trust
+ set priority 85
+ add interface <span>10GE</span><span>0/0/1</span>
+#
+firewall zone untrust
+ set priority 5
+ add interface <span>10GE</span><span>0/0/2</span>
+#
+ ip route-static 0.0.0.0 0.0.0.0 1.1.1.254 
+# 
+nat address-group addressgroup1 0
+ mode full-cone global
+ route enable
+ section 0 1.1.1.10 1.1.1.15 
+#  
+nat-policy  
+  rule name policy_nat1
+    source-address 10.1.1.0 24   
+    action source-nat address-group addressgroup1  
+#                                          
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_nat_cfg_0095.html">Source NAT
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_nat_cfg_0021.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

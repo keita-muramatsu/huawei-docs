@@ -1,0 +1,102 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="RADIUS Packet Retransmission Mechanism">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_aaa_cfg_0021.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_aaa_cfg_0024.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_aaa_cfg_0026.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="RADIUS">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="RADIUS">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="RADIUS">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featurename" content="HWTACACS">
+<meta name="featurename" content="LDAP">
+<meta name="featurename" content="RADIUS">
+<meta name="featurename" content="Local User">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001513155650">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>RADIUS Packet Retransmission Mechanism</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001513155650"></a><a name="EN-US_CONCEPT_0000001513155650"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">RADIUS Packet Retransmission Mechanism</h1>
+<div><p>When a user is being authenticated, a device sends an Access-Request packet to the RADIUS server. To ensure that the device can receive a response packet from the server even if a network fault or delay occurs, a retransmission upon timeout mechanism is used. The number of retransmissions and retransmission interval are controlled using the retransmission timer.</p>
+<p>RADIUS packet retransmission discussed here applies only to a single server. If multiple servers are configured in a RADIUS server template, the overall retransmission period depends on the retransmission interval, number of retransmissions, RADIUS server status, number of servers, and algorithm for selecting the servers.</p>
+<div class="p">You can set the retransmission timer using the following commands:
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="61.57%" id="mcps1.3.3.1.1.3.1.1" liSelected="liSelected"><p>Command</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="38.43%" id="mcps1.3.3.1.1.3.1.2" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="61.57%" headers="mcps1.3.3.1.1.3.1.1 "><p><strong>radius-server retransmit</strong> <em>retry-times</em></p>
+</td>
+<td class="cellrowborder" valign="top" width="38.43%" headers="mcps1.3.3.1.1.3.1.2 "><p>Number of retransmissions.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="61.57%" headers="mcps1.3.3.1.1.3.1.1 "><p><strong>radius-server timeout</strong> <em>time-value</em></p>
+</td>
+<td class="cellrowborder" valign="top" width="38.43%" headers="mcps1.3.3.1.1.3.1.2 "><p>Retransmission interval.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>In <a href="#EN-US_CONCEPT_0000001513155650__fig_dc_cfg_aaa_601501">Figure 1</a>, a Telnet user requests to log in to the device. After the device receives the request, it sends a RADIUS Access-Request packet to the RADIUS server and enables the retransmission timer. The retransmission timer defines the retransmission interval and number of retransmissions. If the device does not receive any response packet from the RADIUS server when the retransmission interval expires, it sends a RADIUS Access-Request packet again.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001513155650__fig_dc_cfg_aaa_601501"><a name="EN-US_CONCEPT_0000001513155650__fig_dc_cfg_aaa_601501"></a><a name="fig_dc_cfg_aaa_601501"></a><span class="figcap"><b>Figure 1 </b>RADIUS authentication packet retransmission flowchart</span><br><span><img class="vsd" src="figure/en-us_image_0000001563756181.png" width="NaN" height="NaN"></span></div>
+<div class="p">The device stops packet retransmission if any of the following conditions is met:<ul><li>The device receives a response packet from the RADIUS server. It then stops packet retransmission and marks the RADIUS server status as up.</li><li>The device detects that the RADIUS server status is down. After the device marks the RADIUS server status as down:<ul><li>If the number of retransmitted packets has reached the upper limit, the device stops packet retransmission and retains the RADIUS server status as down.</li><li>If the number of retransmitted packets has not reached the upper limit, the device retransmits an Access-Request packet once again to the RADIUS server. If the device receives a response packet from the server, it stops packet retransmission and restores the RADIUS server status to up. Otherwise, it still stops packet retransmission and retains the RADIUS server status as down.</li></ul>
+</li><li>The number of retransmitted packets has reached the upper limit. The device then stops packet retransmission and performs the following:<ul><li>If the device receives a response packet from the RADIUS server, it marks the RADIUS server status as up.</li><li>If the device has detected that the RADIUS server status is down, it marks the server status as down.</li><li>If the device receives no response packet from the RADIUS server and does not detect that the server status is down, the device does not change the server status. Actually, the server does not respond.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The device does not definitely mark the status of the server that does not respond as down. The device marks the server status as down only if the corresponding conditions are met.</p>
+</div></div>
+</li></ul>
+</li></ul>
+</div>
+<p>For the RADIUS server status and conditions for a device to mark the server status as down, see <a href="galaxy_aaa_cfg_0027.html">RADIUS Server Status Detection</a>.</p>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_aaa_cfg_0021.html">Understanding RADIUS-based AAA
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_aaa_cfg_0024.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_aaa_cfg_0026.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

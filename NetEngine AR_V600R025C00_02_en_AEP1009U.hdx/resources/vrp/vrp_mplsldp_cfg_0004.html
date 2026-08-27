@@ -1,0 +1,106 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Basic LDP Concepts">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0009.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001334210438">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Basic LDP Concepts</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001334210438"></a><a name="EN-US_CONCEPT_0000001334210438"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Basic LDP Concepts</h1>
+<div><p>MPLS supports multiple label distribution protocols, among which LDP is widely used. </p>
+<p>LDP defines messages to be used in the label distribution process and procedures for processing the messages. Label switching routers (LSRs) obtain information about incoming labels, next-hop nodes, and outgoing labels for specified FECs from local forwarding information bases (LFIBs) to establish LSPs.</p>
+<p>For detailed information about LDP, see relevant standards (LDP Specification).</p>
+<div class="section"><h4 class="sectiontitle">LDP Adjacencies</h4><div class="p">When an LSR receives a Hello message from a peer, the LSR establishes an LDP adjacency with the peer. There are two types of LDP adjacencies:<ul><li><p>Local adjacency: established by exchanging Link Hello messages.</p>
+</li><li><p>Remote adjacency: established by exchanging Targeted Hello messages.</p>
+</li></ul>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">LDP Peers</h4><p>LDP peers refer to LSRs that establish an LDP session and use LDP to exchange label messages.</p>
+<p>LDP peers learn each other's labels through the LDP session established between them.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">LDP Sessions</h4><p>An LDP session is used by LSRs to exchange messages, such as Label Mapping messages and Label Release messages. LDP sessions are classified into the following types:</p>
+<ul><li><p>Local LDP session: created over a local adjacency. The two LSRs in a local session are directly connected. LSRs can exchange labels and establish LDP LSPs only after local LDP sessions are established.</p>
+</li><li><p>Remote LDP session: created over a remote adjacency. The two LSRs of a remote session can be directly or indirectly connected. A remote LDP session provides the following functions: An L2VPN needs to use LDP extensions to transmit its own protocol packets. When devices at both ends of an L2VPN are indirectly connected, a remote LDP session needs to be established. Also, LDP-based remote peers directly distribute LDP labels to each other, which can be used in scenarios similar to LDP over TE.</p>
+</li></ul>
+<p>Local and remote LDP sessions can be established at the same time.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Differences and Relationships Between LDP Adjacencies, Peers, and Sessions</h4><p><strong>Differences</strong></p>
+<p>The differences between LDP adjacencies, peers, and sessions are as follows:</p>
+<ul><li><p>An LDP adjacency is a TCP connection established after two devices exchange Hello messages. It is used for the link between two interconnected interfaces.</p>
+</li><li><p>LDP peers refer to devices that exchange label messages through LDP after a TCP connection is set up.</p>
+</li><li><p>An LDP session refers to a series of processes in which two LDP peers exchange label messages.</p>
+</li></ul>
+<p><strong>Relationships</strong></p>
+<p>To establish an LDP session between two devices, a link for setting up a TCP connection must be established — this link is called an adjacency. After an adjacency is established, the two devices exchange LDP session messages to establish an LDP session. An LDP peer relationship is then established between the two devices. Finally, the LDP peers exchange label information. The relationships can be described as follows:</p>
+<ul><li><p>LDP maintains peer relationships over adjacencies. The type of peer depends on the type of adjacency.</p>
+</li><li><p>A peer can be maintained by more than one adjacency. If a peer is maintained by both local and remote adjacencies, the peer is a coexistent local and remote peer.</p>
+</li><li><p>An LDP session can be established only between LDP peers.</p>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Types of LDP Messages</h4><p>LDP uses the following types of messages:</p>
+<ul><li><p>Discovery message: used to notify or maintain the presence of an LSR.</p>
+</li><li><p>Session message: used to establish, maintain, or terminate an LDP session between LDP peers.</p>
+</li><li><p>Advertisement message: used to create, modify, or delete a mapping between a specific FEC and label.</p>
+</li><li><p>Notification message: used to provide advisory information or error information.</p>
+</li></ul>
+<p>LDP transmits Discovery messages over UDP and transmits Session, Advertisement, and Notification messages over TCP.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Label Spaces and LDP Identifiers</h4><ul><li><p>Label space</p>
+<p>A label space defines a range of labels distributed between LDP peers. Only the global label space is supported. All interfaces on an LSR share a label space.</p>
+</li><li><p>LDP identifier</p>
+<div class="p">An LDP identifier identifies a label space used by a specified LSR. An LDP identifier consists of an LSR ID and a label space, and is 6 bytes long. An LDP identifier is in the format of &lt;LSR ID&gt;:&lt;Label space ID&gt;.<ul><li><p>LSR ID: indicates the LSR identifier and is 4 bytes long.</p>
+</li><li><p>Label space ID: indicates the identifier of the label space and is 2 bytes long.</p>
+</li></ul>
+</div>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0003.html">Understanding MPLS LDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0009.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

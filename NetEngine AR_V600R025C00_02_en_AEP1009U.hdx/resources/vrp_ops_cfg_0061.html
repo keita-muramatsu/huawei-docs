@@ -1,0 +1,222 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a Script Assistant for Using a User-defined Command to Monitor Changes of Important Routes">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ops_cfg_0050.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ops_cfg_0060.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="OPS">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="OPS">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001880738678">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a Script Assistant for Using a User-defined Command to Monitor Changes of Important Routes</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001880738678"></a><a name="EN-US_TASK_0000001880738678"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a Script Assistant for Using a User-defined Command to Monitor Changes of Important Routes</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001880738678__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001880738678__fig206141513115711">Figure 1</a>, a user manages a device through a remote network and wants to use a user-defined command to monitor changes of important routes and generate logs to detect changes of important routes as soon as they occur.</p>
+<div class="fignone" id="EN-US_TASK_0000001880738678__fig206141513115711"><a name="EN-US_TASK_0000001880738678__fig206141513115711"></a><a name="fig206141513115711"></a><span class="figcap"><b>Figure 1 </b>Networking diagram of monitoring key route changes using user-defined commands</span><br><span><img src="images/fig_dc_cfg_ops_002401.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001880738678__1.4.2"></a><a name="1.4.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li><p>Make Python scripts <strong>climuti.py</strong> and <strong>route_track.py</strong> to customize the command for monitoring changes of important routes and generate logs when important routes change.</p>
+</li><li><p>Remotely manage the device, upload the Python script to DeviceA, and install the script <strong>climuti.py</strong>.</p>
+</li><li><p>Configure a Python script assistant.</p>
+</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001880738678__1.4.3"></a><a name="1.4.3"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><ul><li>It is recommended that the name of the command subscribed through <a href="vrp_ops_cfg_0030.html">ops.cli.subscribe</a> be different from that of the Python script file. Otherwise, the Python script file cannot be copied or deleted.</li><li>The .pyc file is generated after the Python script file is compiled. Whether the .pyc file is generated is irrelevant to whether the corresponding Python script is successfully installed. Therefore, you do not need to pay attention to the .pyc file.</li><li>The .pyc file cannot be deleted independently. When you run the <b><span class="cmdqueryname">ops uninstall file</span></b> command to uninstall a Python script, the .pyc file is automatically deleted.</li><li>The <strong>script-assistant python route_track.py</strong> command is displayed in the configuration file only after you enter the <strong>routetrack</strong> command to trigger the subscribed event in the <strong>climuti.py</strong> script.</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001880738678__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an IP address for the specified interface.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.1.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</p></li><li><span>Make a Python script.</span><p><p># Make a Python script to implement the following functions:</p>
+<ul><li>The <strong>climuti.py</strong> script is used to customize the <strong>routetrack</strong> command to enable the function of monitoring key route changes and install the <strong>route_track.py</strong> script.</li></ul>
+<ul><li>The <strong>route_track.py</strong> script monitors the changes of key routes and generates logs when routes change.</li></ul>
+<p># Example of the <span><strong>climuti.py</strong> script</span></p>
+<pre class="screen"># -*- coding: utf-8 -*-
+import ops         # Import the ops module.
+import sys         # Import the sys module.
+import os         # Import the os module.
+# Subscription processing function
+def ops_condition(_ops):
+    # Customize the command <strong>routetrack</strong>.
+    value1, err_str1 = _ops.cli.subscribe("cli1", "routetrack", enter=True)
+    # Customize the command <strong>no routetrack</strong>.
+    value2, err_str2 = _ops.cli.subscribe("cli2", "no routetrack", enter=True)
+    #Combined event. Enter the command <strong>routetrack</strong> or <strong>no routetrack</strong>.
+    value10, err_str10 = _ops.correlate("cli1 or cli2")
+    return 0
+# Work processing function
+def ops_execute(_ops):
+    # Obtain the system environment variable <strong>_cli_input</strong>, which indicates the command entered by the user.
+    key, value = _ops.environment.get("_cli_input")
+    _ops.set_model_type("YANG")
+    # When the user enters the <strong>routetrack </strong>command, perform the following steps:
+    if key == "routetrack":
+        # Open the command line channel.
+        handle, err_desp = _ops.cli.open()
+        # Run the <strong>ops install file route_track.py</strong> command to install the <strong>route_track.py</strong> script.
+        result, n11, n21 = _ops.cli.execute(handle,"ops install file route_track.py")
+        # Run the <strong>system-view</strong> command to enter the system view.
+        result, n11, n21 = _ops.cli.execute(handle,"system-view")
+        # Run the <strong>ops</strong> command to enter the OPS view.
+        result, n11, n21 = _ops.cli.execute(handle,"ops")
+        # Run the <strong>script-assistant python route_track.py</strong> command to configure the script assistant of <strong>route_track.py</strong>.
+        result, n11, n21 = _ops.cli.execute(handle,"script-assistant python route_track.py")
+        # Close the command line channel.
+        result = _ops.cli.close(handle)
+        # When the user enters the <strong>no routetrack</strong> command, perform the following steps:
+    elif key == "no routetrack":
+        # Open the command line channel.
+        handle, err_desp = _ops.cli.open()
+        # Run the <strong>system-view</strong> command to enter the system view.
+        result, n11, n21 = _ops.cli.execute(handle,"system-view")
+        # Run the <strong>ops</strong> command to enter the OPS view.
+        result, n11, n21 = _ops.cli.execute(handle,"ops")
+        # Run the <strong>undo script-assistant python route_track.py</strong> command to delete the script assistant of <strong>route_track.py</strong>.
+        result, n11, n21 = _ops.cli.execute(handle,"undo script-assistant python route_track.py")
+        # Run the <strong>quit </strong>command to return to the system view.
+        result, n11, n21 = _ops.cli.execute(handle,"quit")
+        # Run the <strong>quit </strong>command to return to the user view.
+        result, n11, n21 = _ops.cli.execute(handle,"quit")
+        # Run the <strong>ops uninstall file route_track.py</strong> command to uninstall the <strong>route_track.py</strong> script.
+        result, n11, n21 = _ops.cli.execute(handle,"ops uninstall file route_track.py")   
+        # Close the command line channel.
+        result = _ops.cli.close(handle)
+    else:
+        return 1
+    return 0</pre>
+<p># <span>Example of the <strong>route_track.py</strong> script</span></p>
+<pre class="screen"># -*- coding: utf-8 -*-
+import ops         # Import the ops module.
+import sys         # Import the sys module.
+import os         # Import the os module.
+# Subscription processing function
+def ops_condition(_ops):
+    # Monitor changes of OSPF routes on network segment 10.1.1.1/24.
+    value, err_str = _ops.route.subscribe("route1", "10.1.1.1", maskLen=24, optype="modify", protocol="ospf")
+    return 0
+# Work processing function
+def ops_execute(_ops):
+    # Record user-defined critical-level logs to prompt route changes.
+    status, err_log = _ops.syslog("Syslog: The important route changed.", "critical", "syslog")
+    return 0</pre>
+</p></li><li><span>Upload the script file to the device and install it.</span><p><p># Configure DeviceA as the SFTP client to download the Python script from the SFTP server.</p>
+<pre class="screen">[DeviceA] <strong>sftp 10.2.1.1</strong>
+Trying 10.2.1.1 ... 
+Press CTRL+K to abort 
+Connected to 10.2.1.1 ... 
+Please input the username:  
+Enter password: 
+sftp-client&gt; <strong>get <span>climuti.py</span></strong>
+Info: Transfer file in binary mode.
+Please wait for a while...
+/    2699 bytes transferred
+Info: Downloaded the file successfully.
+sftp-client&gt; <strong>get route_track.py</strong>
+Info: Transfer file in binary mode.
+Please wait for a while...
+/    595 bytes transferred
+Info: Downloaded the file successfully.</pre>
+<p># Install the Python script on DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>quit</strong>
+&lt;DeviceA&gt; <strong>ops install file <span>climuti.py</span></strong>
+&lt;DeviceA&gt; <strong>ops install file route_track.py</strong></pre>
+</p></li><li><span>Configure a Python script assistant.</span><p><p># Configure a Python script assistant and register the CLI event in the script <strong>port_description_lldp.py</strong>. Wait for the event to be triggered.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>system-view</strong>
+[<span class="keyword"></span>DeviceA] <strong>ops</strong>
+[DeviceA-ops] <strong>script-assistant python <span>climuti.py</span></strong>
+[DeviceA-ops] <strong>script-assistant python route_track.py</strong>
+[DeviceA-ops] <strong>quit</strong>
+[DeviceA] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001880738678__1.4.5"></a><a name="1.4.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># After the preceding configurations are complete, run the <strong>routetrack</strong> command to enable the monitoring of key route changes and check whether the <strong>route_track.py</strong> script is successfully installed in the <strong>flash:/$_user/</strong> directory of the device.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>routetrack</strong>
+&lt;DeviceA&gt; <strong>cd $_user</strong>
+&lt;DeviceA&gt; <strong>dir</strong>
+Directory of flash:/$_user/                                                       
+                                                                                
+  Idx  Attr     Size(Byte)  Date        Time       FileName                     
+    0  -rw-          1,672  Mar 22 2024 14:29:33   climuti.py              
+    1  -rw-          2,000  Mar 22 2024 14:29:57   climuti.pyc             
+    2  -rw-            441  Mar 22 2024 14:31:00   route_track.py              
+    3  -rw-            891  Mar 22 2024 14:31:03   route_track.pyc             
+                                                                                
+1,927,468 KB total available (387,044 KB free)</pre>
+<p># Enable the log function. When changes of important routes are monitored, the device automatically generates logs.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>system-view</strong>
+[<span class="keyword"></span>DeviceA] <strong>info-center enable</strong>
+[<span class="keyword"></span>DeviceA] <strong>quit</strong>
+&lt;DeviceA&gt; <strong>terminal monitor</strong>
+&lt;DeviceA&gt; <strong>terminal logging</strong>
+&lt;DeviceA&gt;
+Mar 28 2024 14:29:17+08:00 DeviceA %%01OPSA/2/SCRIPT_LOG: OPS: Syslog: The important route changed. (user="route_track.py", session=964036020).</pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+ops
+ script-assistant python climuti.py
+ script-assistant python route_track.py
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+return</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ops_cfg_0050.html">OPS Configuration Examples
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ops_cfg_0060.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

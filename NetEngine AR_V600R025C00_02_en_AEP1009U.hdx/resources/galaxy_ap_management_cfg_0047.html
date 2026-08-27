@@ -1,0 +1,94 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring PoE Power Management">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0043.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0074.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0065.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563885473">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring PoE Power Management</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563885473"></a><a name="EN-US_TASK_0000001563885473"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring PoE Power Management</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563885473__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><div class="p">You can adjust the following power parameters to improve PoE power efficiency and ensure stable system operation.<ul><li>Power supply mode of an AP<p>When the power supply mode of an AP cannot be correctly identified through LLDP or hardware, you can manually change the power supply mode of the AP.</p>
+<p>For an AP with dual PoE inputs, you can run the <b><span class="cmdqueryname">power force work-mode</span></b> command to forcibly lower the power of the AP so that the two inputs work in active/standby mode. For example, when an AP receives two inputs of 802.3at power supply, it superposes power received on the two network ports. If you manually set the power supply mode to 802.3at, the two network ports back up each other for power supply.</p>
+<p>After the power supply mode of an AP is manually changed, the AP uses the configured power supply mode to reduce power consumption. Otherwise, the AP uses the power supply mode identified by LLDP or hardware to reduce power consumption.</p>
+</li><li>Maximum output power of an AP<p>If the power that the network provides for the PoE device is unstable, for example, the mains voltage fluctuates, the power that the PoE device provides for PDs is affected and begins to fluctuate. As a result, PDs are not provided with sufficient power and some PDs are powered off. You can configure the maximum output power of the AP to ensure power stability for a PD.</p>
+</li><li>Percentage of reserved PoE power to the available PoE power on an AP<p>The power of a PD keeps changing when the PD is running. Sometimes, the power consumption increases sharply and the available power of the device cannot support the burst increase of power. In this case, the device cuts off PDs on low-priority interfaces to enable overload protection on PoE power. As a result, all PDs are powered off.</p>
+<p>You can configure proper reserved power to solve the problem. When the power consumption increases sharply, the reserved power can support the system running. Then the device can immediately power off PDs on low-priority interfaces to ensure stable running of other PDs.</p>
+</li><li>Alarm threshold of the PoE power consumption percentage<p>When the power consumption increases sharply within a range, the reserved power can satisfy the power requirement. However, if the power consumption exceeds the range, some PDs are powered off. To solve this problem, configure the alarm threshold for the power consumption percentage. When the power consumption exceeds the threshold, the system generates an alarm so that administrators can take measures to reduce the power consumption.</p>
+</li></ul>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563885473__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen" id="EN-US_TASK_0000001563885473__en-us_task_0000001512686326_screen51345165129"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563885473__en-us_task_0000001512686326_cmdname15136141631217">system-view</span></b></pre>
+</p></li><li><span>Enter the WLAN view.</span><p><pre class="screen" id="EN-US_TASK_0000001563885473__en-us_task_0000001512686326_screen220544818420"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563885473__en-us_task_0000001512686326_cmdname3591105918428">wlan</span></b></pre>
+</p></li><li><span>Create an AP system profile, and enter its view.</span><p><pre class="screen" id="EN-US_TASK_0000001563885473__en-us_task_0000001564125621_screen2880193110264"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563885473__en-us_task_0000001564125621_cmdname1140365382712">ap-system-profile</span></b> <strong><span id="EN-US_TASK_0000001563885473__en-us_task_0000001564125621_cmdparmname1551119214288">name</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563885473__en-us_task_0000001564125621_varname9106104772717">profile-name</span></i></pre>
+<p id="EN-US_TASK_0000001563885473__en-us_task_0000001564125621_p87812563311">By default, the AP system profile <strong id="EN-US_TASK_0000001563885473__en-us_task_0000001564125621_b17126434161020">default</strong> exists on the device.</p>
+</p></li><li><span>Configure PoE power management. You can configure one or more of the following functions as required:</span><ul><li>Configure the power supply mode for the AP.<pre class="screen"><b><span class="cmdqueryname">power force work-mode</span></b> { <strong><span>af</span></strong> | <strong><span>at</span></strong> | <strong><span>bt60</span></strong> | <strong><span>bt90</span></strong> }</pre>
+<p>By default, no power supply mode is configured for an AP.</p>
+</li><li>Configure the maximum output power of the AP.<pre class="screen"><b><span class="cmdqueryname">poe max-power</span></b> <i><span class="varname">max-power</span></i></pre>
+<p>By default, the maximum output power of an AP is set to 750000 mW. When the AP's power supply capability does not reach 750000 mW, the maximum output power of the AP is the total power that the PoE power supply provides for PDs.</p>
+</li><li>Configure the percentage of the reserved PoE power to the total PoE power on the AP.<pre class="screen"><b><span class="cmdqueryname">poe power-reserved</span></b> <i><span class="varname">power-reserved</span></i></pre>
+<p>By default, the percentage of the reserved PoE power against the total PoE power on an AP is not set.</p>
+</li><li>Configure the alarm threshold of the PoE power consumption percentage.<pre class="screen"><b><span class="cmdqueryname">poe power-threshold</span></b> <i><span class="varname">threshold-value</span></i></pre>
+<p>By default, the alarm threshold of the PoE power consumption percentage is not set.</p>
+</li></ul>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ap_management_cfg_0043.html">Configuring the PoE Function of APs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ap_management_cfg_0074.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ap_management_cfg_0065.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

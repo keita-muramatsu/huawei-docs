@@ -1,0 +1,89 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Session Aging">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_session_management_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="security_session_management_cfg_0013.html">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_task_0000002085002922.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Session Management">
+<meta name="featuretype" content="System-level Forwarding">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Session Management">
+<meta name="featuretype" content="System-level Forwarding">
+<meta name="featuretype" content="System-level Forwarding">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563885641">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Session Aging</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563885641"></a><a name="EN-US_TASK_0000001563885641"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Session Aging</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563885641__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>After a session is created, if no packet matches the session for a long time, the connection is torn down, and the session is considered unnecessary. To save system resources, the system deletes the session that is not matched for a certain period of time; that is, the session is aged out.</p>
+<p>The impact of aging time on forwarding is as follows:</p>
+<ul><li>If the aging time is too long, a large number of sessions whose corresponding connections have been torn down may exist in the system and consume system resources. In addition, new sessions may not be created, thus affecting the forwarding of other services.</li><li>If the aging time is too short, some sessions may be aged out before packet transmission is finished, resulting in service interruptions.</li></ul>
+<p>Generally, the default session aging time is used. You can also modify the aging time based on the traffic type and number of connections.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563885641__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Configure the session aging time.</span><p><pre class="screen"><b><span class="cmdqueryname">session</span></b> { { <strong><strong><span>dns</span></strong></strong> | <strong>ftp</strong> | <strong>http</strong> | <strong>icmp</strong> | <strong>tcp</strong> | <strong>udp</strong> | <strong>sip</strong> | <strong>rtsp</strong> | <strong>pptp</strong> | <strong>others</strong> | <strong><span>sac-cache</span></strong> } | { <strong>tcp</strong> | <strong><strong><span>udp</span></strong></strong> } <b><span class="cmdqueryname">user-define</span></b> <em>port-number</em> } <b><span class="cmdqueryname">aging-time</span></b><em> aging-time</em></pre>
+<p>For the default aging time of sessions of different protocol types, see <a href="security_session_management_cfg_0013.html">Default Settings for Session Management</a>. For TCP/UDP packets, the aging time configured with a user-defined port number specified is preferentially used.</p>
+</p></li><li><span>(Optional) Enable the session table leak check.</span><p><pre class="screen"><b><span class="cmdqueryname">session leak-check</span></b> [ <strong><span>auto-recover</span></strong> ] <strong><span>enable</span></strong></pre>
+<p>By default, the session table leak check is disabled.</p>
+<div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>After the session table leak check is enabled, if the number of session resources remains full for a long time, the device may restart. Therefore, exercise caution when performing the configurations.</p>
+</div></div>
+</p></li><li><span>(Optional) Set the maximum rate of new sessions.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">session create-rate-limit</span></b> </strong><em><i><span class="varname">limit-value</span></i></em></pre>
+<p>By default, the rate of new sessions is not limited.</p>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001563885641__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><ul><li>Check the session aging time on the device.<pre class="screen"><b><span class="cmdqueryname">display session aging-time</span></b></pre>
+</li><li>Check the result of the session table leak check.<pre class="screen"><b><span class="cmdqueryname">display session leak-check result</span></b></pre>
+<pre class="screen"><strong><b><span class="cmdqueryname">display ipv6 session leak-check result</span></b></strong></pre>
+</li></ul>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_session_management_cfg_0001.html">Session Management Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_session_management_cfg_0013.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="toctopics/en-us_task_0000002085002922.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

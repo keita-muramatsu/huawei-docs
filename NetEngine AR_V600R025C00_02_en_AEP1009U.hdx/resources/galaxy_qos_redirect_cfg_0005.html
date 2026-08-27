@@ -1,0 +1,164 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring MQC-based Redirection">
+<meta name="DC.subject" content="Policy-Based Routing">
+<meta name="keywords" content="Policy-Based Routing">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_redirect_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="spec/Redirection_limitation_all.html">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002242260837.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Redirection">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Redirection">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564010409">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring MQC-based Redirection</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564010409"></a><a name="EN-US_TASK_0000001564010409"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring MQC-based Redirection</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564010409__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>After redirection is configured, the device can redirect packets matching traffic classification rules to a specified next-hop address.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>For details about MQC-related configuration precautions, see "Configuration Precautions for MQC" in MQC Configuration.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564010409__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure a traffic classifier.</span><p><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_p132031259104114">For details about how to configure a traffic classifier, see <a href="galaxy_mqc_cfg_0005.html">Configuring a Traffic Classifier</a> in "MQC Configuration".</p>
+</p></li><li><span>Configure a traffic behavior.</span><ol type="a"><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Create a traffic behavior and enter the traffic behavior view, or enter the view of an existing traffic behavior.</span><p><pre class="screen"><b><span class="cmdqueryname">traffic behavior</span></b> <i><span class="varname">behavior-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure a redirection action.</span><p><ul><li><p>Redirection to an interface</p>
+<pre class="screen"><b><span class="cmdqueryname">redirect interface</span></b> { <strong>dialer</strong> <i><span class="varname">dialer-id</span></i> | <i><span class="varname">dialer-name</span></i> | <strong>cellular </strong><i><span class="varname">interface-name</span></i> | <strong><span>tunnel</span></strong> <i><span class="varname">tunnel-id</span></i>  | <i><span class="varname">interface-name </span></i>} [ <strong>track</strong> { <strong>nqa</strong> <i><span class="varname">admin-name</span></i> <i><span class="varname">test-name</span></i> | <strong>ip-route</strong> <i><span class="varname">ip-address </span></i>{ <i><span class="varname">ip-address-mask</span></i> | <i><span class="varname">mask-length </span></i>} | <strong>ipv6-route </strong><i><span class="varname">ipv6-address</span></i> <i><span class="varname">ipv6-mask-length </span></i>} ] [ <strong>fail-action</strong> <strong>discard </strong>]</pre>
+<p></p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Generally, if a packet needs to be redirected to the outbound interface, the outbound interface needs to be added to the VLAN corresponding to the packet.</p>
+</div></div>
+</li><li>Redirection to a backup interface<pre class="screen"><b><span class="cmdqueryname">redirect backup-interface</span></b> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <i><span class="varname">interface-name</span></i> }</pre>
+</li><li>Redirection to a single next-hop IP address<pre class="screen"><b><span class="cmdqueryname">redirect</span></b> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ] <strong><span>nexthop</span></strong> { <i><span class="varname">ip-address</span></i> [ <strong><span>track</span></strong> { <strong><span>nqa</span></strong> <i><span class="varname">admin-name</span></i> <i><span class="varname">test-name</span></i> | <strong><span>ip-route</span></strong> <i><span class="varname">ip-address</span></i> { <i><span class="varname">ip-address-mask</span></i> | <i><span class="varname">mask-length</span></i> } | <strong><span>vrrp</span></strong> <i><span class="varname">vrid</span></i> <strong><span>interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <strong><span>interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> } ] } &amp;&lt;1-2&gt; [ <strong><span>fail-action discard</span></strong> ]</pre>
+<pre class="screen"><b><span class="cmdqueryname">redirect</span></b> <strong>ipv6 </strong>[ <strong>vpn-instance</strong> <em>vpn-instance-name</em> ] <strong>nexthop</strong> <span>{ </span><i><span class="varname">ipv6-address</span></i> [ <strong><span>track</span></strong> {<strong><span> nqa</span></strong> <i><span class="varname">admin-name</span></i> <i><span class="varname">test-name</span></i> | <strong><span>ipv6-route</span></strong> <i><span class="varname">ipv6-address</span></i> <i><span class="varname">ipv6-mask-length</span></i> } ] } &amp;&lt;1-2&gt; [ <strong><span>fail-action discard</span></strong> ]</pre>
+</li><li>Redirection to a backup next-hop address<pre class="screen"><b><span class="cmdqueryname">redirect</span></b> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ] <strong><span>backup-nexthop</span></strong> <i><span class="varname">ip-address</span></i> [ <strong><span>track</span></strong> { <strong><span>interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <strong><span>nqa</span></strong> <i><span class="varname">admin-name</span></i> <i><span class="varname">test-name</span></i> } ]</pre>
+</li><li>Redirection to a site<pre class="screen"><b><span class="cmdqueryname">redirect site</span></b> <i><span class="varname">siteid</span></i></pre>
+</li><li>Redirection to a backup site<pre class="screen"><b><span class="cmdqueryname">redirect backup-site</span></b> <i><span class="varname">siteid</span></i></pre>
+</li></ul>
+</p></li><li class="substepexpand"><span>Exit the traffic behavior view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Configure a traffic policy.</span><ol type="a" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_substeps1847014515257"><li class="substepexpand" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_substep1847024512515"><span id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_cmd3470164511250">Create a traffic policy and enter the traffic policy view, or enter the view of an existing traffic policy.</span><p><pre class="screen" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_screen12581214182617"><strong id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001512847490_b132061657174518"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001512847490_cmdname220555714451">traffic policy</span></b> </strong><i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001512847490_varname173177584617">policy-name</span></i></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_substep316613144271"><span id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_cmd51661614122711">Bind a traffic behavior and a traffic classifier to the traffic policy.</span><p><pre class="screen" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_screen6741455185420"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001512847490_cmdname979606411175340">classifier</span></b> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001512847490_varname1735113404175340">classifier-name</span></i> <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001512847490_cmdparmname1448135958175340">behavior</span></strong> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001512847490_varname272307595175340">behavior-name</span></i><span> [ <strong id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001512847490_b795658152175340">precedence</strong> <em id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001512847490_i642236598175340">precedence-value</em> ]</span></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_substep18715857122710"><span id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_cmd271555752719">Exit the traffic policy view.</span><p><pre class="screen" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_screen19715105752711"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_cmdname17715357122713">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Apply the traffic policy.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The application direction supported by a traffic policy is related to the redirection action. For details, see "Configuration Precautions for Redirection."</p>
+</div></div>
+</p><ul><li>Apply a traffic policy to an interface.<ol type="a" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_ol1401330162315"><li id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_li640103015231">Enter the interface view.<pre class="screen" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_screen1327345082015"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_cmdname6642163772919">interface</span></b> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_varname1064283713294">interface-type</span></i> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_varname16421374294">interface-number</span></i></pre>
+</li><li id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_li4885132412574">Apply a traffic policy to the interface.<pre class="screen" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_screen6671142133019"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_cmdname313925976175340">traffic-policy</span></b> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_varname517264962175340">policy-name</span></i> { <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_cmdparmname584570000175340">inbound</span></strong> | <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_cmdparmname419941659175340">outbound</span></strong> } [ <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_cmdparmname15429201418246">preprocess</span></strong> | <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_cmdparmname1410220122413">firstprocess</span></strong>  ]</pre>
+<pre class="screen" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_screen14614218616"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_cmdname513013461366">traffic-policy</span></b> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_varname413084611612">policy-name</span></i> <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_cmdparmname1313064613617">inbound</span></strong> <strong id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_b513015468618">decap-process</strong> </pre>
+<p id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_p1818611124121">If the <strong id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_b198569211123">decap-process</strong> parameter is specified, you need to run the <strong id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_b08515378122">qos car inbound decap-process</strong> command in the interface view to configure the bandwidth limit for the decapsulation service in the inbound direction of the interface.</p>
+</li><li id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_li93511129185920">Exit the interface view.<pre class="screen" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_screen15351129145912"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001513047058_cmdname103514293593">quit</span></b></pre>
+</li></ol>
+</li></ul>
+</li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564010409__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_simpletable174368486122"><tr><th valign="bottom" align="left" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p1439121215412">Operation</p>
+</th>
+<th valign="bottom" align="left" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p19393122414">Command</p>
+</th>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow232818344313"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry732820341633" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p1232816348315">Check the configured traffic classifiers.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry153289341931" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p132816341231"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname344215589417">display traffic classifier</span></b> [ <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname1044214581242">classifier-name</span></i> ]</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow1832811343317"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry123287341332" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p1232823416310">Check the configured traffic behaviors.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry632812349318" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p1032853410313"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname1844128957">display traffic behavior</span></b> [ <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname124411081852">behavior-name</span></i> ]</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow1032843414317"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1432816341631" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p7328203413314">Check the configured traffic policy.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1932819341238" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p83296344313"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname1242714255519">display traffic policy</span></b> [ <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname742716258514">policy-name</span></i> [ <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdparmname144277251351">classifier</span></strong> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname11427325754">classifier-name</span></i> ] ]</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow13329834433"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1132912341533" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p14329934637">Check the traffic policy application records.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry83291934338" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p197547105318"><span><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname19528837856">display traffic-policy applied-record</span></b></span></p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow332912342319"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1432918343316" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p183291834837">Check TCAM delivery failures.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry193292341032" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p183291634333"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname194111952356">display system tcam fail-record</span></b> [ <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdparmname34119521651">slot</span></strong> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname184111525515">slot-id</span></i> ]</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow173290349318"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry123294348313" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p143298341337">Check the group indexes and rule counts occupied by different services.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry832923414318" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p183299341538"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname10871131766">display system tcam service brief</span></b> [ <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdparmname19872139616">slot</span></strong> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname158714135616">slot-id</span></i> ]</p>
+<p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p1832919341335"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname159110258616">display system tcam service</span></b> { <b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname1159114251766">cpcar</span></b> <b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname165911925866">slot</span></b> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname1959172516615">slot-id</span></i> | <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname35911825261">service-name</span></i> <b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname19591925261">slot</span></b> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname95911025368">slot-id</span></i> [ <b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname65911225469">chip</span></b> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname259113251969">chip-id</span></i> ] }</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow2154194485316"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry015420446531" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p1764294414535">Check the traffic policy application records.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry515424412537" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p164254412537"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname3642154418536">display system tcam service traffic-policy</span></b></p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow577881679"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry577681676" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p87758974">Check information about matched rules.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry177178179" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p9805121711596"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname1825162162813">display system tcam match-rules</span></b> <strong><span id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdparmname68254252814">slot</span></strong> <i><span class="varname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_varname4825828283">slot-id</span></i></p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow154771550712"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry124771851712" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p1247705978">Check statistics on packets that match a traffic policy.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry16477152716" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p28955244564"><strong id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_b11938627195610"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname118231110587">display traffic-policy statistics</span></b></strong></p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_strow339614295111"><td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry20396164219513" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry173914121419"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p14379204415119">Check matching fields and actions supported by a traffic policy in each view.</p>
+</td>
+<td valign="top" id="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry539614215115" headers="en-us_task_0000001563993061_en-us_task_0000001563767393_stentry1339111220417"><p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_p2379144419515"><b><span class="cmdqueryname" id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_en-us_task_0000001563767393_cmdname1437914425116">display system tcam acl group-information</span></b></p>
+</td>
+</tr>
+</table></div>
+<p id="EN-US_TASK_0000001564010409__en-us_task_0000001563993061_p16467194191211"></p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_qos_redirect_cfg_0001.html">Redirection Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="spec/Redirection_limitation_all.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="toctopics/en-us_topic_0000002242260837.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

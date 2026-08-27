@@ -1,0 +1,194 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring the Device as an IPv4 PPPoE Client (Multiple Carrier Networks on One Link)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_PPPoE_0018.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_PPPoE_0014.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_PPPoE_0016.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001824152252">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring the Device as an IPv4 PPPoE Client (Multiple Carrier Networks on One Link)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001824152252"></a><a name="EN-US_TASK_0000001824152252"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring the Device as an IPv4 PPPoE Client (Multiple Carrier Networks on One Link)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001824152252__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000001824152252__fig563010812120">Figure 1</a>, Device A functioning as a PPPoE client connects to hosts on the LAN using interface1 and interface2, and connects to multiple PPPoE servers using interface3 through a Layer 2 switch.</p>
+<p>The customer requires that some hosts access one carrier network and other hosts access the other carrier network. Each carrier provides an account and a service name. During connection setup, hosts use the accounts for which different service names are specified to connect to their respective PPPoE servers. The PPPoE servers then perform authentication for them. After the authentication succeeds, PPPoE sessions are established. In the scenario shown in the figure, two PPPoE sessions are established.</p>
+<p>Service requirements are as follows:</p>
+<ul><li>After CHAP or PAP authentication succeeds, Device A (PPPoE client) establishes a connection with Device C (PPPoE server).</li><li>After CHAP or PAP authentication succeeds, Device A (PPPoE client) establishes a connection with Device D (PPPoE server).</li><li>After a connection is disconnected, Device A attempts to re-establish a dial-up connection at intervals.</li></ul>
+<div class="fignone" id="EN-US_TASK_0000001824152252__fig563010812120"><a name="EN-US_TASK_0000001824152252__fig563010812120"></a><a name="fig563010812120"></a><span class="figcap"><b>Figure 1 </b><strong>Network diagram of the device functioning as a PPPoE client (multi-carrier scenario)</strong></span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In the figure, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000001824152892.png" width="NaN" height="NaN"></span></div>
+<h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Create a different dialer interface for each carrier network, and configure CHAP or PAP authentication on the dialer interfaces, so that the device can establish connections with the PPPoE servers through PPP authentication. (Information involved in CHAP authentication is provided by the carriers.)</li><li>Bind the dialer interfaces to a physical interface, through which server-client connections are established. During the binding operation, specify the service names that identify carrier networks. After a connection is disconnected, the device attempts to re-establish a dial-up connection at intervals.</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001824152252__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure PPPoE servers.</span><p><p>Configure the authentication mode and IP address allocation mode or IP addresses/address pools assignable to PPPoE clients on the PPPoE servers. The device cannot be configured as a PPPoE server. The PPPoE server configuration varies according to the device. For details, see the relevant documentation.</p>
+</p></li><li><span>Configure VPN instances for LAN users.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI]<strong> sysname Device</strong><strong>A</strong>
+[DeviceA] <strong>ip vpn-instance vpn1</strong>
+[DeviceA-vpn-instance-vpn1] <strong>ipv4-family</strong>
+[DeviceA-vpn-instance-vpn1] <strong>quit</strong>
+[DeviceA] <strong>ip vpn-instance vpn2</strong>
+[DeviceA-vpn-instance-vpn2] <strong>ipv4-family</strong>
+[DeviceA-vpn-instance-vpn2] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ip binding vpn-instance vpn1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.3.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ip binding vpn-instance vpn2</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.3.2.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure a dialer interface for connecting to one carrier network, configure the authentication mode of the interface, and enable generation of a default route.</span><p><p>If the authentication mode of the PPPoE server is CHAP, configure CHAP authentication on the interface. If the authentication mode of the PPPoE server is PAP, configure PAP authentication on the interface. If the authentication mode of the PPPoE server is unknown, configure both CHAP and PAP authentication on the interface. This example assumes that the authentication mode of the PPPoE server is unknown.</p>
+</p><p><pre class="screen">[DeviceA] <strong>interface dialer 1</strong>
+[DeviceA-Dialer1] <strong>link-protocol ppp</strong>
+[DeviceA-Dialer1] <strong>ip binding vpn-instance vpn1</strong>
+[DeviceA-Dialer1] <strong>ppp chap user user1@system</strong>
+[DeviceA-Dialer1] <strong>ppp chap password cipher YsHsjx_202206 </strong>
+[DeviceA-Dialer1] <strong>ppp pap local-user user1@system password cipher</strong><strong> YsHsjx_202206</strong> 
+[DeviceA-Dialer1] <strong>ip address ppp-negotiate </strong>
+[DeviceA-Dialer1] <strong>ppp ipcp default-route</strong>
+[DeviceA-Dialer1]<strong> quit</strong></pre>
+</p></li><li><span>Configure a dialer interface for connecting to the other carrier network, configure the authentication mode of the interface, and enable generation of a default route.</span><p><p>If the authentication mode of the PPPoE server is CHAP, configure CHAP authentication on the interface. If the authentication mode of the PPPoE server is PAP, configure PAP authentication on the interface. If the authentication mode of the PPPoE server is unknown, configure both CHAP and PAP authentication on the interface. This example assumes that the authentication mode of the PPPoE server is unknown.</p>
+</p><p><pre class="screen">[DeviceA] <strong>interface dialer 2</strong>
+[DeviceA-Dialer2] <strong>link-protocol ppp</strong>
+[DeviceA-Dialer2] <strong>ip binding vpn-instance vpn2</strong>
+[DeviceA-Dialer2] <strong>ppp chap user user2@system</strong>
+[DeviceA-Dialer2] <strong>ppp chap password cipher YsHsjx_202207 </strong>
+[DeviceA-Dialer2] <strong>ppp pap local-user user2@system password cipher</strong><strong> YsHsjx_202207</strong> 
+[DeviceA-Dialer2] <strong>ip address ppp-negotiate</strong>
+[DeviceA-Dialer2] <strong>ppp ipcp default-route</strong>
+[DeviceA-Dialer2] <strong>quit</strong></pre>
+</p></li><li><span>Bind the two configured dialer interfaces to the physical interface <span>10GE</span><span>0/0/3</span> and establish PPPoE sessions. <strong>service-name</strong> specifies the service name provided by a carrier.</span><p><pre class="screen">[DeviceA] <strong>interface <span>10GE</span> <span>0/0/3</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>pppoe-client dialer 1 bundle-number 1 service-name server_device_c</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>pppoe-client dialer 2 bundle-number 2 service-name server_device_d</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure NAT on the device to translate LAN users' private IP addresses into public IP addresses.</span><p><pre class="screen">[DeviceA] <strong>interface dialer 1</strong>
+[DeviceA-Dialer1] <strong>nat enable</strong>
+[DeviceA-Dialer1]<strong> </strong><strong>quit</strong>
+[DeviceA] <strong>interface dialer 2</strong>
+[DeviceA-Dialer2] <strong>nat enable</strong>
+[DeviceA-Dialer2] <strong>quit</strong>
+[DeviceA]<strong> nat-policy</strong>
+[DeviceA-policy-nat] <strong>rule name sourcenat1</strong>
+[DeviceA-policy-nat-rule-sourcenat1] <strong>source-address 10.3.1.1 24</strong>
+[DeviceA-policy-nat-rule-sourcenat1] <strong>action source-nat easy-ip</strong>
+[DeviceA-policy-nat-rule-sourcenat1] <strong>quit</strong>
+[DeviceA-policy-nat] <strong>rule name sourcenat2</strong>
+[DeviceA-policy-nat-rule-sourcenat2] <strong>source-address 10.3.2.1 24</strong>
+[DeviceA-policy-nat-rule-sourcenat2] <strong>action source-nat easy-ip</strong></pre>
+</p></li><li><span>Configure static routes destined for PPPoE servers.</span><p><pre class="screen">[DeviceA] <strong>ip route-static vpn-instance vpn1 0.0.0.0 0 dialer 1</strong>
+[DeviceA] <strong>ip route-static vpn-instance vpn2 0.0.0.0 0 dialer 2</strong>
+[DeviceA] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001824152252__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Run the <strong>display pppoe-client session summary</strong> command to check PPPoE sessions and statistics on the PPPoE client. The command output shows that the session status is <strong>UP</strong>, indicating that the sessions are normal.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>display pppoe-client session summary</strong> 
+-----------------------------------------------------------------------------------------
+PPPoE Client Session(summary):
+ID  Dialer   Bundle  Intf             Client-MAC      Server-MAC       State     AC-Name
+1    1       1       <span>10GE</span><span>0/0/3</span>     00e0-fc03-0201    00e0-fccd-0680    UP       DUALFW_V500e0fc030203
+2    2       2       <span>10GE</span><span>0/0/3</span>     00e0-fc03-0201    00e0-fcaf-1e26    UP       DUALFW_V500e0fc054177
+--------------------------------------------------------------------------------</pre>
+<p></p>
+<h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen"># 
+sysname DeviceA 
+#
+ip vpn-instance vpn1
+ ipv4-family
+#
+ip vpn-instance vpn2
+ ipv4-family
+#                                                                                                                                
+interface Dialer 1
+ link-protocol ppp
+ ip binding vpn-instance vpn1
+ ppp chap user user1@system
+ ppp chap password cipher $1d$OwseVRh@LH}ZeTBm$1nH4$ab&gt;d(N{-%0!ab48y=Ic*xEUR4pVhR2"9-<font style="font-size:8pt" Face="Courier New" >~</font>,$ 
+<strong> </strong>ppp pap local-user user1@system password cipher $1d$OwseVRh@LH}ZeTBm$1nH4$ab&gt;d(N{-%0!ab48y=Ic*xEUR4pVhR2"9-<font style="font-size:8pt" Face="Courier New" >~</font>,$
+ ip address ppp-negotiate
+ ppp ipcp default-route                                                                                                             
+ nat enable
+#                                                                                                                                   
+interface Dialer2
+ link-protocol ppp
+ ip binding vpn-instance vpn2                                                         
+ ppp chap user user2@system
+ ppp chap password cipher %+%##!!!!!!!!!"!!!!'!!!!*!!!!7LTnVOK_g:QDY;/\dKZOyPz%#cW@"O6Z$
+<strong> </strong>ppp pap local-user user2@system password cipher %+%##!!!!!!!!!"!!!!'!!!!*!!!!7LTnVOK_g:QDY;/\dKZOyPz%#cW@"O6Z$
+ ip address ppp-negotiate
+ ppp ipcp default-route                                                                                                             
+ nat enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip binding vpn-instance vpn1
+ ip address 10.3.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpn2
+ ip address 10.3.2.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>  
+ pppoe-client dialer 1 bundle-number 1 service-name server_device_c
+ pppoe-client dialer 2 bundle-number 2 service-name server_device_d
+#
+nat-policy
+ rule name sourcenat1
+  source-address 10.3.1.1 24
+  action source-nat easy-ip
+ rule name sourcenat2
+  source-address 10.3.2.1 24
+  action source-nat easy-ip
+#
+ip route-static vpn-instance vpn1 0.0.0.0 0 dialer 1
+ip route-static vpn-instance vpn2 0.0.0.0 0 dialer 2
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_PPPoE_0018.html">Configuration Examples for PPPoE
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_PPPoE_0014.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_PPPoE_0016.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

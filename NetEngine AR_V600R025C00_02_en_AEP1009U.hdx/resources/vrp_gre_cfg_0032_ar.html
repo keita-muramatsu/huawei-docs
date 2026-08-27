@@ -1,0 +1,95 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring the EoGRE Primary/Backup Solution">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_0021_ar.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_0031_ar.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001689030817">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring the EoGRE Primary/Backup Solution</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001689030817"></a><a name="EN-US_TASK_0000001689030817"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring the EoGRE Primary/Backup Solution</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001689030817__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>STAs connect to the active and standby DCNs through two EoGRE tunnels. When the connection to the active DCN is faulty, services need to be switched to the standby DCN securely and reliably.</p>
+<p>The EoGRE primary/backup solution can be deployed on devices to implement secure and reliable switching and provide remote disaster recovery.</p>
+<div class="p">When the primary and backup EoGRE tunnels are deployed, the primary tunnel is in the standby state due to a fault. By default, a primary EoGRE tunnel does not proactively switch to the forwarding state after fault recovery. To enable the primary EoGRE tunnel to automatically switch to the forwarding state after it recovers, you can run the <strong><b><span class="cmdqueryname">gre preempt enable</span></b></strong> command to enable preemption for the primary and backup EoGRE tunnels and set a preemption delay as needed.<ul><li>To prevent frequent switchovers between the primary and backup EoGRE tunnels, you can configure a preemption delay using the <strong><b><span class="cmdqueryname">gre preempt delay</span></b></strong> <i><span class="varname">delay-time</span></i> command to ensure that the tunnel interfaces to which a VE interface is bound do not frequently alternate between up and down repeatedly.</li><li>To enable the primary tunnel to switch to the forwarding state immediately after it recovers, you can configure a preemption delay of 0.</li></ul>
+</div>
+<p>Preemption for primary and backup EoGRE tunnels takes effect only when the VE interface is bound to two tunnel interfaces.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001689030817__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Prerequisites</h4><p>Before deploying the EoGRE primary/backup solution, establish GRE tunnels. For details, see <a href="vrp_gre_cfg_0006.html">Configuring a GRE Tunnel</a>.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001689030817__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create a VE interface and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface virtual-ethernet</span></b> <i><span class="varname">ve-number</span></i></pre>
+</p></li><li><span>Set the link type of the VE interface to trunk.</span><p><pre class="screen"><b><span class="cmdqueryname">port link-type</span></b> <strong><span>trunk</span></strong></pre>
+</p></li><li><span>Remove the VE interface from VLAN 1.</span><p><pre class="screen"><b><span class="cmdqueryname">undo port trunk allow-pass vlan 1</span></b></pre>
+</p></li><li><span>Add the VE interface to VLANs.</span><p><pre class="screen"><b><span class="cmdqueryname">port trunk allow-pass vlan</span></b> { { <em>vlan-id1</em> [ <strong>to</strong> <em>vlan-id2</em> ] }&amp;&lt;1-10&gt; | <strong>all</strong> }</pre>
+</p></li><li><span>(Optional) Enable preemption for the primary and backup EoGRE tunnels.</span><p><pre class="screen"><b><span class="cmdqueryname">gre preempt enable</span></b></pre>
+<p>By default, preemption for the primary and backup EoGRE tunnels is disabled.</p>
+</p></li><li><span>(Optional) Configure a preemption delay for the primary and backup EoGRE tunnels.</span><p><pre class="screen"><b><span class="cmdqueryname">gre preempt delay</span></b> <i><span class="varname">delay-time</span></i></pre>
+<p>By default, the preemption delay for the primary and backup EoGRE tunnels is 60s.</p>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Enter the tunnel interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface tunnel</span></b> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Set the tunnel encapsulation type to GRE.</span><p><pre class="screen"><b><span class="cmdqueryname">tunnel-protocol</span></b> <strong><span>gre</span></strong></pre>
+</p></li><li><span>Bind the VE interface to the tunnel interface and set the binding priority.</span><p><pre class="screen"><b><span class="cmdqueryname">map interface virtual-ethernet</span></b> <i><span class="varname">ve-number</span></i> <strong>priority</strong> <i><span class="varname">priority-value</span></i></pre>
+</p><p><p>By default, no VE interface is bound to a tunnel interface.</p>
+</p></li><li><span>Configure heartbeat detection.</span><p><p>Configure heartbeat detection based on Keepalive packets for the GRE tunnel.</p>
+</p><p><pre class="screen"><b><span class="cmdqueryname">keepalive</span></b> [ <strong><span>period</span></strong> <i><span class="varname">period</span></i> [ <strong><span>retry-times</span></strong> <i><span class="varname">retry-times</span></i> ] ]</pre>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001689030817__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display interface virtual-ethernet</span></b> [ <i><span class="varname">ve-number</span></i> ] command to check the status and statistics about a VE interface.</li><li>Run the <b><span class="cmdqueryname">display tunnel mapping</span></b> [ <strong>i</strong><strong>nterface</strong> { <strong>tunnel</strong> &lt;<i><span class="varname">interface-number</span></i>&gt; | <strong>virtual-ethernet</strong> <em>ve-interface-number </em>} ] command to check the mapping between tunnel interfaces and VE interfaces.</li><li>Run the <strong>display tunnel mapping configuration</strong> command to check configurations in the EoGRE primary/backup scenario, including information about the tunnel interfaces bound to a VE interface, whether preemption is enabled for the primary and backup EoGRE tunnels, and the preemption delay.</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_gre_cfg_0021_ar.html">Configuring EoGRE
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_gre_cfg_0031_ar.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

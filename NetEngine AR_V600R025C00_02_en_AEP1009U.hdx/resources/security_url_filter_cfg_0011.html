@@ -1,0 +1,502 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Using URL Categories to Control Website Access">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_url_filter_cfg_0035.html">
+<meta name="DC.Relation" scheme="URI" content="security_url_filter_cfg_0015.html">
+<meta name="DC.Relation" scheme="URI" content="security_url_filter_cfg_0012.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebNext" content="ys_sec@security_cfgcase_contentsec_0006_22.0.xml">
+<meta name="featurename" content="URL Filtering">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="URL Filtering">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featurename" content="URL Filtering">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513166502">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Using URL Categories to Control Website Access</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513166502"></a><a name="EN-US_TASK_0000001513166502"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Using URL Categories to Control Website Access</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513166502__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001513166502__fig01">Figure 1</a>, DeviceA is deployed as a gateway at the border of an enterprise network. This device is used to implement URL filtering on users' requests for Internet access.</p>
+<p>The enterprise has the following network access requirements for R&amp;D and marketing employees:</p>
+<ul><li>R&amp;D employees can access only education/science and search engine/portal websites from 09:00 to 17:00, and cannot access other websites.</li><li>Marketing employees can access only education/science, search engine/portal, and social issues websites from 09:00 to 17:00, and cannot access other websites.</li></ul>
+<div class="fignone" id="EN-US_TASK_0000001513166502__fig01"><a name="EN-US_TASK_0000001513166502__fig01"></a><a name="fig01"></a><span class="figcap"><b>Figure 1 </b>Network diagram for using URL categories to control website access</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 and interface 2 represent <span>10GE</span><span>0/0/1</span>, and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000001966416022.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513166502__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure an IP address for each interface and add interfaces to security zones.</li><li>Configure a security policy to block encrypted DNS traffic and ensure that the browser uses non-encrypted DNS to perform the DNS query.<p id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_p3660173016105">When employees use browsers to access web pages, secure DNS may be enabled by default on some browsers. By default, URL filtering is not performed on encrypted DNS traffic. Therefore, you need to configure a security policy to block encrypted DNS traffic. After the encrypted DNS traffic is blocked, the browser attempts to use non-encrypted DNS to perform the DNS query again. In this process, users can access the Internet properly.</p>
+</li><li>Configure the remote query server to obtain the mappings between URLs and predefined URL categories. In this example, education/science, search engine/portal, and social issues websites are predefined URL categories, based on which the device filters URLs. To use the remote query function, perform the following operations:<ol type="a"><li>Activate the remote URL query license and ensure that the license is within the validity period.</li><li>Configure a DNS server to ensure that DeviceA can correctly parse <span>sec.huawei.com</span>.</li><li>Set the parameters for the remote query server, including the query mode, country name, and timeout interval.</li><li>Configure a security policy to allow DeviceA to access the scheduling center <span>sec.huawei.com</span>.</li></ol>
+</li><li>Configure two URL filtering profiles — <strong>profile_url_research</strong> and <strong>profile_url_marketing</strong> — for the R&amp;D and marketing departments, respectively. Specify control actions for predefined URL categories.</li><li><p>Configure a time range.</p>
+</li><li>Configure two security policies, and reference the corresponding time range and URL filtering profile in each security policy to control URL access from employees in different departments.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513166502__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an IP address for each interface and add interfaces to security zones.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceA</strong>
+[<span class="keyword">DeviceA</span>] <strong>interface <span>10ge</span></strong> <strong><span>0/0/1</span></strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>ip address 1.1.1.1 24</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>] <strong>interface <span>10ge</span></strong> <strong><span>0/0/2</span></strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.1.1.1 255.255.255.0</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.1.2.1 255.255.255.0 sub</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>] <strong>firewall zone untrust</strong>
+[<span class="keyword">DeviceA</span>-zone-untrust] <strong>add interface </strong><strong><span>10ge</span></strong> <strong><span>0/0/1</span></strong>
+[<span class="keyword">DeviceA</span>-zone-untrust] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>] <strong>firewall zone trust</strong>
+[<span class="keyword">DeviceA</span>-zone-trust] <strong>add interface </strong><strong><span>10ge</span></strong> <strong><span>0/0/2</span></strong>
+[<span class="keyword">DeviceA</span>-zone-trust] <strong>quit</strong></pre>
+</p></li><li><span>Configure a security policy to block encrypted DNS traffic and ensure that the user browser uses non-encrypted DNS to perform the DNS query. By default, URL filtering is not performed on encrypted DNS traffic.</span><p><p id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_p83056147508"># Block traffic of encryption protocols, including QUIC (service: UDP; destination port number: 443), HTTPS (service: TCP; destination port number: 443), and DNS_over_TLS (service: TCP; destination port number: 853), and IP addresses of well-known DNS servers (1.0.0.3, 1.1.1.3, 8.8.4.4, and 8.8.8.8).</p>
+<pre class="screen" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_screen336513573616">[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword53651635183616">DeviceA</span>] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b20365153593614">security-policy</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword83651235143611">DeviceA</span>-policy-security] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b14365123512361">rule name policy_deny_</strong><strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b11143022193715">dot</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword1236573513614">DeviceA</span>-policy-security-rule-policy_deny_dot] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b108061554133718">destination-address </strong><strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b42223402380">1.0.0.3 mask 255.255.255.255</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword17531105173813">DeviceA</span>-policy-security-rule-policy_deny_dot] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b1653125119385">destination-address </strong><strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b153112515382">1.1.1.3 mask 255.255.255.255</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword18172172964717">DeviceA</span>-policy-security-rule-policy_deny_dot] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b9172132910478">destination-address </strong><strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b21726291472">8.8.4.4 mask 255.255.255.255</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword16308183012474">DeviceA</span>-policy-security-rule-policy_deny_dot] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b10308153034719">destination-address </strong><strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b1730816303476">8.8.8.8 mask 255.255.255.255</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword1042604164812">DeviceA</span>-policy-security-rule-policy_deny_dot] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b0271026134910">service protocol tcp source-port 0 to 65535 destination-port 443</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword1060411011491">DeviceA</span>-policy-security-rule-policy_deny_dot] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b475812964918">service protocol tcp source-port 0 to 65535 destination-port 853</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword11863216144911">DeviceA</span>-policy-security-rule-policy_deny_dot] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b1850373324915">service protocol udp source-port 0 to 65535 destination-port 443</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword121897120501">DeviceA</span>-policy-security-rule-policy_deny_dot] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b143652351368">action deny</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword2036623553617">DeviceA</span>-policy-security-rule-policy_deny_dot] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b236613513363">quit</strong></pre>
+<div class="p" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_p13965929510"># Block traffic of encrypted DNS applications, including DNS_ECH and DNS_Over_HTTPS.<pre class="screen" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_screen159361325116">[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword10302932312">DeviceA</span>-policy-security] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b430211318319">rule name policy_deny_</strong><strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b142581110330">ech</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword10637118231">DeviceA</span>-policy-security-rule-policy_deny_ech] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b204720352315">application app DNS_ECH</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword1588613381934">DeviceA</span>-policy-security-rule-policy_deny_ech] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b19621847138">application app DNS_Over_HTTPS</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword185726526317">DeviceA</span>-policy-security-rule-policy_deny_ech] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b19625155633">action deny</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword568115316416">DeviceA</span>-policy-security-rule-policy_deny_ech] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b191720585311">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_keyword0361588415">DeviceA</span>-policy-security] <strong id="EN-US_TASK_0000001513166502__en-us_task_0000001564126593_b16158723544">quit</strong></pre>
+</div>
+</p></li><li><span>Configure the remote query server to obtain the mappings between URLs and predefined URL categories.</span><ol type="a"><li class="substepexpand"><span>Activate the remote URL query license and ensure that the license is within the validity period.</span></li><li class="substepexpand"><span>Configure a DNS server.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>] <strong>dns resolve</strong>
+[<span class="keyword">DeviceA</span>] <strong>dns server 10.2.0.70</strong></pre>
+</p></li><li class="substepexpand"><span>Set the parameters of the remote query server, including the country name, timeout interval, and timeout action.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>] <strong>country CN</strong>
+[<span class="keyword">DeviceA</span>] <strong>url-filter query timeout time 3 action allow</strong></pre>
+</p></li><li class="substepexpand"><span>Configure a security policy to allow <span class="keyword">DeviceA</span> to access the scheduling center.</span><p><pre class="screen">[<span class="keyword">DeviceA</span><span class="keyword"></span>] <strong>security-policy</strong>
+[<span class="keyword">DeviceA</span>-policy-security] <strong>rule name policy_sec_huawei_com</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_huawei_com] <strong>source-zone local</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_huawei_com] <strong>destination-zone untrust</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_huawei_com] <strong>action permit</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_huawei_com] <strong>quit</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security] <strong>quit</strong></pre>
+</p></li></ol>
+</li><li><span>Configure URL filtering profiles.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You can run the <strong>display url-filter category pre-defined</strong> command to query the mappings between the following predefined categories and IDs:</p>
+<ul><li>17: Education/Science</li><li>15: Search Engines/Portals</li><li>5: Social Focus (social issues)</li></ul>
+</div></div>
+</p><ol type="a"><li class="substepexpand"><span>Configure a URL filtering profile for the R&amp;D department.</span><p><pre class="screen">[<span class="keyword">DeviceA</span><span class="keyword"></span>] <strong>profile type url-filter name profile_url_research </strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-profile-url-filter-profile_url_research] <strong>category pre-defined action block</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-profile-url-filter-profile_url_research] <strong>category pre-defined category-id 15 action allow</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-profile-url-filter-profile_url_research] <strong>category pre-defined category-id 17 action allow</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-profile-url-filter-profile_url_research]<strong> https-filter enable</strong>
+[<span class="keyword">DeviceA</span>-profile-url-filter-profile_url_research] <strong>quit</strong></pre>
+</p></li><li class="substepexpand"><span>Configure a URL filtering profile for the marketing department.</span><p><pre class="screen">[<span class="keyword">DeviceA</span><span class="keyword"></span>] <strong>profile type url-filter name profile_url_marketing </strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-profile-url-filter-profile_url_marketing] <strong>category pre-defined action block</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-profile-url-filter-profile_url_marketing] <strong>category pre-defined category-id 5 action allow</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-profile-url-filter-profile_url_marketing] <strong>category pre-defined category-id 15 action allow</strong>
+[<span class="keyword">DeviceA</span>-profile-url-filter-profile_url_marketing] <strong>category pre-defined category-id 17 action allow</strong>
+[<span class="keyword">DeviceA</span>-profile-url-filter-profile_url_marketing] <strong>https-filter enable</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-profile-url-filter-profile_url_marketing] <strong>quit</strong></pre>
+</p></li></ol>
+</li><li><span>Configure a time range.</span><p><pre class="screen">[<span class="keyword">DeviceA</span><span class="keyword"></span>] <strong>time-range time_range</strong> <strong>09:00 to 17:00 daily</strong></pre>
+</p></li><li><span>Reference URL filtering profiles in security policies.</span><ol type="a"><li class="substepexpand"><span>Configure a security policy for the R&amp;D department.</span><p><pre class="screen">[<span class="keyword">DeviceA</span><span class="keyword"></span>] <strong>security-policy</strong>
+[<span class="keyword">DeviceA</span>-policy-security] <strong>rule name policy_sec_research</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_research] <strong>description Security policy of web access protect for research.</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_research] <strong>source-zone trust</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_research] <strong>destination-zone untrust</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_research] <strong>source-address 10.1.2.0 mask 255.255.255.0</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_research] <strong>time-range time_range</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_research] <strong>action permit</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_research] <strong>profile url-filter profile_url_research</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_research] <strong>quit</strong></pre>
+</p></li><li class="substepexpand"><span>Configure a security policy for the marketing department.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>-policy-security] <strong>rule name policy_sec_marketing</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_marketing] <strong>description Security policy of web access protect for marketing.</strong>
+[<span class="keyword">DeviceA</span>-policy-security-rule-policy_sec_marketing] <strong>source-zone trust</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_marketing] <strong>destination-zone untrust</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_marketing] <strong>source-address 10.1.1.0 mask 255.255.255.0</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_marketing] <strong>time-range time_range</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_marketing] <strong>action permit</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_marketing] <strong>profile url-filter profile_url_marketing</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security-rule-policy_sec_marketing] <strong>quit</strong>
+[<span class="keyword">DeviceA</span><span class="keyword"></span>-policy-security] <strong>quit</strong></pre>
+</p></li></ol>
+</li><li><span>Commit the content security profiles.</span><p><pre class="screen">[<span class="keyword">DeviceA</span><span class="keyword"></span>] <strong>engine configuration commit</strong>
+Info: The operation may last several minutes, please wait. Try "display engine information" for detail. 
+[<span class="keyword">DeviceA</span><span class="keyword"></span>] 
+Info: URL submitted configurations successfully.  
+Info: Engine configuration is compiled successfully.</pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513166502__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li><p>All R&amp;D employees can access only websites that belong to the education/science and search engine/portal categories from 09:00 to 17:00, but they cannot access other websites including websites that belong to the social focus category.</p>
+<p>If an R&amp;D employee attempts to access other websites (including those belonging to the Social Focus category), the device generates a URL log (<strong>URL/4/FILTER</strong>), in which <strong>Type</strong> (indicates the filtering type) is <span class="uicontrol"><b>Pre-defined</b></span> and <span class="uicontrol"><b>Action</b></span> is <span class="uicontrol"><b>Block</b></span>.</p>
+</li><li><p>All marketing employees can access only websites that belong to the Education/Science, Search Engines/Portals, and Social Focus categories from 09:00 to 17:00, but they cannot access other websites.</p>
+<p>If a marketing employee attempts to access other websites, the device generates a URL log (<strong>URL/4/FILTER</strong>), in which <strong>Type</strong> (indicates the filtering type) is <span class="uicontrol"><b>Pre-defined</b></span> and <span class="uicontrol"><b>Action</b></span> is <span class="uicontrol"><b>Block</b></span>.</p>
+</li></ul>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001513166502__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#
+sysname <span class="keyword">DeviceA</span>
+#
+ dns resolve
+ dns server 10.2.0.70
+#
+ country CN
+#
+ time-range time_range 09:00 to 17:00 daily
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.1.1 255.255.255.0
+ ip address 10.1.2.1 255.255.255.0 sub
+#
+firewall zone trust
+ set priority 85
+ add interface <span>10GE</span><span>0/0/2</span>
+#
+firewall zone untrust
+ set priority 5
+ add interface <span>10GE</span><span>0/0/1</span>
+#
+profile type url-filter name profile_url_research
+<strong> </strong>https-filter enable
+ category pre-defined subcategory-id 101 action block
+ category pre-defined subcategory-id 102 action block
+ category pre-defined subcategory-id 162 action block
+ category pre-defined subcategory-id 163 action block
+ category pre-defined subcategory-id 164 action block
+ category pre-defined subcategory-id 165 action block
+ category pre-defined subcategory-id 103 action block
+ category pre-defined subcategory-id 166 action block
+ category pre-defined subcategory-id 167 action block
+ category pre-defined subcategory-id 168 action block
+ category pre-defined subcategory-id 104 action block
+ category pre-defined subcategory-id 169 action block
+ category pre-defined subcategory-id 170 action block
+ category pre-defined subcategory-id 105 action block
+ category pre-defined subcategory-id 171 action block
+ category pre-defined subcategory-id 172 action block
+ category pre-defined subcategory-id 173 action block
+ category pre-defined subcategory-id 174 action block
+ category pre-defined subcategory-id 106 action block
+ category pre-defined subcategory-id 108 action block
+ category pre-defined subcategory-id 177 action block
+ category pre-defined subcategory-id 251 action block
+ category pre-defined subcategory-id 109 action block
+ category pre-defined subcategory-id 110 action block
+ category pre-defined subcategory-id 111 action block
+ category pre-defined subcategory-id 112 action block
+ category pre-defined subcategory-id 114 action block
+ category pre-defined subcategory-id 115 action block
+ category pre-defined subcategory-id 117 action block
+ category pre-defined subcategory-id 178 action block
+ category pre-defined subcategory-id 179 action block
+ category pre-defined subcategory-id 180 action block
+ category pre-defined subcategory-id 181 action block
+ category pre-defined subcategory-id 248 action block
+ category pre-defined subcategory-id 118 action block
+ category pre-defined subcategory-id 119 action block
+ category pre-defined subcategory-id 122 action block
+ category pre-defined subcategory-id 182 action block
+ category pre-defined subcategory-id 183 action block
+ category pre-defined subcategory-id 184 action block
+ category pre-defined subcategory-id 123 action block
+ category pre-defined subcategory-id 124 action block
+ category pre-defined subcategory-id 186 action block
+ category pre-defined subcategory-id 187 action block
+ category pre-defined subcategory-id 188 action block
+ category pre-defined subcategory-id 189 action block
+ category pre-defined subcategory-id 125 action block
+ category pre-defined subcategory-id 127 action block
+ category pre-defined subcategory-id 128 action block
+ category pre-defined subcategory-id 130 action block
+ category pre-defined subcategory-id 131 action block
+ category pre-defined subcategory-id 132 action block
+ category pre-defined subcategory-id 197 action block
+ category pre-defined subcategory-id 198 action block
+ category pre-defined subcategory-id 199 action block
+ category pre-defined subcategory-id 200 action block
+ category pre-defined subcategory-id 227 action block
+ category pre-defined subcategory-id 228 action block
+ category pre-defined subcategory-id 133 action block
+ category pre-defined subcategory-id 201 action block
+ category pre-defined subcategory-id 202 action block
+ category pre-defined subcategory-id 204 action block
+ category pre-defined subcategory-id 205 action block
+ category pre-defined subcategory-id 134 action block
+ category pre-defined subcategory-id 135 action block
+ category pre-defined subcategory-id 136 action block
+ category pre-defined subcategory-id 137 action block
+ category pre-defined subcategory-id 138 action block
+ category pre-defined subcategory-id 139 action block
+ category pre-defined subcategory-id 140 action block
+ category pre-defined subcategory-id 141 action block
+ category pre-defined subcategory-id 206 action block
+ category pre-defined subcategory-id 207 action block
+ category pre-defined subcategory-id 208 action block
+ category pre-defined subcategory-id 209 action block
+ category pre-defined subcategory-id 210 action block
+ category pre-defined subcategory-id 229 action block
+ category pre-defined subcategory-id 142 action block
+ category pre-defined subcategory-id 143 action block
+ category pre-defined subcategory-id 144 action block
+ category pre-defined subcategory-id 145 action block
+ category pre-defined subcategory-id 146 action block
+ category pre-defined subcategory-id 147 action block
+ category pre-defined subcategory-id 211 action block
+ category pre-defined subcategory-id 212 action block
+ category pre-defined subcategory-id 213 action block
+ category pre-defined subcategory-id 240 action block
+ category pre-defined subcategory-id 253 action block
+ category pre-defined subcategory-id 149 action block
+ category pre-defined subcategory-id 150 action block
+ category pre-defined subcategory-id 214 action block
+ category pre-defined subcategory-id 215 action block
+ category pre-defined subcategory-id 216 action block
+ category pre-defined subcategory-id 217 action block
+ category pre-defined subcategory-id 151 action block
+ category pre-defined subcategory-id 218 action block
+ category pre-defined subcategory-id 219 action block
+ category pre-defined subcategory-id 220 action block
+ category pre-defined subcategory-id 221 action block
+ category pre-defined subcategory-id 222 action block
+ category pre-defined subcategory-id 223 action block
+ category pre-defined subcategory-id 230 action block
+ category pre-defined subcategory-id 252 action block
+ category pre-defined subcategory-id 152 action block
+ category pre-defined subcategory-id 153 action block
+ category pre-defined subcategory-id 238 action block
+ category pre-defined subcategory-id 154 action block
+ category pre-defined subcategory-id 155 action block
+ category pre-defined subcategory-id 224 action block
+ category pre-defined subcategory-id 225 action block
+ category pre-defined subcategory-id 156 action block
+ category pre-defined subcategory-id 157 action block
+ category pre-defined subcategory-id 158 action block
+ category pre-defined subcategory-id 231 action block
+ category pre-defined subcategory-id 232 action block
+ category pre-defined subcategory-id 159 action block
+ category pre-defined subcategory-id 254 action block
+ category pre-defined subcategory-id 160 action block
+ category pre-defined subcategory-id 161 action block
+ category pre-defined subcategory-id 176 action block
+ category pre-defined subcategory-id 226 action block
+ category pre-defined subcategory-id 234 action block
+ category pre-defined subcategory-id 235 action block
+ category pre-defined subcategory-id 236 action block
+ category pre-defined subcategory-id 237 action block
+ category pre-defined subcategory-id 239 action block
+ category pre-defined subcategory-id 241 action block
+ category pre-defined subcategory-id 233 action block
+profile type url-filter name profile_url_marketing
+<strong> </strong>https-filter enable                                          
+ category pre-defined subcategory-id 101 action block
+ category pre-defined subcategory-id 102 action block
+ category pre-defined subcategory-id 162 action block
+ category pre-defined subcategory-id 163 action block
+ category pre-defined subcategory-id 164 action block
+ category pre-defined subcategory-id 165 action block
+ category pre-defined subcategory-id 103 action block
+ category pre-defined subcategory-id 166 action block
+ category pre-defined subcategory-id 167 action block
+ category pre-defined subcategory-id 168 action block
+ category pre-defined subcategory-id 104 action block
+ category pre-defined subcategory-id 169 action block
+ category pre-defined subcategory-id 170 action block
+ category pre-defined subcategory-id 106 action block
+ category pre-defined subcategory-id 108 action block
+ category pre-defined subcategory-id 177 action block
+ category pre-defined subcategory-id 251 action block
+ category pre-defined subcategory-id 109 action block
+ category pre-defined subcategory-id 110 action block
+ category pre-defined subcategory-id 111 action block
+ category pre-defined subcategory-id 112 action block
+ category pre-defined subcategory-id 114 action block
+ category pre-defined subcategory-id 115 action block
+ category pre-defined subcategory-id 117 action block
+ category pre-defined subcategory-id 178 action block
+ category pre-defined subcategory-id 179 action block
+ category pre-defined subcategory-id 180 action block
+ category pre-defined subcategory-id 181 action block
+ category pre-defined subcategory-id 248 action block
+ category pre-defined subcategory-id 118 action block
+ category pre-defined subcategory-id 119 action block
+ category pre-defined subcategory-id 122 action block
+ category pre-defined subcategory-id 182 action block
+ category pre-defined subcategory-id 183 action block
+ category pre-defined subcategory-id 184 action block
+ category pre-defined subcategory-id 123 action block
+ category pre-defined subcategory-id 124 action block
+ category pre-defined subcategory-id 186 action block
+ category pre-defined subcategory-id 187 action block
+ category pre-defined subcategory-id 188 action block
+ category pre-defined subcategory-id 189 action block
+ category pre-defined subcategory-id 125 action block
+ category pre-defined subcategory-id 127 action block
+ category pre-defined subcategory-id 128 action block
+ category pre-defined subcategory-id 130 action block
+ category pre-defined subcategory-id 131 action block
+ category pre-defined subcategory-id 132 action block
+ category pre-defined subcategory-id 197 action block
+ category pre-defined subcategory-id 198 action block
+ category pre-defined subcategory-id 199 action block
+ category pre-defined subcategory-id 200 action block
+ category pre-defined subcategory-id 227 action block
+ category pre-defined subcategory-id 228 action block
+ category pre-defined subcategory-id 133 action block
+ category pre-defined subcategory-id 201 action block
+ category pre-defined subcategory-id 202 action block
+ category pre-defined subcategory-id 204 action block
+ category pre-defined subcategory-id 205 action block
+ category pre-defined subcategory-id 134 action block
+ category pre-defined subcategory-id 135 action block
+ category pre-defined subcategory-id 136 action block
+ category pre-defined subcategory-id 137 action block
+ category pre-defined subcategory-id 138 action block
+ category pre-defined subcategory-id 139 action block
+ category pre-defined subcategory-id 140 action block
+ category pre-defined subcategory-id 141 action block
+ category pre-defined subcategory-id 206 action block
+ category pre-defined subcategory-id 207 action block
+ category pre-defined subcategory-id 208 action block
+ category pre-defined subcategory-id 209 action block
+ category pre-defined subcategory-id 210 action block
+ category pre-defined subcategory-id 229 action block
+ category pre-defined subcategory-id 142 action block
+ category pre-defined subcategory-id 143 action block
+ category pre-defined subcategory-id 144 action block
+ category pre-defined subcategory-id 145 action block
+ category pre-defined subcategory-id 146 action block
+ category pre-defined subcategory-id 147 action block
+ category pre-defined subcategory-id 211 action block
+ category pre-defined subcategory-id 212 action block
+ category pre-defined subcategory-id 213 action block
+ category pre-defined subcategory-id 240 action block
+ category pre-defined subcategory-id 253 action block
+ category pre-defined subcategory-id 149 action block
+ category pre-defined subcategory-id 150 action block
+ category pre-defined subcategory-id 214 action block
+ category pre-defined subcategory-id 215 action block
+ category pre-defined subcategory-id 216 action block
+ category pre-defined subcategory-id 217 action block
+ category pre-defined subcategory-id 151 action block
+ category pre-defined subcategory-id 218 action block
+ category pre-defined subcategory-id 219 action block
+ category pre-defined subcategory-id 220 action block
+ category pre-defined subcategory-id 221 action block
+ category pre-defined subcategory-id 222 action block
+ category pre-defined subcategory-id 223 action block
+ category pre-defined subcategory-id 230 action block
+ category pre-defined subcategory-id 252 action block
+ category pre-defined subcategory-id 152 action block
+ category pre-defined subcategory-id 153 action block
+ category pre-defined subcategory-id 238 action block
+ category pre-defined subcategory-id 154 action block
+ category pre-defined subcategory-id 155 action block
+ category pre-defined subcategory-id 224 action block
+ category pre-defined subcategory-id 225 action block
+ category pre-defined subcategory-id 156 action block
+ category pre-defined subcategory-id 157 action block
+ category pre-defined subcategory-id 158 action block
+ category pre-defined subcategory-id 231 action block
+ category pre-defined subcategory-id 232 action block
+ category pre-defined subcategory-id 159 action block
+ category pre-defined subcategory-id 254 action block
+ category pre-defined subcategory-id 160 action block
+ category pre-defined subcategory-id 161 action block
+ category pre-defined subcategory-id 176 action block
+ category pre-defined subcategory-id 226 action block
+ category pre-defined subcategory-id 234 action block
+ category pre-defined subcategory-id 235 action block
+ category pre-defined subcategory-id 236 action block
+ category pre-defined subcategory-id 237 action block
+ category pre-defined subcategory-id 239 action block
+ category pre-defined subcategory-id 241 action block
+ category pre-defined subcategory-id 233 action block
+#
+security-policy
+ rule name policy_deny_dot
+  destination-address 1.0.0.3 mask 255.255.255.255
+  destination-address 1.1.1.3 mask 255.255.255.255
+  destination-address 8.8.4.4 mask 255.255.255.255
+  destination-address 8.8.8.8 mask 255.255.255.255
+  service protocol tcp source-port 0 to 65535 destination-port 443
+  service protocol tcp source-port 0 to 65535 destination-port 853
+  service protocol udp source-port 0 to 65535 destination-port 443
+  action deny
+ rule name policy_deny_ech
+  application app DNS_ECH 
+  application app DNS_Over_HTTPS
+  action deny
+ rule name policy_sec_huawei_com
+  source-zone local
+  destination-zone untrust
+  action permit
+ rule name policy_sec_research
+  description Security policy of web access protect for research.
+  source-zone trust
+  destination-zone untrust
+  source-address 10.1.2.0 mask 255.255.255.0
+  time-range time_range
+  profile url-filter profile_url_research
+  action permit
+ rule name policy_sec_marketing
+  description Security policy of web access protect for marketing.
+  source-zone trust
+  destination-zone untrust
+  source-address 10.1.1.0 mask 255.255.255.0
+  time-range time_range
+  profile url-filter profile_url_marketing
+  action permit
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_url_filter_cfg_0035.html">Configuration Examples for URL Filtering
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_url_filter_cfg_0015.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_url_filter_cfg_0012.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

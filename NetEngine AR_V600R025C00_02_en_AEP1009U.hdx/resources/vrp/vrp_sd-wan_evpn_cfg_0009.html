@@ -1,0 +1,111 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring a VPN Instance">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0008.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0123.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001130783012">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring a VPN Instance</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001130783012"></a><a name="EN-US_TASK_0000001130783012"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring a VPN Instance</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001130783012__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring a VPN instance, you need to create a route-policy and set the color value and priority for EVPN routes to apply the route-policy to the outbound direction when configuring the VPN instance.</p>
+<pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">route-policy</span></b><strong> </strong><i><span class="varname">route-policy-name</span></i><em> </em><i><span class="varname">matchMode</span></i> <strong><span>node</span></strong> <i><span class="varname">node</span></i>
+<b><span class="cmdqueryname">apply extcommunity priority-color</span></b><strong> </strong>{ <i><span class="varname">extCmntyValue</span></i> } &amp;&lt;1-16&gt;</pre>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001130783012__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>SD-WAN EVPN is a VPN solution that separates the overlay service network from the underlay transport network. On the overlay network, you need to configure VPN instances for user services on CPEs at sites and enable the VPN instances to advertise EVPN IP prefix routes so that the IP prefix routes become VPN routes for user services.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001130783012__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create a VPN instance and enter the VPN instance view.</span><p><pre class="screen"><b><span class="cmdqueryname">ip vpn-instance</span></b><strong> </strong><i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li><span>Bind a VN ID to the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">vn-id</span></b><strong> </strong><i><span class="varname">vn-identifier</span></i></pre>
+<p>For the same VPN instance, ensure that different CPEs have the same VN ID so that services of the same user can be forwarded properly.</p>
+<p>By default, no VN ID is bound to a VPN instance.</p>
+</p></li><li><span>Enable the VPN instance IPv4 or IPv6 address family and enter its view.</span><p><ul><li>Enter the IPv4 address family view.<pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</li><li>Enter the IPv6 address family view.<pre class="screen"><b><span class="cmdqueryname">ipv6-family</span></b></pre>
+</li></ul>
+</p></li><li><span>Configure an RD.</span><p><pre class="screen"><b><span class="cmdqueryname">route-distinguisher</span></b> <i><span class="varname">route-distinguisher</span></i></pre>
+<p>By default, no RD is configured for a VPN instance.</p>
+</p></li><li><span>Configure VPN targets for EVPN routes.</span><p><pre class="screen"><b><span class="vpn-target evpn">vpn-target</span></b> { <i><span class="varname">vpn-target</span></i> } &amp;&lt;1-8&gt; [ <i><span class="varname">vrfRtType</span></i> ] <strong><span>evpn</span></strong></pre>
+<p>When the local CPE advertises EVPN IP prefix routes to other CPEs, all VPN targets in the export VPN target list configured in this step must be carried in the routes. IP prefix routes received by the local CPE can be leaked to the routing table of the local VPN instance only when the VPN targets carried in the routes overlap with those in the import VPN target list configured in this step.</p>
+<p>By default, no VPN targets for EVPN routes are configured for the IPv4/IPv6 address family of a VPN instance.</p>
+</p></li><li><span>Configure an export policy for the VPN instance and apply the policy to the EVPN routes advertised by the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">export route-policy</span></b> <i><span class="varname">policy-name</span></i> [ <strong><span>add-ert-first</span></strong> ] <strong><span>evpn</span></strong></pre>
+<p>If you want to set the color attribute for EVPN routes on the CPE, perform this step and set the route-policy configured in the prerequisites as the export policy of the VPN instance.</p>
+<p>By default, export VPN targets are added to VPN routes after these routes are matched against an export route-policy. If the export route-policy contains VPN target-related filtering rules, it cannot apply to VPN routes. If you want to apply the VPN target-related filtering rules defined in an export route-policy to VPN routes, configure the <strong><span>add-ert-first</span></strong> parameter for the device to add export VPN targets to VPN routes before matching these routes against the export route-policy.</p>
+</p></li><li><span>Return to the VPN instance view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Enter the view of the interface to be bound to the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <em>interface-type</em> <em>interface-number</em></pre>
+</p></li><li><span>Bind the interface to the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">ip binding vpn-instance</span></b> <em>vpn-instance-name</em></pre>
+<p>After this step is performed, Layer 3 features (including IPv4 and IPv6 features) configured on the interface, such as the IP address and routing protocol, will be deleted. If necessary, reconfigure them.</p>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li><span>Enter the BGP-VPN instance IPv4 or IPv6 address family view.</span><p><ul><li>Enter the IPv4 address family view.<pre class="screen"><b><span class="cmdqueryname">ipv4-family vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</li><li>Enter the IPv6 address family view.<pre class="screen"><b><span class="cmdqueryname">ipv6-family vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</li></ul>
+</p></li><li><span>Import direct routes into the BGP-VPN instance IPv4 address family.</span><p><pre class="screen"><b><span class="cmdqueryname">import-route</span></b> <strong><span>direct</span></strong> [ <strong><span>med</span></strong> <i><span class="varname">med</span></i> | <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ] <sup>*</sup></pre>
+<p>User-side devices are directly connected to the CPE. To generate VPN routes for user services, direct routes need to be imported into the BGP-VPN instance IPv6 address family.</p>
+</p></li><li><span>Enable the function of advertising EVPN IP prefix routes of the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">advertise l2vpn evpn</span></b><strong> </strong>[ <strong><span>best-route</span></strong> | <strong><span>valid-routes</span></strong> ]</pre>
+<p>After the <b><span class="cmdqueryname">advertise l2vpn evpn</span></b> command is run, the CPE advertises all VPN routes (including invalid and non-optimal routes) of the VPN instance for user services to the BGP EVPN peer in the format of IP prefix routes. To prevent invalid routes from being advertised, specify the <strong><span>valid-routes</span></strong> parameter. If you want to advertise only the optimal VPN routes, specify the <strong><span>best-route</span></strong> parameter.</p>
+<p>By default, a VPN instance is disabled from advertising EVPN IP prefix routes.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0007.html">Configuring SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0008.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0123.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,189 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring the Working Mode and VLANs for an AP's Wired Interface">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0057.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0058.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0089.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513045522">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring the Working Mode and VLANs for an AP's Wired Interface</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513045522"></a><a name="EN-US_TASK_0000001513045522"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring the Working Mode and VLANs for an AP's Wired Interface</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513045522__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>You can configure the mode and VLANs for an AP's wired interface to implement wired network communication. You need to add an AP's wired interface to a VLAN or a group of VLANs in tagged mode. However, wired terminals cannot receive packets with VLAN tags. Therefore, you need to add the AP's wired interfaces directly connected to wired terminals to a VLAN or a group of VLANs in untagged mode. When sending data frames, the interface removes VLAN tags from the frames and sends the frames to wired terminals.</p>
+<p>Frames sent from wired terminals are untagged. Therefore, the wired interface directly connected to the wired terminal must be configured with a PVID to add a tag to the received untagged frames. This ensures that wired packets can be sent to the upper-layer network and prevents packets from being discarded due to no tag or incorrect PVID.</p>
+<div class="p">An AP's wired interface can work in root, middle, or endpoint mode. You can configure different working modes for an AP's wired interface depending on specific scenarios.<ul><li>Root mode: The AP's wired interface functions as an uplink interface to connect to an uplink device.</li><li>Middle mode: The central AP's wired interface connects to a downlink RU.</li><li>Endpoint mode: The AP's wired interface functions as a downlink interface to connect to wired terminals.</li></ul>
+</div>
+<div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><ul><li><p>After configuring the working mode for an AP's wired interface, restart the AP to make the configuration take effect.</p>
+</li><li>If the AP's uplink interface is incorrectly configured to work in endpoint mode and the AP can go online properly, run the <b><span class="cmdqueryname">mode</span></b> command to modify the configuration. If the AP cannot go online, you are advised to press and hold the <strong>Default</strong> button to restore the factory defaults of the AP.</li></ul>
+</div></div>
+<div class="p">AP's wired interfaces are added to different VLANs and PVIDs by default when working in different modes.
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Default VLANs and PVIDs to which AP's wired interfaces are added in different working modes</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="35.532286212914485%" id="mcps1.3.1.5.1.2.3.1.1" liSelected="liSelected"><p>Working Mode</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="64.46771378708553%" id="mcps1.3.1.5.1.2.3.1.2" liSelected="liSelected"><p>VLAN</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="35.532286212914485%" id="mcps1.3.1.5.1.2.3.1.3"><p>PVID</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="35.532286212914485%" headers="mcps1.3.1.5.1.2.3.1.1 mcps1.3.1.5.1.2.3.1.3 "><p>Root</p>
+</td>
+<td class="cellrowborder" valign="top" width="64.46771378708553%" headers="mcps1.3.1.5.1.2.3.1.2 "><p>VLAN 1, service VLAN, and authorization VLAN</p>
+</td>
+<td class="cellrowborder" valign="top" width="35.532286212914485%" headers="mcps1.3.1.5.1.2.3.1.1 mcps1.3.1.5.1.2.3.1.3 "><p>You can manually configure a PVID. If the AP's wired interface has been configured to transmit CAPWAP packets carrying the management VLAN tag using the <b><span class="cmdqueryname">management-vlan</span></b> command, the PVID for the AP's wired interface must be configured the same as the management VLAN ID.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="35.532286212914485%" headers="mcps1.3.1.5.1.2.3.1.1 mcps1.3.1.5.1.2.3.1.3 "><p>Middle</p>
+</td>
+<td class="cellrowborder" valign="top" width="64.46771378708553%" headers="mcps1.3.1.5.1.2.3.1.2 "><p>VLAN 1 and management VLAN</p>
+</td>
+<td class="cellrowborder" valign="top" width="35.532286212914485%" headers="mcps1.3.1.5.1.2.3.1.1 mcps1.3.1.5.1.2.3.1.3 "><p>The PVID cannot be configured.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="35.532286212914485%" headers="mcps1.3.1.5.1.2.3.1.1 mcps1.3.1.5.1.2.3.1.3 "><p>Endpoint</p>
+</td>
+<td class="cellrowborder" valign="top" width="64.46771378708553%" headers="mcps1.3.1.5.1.2.3.1.2 "><p>VLAN 1</p>
+</td>
+<td class="cellrowborder" valign="top" width="35.532286212914485%" headers="mcps1.3.1.5.1.2.3.1.1 mcps1.3.1.5.1.2.3.1.3 "><p>You can manually configure a PVID.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>There are two scenarios in which APs are directly connected to wired users: in the centralized architecture, APs' wired interfaces are directly connected to wired users; in the agile distributed architecture, RUs' wired interfaces are directly connected to wired users.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001513045522__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>In the WAC + Fit AP architecture, an AP's wired interfaces are directly connected to wired users.</span><p><p>As shown in <a href="#EN-US_TASK_0000001513045522__fig720316044215">Figure 1</a>, the AP's wired interface interface1 connects to a wired terminal. Perform the following configurations to implement wired network connectivity.</p>
+<div class="fignone" id="EN-US_TASK_0000001513045522__fig720316044215"><a name="EN-US_TASK_0000001513045522__fig720316044215"></a><a name="fig720316044215"></a><span class="figcap"><b>Figure 1 </b>Network diagram for directly connecting wired users to APs' wired interfaces in the WAC + Fit AP architecture</span><br><span><img class="vsd" src="figure/en-us_image_0000001564005821.png"></span></div>
+<ul><li>Configure the AP's wired interface interface2 on the WAC.<ol id="EN-US_TASK_0000001513045522__ol11816739164416"><li id="EN-US_TASK_0000001513045522__li38165397443">Enter the system view.<pre class="screen" id="EN-US_TASK_0000001513045522__screen18757105018459"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__cmdname15136141631217">system-view</span></b></pre>
+</li><li id="EN-US_TASK_0000001513045522__li1922319544617">Enter the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__screen1830151913460"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__cmdname3591105918428">wlan</span></b></pre>
+</li><li id="EN-US_TASK_0000001513045522__li2950932164614">Create an AP wired port profile and enter its view.<pre class="screen" id="EN-US_TASK_0000001513045522__screen152286611557"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__cmdname22917302395">wired-port-profile</span></b> <strong><span id="EN-US_TASK_0000001513045522__cmdparmname1748838153916">name</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__varname563817431390">wired-port-profile-name</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__p18551112617112">By default, the AP wired port profile <strong id="EN-US_TASK_0000001513045522__b1138926307">default</strong> exists on the device.</p>
+</li><li id="EN-US_TASK_0000001513045522__li7445111516276">Configure the description of an AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__screen16676412277"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__cmdname117362514284">description</span></b> <i><span class="varname" id="EN-US_TASK_0000001513045522__varname1583141415282">description</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__p199792597292">By default, no description is configured for an AP's wired interface.</p>
+</li><li id="EN-US_TASK_0000001513045522__li1920285312553"><strong>Optional: </strong>Configure the working mode for the AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__screen12506115017564"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__cmdname1183989358190941">mode</span></b> <strong><span id="EN-US_TASK_0000001513045522__cmdparmname702400114190941">root</span></strong></pre>
+</li><li id="EN-US_TASK_0000001513045522__li1168310263582">Specify the VLANs to which the AP's wired interface is to be added.<pre class="screen" id="EN-US_TASK_0000001513045522__screen116281047216"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__cmdname17373896219">vlan</span></b> <strong><span id="EN-US_TASK_0000001513045522__cmdparmname45221849421">tagged</span></strong> { { <i><span class="varname" id="EN-US_TASK_0000001513045522__varname501556523">vlan-id1</span></i> [ <strong><span id="EN-US_TASK_0000001513045522__cmdparmname38851032">to</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__varname115905251448">vlan-id2</span></i> ] } &amp;&lt;1-10&gt; }</pre>
+<p id="EN-US_TASK_0000001513045522__p175918482031">By default, an AP's wired interface allows packets from all VLANs to pass. The wired interface is added to VLAN 1 in untagged mode and to other VLANs in tagged mode.</p>
+</li><li id="EN-US_TASK_0000001513045522__li134521731254">Return to the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__screen17777157369"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__cmdname611891610620">quit</span></b></pre>
+</li><li id="EN-US_TASK_0000001513045522__li054812261165">Bind the AP wired port profile to an AP group or a specific AP. For details, see <a href="galaxy_ap_management_cfg_0063.html">Binding an AP Wired Port Profile</a>.</li></ol>
+</li><li>Configure the AP's wired interface interface1 on the WAC.<ol><li>Enter the system view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen18757105018459"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname15136141631217">system-view</span></b></pre>
+</li><li>Enter the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen1830151913460"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname3591105918428">wlan</span></b></pre>
+</li><li>Create an AP wired port profile and enter its view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen152286611557"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname22917302395">wired-port-profile</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname1748838153916">name</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname563817431390">wired-port-profile-name</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p18551112617112">By default, the AP wired port profile <strong id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_b1138926307">default</strong> exists on the device.</p>
+</li><li>Configure the description of an AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen16676412277"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname117362514284">description</span></b> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname1583141415282">description</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p199792597292">By default, no description is configured for an AP's wired interface.</p>
+</li><li>Configure the working mode for the AP's wired interface.<pre class="screen"><b><span class="cmdqueryname">mode</span></b> <strong><span>endpoint</span></strong></pre>
+</li><li id="EN-US_TASK_0000001513045522__li6194627171118">Specify the VLANs to which the AP's wired interface is to be added.<pre class="screen" id="EN-US_TASK_0000001513045522__screen1819492721117"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__cmdname61944278119">vlan</span></b> <strong><span id="EN-US_TASK_0000001513045522__cmdparmname3195127181114">untagged</span></strong> { { <i><span class="varname" id="EN-US_TASK_0000001513045522__varname18195162721114">vlan-id1</span></i> [ <strong><span id="EN-US_TASK_0000001513045522__cmdparmname121957277110">to</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__varname176161058124412">vlan-id2</span></i> ] } &amp;&lt;1-10&gt; }</pre>
+<p id="EN-US_TASK_0000001513045522__p1019562719115">By default, an AP's wired interface allows packets from all VLANs to pass. The wired interface is added to VLAN 1 in untagged mode and to other VLANs in tagged mode.</p>
+</li><li id="EN-US_TASK_0000001513045522__li1344219326113">Configure the PVID for an AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__screen26812463549"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__cmdname149079216560">vlan pvid</span></b> <i><span class="varname" id="EN-US_TASK_0000001513045522__varname2066164735510">vlan-id</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__p16420165114541">By default, the PVID of an AP's wired interface is 1.</p>
+</li><li>Return to the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen17777157369"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname611891610620">quit</span></b></pre>
+</li><li>Bind the AP wired port profile to an AP group or a specific AP. For details, see <a href="galaxy_ap_management_cfg_0063.html">Binding an AP Wired Port Profile</a>.</li></ol>
+</li></ul>
+</p></li><li><span>In the agile distributed architecture, wired interfaces of RUs are directly connected to wired users.</span><p><p>As shown in <a href="#EN-US_TASK_0000001513045522__fig16583844192214">Figure 2</a>, the RU's wired interface interface1 connects to a wired terminal. Perform the following configurations to implement wired network connectivity.</p>
+<div class="fignone" id="EN-US_TASK_0000001513045522__fig16583844192214"><a name="EN-US_TASK_0000001513045522__fig16583844192214"></a><a name="fig16583844192214"></a><span class="figcap"><b>Figure 2 </b>Wired terminal directly connected to an RU's wired interface in the agile distributed architecture</span><br><span><img class="vsd" src="figure/en-us_image_0000001513165554.png"></span></div>
+<div class="p"><ul><li>Configure the central AP's wired interface interface2 on the WAC.<ol><li id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_li38165397443">Enter the system view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen18757105018459_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname15136141631217_1">system-view</span></b></pre>
+</li><li id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_li1922319544617">Enter the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen1830151913460_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname3591105918428_1">wlan</span></b></pre>
+</li><li id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_li2950932164614">Create an AP wired port profile and enter its view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen152286611557_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname22917302395_1">wired-port-profile</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname1748838153916_1">name</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname563817431390_1">wired-port-profile-name</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p18551112617112_1">By default, the AP wired port profile <strong id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_b1138926307_1">default</strong> exists on the device.</p>
+</li><li id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_li7445111516276">Configure the description of an AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen16676412277_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname117362514284_1">description</span></b> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname1583141415282_1">description</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p199792597292_1">By default, no description is configured for an AP's wired interface.</p>
+</li><li id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_li1920285312553"><strong>Optional: </strong>Configure the working mode for the AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen12506115017564"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname1183989358190941">mode</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname702400114190941">root</span></strong></pre>
+</li><li id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_li1168310263582">Specify the VLANs to which the AP's wired interface is to be added.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen116281047216"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname17373896219">vlan</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname45221849421">tagged</span></strong> { { <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname501556523">vlan-id1</span></i> [ <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname38851032">to</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname115905251448">vlan-id2</span></i> ] } &amp;&lt;1-10&gt; }</pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p175918482031">By default, an AP's wired interface allows packets from all VLANs to pass. The wired interface is added to VLAN 1 in untagged mode and to other VLANs in tagged mode.</p>
+</li><li id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_li134521731254">Return to the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen17777157369_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname611891610620_1">quit</span></b></pre>
+</li><li id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_li054812261165">Bind the AP wired port profile to an AP group or a specific AP. For details, see <a href="galaxy_ap_management_cfg_0063.html">Binding an AP Wired Port Profile</a>.</li></ol>
+</li><li>Configure the central AP's wired interface interface1 on the WAC.<ol><li>Enter the system view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen18757105018459_2"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname15136141631217_2">system-view</span></b></pre>
+</li><li>Enter the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen1830151913460_2"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname3591105918428_2">wlan</span></b></pre>
+</li><li>Create an AP wired port profile and enter its view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen152286611557_2"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname22917302395_2">wired-port-profile</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname1748838153916_2">name</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname563817431390_2">wired-port-profile-name</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p18551112617112_2">By default, the AP wired port profile <strong id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_b1138926307_2">default</strong> exists on the device.</p>
+</li><li>Configure the description of an AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen16676412277_2"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname117362514284_2">description</span></b> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname1583141415282_2">description</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p199792597292_2">By default, no description is configured for an AP's wired interface.</p>
+</li><li>Configure the working mode for the AP's wired interface.<pre class="screen"><b><span class="cmdqueryname">mode</span></b> <strong><span>middle</span></strong></pre>
+</li><li>Specify the VLANs to which the AP's wired interface is to be added.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen116281047216_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname17373896219_1">vlan</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname45221849421_1">tagged</span></strong> { { <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname501556523_1">vlan-id1</span></i> [ <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname38851032_1">to</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname115905251448_1">vlan-id2</span></i> ] } &amp;&lt;1-10&gt; }</pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p175918482031_1">By default, an AP's wired interface allows packets from all VLANs to pass. The wired interface is added to VLAN 1 in untagged mode and to other VLANs in tagged mode.</p>
+</li><li>Return to the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen17777157369_2"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname611891610620_2">quit</span></b></pre>
+</li><li>Bind the AP wired port profile to an AP group or a specific AP. For details, see <a href="galaxy_ap_management_cfg_0063.html">Binding an AP Wired Port Profile</a>.</li></ol>
+</li><li>Configure the RU's wired interface interface2 on the WAC.<ol><li>Enter the system view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen18757105018459_3"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname15136141631217_3">system-view</span></b></pre>
+</li><li>Enter the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen1830151913460_3"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname3591105918428_3">wlan</span></b></pre>
+</li><li>Create an AP wired port profile and enter its view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen152286611557_3"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname22917302395_3">wired-port-profile</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname1748838153916_3">name</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname563817431390_3">wired-port-profile-name</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p18551112617112_3">By default, the AP wired port profile <strong id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_b1138926307_3">default</strong> exists on the device.</p>
+</li><li>Configure the description of an AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen16676412277_3"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname117362514284_3">description</span></b> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname1583141415282_3">description</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p199792597292_3">By default, no description is configured for an AP's wired interface.</p>
+</li><li>Specify the VLANs to which the AP's wired interface is to be added.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen116281047216_2"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname17373896219_2">vlan</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname45221849421_2">tagged</span></strong> { { <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname501556523_2">vlan-id1</span></i> [ <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname38851032_2">to</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname115905251448_2">vlan-id2</span></i> ] } &amp;&lt;1-10&gt; }</pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p175918482031_2">By default, an AP's wired interface allows packets from all VLANs to pass. The wired interface is added to VLAN 1 in untagged mode and to other VLANs in tagged mode.</p>
+</li><li>Return to the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen17777157369_3"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname611891610620_3">quit</span></b></pre>
+</li><li>Bind the AP wired port profile to an AP group or a specific AP. For details, see <a href="galaxy_ap_management_cfg_0063.html">Binding an AP Wired Port Profile</a>.</li></ol>
+</li><li>Configure the RU's wired interface interface1 on the WAC.<ol><li>Enter the system view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen18757105018459_4"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname15136141631217_4">system-view</span></b></pre>
+</li><li>Enter the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen1830151913460_4"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname3591105918428_4">wlan</span></b></pre>
+</li><li>Create an AP wired port profile and enter its view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen152286611557_4"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname22917302395_4">wired-port-profile</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname1748838153916_4">name</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname563817431390_4">wired-port-profile-name</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p18551112617112_4">By default, the AP wired port profile <strong id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_b1138926307_4">default</strong> exists on the device.</p>
+</li><li>Configure the description of an AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen16676412277_4"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname117362514284_4">description</span></b> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname1583141415282_4">description</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p199792597292_4">By default, no description is configured for an AP's wired interface.</p>
+</li><li>Specify the VLANs to which the AP's wired interface is to be added.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen1819492721117"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname61944278119">vlan</span></b> <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname3195127181114">untagged</span></strong> { { <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname18195162721114">vlan-id1</span></i> [ <strong><span id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdparmname121957277110">to</span></strong> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname176161058124412">vlan-id2</span></i> ] } &amp;&lt;1-10&gt; }</pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p1019562719115">By default, an AP's wired interface allows packets from all VLANs to pass. The wired interface is added to VLAN 1 in untagged mode and to other VLANs in tagged mode.</p>
+</li><li>Configure the PVID for an AP's wired interface.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen26812463549"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname149079216560">vlan pvid</span></b> <i><span class="varname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_varname2066164735510">vlan-id</span></i></pre>
+<p id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_p16420165114541">By default, the PVID of an AP's wired interface is 1.</p>
+</li><li>Return to the WLAN view.<pre class="screen" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_screen17777157369_4"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513045522__en-us_task_0000001513045522_cmdname611891610620_4">quit</span></b></pre>
+</li><li>Bind the AP wired port profile to an AP group or a specific AP. For details, see <a href="galaxy_ap_management_cfg_0063.html">Binding an AP Wired Port Profile</a>.</li></ol>
+</li></ul>
+</div>
+</p></li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ap_management_cfg_0057.html">Configuring AP Wired Interfaces
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ap_management_cfg_0058.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ap_management_cfg_0089.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

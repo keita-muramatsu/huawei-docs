@@ -1,0 +1,1610 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Example for Configuring Access Authentication in the Financial Scenario">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001538075105.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001538275217.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001537915225">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring Access Authentication in the Financial Scenario</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001537915225"></a><a name="EN-US_TOPIC_0000001537915225"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Access Authentication in the Financial Scenario</h1>
+<div><div class="section"><h4 class="sectiontitle">Applicable Products and Versions</h4><p>This example applies to AR5700 and AR6700 series routers running V600R022C00 and later versions.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Scenario</h4><p>This document provides a typical configuration example for financial branch sites. It provides a detailed plan of access authentication, network deployment, traffic scheduling, and device management for terminals at branch sites, provides configuration examples based on the plan, and provides references for networking planning and device configuration.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Networking Requirements</h4><p>On the enterprise network shown in <a href="#EN-US_TOPIC_0000001537915225__fig1380122013328">Figure 1</a>, two AR routers <span>RouterA</span> and <span>RouterB</span> are deployed. Users can access the Internet through <span>RouterA</span> or <span>RouterB</span>. The WAN links of the two devices back up each other. That is, if one WAN link fails, traffic is switched to the other WAN link. Load balancing can be implemented for LAN interface access. PCs on the same network segment can access the network through the interface of RouterA or RouterB. RouterA and RouterB are connected through an Eth-Trunk to ensure reliability. The bandwidth of high-priority services must be guaranteed. The implementation is as follows:</p>
+<ul><li>Deploy RouterA and RouterB as dual gateways and deploy Eth-Trunk between the gateways to ensure link reliability.</li><li>Deploy OSPF between the two gateways and between the gateways and the Internet to ensure route connectivity between the gateways and the Internet.</li><li>Deploy VRRP on the LAN-side gateways. Traffic of VRRP master devices on different network segments is evenly distributed on two routers to ensure that traffic is load balanced between WAN interfaces of the two routers.</li><li>Directly connect terminals to the routers, and enable NAC authentication on the router interfaces to ensure terminal access security.</li><li>Deploy HQoS to ensure that high-priority services (such as voice and video services) of different users are preferentially scheduled, highest-priority services enter the PQ queue and have bandwidth guaranteed, high-priority services enter the DRR queue and have a higher weight, and low-priority services enter the DRR queue and have a lower weight.</li><li>Deploy the NMS, log server, and clock server.</li><li>Apply user access restrictions, enable SSH, and restrict access IP addresses.</li></ul>
+<div class="fignone" id="EN-US_TOPIC_0000001537915225__fig1380122013328"><a name="EN-US_TOPIC_0000001537915225__fig1380122013328"></a><a name="fig1380122013328"></a><span class="figcap"><b>Figure 1 </b>Network Diagram</span><br><span><img class="vsd" src="../images/en-us_image_0000001981091565.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4><p>1. Configure LLDP globally on <span>RouterA</span> and <span>RouterB</span>.</p>
+<p>2. Configure interfaces, VLANs, and IP addresses so that routers can communicate with each other.</p>
+<p>3. Configure STP edge ports to ensure that terminal access interfaces on routers do not participate in STP calculation.</p>
+<p>4. Configure OSPF neighbor relationships and advertise routes so that routers can communicate with each other and with the Internet.</p>
+<p>5. Configure QoS to ensure that voice services enter the PQ queue and have bandwidth guaranteed, video and other services enter the DRR queue, and video services have a higher weight.</p>
+<p>6. Configure NAC, configure 802.1X authentication on the interfaces connected to terminals, set the authentication mode to RADIUS, and enable MAC address bypass authentication upon an authentication failure.</p>
+<p>7. Configure SNMP, including the SNMP version, community, and source interface for sending traps, and configure the device to be managed by the NMS only through SNMP.</p>
+<p>8. Configure NTP synchronization to ensure that the device clock is synchronized with the NTP server clock.</p>
+<p>9. Configure an SSH user, configure an AAA user, and set the user access mode to SSH.</p>
+<p>10. Configure a VTY interface, set the authentication mode to AAA, and restrict the login IP address of the administrator so that users using other IP addresses are not allowed to log in.</p>
+<p>11. Configure the information center, log server, and source interface for sending logs.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">(Optional) Data Plan</h4>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Interface and address data plan</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="10.57%" id="mcps1.3.5.2.2.9.1.1" liSelected="liSelected"><p>Device</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="11.1%" id="mcps1.3.5.2.2.9.1.2" liSelected="liSelected"><p>Interface</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="10.58%" id="mcps1.3.5.2.2.9.1.3" liSelected="liSelected"><p>Peer Device</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="14.6%" id="mcps1.3.5.2.2.9.1.4" liSelected="liSelected"><p>Peer Interface</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="14.59%" id="mcps1.3.5.2.2.9.1.5" liSelected="liSelected"><p>Interface Type</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="9.45%" id="mcps1.3.5.2.2.9.1.6" liSelected="liSelected"><p>VLAN</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="16.61%" id="mcps1.3.5.2.2.9.1.7" liSelected="liSelected"><p>Interface Address</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="12.5%" id="mcps1.3.5.2.2.9.1.8" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/0</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>Internet device</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>Internet device interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 3 main interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>20.1.1.2/24</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to the Internet</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/1</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>RouterB</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>GE0/0/1</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Eth-Trunk 1 member interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>NA</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to RouterB</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/2</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>RouterB</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>GE0/0/2</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Eth-Trunk 1 member interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to RouterB</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/3</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>PC1</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>PC1 network port</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 2 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>21</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to the user PC</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/4</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>PC2</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>PC2 network port</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 2 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>21</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to the user PC</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/5</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>PC3</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>PC3 network port</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 2 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>30</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to the user PC</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>VLANIF 21</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 3 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>Primary address:</p>
+<p>Interface IP address: 21.1.1.1/24</p>
+<p>VRRP virtual IP address: 21.1.1.254</p>
+<p>VRRP priority: 120</p>
+<p>Secondary address:</p>
+<p>Interface IP address: 22.1.1.1/24</p>
+<p>VRRP virtual IP address: 22.1.1.254</p>
+<p>VRRP priority: 90</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Layer 3 gateway for users</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>VLANIF 30</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 3 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>Interface IP address: 30.1.1.1/24</p>
+<p>VRRP virtual IP address: 30.1.1.254</p>
+<p>VRRP priority: 120</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Layer 3 gateway for users</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>Eth-Trunk1</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>RouterB</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>Eth-Trunk 1</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 2 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>VLANs 2 to 4094</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to RouterB</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterA</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>LoopBack 0</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Loopback interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>10.1.1.1/32</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>OSPF router ID and source interface for sending logs</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/0</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>Internet device</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>Internet device interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 3 main interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>40.1.1.2/24</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to the Internet</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/1</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>RouterA</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>GE0/0/1</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Eth-Trunk 1 member interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to RouterA</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/2</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>RouterA</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>GE0/0/2</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Eth-Trunk 1 member interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to RouterA</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/3</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>PC4</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>PC4 network port</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 2 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>21</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to the user PC</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/4</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>PC5</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>PC5 network port</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 2 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>21</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to the user PC</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>GE0/0/5</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>PC6</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>PC6 network port</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 2 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>30</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to the user PC</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>VLANIF 21</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 3 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>Primary address:</p>
+<p>Interface IP address: 21.1.1.2/24</p>
+<p>VRRP virtual IP address: 21.1.1.254</p>
+<p>VRRP priority: 90</p>
+<p>Secondary address:</p>
+<p>Interface IP address: 22.1.1.2/24</p>
+<p>VRRP virtual IP address: 22.1.1.254</p>
+<p>VRRP priority: 120</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Layer 3 gateway for users</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>VLANIF 30</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 3 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>Interface IP address: 30.1.1.2/24</p>
+<p>VRRP virtual IP address: 30.1.1.254</p>
+<p>VRRP priority: 90</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Layer 3 gateway for users</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>Eth-Trunk1</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>RouterA</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>Eth-Trunk 1</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Layer 2 interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>VLANs 2 to 4094</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>Connected to RouterA</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.5.2.2.9.1.1 "><p><span>RouterB</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="11.1%" headers="mcps1.3.5.2.2.9.1.2 "><p>LoopBack 0</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.58%" headers="mcps1.3.5.2.2.9.1.3 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.6%" headers="mcps1.3.5.2.2.9.1.4 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.59%" headers="mcps1.3.5.2.2.9.1.5 "><p>Loopback interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.45%" headers="mcps1.3.5.2.2.9.1.6 "><p>N/A</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.61%" headers="mcps1.3.5.2.2.9.1.7 "><p>10.1.1.2/32</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.5%" headers="mcps1.3.5.2.2.9.1.8 "><p>OSPF router ID and source interface for sending logs</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 2 </b>Server address plan</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.5.3.2.3.1.1" liSelected="liSelected"><p>Server</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.5.3.2.3.1.2" liSelected="liSelected"><p>Address</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.1 "><p>RADIUS server</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.2 "><p>120.1.1.10 (weight: 80)</p>
+<p>120.1.1.11 (weight: 70)</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.1 "><p>NMS server</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.2 "><p>120.1.1.2</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.1 "><p>Log server</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.2 "><p>120.1.1.3</p>
+<p>120.1.1.4</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.1 "><p>NTP server</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.2 "><p>120.1.1.5</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.1 "><p>Network segment allowed access to the device (SSH)</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.5.3.2.3.1.2 "><p>120.1.1.0/24</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 3 </b>Configuration requirements for different user types</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="19.518048195180484%" id="mcps1.3.5.4.2.6.1.1" liSelected="liSelected"><p>User</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="19.788021197880212%" id="mcps1.3.5.4.2.6.1.2" liSelected="liSelected"><p>Scheduling Mode</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="14.71852814718528%" id="mcps1.3.5.4.2.6.1.3" liSelected="liSelected"><p>Weight</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="16.83831616838316%" id="mcps1.3.5.4.2.6.1.4" liSelected="liSelected"><p>Guaranteed Bandwidth</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="29.137086291370863%" id="mcps1.3.5.4.2.6.1.5" liSelected="liSelected"><p>Committed Burst Size</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="19.518048195180484%" headers="mcps1.3.5.4.2.6.1.1 "><p>user1</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.788021197880212%" headers="mcps1.3.5.4.2.6.1.2 "><p>DRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.71852814718528%" headers="mcps1.3.5.4.2.6.1.3 "><p>30</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.83831616838316%" headers="mcps1.3.5.4.2.6.1.4 "><p>50000kbps</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.137086291370863%" headers="mcps1.3.5.4.2.6.1.5 "><p>1000000bytes</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.518048195180484%" headers="mcps1.3.5.4.2.6.1.1 "><p>user2</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.788021197880212%" headers="mcps1.3.5.4.2.6.1.2 "><p>DRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.71852814718528%" headers="mcps1.3.5.4.2.6.1.3 "><p>10</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.83831616838316%" headers="mcps1.3.5.4.2.6.1.4 "><p>30000kbps</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.137086291370863%" headers="mcps1.3.5.4.2.6.1.5 "><p>750000bytes</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.518048195180484%" headers="mcps1.3.5.4.2.6.1.1 "><p>user3</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.788021197880212%" headers="mcps1.3.5.4.2.6.1.2 "><p>DRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.71852814718528%" headers="mcps1.3.5.4.2.6.1.3 "><p>10</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.83831616838316%" headers="mcps1.3.5.4.2.6.1.4 "><p>20000kbps</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.137086291370863%" headers="mcps1.3.5.4.2.6.1.5 "><p>500000bytes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 4 </b>Configuration requirements for voice, video, and data services</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.5.5.2.5.1.1" liSelected="liSelected"><p>Service Type</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.5.5.2.5.1.2" liSelected="liSelected"><p>Scheduling Mode</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.5.5.2.5.1.3" liSelected="liSelected"><p>Weight</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.5.5.2.5.1.4" liSelected="liSelected"><p>Shaping Percentage</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.1 "><p>Voice</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.2 "><p>PQ</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.3 "><p>-</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.4 "><p>15%</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.1 "><p>Video</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.2 "><p>DRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.3 "><p>30</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.4 "><p>30%</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.1 "><p>Data</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.2 "><p>DRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.3 "><p>10</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.5.5.2.5.1.4 "><p>45%</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Precautions</h4><p>None</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li>Configure LLDP globally.<div class="p"># Configure LLDP on <span>RouterA</span>.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname <span>RouterA</span></strong>
+[<span>RouterA</span>] <strong>lldp enable</strong></pre>
+</div>
+<div class="p"># Configure LLDP on <span>RouterB</span>.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname <span>RouterB</span></strong>
+[<span>RouterB</span>] <strong>lldp enable</strong></pre>
+</div>
+</li><li>Create a loopback interface, assign an IP address to the loopback interface, and configure a VRRP group.<p id="EN-US_TOPIC_0000001537915225__p2209449133212">Configure <span id="EN-US_TOPIC_0000001537915225__text11194152815328">RouterA</span>.</p>
+<pre class="screen">[<span>RouterA</span>] <strong>vlan batch 21 30</strong>
+[<span>RouterA</span>] <strong>interface LoopBack 0</strong>
+[<span>RouterA</span>-LoopBack0] <strong>ip address 10.1.1.1 255.255.255.255</strong>
+[<span>RouterA</span>-LoopBack0] <strong>quit</strong>
+[<span>RouterA</span>] <strong>interface Vlanif 21</strong>
+[<span>RouterA</span>-Vlanif21] <strong>ip address 21.1.1.1 255.255.255.0</strong>
+[<span>RouterA</span>-Vlanif21] <strong>ip address 22.1.1.1 255.255.255.0 sub</strong>
+[<span>RouterA</span>-Vlanif21] <strong>vrrp vrid 21 virtual-ip 21.1.1.254</strong>
+[<span>RouterA</span>-Vlanif21] <strong>vrrp vrid 21 priority 120</strong>
+[<span>RouterA</span>-Vlanif21] <strong>vrrp vrid 22 virtual-ip 22.1.1.254</strong>
+[<span>RouterA</span>-Vlanif21] <strong>vrrp vrid 22 priority 90</strong>
+[<span>RouterA</span>-Vlanif21] <strong>quit</strong>
+[<span>RouterA</span>] <strong>interface Vlanif 30</strong>
+[<span>RouterA</span>-Vlanif30] <strong>ip address 30.1.1.1 255.255.255.0</strong>
+[<span>RouterA</span>-Vlanif30] <strong>vrrp vrid 30 virtual-ip 30.1.1.254</strong>
+[<span>RouterA</span>-Vlanif30] <strong>vrrp vrid 30 priority 120</strong>
+[<span>RouterA</span>-Vlanif30] <strong>quit</strong></pre>
+<p id="EN-US_TOPIC_0000001537915225__p455873823212">Configure <span id="EN-US_TOPIC_0000001537915225__text67707111335">RouterB</span>.</p>
+<pre class="screen">[<span>RouterB</span>] <strong>vlan batch 21 30</strong>
+[<span>RouterB</span>] <strong>interface LoopBack0</strong>
+[<span>RouterB</span>-LoopBack0] <strong>ip address 10.1.1.2 255.255.255.255</strong>
+[<span>RouterB</span>-LoopBack0] <strong>quit</strong>
+[<span>RouterB</span>] <strong>interface Vlanif 21</strong>
+[<span>RouterB</span>-Vlanif21] <strong>ip address 21.1.1.2 255.255.255.0</strong>
+[<span>RouterB</span>-Vlanif21] <strong>ip address 22.1.1.2 255.255.255.0 sub</strong>
+[<span>RouterB</span>-Vlanif21] <strong>vrrp vrid 21 virtual-ip 21.1.1.254</strong>
+[<span>RouterB</span>-Vlanif21] <strong>vrrp vrid 21 priority 90</strong>
+[<span>RouterB</span>-Vlanif21] <strong>vrrp vrid 22 virtual-ip 22.1.1.254</strong>
+[<span>RouterB</span>-Vlanif21] <strong>vrrp vrid 22 priority 120</strong>
+[<span>RouterB</span>-Vlanif21] <strong>quit</strong>
+[<span>RouterB</span>] <strong>interface Vlanif 30</strong>
+[<span>RouterB</span>-Vlanif30] <strong>ip address 30.1.1.2 255.255.255.0</strong>
+[<span>RouterB</span>-Vlanif30] <strong>vrrp vrid 30 virtual-ip 30.1.1.254</strong>
+[<span>RouterB</span>-Vlanif30] <strong>vrrp vrid 30 priority 90</strong>
+[<span>RouterB</span>-Vlanif30] <strong>quit</strong></pre>
+</li><li>Add LAN ports to VLANs.<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text11194152815328">RouterA</span>.</p>
+<pre class="screen">[<span>RouterA</span>] <strong>interface GE 0/0/3</strong>
+[<span>RouterA</span>-GE0/0/3] <strong>portswitch</strong>
+[<span>RouterA</span>-GE0/0/3] <strong>port link-type access</strong>
+[<span>RouterA</span>-GE0/0/3] <strong>port default vlan 21</strong>
+[<span>RouterA</span>-GE0/0/3] <strong>quit</strong>
+[<span>RouterA</span>] <strong>interface GE 0/0/4</strong>
+[<span>RouterA</span>-GE0/0/4] <strong>portswitch</strong>
+[<span>RouterA</span>-GE0/0/4] <strong>port link-type access</strong>
+[<span>RouterA</span>-GE0/0/4] <strong>port default vlan 21</strong>
+[<span>RouterA</span>-GE0/0/4] <strong>quit</strong>
+[<span>RouterA</span>] <strong>interface GE 0/0/5</strong>
+[<span>RouterA</span>-GE0/0/5] <strong>portswitch</strong>
+[<span>RouterA</span>-GE0/0/5] <strong>port link-type access</strong>
+[<span>RouterA</span>-GE0/0/5] <strong>port default vlan 30</strong>
+[<span>RouterA</span>-GE0/0/5] <strong>quit</strong></pre>
+<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text67707111335">RouterB</span>.</p>
+<pre class="screen">[<span>RouterB</span>] <strong>interface GE 0/0/3</strong>
+[<span>RouterB</span>-GE0/0/3] <strong>portswitch</strong>
+[<span>RouterB</span>-GE0/0/3] <strong>port link-type access</strong>
+[<span>RouterB</span>-GE0/0/3] <strong>port default vlan 21</strong>
+[<span>RouterB</span>-GE0/0/3] <strong>quit</strong>
+[<span>RouterB</span>] <strong>interface GE 0/0/4</strong>
+[<span>RouterB</span>-GE0/0/4] <strong>portswitch</strong>
+[<span>RouterB</span>-GE0/0/4] <strong>port link-type access</strong>
+[<span>RouterB</span>-GE0/0/4] <strong>port default vlan 21</strong>
+[<span>RouterB</span>-GE0/0/4] <strong>quit</strong>
+[<span>RouterB</span>] <strong>interface GE 0/0/5</strong>
+[<span>RouterB</span>-GE0/0/5] <strong>portswitch</strong>
+[<span>RouterB</span>-GE0/0/5] <strong>port link-type access</strong>
+[<span>RouterB</span>-GE0/0/5] <strong>port default vlan 30</strong>
+[<span>RouterB</span>-GE0/0/5] <strong>quit</strong></pre>
+</li><li>Configure IP addresses for WAN ports.<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text11194152815328_1">RouterA</span>.</p>
+<pre class="screen">[<span>RouterA</span>] <strong>interface GE 0/0/0</strong>
+[<span>RouterA</span>-GE0/0/0] <strong>ip address 20.1.1.2 255.255.255.0</strong>
+[<span>RouterA</span>-GE0/0/0] <strong>quit</strong></pre>
+<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text67707111335_1">RouterB</span>.</p>
+<pre class="screen">[<span>RouterB</span>] <strong>interface GE 0/0/0</strong>
+[<span>RouterB</span>-GE0/0/0] <strong>ip address 40.1.1.2 255.255.255.0</strong>
+[<span>RouterB</span>-GE0/0/0] <strong>quit</strong></pre>
+</li><li>Configure an Eth-Trunk and its member interfaces.<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text11194152815328_2">RouterA</span>.</p>
+<pre class="screen">[<span>RouterA</span>] <strong>interface Eth-Trunk 1</strong>
+[<span>RouterA</span>-Eth-Trunk1] <strong>portswitch</strong>
+[<span>RouterA</span>-Eth-Trunk1] <strong>port link-type trunk</strong>
+[<span>RouterA</span>-Eth-Trunk1] <strong>port trunk allow-pass vlan 2 to 4094</strong>
+[<span>RouterA</span>-Eth-Trunk1] <strong>quit</strong>
+[<span>RouterA</span>] <strong>interface GE0/0/1</strong>
+[<span>RouterA</span>-GE0/0/1] <strong>eth-trunk 1</strong>
+[<span>RouterA</span>-GE0/0/1] <strong>quit</strong>
+[<span>RouterA</span>] <strong>interface GE0/0/2</strong>
+[<span>RouterA</span>-GE0/0/2] <strong>eth-trunk 1</strong>
+[<span>RouterA</span>-GE0/0/2] <strong>quit</strong></pre>
+<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text67707111335_2">RouterB</span>.</p>
+<pre class="screen">[<span>RouterB</span>] <strong>interface Eth-Trunk 1</strong>
+[<span>RouterB</span>-Eth-Trunk1] <strong>portswitch</strong>
+[<span>RouterB</span>-Eth-Trunk1] <strong>port link-type trunk</strong>
+[<span>RouterB</span>-Eth-Trunk1] <strong>port trunk allow-pass vlan 2 to 4094</strong>
+[<span>RouterB</span>-Eth-Trunk1] <strong>quit</strong>
+[<span>RouterB</span>] <strong>interface GE0/0/1</strong>
+[<span>RouterB</span>-GE0/0/1] <strong>eth-trunk 1</strong>
+[<span>RouterB</span>-GE0/0/1] <strong>quit</strong>
+[<span>RouterB</span>] <strong>interface GE0/0/2</strong>
+[<span>RouterB</span>-GE0/0/2] <strong>eth-trunk 1</strong>
+[<span>RouterB</span>-GE0/0/2] <strong>quit</strong></pre>
+</li><li>Configure LAN-side access ports as STP edge ports.<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text11194152815328_3">RouterA</span>.</p>
+<pre class="screen">[<span>RouterA</span>] <strong>interface GE 0/0/3</strong>
+[<span>RouterA</span>-GE0/0/3] <strong>stp edged-port enable</strong>
+[<span>RouterA</span>-GE0/0/3] <strong>quit</strong>
+[<span>RouterA</span>] <strong>interface GE 0/0/4</strong>
+[<span>RouterA</span>-GE0/0/4] <strong>stp edged-port enable</strong>
+[<span>RouterA</span>-GE0/0/4] <strong>quit</strong>
+[<span>RouterA</span>] <strong>interface GE 0/0/5</strong>
+[<span>RouterA</span>-GE0/0/5] <strong>stp edged-port enable</strong>
+[<span>RouterA</span>-GE0/0/5] <strong>quit</strong></pre>
+<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text67707111335_3">RouterB</span>.</p>
+<pre class="screen">[<span>RouterB</span>] <strong>interface GE 0/0/3</strong>
+[<span>RouterB</span>-GE0/0/3] <strong>stp edged-port enable</strong>
+[<span>RouterB</span>-GE0/0/3] <strong>quit</strong>
+[<span>RouterB</span>] <strong>interface GE 0/0/4</strong>
+[<span>RouterB</span>-GE0/0/4] <strong>stp edged-port enable</strong>
+[<span>RouterB</span>-GE0/0/4] <strong>quit</strong>
+[<span>RouterB</span>] <strong>interface GE 0/0/5</strong>
+[<span>RouterB</span>-GE0/0/5] <strong>stp edged-port enable</strong>
+[<span>RouterB</span>-GE0/0/5] <strong>quit</strong></pre>
+</li><li>Configure WAN ports to establish an OSPF neighbor relationship with the WAN network.<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text11194152815328_4">RouterA</span>.</p>
+<pre class="screen">[<span>RouterA</span>] <strong>interface GE 0/0/0</strong>
+[<span>RouterA</span>-GE0/0/0] <strong>ospf network-type p2p</strong>
+[<span>RouterA</span>-GE0/0/0] <strong>ospf cost 10</strong>
+[<span>RouterA</span>-GE0/0/0] <strong>ospf authentication-mode hmac-sha256 1 cipher YsHsjx_202206</strong>
+[<span>RouterA</span>-GE0/0/0] <strong>quit</strong>
+[<span>RouterA</span>] <strong>ospf 1</strong> <strong>router-id</strong> <strong>10.1.1.1</strong>
+[<span>RouterA</span>-ospf-1] <strong>area 3</strong>
+[<span>RouterA</span>-ospf-1-area-0.0.0.3] <strong>nssa no-summary</strong>
+[<span>RouterA</span>-ospf-1-area-0.0.0.3] <strong>network 21.1.1.0 0.0.0.255</strong>
+[<span>RouterA</span>-ospf-1-area-0.0.0.3] <strong>network 22.1.1.0 0.0.0.255</strong>
+[<span>RouterA</span>-ospf-1-area-0.0.0.3] <strong>network 20.1.1.0 0.0.0.255</strong>
+[<span>RouterA</span>-ospf-1-area-0.0.0.3] <strong>network 30.1.1.0 0.0.0.255</strong>
+[<span>RouterA</span>-ospf-1-area-0.0.0.3] <strong>network 10.1.1.1 0.0.0.0</strong>
+[<span>RouterA</span>-ospf-1-area-0.0.0.3] <strong>quit</strong>
+[<span>RouterA</span>-ospf-1] <strong>quit</strong></pre>
+<p>Configure <span id="EN-US_TOPIC_0000001537915225__en-us_topic_0000001537915225_text67707111335_4">RouterB</span>.</p>
+<pre class="screen">[<span>RouterB</span>] <strong>interface GE 0/0/0</strong>
+[<span>RouterB</span>-GE0/0/0] <strong>ospf network-type p2p</strong>
+[<span>RouterB</span>-GE0/0/0] <strong>ospf cost 10</strong>
+[<span>RouterB</span>-GE0/0/0] <strong>ospf authentication-mode hmac-sha256 1 cipher YsHsjx_202206</strong>
+[<span>RouterB</span>-GE0/0/0] <strong>quit</strong>
+[<span>RouterB</span>] <strong>ospf 1</strong> <strong>router-id</strong> <strong>10.1.1.2</strong>
+[<span>RouterB</span>-ospf-1] <strong>area 3</strong>
+[<span>RouterB</span>-ospf-1-area-0.0.0.3] <strong>nssa no-summary</strong>
+[<span>RouterB</span>-ospf-1-area-0.0.0.3] <strong>network 21.1.1.0 0.0.0.255</strong>
+[<span>RouterB</span>-ospf-1-area-0.0.0.3] <strong>network 22.1.1.0 0.0.0.255</strong>
+[<span>RouterB</span>-ospf-1-area-0.0.0.3] <strong>network 40.1.1.0 0.0.0.255</strong>
+[<span>RouterB</span>-ospf-1-area-0.0.0.3] <strong>network 30.1.1.0 0.0.0.255</strong>
+[<span>RouterB</span>-ospf-1-area-0.0.0.3] <strong>network 10.1.1.2 0.0.0.0</strong>
+[<span>RouterB</span>-ospf-1-area-0.0.0.3] <strong>quit</strong>
+[<span>RouterB</span>-ospf-1] <strong>quit</strong></pre>
+</li><li>Configure HQoS.<div class="p"># Configure a flow queue (FQ) profile.<pre class="screen">[<span>RouterA</span>] <strong>flow-queue fq1</strong>
+[<span>RouterA</span>-flow-queue-fq1] <strong>queue voice pq shaping cir-shaping-percentage 15</strong>
+[<span>RouterA</span>-flow-queue-fq1] <strong>queue video drr weight 30 shaping cir-shaping-percentage 30</strong>
+[<span>RouterA</span>-flow-queue-fq1] <strong>queue data drr weight 10 shaping cir-shaping-percentage 45</strong>
+[<span>RouterA</span>-flow-queue-fq1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an FQ traffic policy.<pre class="screen">[<span>RouterA</span>] <strong>traffic classifier voice</strong>
+[<span>RouterA</span>-classifier-voice] <strong>if-match dscp 46</strong>
+[<span>RouterA</span>-classifier-voice] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic classifier video</strong>
+[<span>RouterA</span>-classifier-video] <strong>if-match dscp 40</strong>
+[<span>RouterA</span>-classifier-video] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic classifier data</strong>
+[<span>RouterA</span>-classifier-data] <strong>if-match dscp 15</strong>
+[<span>RouterA</span>-classifier-data] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic behavior voice</strong>
+[<span>RouterA</span>-behavior-voice] <strong>flow-queue fq1 queue voice</strong>
+[<span>RouterA</span>-behavior-voice] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic behavior video</strong>
+[<span>RouterA</span>-behavior-video] <strong>flow-queue fq1 queue video</strong>
+[<span>RouterA</span>-behavior-video] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic behavior data</strong>
+[<span>RouterA</span>-behavior-data] <strong>flow-queue fq1 queue data</strong>
+[<span>RouterA</span>-behavior-data] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic policy sub-policy</strong>
+[<span>RouterA</span>-trafficpolicy-sub-policy] <strong>classifier voice behavior voice</strong>
+[<span>RouterA</span>-trafficpolicy-sub-policy] <strong>classifier video behavior video</strong>
+[<span>RouterA</span>-trafficpolicy-sub-policy] <strong>classifier data behavior data</strong>
+[<span>RouterA</span>-trafficpolicy-sub-policy] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a subscriber queue (SQ) profile.<pre class="screen">[<span>RouterA</span>] <strong>qos-user-profile uq1</strong>
+[<span>RouterA</span>-qos-user-profile-uq1] <strong>user-queue user1 drr weight 30 cir 50000 cbs 1000000</strong>
+[<span>RouterA</span>-qos-user-profile-uq1]<strong> user-queue user2 drr weight 10 cir 30000 cbs 750000</strong>
+[<span>RouterA</span>-qos-user-profile-uq1] <strong>user-queue user3 drr weight 10 cir 20000 cbs 500000</strong>
+[<span>RouterA</span>-qos-user-profile-uq1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an SQ traffic policy.<pre class="screen">[<span>RouterA</span>] <strong>acl 2001</strong>
+[<span>RouterA</span>-acl4-basic-2001] <strong>rule permit source 10.10.10.0 24</strong>
+[<span>RouterA</span>-acl4-basic-2001] <strong>quit</strong>
+[<span>RouterA</span>] <strong>acl 2002</strong>
+[<span>RouterA</span>-acl4-basic-2002] <strong>rule permit source 10.10.20.0 24</strong>
+[<span>RouterA</span>-acl4-basic-2002] <strong>quit</strong>
+[<span>RouterA</span>] <strong>acl 2003</strong>
+[<span>RouterA</span>-acl4-basic-2003] <strong>rule permit source 10.10.30.0 24</strong>
+[<span>RouterA</span>-acl4-basic-2003] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic classifier user1</strong>
+[<span>RouterA</span>-classifier-user1] <strong>if-match acl 2001</strong>
+[<span>RouterA</span>-classifier-user1] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic classifier user2</strong>
+[<span>RouterA</span>-classifier-user2] <strong>if-match acl 2002</strong>
+[<span>RouterA</span>-classifier-user2] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic classifier user3</strong>
+[<span>RouterA</span>-classifier-user3] <strong>if-match acl 2003</strong>
+[<span>RouterA</span>-classifier-user3] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic behavior user1</strong>
+[<span>RouterA</span>-behavior-user1] <strong>qos-user-profile uq1 user-queue user1</strong>
+[<span>RouterA</span>-behavior-user1] <strong>traffic-policy sub-policy</strong>
+[<span>RouterA</span>-behavior-user1] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic behavior user2</strong>
+[<span>RouterA</span>-behavior-user2] <strong>qos-user-profile uq1 user-queue user2</strong>
+[<span>RouterA</span>-behavior-user2] <strong>traffic-policy sub-policy</strong>
+[<span>RouterA</span>-behavior-user2] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic behavior user3</strong>
+[<span>RouterA</span>-behavior-user3] <strong>qos-user-profile uq1 user-queue user3</strong>
+[<span>RouterA</span>-behavior-user3] <strong>traffic-policy sub-policy</strong>
+[<span>RouterA</span>-behavior-user3] <strong>quit</strong>
+[<span>RouterA</span>] <strong>traffic policy parent-policy</strong>
+[<span>RouterA</span>-trafficpolicy-parent-policy] <strong>classifier user1 behavior user1</strong>
+[<span>RouterA</span>-trafficpolicy-parent-policy] <strong>classifier user2 behavior user2</strong>
+[<span>RouterA</span>-trafficpolicy-parent-policy] <strong>classifier user3 behavior user3</strong>
+[<span>RouterA</span>-trafficpolicy-parent-policy] <strong>quit</strong></pre>
+</div>
+<div class="p"># Apply the HQoS parent policy to the outbound interface of RouterA.<pre class="screen">[<span>RouterA</span>] <strong>interface GE 0/0/0</strong>
+[<span>RouterA</span>-GE0/0/0] <strong>traffic-policy parent-policy outbound</strong>
+[<span>RouterA</span>-GE0/0/0] <strong>quit</strong></pre>
+</div>
+<p># The configuration of <span>RouterB</span> is the same as that of <span>RouterA</span>.</p>
+</li><li>Configure NAC.<div class="p"># Create and configure the RADIUS server template <strong>rd1</strong>.<pre class="screen">[<span>RouterA</span>] <strong>radius-server template rd1</strong>
+[<span>RouterA</span>-radius-rd1] <strong>radius-server authentication 120.1.1.10 1812 weight 80</strong>
+[<span>RouterA</span>-radius-rd1] <strong>radius-server authentication 120.1.1.11 1812 weight 70</strong>
+[<span>RouterA</span>-radius-rd1] <strong>radius-server accounting 120.1.1.10 1813 weight 80</strong>
+[<span>RouterA</span>-radius-rd1] <strong>radius-server accounting 120.1.1.11 1813 weight 70</strong>
+[<span>RouterA</span>-radius-rd1] <strong>radius-server shared-key cipher YsHsjx_202206</strong>
+[<span>RouterA</span>-radius-rd1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Create the AAA authentication scheme <strong>abc</strong> and set the authentication mode to RADIUS.<pre class="screen">[<span>RouterA</span>] <strong>aaa</strong>
+[<span>RouterA</span>-aaa] <strong>authentication-scheme abc</strong>
+[<span>RouterA</span>-aaa-authen-abc] <strong>authentication-mode radius</strong>
+[<span>RouterA</span>-aaa-authen-abc] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure the accounting scheme <strong>acco1</strong>.<pre class="screen">[<span>RouterA</span>-aaa] <strong>accounting-scheme acco1</strong>
+[<span>RouterA</span>-aaa-accounting-acco1]<strong> accounting-mode radius</strong>
+[<span>RouterA</span>-aaa-accounting-acco1] <strong>accounting realtime 12</strong>
+[<span>RouterA</span>-aaa-accounting-acco1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Create the authentication domain <strong>isp</strong>, and bind the AAA authentication scheme <strong>abc</strong>, accounting scheme <strong>acco1</strong>, and RADIUS server template <strong>rd1</strong> to the domain.<pre class="screen">[<span>RouterA</span>-aaa] <strong>domain huawei.com</strong>
+[<span>RouterA</span>-aaa-domain-huawei.com] <strong>authentication-scheme abc</strong>
+[<span>RouterA</span>-aaa-domain-huawei.com] <strong>accounting-scheme acco1</strong>
+[<span>RouterA</span>-aaa-domain-huawei.com] <strong>radius-server rd1</strong>
+[<span>RouterA</span>-aaa-domain-huawei.com] <strong>quit</strong>
+[<span>RouterA</span>-aaa] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a MAC access profile.<pre class="screen">[<span>RouterA</span>] <strong>mac-access-profile name m1</strong>
+[<span>RouterA</span>-mac-access-profile-m1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure an 802.1X access profile, configure re-authentication for online 802.1X authentication users, set the re-authentication interval to 7200 seconds, and set the number of retransmissions of authentication request packets or handshake packets to 3.<pre class="screen">[<span>RouterA</span>] <strong>dot1x-access-profile name d1</strong>
+[<span>RouterA</span>-dot1x-access-profile-d1] <strong>dot1x authentication-method eap</strong>
+[<span>RouterA</span>-dot1x-access-profile-d1] <strong>dot1x reauthenticate</strong>
+[<span>RouterA</span>-dot1x-access-profile-d1] <strong>dot1x timer reauthenticate-period 7200</strong>
+[<span>RouterA</span>-dot1x-access-profile-d1] <strong>dot1x retry 3</strong>
+[<span>RouterA</span>-dot1x-access-profile-d1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Bind the MAC access profile and 802.1X access profile to the authentication profile <strong>p1</strong>.<pre class="screen">[<span>RouterA</span>] <strong>authentication-profile name p1</strong>
+[<span>RouterA</span>-authen-profile-p1] <strong>mac-access-profile m1</strong>
+[<span>RouterA</span>-authen-profile-p1] <strong>dot1x-access-profile d1</strong></pre>
+</div>
+<div class="p"># Enable MAC address bypass authentication and configure a forcible authentication domain.<pre class="screen">[<span>RouterA</span>-authen-profile-p1] <strong>authentication dot1x-mac-bypass</strong>
+[<span>RouterA</span>-authen-profile-p1] <strong>access-domain huawei.com force</strong>
+[<span>RouterA</span>-authen-profile-p1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Bind the authentication profile <strong>p1</strong> to interfaces.<pre class="screen">[<span>RouterA</span>] <strong>interface GE 0/0/3</strong>
+[<span>RouterA</span>-GE0/0/3] <strong>authentication-profile p1</strong>
+[<span>RouterA</span>] <strong>interface GE 0/0/4</strong>
+[<span>RouterA</span>-GE0/0/4] <strong>authentication-profile p1</strong>
+[<span>RouterA</span>] <strong>interface GE 0/0/5</strong>
+[<span>RouterA</span>-GE0/0/5] <strong>authentication-profile p1</strong></pre>
+</div>
+<p># The configuration of <span>RouterB</span> is the same as that of <span>RouterA</span>.</p>
+</li><li>Configure SNMP.<div class="p"># Configure an ACL.<pre class="screen">[<span>RouterA</span>] <strong>acl 2001</strong>
+[<span>RouterA</span>-acl4-basic-2001] <strong>rule 5 permit source 120.1.1.2 0.0.0.0</strong>
+[<span>RouterA</span>-acl4-basic-2001] <strong>rule 6 deny source 120.1.1.1 0.0.0.0</strong>
+[<span>RouterA</span>-acl4-basic-2001] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure SNMP.<pre class="screen">[<span>RouterA</span>] <strong>snmp-agent</strong>
+[<span>RouterA</span>] <strong>snmp-agent sys-info version v2c v3</strong>
+[<span>RouterA</span>] <strong>snmp-agent trap source LoopBack0</strong>
+[<span>RouterA</span>] <strong>snmp-agent community read adminnms2 acl 2001</strong>
+[<span>RouterA</span>] <strong>snmp-agent target-host inform address udp-domain 120.1.1.2 params securityname Huawei-1234 v3</strong></pre>
+</div>
+<p># The configuration of <span>RouterB</span> is the same as that of <span>RouterA</span>.</p>
+</li><li>Configure NTP synchronization.<pre class="screen">[<span>RouterA</span>] <strong>ntp source-interface LoopBack0</strong>
+[<span>RouterA</span>] <strong>ntp authentication enable</strong>
+[<span>RouterA</span>] <strong>ntp authentication-keyid 42 authentication-mode hmac-sha256 YsHsjx_202206</strong>
+[<span>RouterA</span>] <strong>ntp trusted authentication-keyid 42</strong>
+[<span>RouterA</span>] <strong>ntp unicast-server 120.1.1.5 authentication-keyid 42</strong></pre>
+<p># The configuration of <span>RouterB</span> is the same as that of <span>RouterA</span>.</p>
+</li><li>Configure an SSH user.<div class="p"># Generate a local key pair on the SSH server.<pre class="screen">[<span>RouterA</span>] <strong>rsa local-key-pair create</strong>
+The key name will be:Host     
+The range of public key size is (2048, 4096). 
+NOTE: Key pair generation will take a short while.
+Please input the modulus [default = 3072]:3072 </pre>
+</div>
+<div class="p"># Create a local user on the server and configure the user service type.<pre class="screen">[<span>RouterA</span>] <strong>aaa</strong>
+[<span>RouterA</span>-aaa] <strong>local-user admin123 password irreversible-cipher YsHsjx_202206</strong>
+[<span>RouterA</span>-aaa] <strong>local-user admin123 service-type ssh</strong>
+[<span>RouterA</span>-aaa] <strong>local-user admin123 privilege level 3</strong>
+[<span>RouterA</span>-aaa] <strong>quit</strong></pre>
+</div>
+<div class="p"># Create an SSH user on the server and configure the authentication mode.<pre class="screen">[<span>RouterA</span>] <strong>ssh user admin123</strong>
+[<span>RouterA</span>] <strong>ssh user admin123 authentication-type rsa</strong></pre>
+</div>
+<div class="p"># Enable STelnet and set the user service type to STelnet.<pre class="screen">[<span>RouterA</span>] <strong>stelnet server enable</strong>
+[<span>RouterA</span>] <strong>ssh user admin123 service-type stelnet</strong></pre>
+</div>
+<p># The configuration of <span>RouterB</span> is the same as that of <span>RouterA</span>.</p>
+</li><li>Configure VTY.<pre class="screen">[<span>RouterA</span>] <strong>acl 2002</strong>
+[<span>RouterA</span>-acl4-basic-2001] <strong>rule 5 permit source 121.1.1.0 0.0.0.255</strong>
+[<span>RouterA</span>-acl4-basic-2001] <strong>rule 9999 deny source any</strong>
+[<span>RouterA</span>-acl4-basic-2001] <strong>quit</strong>
+[<span>RouterA</span>] <strong>user-interface vty 0 4</strong>
+[<span>RouterA</span>-ui-vty0-4] <strong>acl 2002 inbound</strong>
+[<span>RouterA</span>-ui-vty0-4] <strong>authentication-mode aaa</strong>
+[<span>RouterA</span>-ui-vty0-4] <strong>user privilege level 3</strong>
+[<span>RouterA</span>-ui-vty0-4] <strong>protocol inbound ssh</strong></pre>
+<p># The configuration of <span>RouterB</span> is the same as that of <span>RouterA</span>.</p>
+</li><li>Configure the information center.<div class="p"># Configure the source interface that sends information to the log host.<pre class="screen">[<span>RouterA</span>] <strong>info-center loghost source LoopBack0</strong></pre>
+</div>
+<div class="p"># Configure the device to output logs to a specified log host and set the number of logs to be displayed to 1024.<pre class="screen">[<span>RouterA</span>] <strong>info-center loghost 120.1.1.3</strong>
+[<span>RouterA</span>] <strong>info-center loghost 120.1.1.4</strong>
+[<span>RouterA</span>] <strong>info-center logbuffer size 1024</strong></pre>
+</div>
+<p># The configuration of <span>RouterB</span> is the same as that of <span>RouterA</span>.</p>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Verifying the Configuration</h4><ol><li>Run the <b><span class="cmdname">display vrrp verbose</span></b> command to check the VRRP group status. The command output shows that the VRRP group status is correct.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display vrrp verbose</strong>                                              
+Vlanif21 | Virtual Router 20                                                    
+State          : Master                                                     
+Virtual IP     : 21.1.1.254                                                     
+Master IP      : 0.0.0.0                                                        
+PriorityRun    : 120                                                            
+PriorityConfig : 120                                                            
+MasterPriority : 0                                                              
+Preempt        : YES   Delay Time : 0s   Remain : --                            
+Hold Multiplier: 3                                                              
+TimerRun       : 1s                                                             
+TimerConfig    : 1s                                                             
+Auth Type      : NONE                                                           
+Virtual MAC    : 0000-5e00-0114                                                 
+Check TTL      : YES                                                            
+Config Type    : Normal                                                         
+Create Time       : 2022-11-29 16:13:25                                         
+Last Change Time  : 0000-00-00 00:00:00                                         
+
+Vlanif21 | Virtual Router 23                                                    
+State          : Master                                                     
+Virtual IP     : 22.1.1.254                                                     
+Master IP      : 0.0.0.0                                                        
+PriorityRun    : 90                                                             
+PriorityConfig : 90                                                             
+MasterPriority : 0                                                              
+Preempt        : YES   Delay Time : 0s   Remain : --                            
+Hold Multiplier: 3                                                              
+TimerRun       : 1s                                                             
+TimerConfig    : 1s                                                             
+Auth Type      : NONE                                                           
+Virtual MAC    : 0000-5e00-0117                                                 
+Check TTL      : YES                                                            
+Config Type    : Normal                                                         
+Create Time       : 2022-11-29 16:16:10                                         
+Last Change Time  : 0000-00-00 00:00:00                                         
+
+Vlanif30 | Virtual Router 30                                                    
+State          : Backup                                                     
+Virtual IP     : 30.1.1.254                                                     
+Master IP      : 0.0.0.0                                                        
+PriorityRun    : 120                                                            
+PriorityConfig : 120                                                            
+MasterPriority : 0                                                              
+Preempt        : YES   Delay Time : 0s   Remain : --                            
+Hold Multiplier: 3                                                              
+TimerRun       : 1s                                                             
+TimerConfig    : 1s                                                             
+Auth Type      : NONE                                                           
+Virtual MAC    : 0000-5e00-011e                                                 
+Check TTL      : YES                                                            
+Config Type    : Normal                                                         
+Create Time       : 2022-11-29 16:24:19                                         
+Last Change Time  : 0000-00-00 00:00:00
+                                                        </pre>
+</li><li>Run the <b><span class="cmdname">display ospf peer</span></b> command. The command output shows that the OSPF neighbor relationship between RouterA and RouterB is in Full state.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display ospf peer</strong>                                        
+OSPF Process 1 with Router ID 10.1.1.1                                   
+ Area 0.0.0.3 interface 20.1.1.2 (GE0/0/0)'s neighbors                     
+  Router ID: 10.1.1.2           Address : 40.1.1.2                         
+  State    : Full               Mode    : Nbr is Slave       Priority: 1        
+  DR       : None               BDR     : None               MTU     : 0        
+  Dead timer due (in seconds) : 36                                              
+  Retrans timer interval      : 5                                               
+  Neighbor up time            : 66h07m03s                                       
+  Neighbor up time stamp      : 2022-10-21 12:25:32                             
+  Authentication Sequence     : 0                                               </pre>
+</li><li>Run the <b><span class="cmdname">display stp brief</span></b> command to check the STP status. The command output shows that the <strong>STP State</strong> field of the port displays <strong>forwarding</strong> and the <strong>Edged</strong> field of the LAN-side port displays <strong>enable</strong>.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display stp brief</strong>                                                 
+2022-11-29 06:35:08.261                                                         
+ MSTID  Port                        Role  STP State     Protection      Cost    
+Edged                                                                           
+     0  GE0/0/3                     DESI  forwarding    none           20000    
+enable                                                                         
+     0  GE0/0/4                     DESI  forwarding    none           20000    
+enable                                                                          
+     0  GE0/0/5                     DESI  forwarding    none           20000    
+enable                                                                          
+ </pre>
+</li><li>Run the <strong>display traffic classifier</strong> command. The command output shows that information about the configured traffic classifier is correct.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display traffic classifier</strong>                                        
+  Traffic Classifier Information:                                                                                                   
+    Classifier: data                                                            
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match dscp 15                                                        
+
+    Classifier: user1                                                           
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match acl 2001                                                       
+
+    Classifier: user2                                                           
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match acl 2002                                                       
+
+    Classifier: user3                                                           
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match acl 2003                                                       
+
+    Classifier: video                                                           
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match dscp cs5                                                       
+
+    Classifier: voice                                                           
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match dscp ef                                                        
+
+Total classifier number is 6 </pre>
+</li><li>Run the <strong>display traffic behavior</strong> command to check information about the configured traffic behavior. The command output shows the FQ profiles referenced by the traffic behaviors of different services, and the SQ profiles and child traffic policies referenced by the traffic behaviors of different users.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display traffic behavior</strong>                                          
+  Traffic Behavior Information:                                                 
+    Behavior: data                                                              
+      Flow queue:                                                               
+       Flow-queue fq1 queue data                                                                                                     
+
+    Behavior: user1                                                             
+      User queue:                                                               
+       Qos-user-profile uq1 user-queue user1                                    
+      Traffic Policy:                                                           
+       Traffic-policy sub-policy                                                
+
+    Behavior: user2                                                             
+      User queue:                                                               
+       Qos-user-profile uq1 user-queue user2                                    
+      Traffic Policy:                                                           
+       Traffic-policy sub-policy                                                
+
+    Behavior: user3                                                             
+      User queue:                                                               
+       Qos-user-profile uq1 user-queue user3                                    
+      Traffic Policy:                                                           
+       Traffic-policy sub-policy                                                
+
+    Behavior: video                                                             
+      Flow queue:                                                               
+       Flow-queue fq1 queue video                                               
+
+    Behavior: voice                                                             
+      Flow queue:                                                               
+       Flow-queue fq1 queue voice                                               
+
+Total behavior number is 6 </pre>
+</li><li>Run the <b><span class="cmdname">display traffic policy</span></b> command to check the configured traffic policy. The command output shows the parent traffic policy <strong>parent-policy</strong> (with the nested child traffic policy <strong>sub-policy</strong>), and the child traffic policy <strong>sub-policy</strong>.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display traffic policy</strong>   
+  Traffic Policy Information:                                                                                            
+    Policy: parent-policy                                                       
+      Classifier: user1                                                         
+        Type: OR                                                                
+      Behavior: user1                                                           
+        User queue:                                                             
+         Qos-user-profile uq1 user-queue user1                                  
+        Traffic Policy:                                                         
+         Traffic-policy sub-policy                                              
+
+      Classifier: user2                                                         
+        Type: OR                                                                
+      Behavior: user2                                                           
+        User queue:                                                             
+         Qos-user-profile uq1 user-queue user2                                  
+        Traffic Policy:                                                         
+         Traffic-policy sub-policy                                              
+
+      Classifier: user3                                                         
+        Type: OR                                                                
+      Behavior: user3                                                           
+        User queue:                                                             
+         Qos-user-profile uq1 user-queue user3                                  
+        Traffic Policy:                                                         
+         Traffic-policy sub-policy                                              
+
+    Policy: sub-policy                                                          
+      Classifier: voice                                                         
+        Type: OR                                                                
+      Behavior: voice                                                           
+        Flow queue:                                                             
+         Flow-queue fq1 queue voice                                             
+
+      Classifier: video                                                         
+        Type: OR                                                                
+      Behavior: video                                                           
+        Flow queue:                                                             
+         Flow-queue fq1 queue video                                             
+
+      Classifier: data                                                          
+        Type: OR                                                                
+      Behavior: data                                                            
+        Flow queue:                                                             
+         Flow-queue fq1 queue data                                              
+
+Total policy number is 2 </pre>
+</li><li>Run the <strong>display traffic-policy applied-record</strong> command. The command output shows that the traffic policy is successfully applied.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display traffic-policy applied-record</strong>                                                                              
+Total records : 1                                                               
+--------------------------------------------------------------------------------
+Policy Type/Name                 Apply Parameter                 Slot  State    
+--------------------------------------------------------------------------------
+parent-policy                    GE0/0/0(IN)                     0     success  
+
+--------------------------------------------------------------------------------</pre>
+</li><li>A terminal is started and 802.1X authentication is triggered. If 802.1X authentication fails, MAC address authentication is performed. If MAC address authentication is successful, you can run the <b><span class="cmdname">display access-user mac-address</span></b> command to check online user information.<p><span><img src="../images/en-us_image_0000001538195037.png" height="180.88" width="465.5" title="Click to enlarge" class="imgResize"></span></p>
+</li><li>A terminal is started and the user name and password are entered to start 802.1X authentication. After the authentication is successful, the user can access the network. You can also run the <b><span class="cmdname">display access-user mac-address</span></b> command to check online user information.<p><span><img src="../images/en-us_image_0000001538275221.png" height="189.75109999999998" width="465.5" title="Click to enlarge" class="imgResize"></span></p>
+</li><li>Run the <b><span class="cmdname">display snmp-agent sys-info version</span></b> command. The command output shows that the SNMP version is SNMPv2c and SNMPv3.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display snmp-agent sys-info version</strong>  
+   SNMP version running in the system:                                          
+           SNMPv2c SNMPv3 </pre>
+</li><li>Run the <b><span class="cmdname">display snmp-agent target-host</span></b> command. The command output shows that the target host that receives traps is correct.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display snmp-agent target-host</strong>
+Target host NO. 1                                                               
+---------------------------------------------------------------------------     
+  Host name                        : __targetHost_1_28107                       
+  IP address                       : 120.1.1.2                                  
+  Source interface                 : -                                          
+  VPN instance                     : -                                          
+  Security name                    : %+%##!!!!!!!!!"!!!!"!!!!*!!!!#A`$BC*P,Ehf<font style="font-size:8pt" Face="Courier New" >~</font>0
+H1w-8/ul-2"81i!R!r9Y9!!!!!2jp5!!!!!!;!!!!G)Z!HJDhNBCF%H#csZz-Cul@)]aLhJe)#+1!!!!
+!%+%#                                                                           
+  Port                             : 162                                        
+  Type                             : inform                                     
+  Version                          : v3                                        
+  Level                            : No authentication and privacy              
+  NMS type                         : NMS                                        
+  With ext vb                      : No                                         
+  Notification filter profile name : -                                          
+  Heart beat required              : No                                         
+--------------------------------------------------------------------------- </pre>
+</li><li>Run the <b><span class="cmdname">display ntp status</span></b> command to check the NTP status. The command output shows that the <strong>clock status</strong> field displays <strong>synchronized</strong>.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display ntp status</strong>                                                                                                     
+ clock status: synchronized                                                     
+ clock stratum: 2                                                               
+ reference clock ID: LOCAL(0)                                                   
+ nominal frequency: 100.0000 Hz                                                 
+ actual frequency: 100.0000 Hz                                                  
+ clock precision: 2^17                                                          
+ clock offset: 0.0000 ms                                                        
+ root delay: 0.00 ms                                                            
+ root dispersion: 11.42 ms                                                      
+ peer dispersion: 10.00 ms                                                      
+ reference time: 06:44:59.159 UTC Oct 24 2022(E700B2EB.28E29F9C)                
+ synchronization state: clock synchronized</pre>
+</li><li>The client whose IP address is in the IP address range specified in ACL 2002 successfully logs in to the device through SSH using the OpenSSH software.</li><li>Run the <b><span class="cmdname">display info-center</span></b> command to check whether information about the log host is correct.<pre class="screen">&lt;<span>RouterA</span>&gt; <strong>display info-center</strong>                                                                                                     
+Information Center:enabled                                                      
+Log host:                                                                       
+        120.1.1.3, channel number 2, channel name loghost,                      
+language English , host facility local7                                         
+        120.1.1.4, channel number 2, channel name loghost,                      
+language English , host facility local7
+Console:                                                                        
+        channel number : 0, channel name : console                              
+Monitor:                                                                        
+        channel number : 1, channel name : monitor                              
+SNMP Agent:                                                                     
+        channel number : 5, channel name : snmpagent                            
+Log buffer:                                                                     
+        enabled,max buffer size 10240, current buffer size 512,                 
+current messages 512, channel number : 4, channel name : logbuffer              
+dropped messages 0, overwritten messages 1176                                   
+Trap buffer:                                                                    
+        enabled,max buffer size 1024, current buffer size 256,                  
+current messages 214, channel number:3, channel name:trapbuffer                 
+dropped messages 0, overwritten messages 0                                      
+logfile:                                                                        
+        channel number : 9, channel name : channel9, language : English         
+Information timestamp setting:                                                  
+        log - date, trap - date, debug - date millisecond</pre>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4><p><span>RouterA</span></p>
+<pre class="screen">#
+sysname RouterA
+lldp enable
+vlan batch 21 30
+#
+info-center loghost source LoopBack0
+info-center loghost 120.1.1.3
+info-center loghost 120.1.1.4
+info-center logbuffer size 1024
+#
+authentication-profile name p1
+ dot1x-access-profile d1
+ mac-access-profile m1
+ access-domain huawei.com force
+ authentication dot1x-mac-bypass
+#
+ntp authentication-keyid 42 authentication-mode hmac-sha256 cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!#A`$BC*P,E(YRSX+E{79:e#Y3XOwh8Ig{.+!!!!!2jp5!!!!!!@!!!!QUjC:{!@HL2%omHb6<font style="font-size:8pt" Face="Courier New" >~</font>/@%b-S0x/G*M;gq|7h2+f*%+%#
+ntp trusted authentication-keyid 42
+ntp unicast-server 120.1.1.5 authentication-keyid 42
+ntp authentication enable
+ntp source-interface LoopBack0
+#
+qos-user-profile uq1
+ user-queue user1 drr weight 30 cir 50000 cbs 1000000 
+ user-queue user2 drr weight 10 cir 30000 cbs 750000 
+ user-queue user3 drr weight 10 cir 20000 cbs 500000
+#
+flow-queue fq1
+ queue voice pq shaping cir-shaping-percentage 15
+ queue video drr weight 30 shaping cir-shaping-percentage 30
+ queue data drr weight 10 shaping cir-shaping-percentage 45
+#
+acl number 2001
+ rule 5 permit source 10.10.10.0 0.0.0.255
+#
+acl number 2002
+ rule 5 permit source 10.10.20.0 0.0.0.255
+#
+acl number 2003
+ rule 5 permit source 10.10.30.0 0.0.0.255
+#
+traffic classifier data
+ if-match dscp 15
+#
+traffic classifier video
+ if-match dscp 40 
+#
+traffic classifier voice
+ if-match dscp 46
+#
+traffic classifier user1
+ if-match acl 2001
+#
+traffic classifier user2
+ if-match acl 2002
+#
+traffic classifier user3
+ if-match acl 2003
+#
+traffic behavior data
+ flow-queue fq1 queue data
+#
+traffic behavior video
+ flow-queue fq1 queue video 
+#
+traffic behavior voice
+ flow-queue fq1 queue voice
+#
+traffic behavior user1
+ qos-user-profile uq1 user-queue user1 
+ traffic-policy sub-policy 
+#
+traffic behavior user2
+ qos-user-profile uq1 user-queue user2 
+ traffic-policy sub-policy 
+#
+traffic behavior user3
+ qos-user-profile uq1 user-queue user3 
+ traffic-policy sub-policy
+#
+traffic policy parent-policy 
+ classifier user1 behavior user1 precedence 5
+ classifier user2 behavior user2 precedence 10
+ classifier user3 behavior user3 precedence 15
+#
+traffic policy sub-policy 
+ classifier voice behavior voice precedence 5
+ classifier video behavior video precedence 10
+ classifier data behavior data precedence 15
+#
+aaa
+ authentication-scheme abc
+  authentication-mode radius
+ accounting-scheme acco1
+  accounting-mode radius
+  accounting realtime 12
+ accounting-scheme default
+  accounting-mode none
+ domain huawei.com
+  authentication-scheme abc
+  accounting-scheme acco1
+  radius-server rd1
+ local-user admin123 password irreversible-cipher $1d$PrtHHcxEY1vu&lt;RUl$v=R:"Ii1@SP2CU.I&amp;B|&lt;s{a5*HGOb=`y],@N[!t6$
+ local-user admin123 privilege level 3
+ local-user admin123 service-type ssh
+#
+radius-server template rd1
+ radius-server shared-key cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!#A`$BC*P,EVx64Se&amp;D##9,N\$`D6\2&amp;EeTR!!!!!2jp5!!!!!!A!!!!+H5X39J\$JUQEAXOO41=t0XR7}8BUU4%-$<font style="font-size:8pt" Face="Courier New" >~</font>I<font style="font-size:8pt" Face="Courier New" >~</font>4=4%+%#
+ radius-server accounting 120.1.1.10 1813 weight 80
+ radius-server accounting 120.1.1.11 1813 weight 70
+ radius-server authentication 120.1.1.10 1812 weight 80
+ radius-server authentication 120.1.1.11 1812 weight 70
+#
+dot1x-access-profile name d1
+ dot1x timer reauthenticate-period 7200
+ dot1x reauthenticate
+ dot1x retry 3
+#
+mac-access-profile name m1
+#
+interface LoopBack0
+ ip address 10.1.1.1 255.255.255.255
+#
+interface Vlanif 21
+ ip address 21.1.1.1 255.255.255.0
+ ip address 22.1.1.1 255.255.255.0 sub
+ vrrp vrid 21 virtual-ip 21.1.1.254
+ vrrp vrid 21 priority 120
+ vrrp vrid 22 virtual-ip 22.1.1.254
+ vrrp vrid 22 priority 90
+#
+interface Vlanif 30
+ ip address 30.1.1.1 255.255.255.0
+ vrrp vrid 30 virtual-ip 30.1.1.254
+ vrrp vrid 30 priority 120
+#
+interface Eth-Trunk1
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 4094
+#
+interface GE0/0/0
+ ip address 20.1.1.2 255.255.255.0
+ ospf authentication-mode hmac-sha256 1 cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!#A`$BC*P,ER8V`<font style="font-size:8pt" Face="Courier New" >~</font>W$YT.5p@DXj:WGFP&lt;6=W!!!!!2jp5!!!!!!;!!!!xuYz&amp;<font style="font-size:8pt" Face="Courier New" >~</font>2I.F;PmMEV_3o;Un.8HT[@\QVEuy&lt;!!!!!%+%#
+ ospf cost 10
+ ospf network-type p2p
+ traffic-policy parent-policy outbound
+#
+interface GE0/0/1
+ eth-trunk 1
+#
+interface GE0/0/2
+ eth-trunk 1
+#
+interface GE 0/0/3
+ portswitch
+ port link-type access
+ port default vlan 21
+ stp edged-port enable
+ authentication-profile p1
+#
+interface GE 0/0/4
+ portswitch
+ port link-type access
+ port default vlan 21
+ stp edged-port enable
+ authentication-profile p1
+#
+interface GE 0/0/5
+ portswitch
+ port link-type access
+ port default vlan 30
+ stp edged-port enable
+ authentication-profile p1
+#
+ospf 1 router-id 10.1.1.1
+ area 0.0.0.3
+  network 21.1.1.0 0.0.0.255
+  network 22.1.1.0 0.0.0.255
+  network 20.1.1.0 0.0.0.255
+  network 30.1.1.0 0.0.0.255
+  network 10.1.1.1 0.0.0.0
+  nssa no-summary
+#
+stelnet server enable
+sftp server enable
+ssh user admin123
+ssh user admin123 authentication-type rsa
+ssh user admin123 service-type stelnet
+#
+user-interface vty 0 4
+ acl 2002 inbound
+ authentication-mode aaa
+ user privilege level 3
+ protocol inbound ssh
+#
+snmp-agent
+snmp-agent sys-info version v2c v3
+snmp-agent trap source LoopBack0
+snmp-agent community read adminnms2 acl 2001
+snmp-agent target-host inform address udp-domain 120.1.1.2 params securityname cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!#A`$BC*P,Ehf<font style="font-size:8pt" Face="Courier New" >~</font>0H1w-8/ul-2"81i!R!r9Y9!!!!!2jp5!!!!!!;!!!!G)Z!HJDhNBCF%H#csZz-Cul@)]aLhJe)#+1!!!!!%+%# 3
+</pre>
+<div class="p"><span>RouterB</span><pre class="screen">#
+sysname RouterB
+lldp enable
+vlan batch 21 30
+#
+info-center loghost source LoopBack0
+info-center loghost 120.1.1.3
+info-center loghost 120.1.1.4
+info-center logbuffer size 1024
+#
+authentication-profile name p1
+ dot1x-access-profile d1
+ mac-access-profile m1
+ access-domain huawei.com force
+ authentication dot1x-mac-bypass
+#
+ntp authentication-keyid 42 authentication-mode hmac-sha256 cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!#A`$BC*P,E(YRSX+E{79:e#Y3XOwh8Ig{.+!!!!!2jp5!!!!!!@!!!!QUjC:{!@HL2%omHb6<font style="font-size:8pt" Face="Courier New" >~</font>/@%b-S0x/G*M;gq|7h2+f*%+%#
+ntp trusted authentication-keyid 42
+ntp unicast-server 120.1.1.5 authentication-keyid 42
+ntp authentication enable
+ntp source-interface LoopBack0
+#
+qos-user-profile uq1
+ user-queue user1 drr weight 30 cir 50000 cbs 1000000 
+ user-queue user2 drr weight 10 cir 30000 cbs 750000 
+ user-queue user3 drr weight 10 cir 20000 cbs 500000
+#
+flow-queue fq1
+ queue voice pq shaping cir-shaping-percentage 15
+ queue video drr weight 30 shaping cir-shaping-percentage 30
+ queue data drr weight 10 shaping cir-shaping-percentage 45
+#
+acl number 2001
+ rule 5 permit source 10.10.10.0 0.0.0.255
+#
+acl number 2002
+ rule 5 permit source 10.10.20.0 0.0.0.255
+#
+acl number 2003
+ rule 5 permit source 10.10.30.0 0.0.0.255
+#
+traffic classifier data
+ if-match dscp 15
+#
+traffic classifier video
+ if-match dscp 40 
+#
+traffic classifier voice
+ if-match dscp 46
+#
+traffic classifier user1
+ if-match acl 2001
+#
+traffic classifier user2
+ if-match acl 2002
+#
+traffic classifier user3
+ if-match acl 2003
+#
+traffic behavior data
+ flow-queue fq1 queue data
+#
+traffic behavior video
+ flow-queue fq1 queue video 
+#
+traffic behavior voice
+ flow-queue fq1 queue voice
+#
+traffic behavior user1
+ qos-user-profile uq1 user-queue user1 
+ traffic-policy sub-policy 
+#
+traffic behavior user2
+ qos-user-profile uq1 user-queue user2 
+ traffic-policy sub-policy 
+#
+traffic behavior user3
+ qos-user-profile uq1 user-queue user3 
+ traffic-policy sub-policy
+#
+traffic policy parent-policy 
+ classifier user1 behavior user1 precedence 5
+ classifier user2 behavior user2 precedence 10
+ classifier user3 behavior user3 precedence 15
+#
+traffic policy sub-policy 
+ classifier voice behavior voice precedence 5
+ classifier video behavior video precedence 10
+ classifier data behavior data precedence 15
+#
+aaa
+ authentication-scheme abc
+  authentication-mode radius
+ accounting-scheme acco1
+  accounting-mode radius
+  accounting realtime 12
+ accounting-scheme default
+  accounting-mode none
+ domain huawei.com
+  authentication-scheme abc
+  accounting-scheme acco1
+  radius-server rd1
+ local-user admin123 password irreversible-cipher $1d$PrtHHcxEY1vu&lt;RUl$v=R:"Ii1@SP2CU.I&amp;B|&lt;s{a5*HGOb=`y],@N[!t6$
+ local-user admin123 privilege level 3
+ local-user admin123 service-type ssh
+#
+radius-server template rd1
+ radius-server shared-key cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!#A`$BC*P,EVx64Se&amp;D##9,N\$`D6\2&amp;EeTR!!!!!2jp5!!!!!!A!!!!+H5X39J\$JUQEAXOO41=t0XR7}8BUU4%-$<font style="font-size:8pt" Face="Courier New" >~</font>I<font style="font-size:8pt" Face="Courier New" >~</font>4=4%+%#
+ radius-server accounting 120.1.1.10 1813 weight 80
+ radius-server accounting 120.1.1.11 1813 weight 70
+ radius-server authentication 120.1.1.10 1812 weight 80
+ radius-server authentication 120.1.1.11 1812 weight 70
+#
+dot1x-access-profile name d1
+ dot1x timer reauthenticate-period 7200
+ dot1x reauthenticate
+ dot1x retry 3
+#
+mac-access-profile name m1
+#
+interface LoopBack0
+ ip address 10.1.1.2 255.255.255.255
+#
+interface Vlanif 21
+ ip address 21.1.1.2 255.255.255.0
+ ip address 22.1.1.2 255.255.255.0 sub
+ vrrp vrid 21 virtual-ip 21.1.1.254
+ vrrp vrid 21 priority 90
+ vrrp vrid 22 virtual-ip 22.1.1.254
+ vrrp vrid 22 priority 120
+#
+interface Vlanif 30
+ ip address 30.1.1.2 255.255.255.0
+ vrrp vrid 30 virtual-ip 30.1.1.254
+ vrrp vrid 30 priority 90
+#
+interface Eth-Trunk1
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 4094
+#
+interface GE0/0/0
+ ip address 40.1.1.2 255.255.255.0
+ ospf authentication-mode hmac-sha256 1 cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!#A`$BC*P,ER8V`<font style="font-size:8pt" Face="Courier New" >~</font>W$YT.5p@DXj:WGFP&lt;6=W!!!!!2jp5!!!!!!;!!!!xuYz&amp;<font style="font-size:8pt" Face="Courier New" >~</font>2I.F;PmMEV_3o;Un.8HT[@\QVEuy&lt;!!!!!%+%#
+ ospf cost 10
+ ospf network-type p2p
+ traffic-policy parent-policy outbound
+#
+interface GE0/0/1
+ eth-trunk 1
+#
+interface GE0/0/2
+ eth-trunk 1
+#
+interface GE 0/0/3
+ portswitch
+ port link-type access
+ port default vlan 21
+ stp edged-port enable
+ authentication-profile p1
+#
+interface GE 0/0/4
+ portswitch
+ port link-type access
+ port default vlan 21
+ stp edged-port enable
+ authentication-profile p1
+#
+interface GE 0/0/5
+ portswitch
+ port link-type access
+ port default vlan 30
+ stp edged-port enable
+ authentication-profile p1
+#
+ospf 1 router-id 10.1.1.1
+ area 0.0.0.3
+  network 21.1.1.0 0.0.0.255
+  network 22.1.1.0 0.0.0.255
+  network 20.1.1.0 0.0.0.255
+  network 30.1.1.0 0.0.0.255
+  network 10.1.1.1 0.0.0.0
+  nssa no-summary
+#
+stelnet server enable
+sftp server enable
+ssh user admin123
+ssh user admin123 authentication-type rsa
+ssh user admin123 service-type stelnet
+#
+user-interface vty 0 4
+ acl 2002 inbound
+ authentication-mode aaa
+ user privilege level 3
+ protocol inbound ssh
+#
+snmp-agent
+snmp-agent sys-info version v2c v3
+snmp-agent trap source LoopBack0
+snmp-agent community read adminnms2 acl 2001
+snmp-agent target-host inform address udp-domain 120.1.1.2 params securityname cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!#A`$BC*P,Ehf<font style="font-size:8pt" Face="Courier New" >~</font>0H1w-8/ul-2"81i!R!r9Y9!!!!!2jp5!!!!!!;!!!!G)Z!HJDhNBCF%H#csZz-Cul@)]aLhJe)#+1!!!!!%+%# v3
+</pre>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_topic_0000001538075105.html">Comprehensive Scenario Cases
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_topic_0000001538275217.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

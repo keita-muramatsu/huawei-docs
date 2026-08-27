@@ -1,0 +1,181 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring 802.1X Authentication (AAA Using Local Authentication)">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_230.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_231.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_233.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001579298562">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring 802.1X Authentication (AAA Using Local Authentication)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001579298562"></a><a name="EN-US_TASK_0000001579298562"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring 802.1X Authentication (AAA Using Local Authentication)</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001579298562__1.4.1"></a><a name="1.4.1"></a>
+<div class="p" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_context1879688917180155"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p50119322180155">In <a href="#EN-US_TASK_0000001579298562__en-us_task_0000001544979758_fig_01">Figure 1</a>, terminals in a company's office area are connected to the company's intranet through DeviceA. The downlink interface (for example <span>10GE</span> <span>0/0/2</span>) of DeviceA is directly connected to terminals in the office area.</p>
+<p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p987894276180155">To meet the company's high security requirements, 802.1X authentication and local authentication need to be configured to authenticate terminals in the office area. Additionally, authentication points need to be deployed on DeviceA's interfaces (for example, <span>10GE</span> <span>0/0/2</span>) that are directly connected to the terminals.</p>
+<div class="fignone" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_fig_01"><a name="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_fig_01"></a><a name="en-us_task_0000001544979758_fig_01"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring 802.1X authentication</span><div class="note" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_note4431204417521"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p74311544145216">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_image419374412574" src="figure/en-us_image_0000001544983250.png"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001579298562__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_steps705058877180155"><li id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_step88562378188"><span id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_cmd371742549180144">Configure network connectivity.</span><p><p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_p84582529382"># Create VLANs, configure the allowed VLANs on interfaces, and configure IP addresses for interfaces.</p>
+<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_screen301526699180144">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b928229808180144">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b133851142144816">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b680095247180144">vlan batch 10 20</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b7792145114597">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b175579513484">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1207589107180144">port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1134790390180144">port trunk allow-pass vlan 10</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1964778305180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1465044327180144">interface vlanif 10</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1679677264180144">ip address 192.168.1.10 24</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1471693815180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1978555855180144">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b187010224495">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b75631228180144">port link-type access</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1122878415180144">port default vlan 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1086189616180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b47469953180144">interface vlanif 20</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1545963845180144">ip address 192.168.2.10 24</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001513160210_b1803338608180144">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_step410780778180155"><span id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_cmd1980094388180155">Configure AAA local authentication.</span><p><p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p595028160180155"># Configure the authentication scheme <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b15189155113115">a1</strong> and set the authentication mode to local authentication.</p>
+<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_screen105866704180155">[DeviceA] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b176452912180155">aaa</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b910558503180155">authentication-scheme a1</strong>
+[DeviceA-aaa-authen-a1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b78903122180155">authentication-mode local</strong>
+[DeviceA-aaa-authen-a1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1977841060180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p711107754180155"># Configure the authorization scheme <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b14431557193113">b1</strong> and set the authorization mode to local authorization.</p>
+<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_screen198888719180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b394895877180155">authorization-scheme b1</strong>
+[DeviceA-aaa-author-b1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b803320399180155">authorization-mode local</strong>
+[DeviceA-aaa-author-b1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1959015431180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p1572111587180155"># Configure the user name, password, and access type of a local user.</p>
+<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_screen235474001180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b11147194214915">local-access-user 00e0-fcd4-8828</strong>
+[DeviceA-aaa-access-user-00e0-fcd4-8828] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b551391586180155">password cipher Example@123</strong>
+[DeviceA-aaa-access-user-00e0-fcd4-8828] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1742164918146">service-type dot1x</strong>
+<span>Warning: If the service type of local access users is configured multiple times, the new configuration overwrites the previous one. The new configuration may cause local access users unable to go online. Continue? [Y/N]:<strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_en-us_task_0000001512681090_b8526918132711">y</strong></span>
+[DeviceA-aaa-access-user-00e0-fcd4-8828] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b113171021161519">quit</strong></pre>
+<p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p1961647584180155"># Configure the service scheme <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1734138993114247">s1</strong>. In the service scheme <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1207861473114247">s1</strong>, set the maximum number of users who are allowed to access the network using the same user name to 15.</p>
+<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_screen678059168180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b2059638639180155">service-scheme s1</strong>
+[DeviceA-aaa-service-s1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b14071811201012">access-limit user-name max-num 15</strong>
+[DeviceA-aaa-service-s1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1128149208180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p1107639395180155"># Configure the domain <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b012614613585">example.com</strong>, and apply the authentication scheme <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b121266635812">a1</strong>, authorization scheme <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b212696155820">b1</strong>, and service scheme <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1012619619583">s1</strong> to the domain.</p>
+<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_screen168652263180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1375161672180155">domain example.com</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b519305790180155">authentication-scheme a1</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1655057624180155">authorization-scheme b1</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b502223749180155">service-scheme s1</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1454152438180155">quit</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b935622287180155">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_step1320411655180155"><span id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_cmd62677487180155">Configure 802.1X authentication.</span><p><div class="p" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p1281891293180155"># Configure the 802.1X access profile <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b643744543114247">d1</strong>.<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_screen689779142180155">[DeviceA] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1387212124180155">dot1x-access-profile name d1</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b20309194464018">dot1x authentication-method pap</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b4569183211402">dot1x timer client-timeout 30</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1949649691180155">quit</strong></pre>
+</div>
+<p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p1708450717180155"># Configure the authentication profile <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b7235453185911">p1</strong>, bind the 802.1X access profile <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b82353535599">d1</strong> to the authentication profile, and configure the forcible authentication domain <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b22351153185915">example.com</strong> for users using the authentication profile.</p>
+<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_screen1000268817180155">[DeviceA] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1582183324180155">authentication-profile name p1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b649890072180155">dot1x-access-profile d1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b525947397180155">access-domain example.com force</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b789896137180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p4385142141316"># Bind the authentication profile <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b141887193114247">p1</strong> to a downlink interface and enable 802.1X authentication on the interface. The following uses <span>10GE</span> <span>0/0/2</span> as an example. Other interfaces have similar configurations.</p>
+<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_screen851762053180155">[DeviceA] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1021992485180155">interface </strong><strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b480419811414"><span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b47806287180155">authentication-profile p1</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b1049648339180155">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_example754116475381"><a name="EN-US_TASK_0000001579298562__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_ol159849584419"><li id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_li1998411511449">A user starts the 802.1X client on a terminal, and enters the user name and password for authentication.</li><li id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_li17984205114417">If the user name and password are correct, an authentication success message is displayed on the client page. The user then can access the network.</li><li id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_li5984355445">After the user goes online, you can run the <strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b9824165285411">display access-user access-type dot1x</strong> command on the device to check online 802.1X user information.</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001579298562__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><p id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_p755783864318">DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_screen1199955094318">#
+sysname DeviceA
+#
+authentication-profile name p1
+ dot1x-access-profile d1
+ access-domain example.com force
+#
+vlan batch 10 20
+#
+aaa
+ authentication-scheme a1    
+  authentication-mode local
+ authorization-scheme b1
+  authorization-mode local
+ service-scheme s1
+  access-limit user-name max-num 15
+ domain example.com            
+  authentication-scheme a1
+  authorization-scheme b1
+  service-scheme s1
+ local-access-user 00e0-fcd4-8828
+  password cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!SKvr${[Fs.&lt;FvBB,.w;M75IN5Z&gt;'!L8G:n-!!!!!2jp5!!!!!!&lt;!!!!k9&amp;fPO&lt;BSRW}jPT(,ewKyfIL"zVtM1<font style="font-size:8pt" Face="Courier New" >~</font>=&gt;e.!!!!!%+%# 
+  service-type dot1x 
+#  
+dot1x-access-profile name d1
+ dot1x authentication-method pap
+ dot1x timer client-timeout 30
+#
+interface Vlanif10
+ ip address 192.168.1.10 255.255.255.0
+#
+interface Vlanif20
+ ip address 192.168.2.10 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+<strong id="EN-US_TASK_0000001579298562__en-us_task_0000001544979758_b591521031417"> </strong>port link-type access
+ port default vlan 20
+ authentication-profile p1
+#
+return </pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_230.html">NAC
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_231.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="feature-specific_233.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

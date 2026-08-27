@@ -1,0 +1,232 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring SPR">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_task_0000001563995721.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_spr_cfg_0016.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Smart Policy Routing">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Smart Policy Routing">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513155450">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring SPR</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513155450"></a><a name="EN-US_TASK_0000001513155450"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring SPR</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513155450__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000001513155450__fig428610143813">Figure 1</a>, two SD-WAN EVPN TNs — MPLS and Internet — are deployed between CPE1 and CPE2. MPLS is used as the primary link, and the Internet is used as the backup link. To properly transmit services between the two CPEs, the thresholds of the link delay, jitter, packet loss rate, and CMI are set to 100 ms, 50 ms, 5‰, and 200, respectively. The IPv4 application identification function needs to be enabled on interface 1 — a physical interface that connects CPE1 to Site1 — and a VPN instance needs to be bound.</p>
+<div class="fignone" id="EN-US_TASK_0000001513155450__fig428610143813"><a name="EN-US_TASK_0000001513155450__fig428610143813"></a><a name="fig428610143813"></a><span class="figcap"><b>Figure 1 </b>Network diagram of SPR</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 represents <span>10GE</span> <span>0/0/1</span>.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001512835934.png"></span></div>
+<h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure an application group for identifying service flows.</li><li>Create a service profile and bind it to the application group.</li><li>Create a policy profile and bind it to the service profile.</li><li>Configure link switchover thresholds.</li><li>Associate a policy with a link.</li><li>Apply the policy to a VPN instance.</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513155450__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an application group for identifying service flows.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname CPE1</strong>
+[CPE1] <strong>interface <span>10ge</span> </strong><strong><span>0/0/1</span></strong>
+[CPE1-<span>10GE</span><span>0/0/1</span>] <strong>ip binding vpn-instance</strong><strong> vpn1</strong>
+[CPE1-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.1.1.1 24</strong>
+[CPE1-<span>10GE</span><span>0/0/1</span>]<strong> </strong><strong>quit</strong>
+[CPE1] <strong>interface <span>10ge</span> </strong><strong><span>0/0/1</span></strong>
+[CPE1--<span>10GE</span><span>0/0/1</span>]<strong> sa enable</strong>
+[CPE1--<span>10GE</span><span>0/0/1</span>]<strong> </strong><strong>quit</strong>
+[CPE1] <strong>application-group name chat</strong>
+[CPE1-application-group-chat] <strong>add</strong> <strong>application welink</strong>
+[CPE1-application-group-chat]<strong> </strong><strong>quit</strong></pre>
+</p></li><li><span>Create a service profile and bind it to the application group.</span><p><pre class="screen">[CPE1] <strong>smart-policy-route</strong>
+[CPE1-smart-policy-route] <strong>service-map map1</strong>
+[CPE1-smart-policy-route-service-map-smap] <strong>match application-group chat</strong>
+[CPE1-smart-policy-route-service-map-smap] <strong>quit</strong></pre>
+</p></li><li><span>Configure a policy profile.</span><p><pre class="screen">[CPE1-smart-policy-route] <strong>spr-policy node 1</strong>
+[CPE1-smart-policy-route-spr-policy-node-1] <strong>binding service-map map1</strong></pre>
+</p></li><li><span>Configure link switchover thresholds.</span><p><pre class="screen">[CPE1-smart-policy-route-spr-policy-node-1] <strong>delay threshold 100</strong>
+[CPE1-smart-policy-route-spr-policy-node-1] <strong>jitter threshold 50</strong>
+[CPE1-smart-policy-route-spr-policy-node-1] <strong>loss threshold 5</strong>
+[CPE1-smart-policy-route-spr-policy-node-1] <strong>cmi threshold 200</strong></pre>
+</p></li><li><span>Associate a policy with a link.</span><p><pre class="screen">[CPE1-smart-policy-route-spr-policy-node-1] <strong>link transport-network mpls</strong>
+[CPE1-smart-policy-route-spr-policy-node-1-link-tn-mpls] <strong>link-role master</strong>
+[CPE1-smart-policy-route-spr-policy-node-1-link-tn-mpls] <strong>link-priority 1</strong>
+[CPE1-smart-policy-route-spr-policy-node-1-link-tn-mpls] <strong>quit</strong>
+[CPE1-smart-policy-route-spr-policy-node-1] <strong>link transport-network internet</strong>
+[CPE1-smart-policy-route-spr-policy-node-1-link-tn-internet] <strong>link-role backup</strong>
+[CPE1-smart-policy-route-spr-policy-node-1-link-tn-internet] <strong>link-priority 1</strong>
+[CPE1-smart-policy-route-spr-policy-node-1-link-tn-internet] <strong>quit</strong></pre>
+</p></li><li><span>Bind the policy profile to a VPN instance.</span><p><pre class="screen">[CPE1-smart-policy-route-spr-policy-node-1] <strong>apply-to vpn-instance vpn1</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513155450__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol><li>Run the <strong>display smart-policy-route spr-policy</strong> <strong>all</strong> command on CPE1 to check the policy profile configuration.<pre class="screen">&lt;CPE1&gt; <strong>display smart-policy-route spr-policy all</strong>
+--------------------------------------------------------------------------------
+SPR-policy Info:
+  PolicyNode       :  1         
+  PolicyPriority   :  1         
+  AppPriority      :  -    
+  SwitchBack       :  enable    
+  DefaultAction    :  forward   
+  RoutingMode      :  path-prefer
+  TimeRange        :  -         
+  TimeRangeStatus  :  -         
+  TransportNetFix  :  disable
+  TrafficHold      :  disable
+  UpperBandwidth   :  -
+  LowerBandwidth   :  -
+  Replication      :  disable
+Threshold Info:
+  Loss             :  5         
+  Delay            :  100       
+  Jitter           :  50        
+  CMI              :  200       
+Service Map Info:
+  ServiceMapID     :  1         
+  ServiceMapName   :  map1      
+  Match content:      
+  MatchType : OnlyAppGroup       AppGroup  : chat                
+Link Info:
+  Master TransportNetwork(1) :
+    TNId    TNName          Priority
+    1       MPLS            1
+  Backup TransportNetwork(1) :
+    TNId    TNName          Priority
+    2       Internet        1
+--------------------------------------------------------------------------------
+Number of SPR-policy: 1
+--------------------------------------------------------------------------------</pre>
+</li><li>Run the <strong>display smart-policy-route spr-instance all</strong> command on CPE1 to check the generated SPR instance and the traffic steering result.<pre class="screen">&lt;CPE1&gt; <strong>display smart-policy-route spr-instance all</strong>     
+--------------------------------------------------------------------------------
+SPR-policy Info:
+  PolicyNode         :  1
+  PolicyPriority     :  1
+  AppPriority        :  -    
+  SwitchBack         :  enable
+  DefaultAction      :  forward
+  RoutingMode        :  path-prefer
+  TimeRange          :  -
+  TimeRangeStatus    :  -
+  TransportNetFix    :  disable
+  TrafficHold        :  disable
+  UpperBandwidth     :  -
+  LowerBandwidth     :  -
+  Replication        :  disable
+Site Info:
+  SiteID             :  29
+VPN Info:(VPN-List lists only the first eight VPN instances.)
+  VPN-Number         :  1
+  VPN-List           :  vpn1
+Threshold Info:
+  Loss               :  5
+  Delay              :  100
+  Jitter             :  50
+  CMI                :  200
+Service Map Info:
+  ServiceMapID       :  1
+  ServiceMapName     :  map1
+  Match content:
+    MatchType : OnlyAppGroup       AppGroup : chat
+LinkPath Info:
+  MasterLink:
+    ConnectionID       :  2               TnId           :  100
+    Auxiliary          :  False           Priority       :  1
+    PathPriority       :  0               Interface      :  <span>10GE</span>0/0/2
+    Loss               :  0               Jitter         :  0
+    Delay              :  0               CMI            :  0
+    OutBandwidth       :  100.00Mbit/s    OutRate        :  -
+    UpperBandwidth     :  -               OutRatio       :  -
+    LowerBandwidth     :  -               AppRate        :  -
+    AppUpperBandwidth  :  -               AppRatio       :  -
+    AppLowerBandwidth  :  -
+  BackupLink:           
+    ConnectionID       :  1               TnId           :  200
+    Auxiliary          :  False           Priority       :  1
+    PathPriority       :  0               Interface      :  <span>10GE</span>0/0/3
+    Loss               :  0               Jitter         :  0
+    Delay              :  0               CMI            :  0
+    OutBandwidth       :  100.00Mbit/s    OutRate        :  -
+    UpperBandwidth     :  -               OutRatio       :  -
+    LowerBandwidth     :  -               AppRate        :  -
+    AppUpperBandwidth  :  -               AppRatio       :  -
+    AppLowerBandwidth  :  -
+Chosen Path Info:
+  BestLinkPath : ConnectionID 2
+--------------------------------------------------------------------------------
+Number of spr-instance: 1
+--------------------------------------------------------------------------------</pre>
+</li></ol>
+<h4 class="sectiontitle">Configuration Scripts</h4><p>CPE1</p>
+<pre class="screen"># 
+ sysname CPE1 
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip binding vpn-instance vpn1
+ ip address 10.1.1.1 24
+ sa enable
+#
+application-group name chat 
+ add application welink 
+# 
+smart-policy-route 
+ service-map map1 
+  match application-group chat 
+ spr-policy node 1 
+  priority 1 
+  binding service-map map1 
+  loss threshold 5 
+  jitter threshold 50 
+  delay threshold 100 
+  cmi threshold 200 
+  link transport-network internet
+   link-role backup 
+   link-priority 1 
+  link transport-network mpls
+   link-role master 
+   link-priority 1 
+  apply-to vpn-instance vpn1 
+#</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_task_0000001563995721.html">Smart Policy Routing Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_qos_spr_cfg_0016.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

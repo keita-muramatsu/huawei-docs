@@ -1,0 +1,136 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="IS-IS/IS-ISv6">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0035.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0080.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0038.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512692630">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>IS-IS/IS-ISv6</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512692630"></a><a name="EN-US_TASK_0000001512692630"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">IS-IS/IS-ISv6</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512692630__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Overview</h4><p>IS-IS/IS-ISv6 authentication is implemented based on an authentication field added to IS-IS packets. After receiving IS-IS packets from a remote device, a local device discards them if the authentication password is incorrect. This mechanism helps to protect the local device against attacks.</p>
+<p>To launch an attack, attackers can obtain Hello packets or LSPs from a network, construct attack packets that can be identified by IS-IS, and then send them to devices. Although devices can identify and discard the attack packets based on authentication information, they may also discard valid packets because they cannot process them immediately. This adversely affects network stability.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001512692630__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+<p></p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001512692630__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure IS-IS area authentication.</span><p><p>The area authentication password is encapsulated into Level-1 area IS-IS packets. Only authenticated packets are accepted. To implement Level-1 area authentication, configure IS-IS area authentication.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IS-IS view.</span><p><pre class="screen"><b><span class="cmdqueryname">isis</span></b> <i><span class="varname">process-id</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure any of the following IS-IS area authentication modes as required:</span><p><ul><li>Configure simple authentication.<pre class="screen"><b><span class="cmdqueryname">area-authentication-mode</span></b> <strong><span>simple</span></strong> { <span><strong><span>plain</span></strong> <i><span class="varname">simple-plain</span></i> | </span>[ <strong><span>cipher</span></strong> ] <i><span class="varname">simple-cipher</span></i> } [ <strong><span>ip</span></strong> | <strong><span>osi</span></strong> ] [ <strong><span>snp-packet</span></strong> { <strong><span>authentication-avoid</span></strong> | <strong><span>send-only</span></strong> } | <strong><span>all-send-only</span></strong> ]</pre>
+</li><li>Configure MD5 authentication.<pre class="screen"><b><span class="cmdqueryname">area-authentication-mode</span></b> <strong><span>md5</span></strong> { <span><strong><span>plain</span></strong> <i><span class="varname">md5-plain</span></i></span> | [ <strong><span>cipher</span></strong> ] <i><span class="varname">md5-cipher</span></i><span> </span>} [ <strong><span>ip</span></strong> | <strong><span>osi</span></strong> ] [ <strong><span>snp-packet</span></strong> { <strong><span>authentication-avoid</span></strong> | <strong><span>send-only</span></strong> } | <strong><span>all-send-only</span></strong> ]</pre>
+</li><li>Configure keychain authentication.<pre class="screen"><b><span class="cmdqueryname">area-authentication-mode</span></b> <strong><span>keychain</span></strong> <i><span class="varname">keychain-name</span></i> [ <strong><span>snp-packet</span></strong> { <strong><span>authentication-avoid</span></strong> | <strong><span>send-only</span></strong> } | <strong><span>all-send-only</span></strong> ]</pre>
+</li><li>Configure HMAC-SHA256 authentication.<pre class="screen"><b><span class="cmdqueryname">area-authentication-mode</span></b> <strong><span>hmac-sha256</span></strong> <strong><span>key-id</span></strong> <i><span class="varname">key-id</span></i> { <span><strong><span>plain</span></strong> <i><span class="varname">plain</span></i> | </span>[ <strong><span>cipher</span></strong> ] <i><span class="varname">cipher</span></i> } [ <strong><span>snp-packet</span></strong> { <strong><span>authentication-avoid</span></strong> | <strong><span>send-only</span></strong> } | <strong><span>all-send-only</span></strong> ]</pre>
+</li></ul>
+</p><p><p>You can configure area authentication in any of the following ways:</p>
+<ul><li><p>Do not specify <strong><span>snp-packet</span></strong> or <strong><span>all-send-only</span></strong>. In this case, the device encapsulates authentication information in the LSPs and SNPs to be sent, authenticates received LSPs and SNPs, and discards the LSPs and SNPs that fail to be authenticated.</p>
+</li><li><p>Specify <strong><span>snp-packet</span></strong> <strong><span>authentication-avoid</span></strong>. In this case, the device encapsulates authentication information in the LSPs to be sent and authenticates received LSPs; the device neither encapsulates authentication information in the SNPs to be sent nor authenticates received SNPs.</p>
+</li><li><p>Specify <strong><span>snp-packet send-only</span></strong>. In this case, the device encapsulates authentication information both in the LSPs and SNPs to be sent, but authenticates only received LSPs (not received SNPs).</p>
+</li><li><p>Specify <strong><span>all-send-only</span></strong>. In this case, the device encapsulates authentication information both in the LSPs and SNPs to be sent, but does not authenticate received LSPs or SNPs.</p>
+</li></ul>
+<div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>After the <b><span class="cmdqueryname">area-authentication-mode</span></b> command is run, IS-IS discards all Level-1 LSPs that fail to be authenticated in the local LSDB after the LSPs are automatically aged. </p>
+<p>The simple or MD5 algorithm is not recommended if high security is required. To prevent routing information from being tampered with and thereby improve security, you are advised to enable authentication and use the keychain or HMAC-SHA256 algorithm.</p>
+</div></div>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001512692630__substep364113112168"><span id="EN-US_TASK_0000001512692630__cmd20641111111614">(Optional) Configure a compatible value for an IS-IS authentication type.</span><p><pre class="screen" id="EN-US_TASK_0000001512692630__screen164611319088"><strong id="EN-US_TASK_0000001512692630__b14293610514"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512692630__cmdname6244125519">authentication-type-compatible</span></b> hmac-sm3 </strong><em id="EN-US_TASK_0000001512692630__i13429461858">auth-type-value</em></pre>
+</p><p><p id="EN-US_TASK_0000001512692630__p8675546957">In a scenario where a Huawei device interworks with a non-Huawei device, if the default values of the authentication type corresponding to the same authentication encryption algorithm on the two devices are different, IS-IS authentication fails. As a result, the two devices fail to establish a neighbor relationship or exchange packets. To prevent this problem, you can perform this step to ensure that the authentication type values of the two devices are the same so that the two devices can implement IS-IS authentication normally and communicate with each other. Currently, a compatible value can be configured only for the HMAC-SM3 encryption algorithm, which is supported only by the keychain authentication.</p>
+</p></li></ol>
+</li><li><span>Configure IS-IS routing domain authentication.</span><p><p>The routing domain authentication password is encapsulated into Level-2 area IS-IS packets. Only authenticated packets are accepted. To implement Level-2 area authentication, configure IS-IS routing domain authentication.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IS-IS view.</span><p><pre class="screen"><b><span class="cmdqueryname">isis</span></b> <i><span class="varname">process-id</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure any of the following IS-IS routing domain authentication modes as required:</span><p><ul><li>Configure simple authentication.<pre class="screen"><b><span class="cmdqueryname">domain-authentication-mode</span></b> <span><strong><span>simple</span></strong> { <span><strong><span>plain</span></strong> <i><span class="varname">simple-plain</span></i> | </span><strong><span>cipher</span></strong> <i><span class="varname">simple-cipher</span></i> }</span> [ <strong><span>ip</span></strong> | <strong><span>osi</span></strong> ] [ <strong><span>snp-packet</span></strong> { <strong><span>authentication-avoid</span></strong> | <strong><span>send-only</span></strong> } | <strong><span>all-send-only</span></strong> ]</pre>
+</li><li>Configure MD5 authentication.<pre class="screen"><b><span class="cmdqueryname">domain-authentication-mode</span></b> <span><strong><span>md5</span></strong> { [ <strong><span>cipher</span></strong> ] <i><span class="varname">md5-cipher</span></i><span> | <strong><span>plain</span></strong> <i><span class="varname">md5-plain</span></i></span> }</span> [ <strong><span>ip</span></strong> | <strong><span>osi</span></strong> ] [ <strong><span>snp-packet</span></strong> { <strong><span>authentication-avoid</span></strong> | <strong><span>send-only</span></strong> } | <strong><span>all-send-only</span></strong> ]</pre>
+</li><li>Configure keychain authentication.<pre class="screen"><b><span class="cmdqueryname">domain-authentication-mode</span></b> <strong><span>keychain</span></strong> <i><span class="varname">keychain-name</span></i> [ <strong><span>snp-packet</span></strong> { <strong><span>authentication-avoid</span></strong> | <strong><span>send-only</span></strong> } | <strong><span>all-send-only</span></strong> ]</pre>
+</li><li>Configure HMAC-SHA256 authentication.<pre class="screen"><b><span class="cmdqueryname">domain-authentication-mode</span></b> <strong><span>hmac-sha256</span></strong> <strong><span>key-id</span></strong> <i><span class="varname">key-id</span></i> { <span><strong><span>plain</span></strong> <i><span class="varname">plain</span></i> | </span>[ <strong><span>cipher</span></strong> ] <i><span class="varname">cipher</span></i> } [ <strong><span>snp-packet</span></strong> { <strong><span>authentication-avoid</span></strong> | <strong><span>send-only</span></strong> } | <strong><span>all-send-only</span></strong> ]</pre>
+</li></ul>
+</p><p><p>You can configure routing domain authentication in any of the following ways:</p>
+<ul><li><p>Do not specify <strong><span>snp-packet</span></strong> or <strong><span>all-send-only</span></strong>. In this case, the device encapsulates authentication information in the LSPs and SNPs to be sent, authenticates received LSPs and SNPs, and discards the LSPs and SNPs that fail to be authenticated.</p>
+</li><li><p>Specify <strong><span>snp-packet</span></strong> <strong><span>authentication-avoid</span></strong>. In this case, the device encapsulates authentication information in the LSPs to be sent and authenticates received LSPs; the device neither encapsulates authentication information in the SNPs to be sent nor authenticates received SNPs.</p>
+</li><li><p>Specify <strong><span>snp-packet send-only</span></strong>. In this case, the device encapsulates authentication information both in the LSPs and SNPs to be sent, but authenticates only received LSPs (not received SNPs).</p>
+</li><li><p>Specify <strong><span>all-send-only</span></strong>. In this case, the device encapsulates authentication information both in the LSPs and SNPs to be sent, but does not authenticate received LSPs or SNPs.</p>
+</li></ul>
+<div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>After the <b><span class="cmdqueryname">domain-authentication-mode</span></b> command is run, IS-IS discards the locally stored Level-2 LSPs that fail authentication and newly received Level-2 LSPs and SNPs that fail authentication after they are automatically aged. To prevent packet loss before authentication is configured, you can specify the <strong><span>send-only</span></strong> parameter in the command when deploying authentication on a network running services.</p>
+<p>The simple or MD5 algorithm is not recommended if high security is required. To prevent routing information from being tampered with and thereby improve security, you are advised to enable authentication and use the keychain or HMAC-SHA256 algorithm.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>(Optional) Configure a compatible value for an IS-IS authentication type.</span><p><pre class="screen" id="EN-US_TASK_0000001512692630__en-us_task_0000001512692630_screen164611319088"><strong id="EN-US_TASK_0000001512692630__en-us_task_0000001512692630_b14293610514"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512692630__en-us_task_0000001512692630_cmdname6244125519">authentication-type-compatible</span></b> hmac-sm3 </strong><em id="EN-US_TASK_0000001512692630__en-us_task_0000001512692630_i13429461858">auth-type-value</em></pre>
+</p><p><p id="EN-US_TASK_0000001512692630__en-us_task_0000001512692630_p8675546957">In a scenario where a Huawei device interworks with a non-Huawei device, if the default values of the authentication type corresponding to the same authentication encryption algorithm on the two devices are different, IS-IS authentication fails. As a result, the two devices fail to establish a neighbor relationship or exchange packets. To prevent this problem, you can perform this step to ensure that the authentication type values of the two devices are the same so that the two devices can implement IS-IS authentication normally and communicate with each other. Currently, a compatible value can be configured only for the HMAC-SM3 encryption algorithm, which is supported only by the keychain authentication.</p>
+</p></li></ol>
+</li><li><span>Configure IS-IS interface authentication.</span><p><p>Interface authentication ensures the validity and correctness of neighbor relationships by allowing interfaces to authenticate the IS-IS Hello packets they receive based on the authentication information carried in the packets. A neighbor relationship can be established between two ends only after the packets exchanged between them are authenticated by each other.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Switch the interface working mode to Layer 3.</span><p><pre class="screen" id="EN-US_TASK_0000001512692630__en-us_task_0228023023_screen132321812144720"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512692630__en-us_task_0228023023_cmdname42322122476">undo portswitch</span></b></pre>
+<p id="EN-US_TASK_0000001512692630__en-us_task_0228023023_p64817191519">Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li class="substepexpand"><span>Configure any of the following IS-IS interface authentication modes as required:</span><p><ul><li>Configure simple authentication.<pre class="screen"><b><span class="cmdqueryname">isis authentication-mode</span></b> <span><strong><span>simple</span></strong> { <span><strong><span>plain</span></strong> <i><span class="varname">simple-plain</span></i> | </span>[ <strong><span>cipher</span></strong> ] <i><span class="varname">simple-cipher</span></i> }</span> [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> ] [ <strong><span>ip</span></strong> | <strong><span>osi</span></strong> ] [ <strong><span>send-only</span></strong> ]</pre>
+</li><li>Configure MD5 authentication.<pre class="screen"><b><span class="cmdqueryname">isis authentication-mode</span></b> <span><strong><span>md5</span></strong> { [ <strong><span>cipher</span></strong> ] <i><span class="varname">md5-cipher</span></i><span> | <strong><span>plain</span></strong> <i><span class="varname">md5-plain</span></i></span> } </span>[ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> ] [ <strong><span>ip</span></strong> | <strong><span>osi</span></strong> ] [ <strong><span>send-only</span></strong> ]</pre>
+</li><li>Configure keychain authentication.<pre class="screen"><b><span class="cmdqueryname">isis authentication-mode</span></b> <strong><span>keychain</span></strong> <i><span class="varname">keychain-name</span></i> [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> ] [ <strong><span>send-only</span></strong> ]</pre>
+</li><li>Configure HMAC-SHA256 authentication.<pre class="screen"><b><span class="cmdqueryname">isis authentication-mode</span></b> <strong><span>hmac-sha256</span></strong> <strong><span>key-id</span></strong> <i><span class="varname">key-id</span></i> { <span><strong><span>plain</span></strong> <i><span class="varname">plain</span></i> | </span>[ <strong><span>cipher</span></strong> ] <i><span class="varname">cipher</span></i> } [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> ] [ <strong><span>send-only</span></strong> ]</pre>
+</li></ul>
+</p><p><div class="p">Note the following when selecting parameters:<ul><li><p>If <strong><span>send-only</span></strong> is specified, the interface encapsulates authentication information into the Hello packets to be sent, but does not authenticate received Hello packets. Neighbor relationships can be established only if authentication is not required or authentication succeeds.</p>
+</li><li><p>If <strong><span>send-only</span></strong> is not specified, ensure that all interfaces on the same network maintain the same password for packets of the same level.</p>
+</li><li><p>The <strong><span>level-1</span></strong> and <strong><span>level-2</span></strong> parameters can be set only on Ethernet interfaces.</p>
+</li><li><div class="p">If the IS-IS interface is a Level-1-2 interface, and neither <strong><span>level-1</span></strong> nor <strong><span>level-2</span></strong> is specified, the authentication mode and password are configured for both Level-1 and Level-2 Hello packets.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The simple or MD5 algorithm is not recommended if high security is required. To prevent routing information from being tampered with and thereby improve security, you are advised to enable authentication and use the keychain or HMAC-SHA256 algorithm.</p>
+</div></div>
+</div>
+</li></ul>
+</div>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure a compatible value for an IS-IS authentication type.</span><p><pre class="screen"><b><span class="cmdqueryname">isis</span></b> <i><span class="varname">process-id</span></i>
+<strong><b><span class="cmdqueryname">authentication-type-compatible</span></b> hmac-sm3 </strong><em>auth-type-value</em></pre>
+<p>In a scenario where a Huawei device interworks with a non-Huawei device, if the default values of the authentication type corresponding to the same authentication encryption algorithm on the two devices are different, IS-IS authentication fails. As a result, the two devices fail to establish a neighbor relationship or exchange packets. To prevent this problem, you can perform this step to ensure that the authentication type values of the two devices are the same so that the two devices can implement IS-IS authentication normally and communicate with each other. Currently, a compatible value can be configured only for the HMAC-SM3 encryption algorithm, which is supported only by the keychain authentication.</p>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001512692630__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <b><span class="cmdqueryname">display isis lsdb</span></b> command to check IS-IS LSDB information.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0035.html">Routing Protocol Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0080.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0038.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

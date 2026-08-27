@@ -1,0 +1,86 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding Key Exchange">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0014.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0016.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001512674782">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding Key Exchange</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001512674782"></a><a name="EN-US_CONCEPT_0000001512674782"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding Key Exchange</h1>
+<div><p>How to securely share a symmetric key is an important issue during encryption and authentication using the key. Currently, this issue can be solved by using the key distribution protocol to generate a dynamic key between two devices through auto-negotiation.</p>
+<p>Keys are generated through IKE negotiation. The Internet Key Exchange (IKE) protocol uses the DH algorithm to implement secure key distribution over an insecure network. This mode is easy to configure and provides high scalability, especially on a large dynamic network. Two communicating parties exchange keying materials to calculate shared keys. Even if a third party obtains all the exchanged data used to calculate the shared keys, it cannot calculate the shared keys. Therefore, this mode greatly improves security.</p>
+<div class="section"><h4 class="sectiontitle">IKE and IPsec</h4><p>IKE is a UDP-based application-layer protocol built on the Internet Security Association and Key Management Protocol (ISAKMP) framework. IPsec uses the IKE protocol for key auto-negotiation and IPsec SA establishment, simplifying IPsec configuration and maintenance.</p>
+<p><a href="#EN-US_CONCEPT_0000001512674782__fig470981219241">Figure 1</a> describes the relationship between IKE and IPsec. Two peers establish an IKE SA for identity authentication and key exchange. Protected by the IKE SA, the peers negotiate a pair of IPsec SAs using the AH or ESP protocol and other configured parameters. Subsequently, data is encrypted and transmitted between the peers in an IPsec tunnel. An IKE SA is bidirectional, so only one IKE SA needs to be established between two peers.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001512674782__fig470981219241"><a name="EN-US_CONCEPT_0000001512674782__fig470981219241"></a><a name="fig470981219241"></a><span class="figcap"><b>Figure 1 </b>Relationship between IKE and IPsec</span><br><span><img class="vsd" src="figure/en-us_image_0000001513034094.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">IKE Security Mechanisms</h4><p>IKE defines a series of self-protection mechanisms that can securely authenticate identities, distribute keys, and establish IPsec SAs on a network. The mechanisms include the following:</p>
+<ul><li><p>Identity authentication</p>
+<div class="p">Two peers authenticate the identity (IP address or name) of each other, using pre-shared key (PSK) authentication, Rivest-Shamir-Adleman (RSA) signature authentication, or digital envelope authentication.<ul><li><p>PSK authentication: Two peers compute the hash value of packets using the PSK and check whether they obtain the same hash value. If the peers obtain the same hash value, the authentication succeeds. Otherwise, authentication fails. For a peer that has multiple remote IPsec peers, PSK authentication requires each pair of peers to have the same PSK. This authentication method can be easily implemented on small-scale networks but has low security.</p>
+</li><li><p>RSA signature authentication: Two peers use a certificate issued by a certificate authority (CA) to verify the validity of a digital certificate. Each peer has a public key (transmitted over the network) and a private key (possessed by itself). The sender computes a hash value for original packets, and then encrypts the hash value using its private key to generate a digital signature. The receiver decrypts the digital signature using the public key received from the sender, and then computes a hash value for packets. If the computed hash value is the same as that decrypted from the digital signature, the authentication succeeds. Otherwise, the authentication fails. RSA signature authentication provides high security but requires digital certificates issued by a CA. This authentication method is applicable to large-scale networks.</p>
+</li><li><p>Digital envelope authentication: The sender generates a random symmetric key and uses it to encrypt packets. The sender also generates a digital signature based on its private key, and generates a digital envelop by encrypting the symmetric key based on the receiver's public key. The receiver decrypts the digital envelop based on its private key to obtain the symmetric key. It uses the symmetric key to decrypt packets, decrypts the digital signature based on the sender's public key, and checks whether the sender's digital signature is correct. If the digital certificate is correct, authentication succeeds. Otherwise, authentication fails.</p>
+</li></ul>
+</div>
+<p>IKE supports the following authentication algorithms: MD5, SHA1, SHA2-256, SHA2-384, SHA2-512, and SM3. MD5 and SHA1 are not recommended because they are insecure and pose security risks.</p>
+</li><li><p>Identity protection</p>
+<p>After a key is generated, identity data is encrypted using the key to ensure secure transmission.</p>
+<p>IKE supports the following encryption algorithms: DES, 3DES, AES-128, AES-192, AES-256, AES-GCM-256, AES-GCM-192, AES-GCM-128, and SM4. DES, AES in CBC mode,  and 3DES are not recommended because they are insecure and pose security risks.</p>
+</li><li><p>Diffie-Hellman (DH)</p>
+<p>DH is a public key exchange method that generates keying materials and uses ISAKMP messages to exchange keying materials between the sender and receiver. The two devices compute the same symmetric key and generate an authentication and an encryption key based on this symmetric key. The encryption key and authentication key are never exchanged between the two devices.</p>
+</li><li><p>Perfect Forward Secrecy (PFS)</p>
+<p>If PFS is enabled, an additional DH key exchange is performed when keys used in IPsec SAs are generated based on the keys used in the IKE SA. This ensures that the keys used in IPsec SAs remain indecipherable even if a key used in the IKE SA is deciphered.</p>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">IKE Versions</h4><div class="p">IKE has two versions: IKEv1 and IKEv2. IKEv2 has the following advantages over IKEv1:<ul><li>Fixes many cryptographic vulnerabilities, enhancing security.</li><li><p>Simplifies SA negotiation and improves negotiation efficiency.</p>
+<p>IKEv1 goes through two phases to negotiate the key and establish IPsec SAs. In phase 1, two peers negotiate and establish a secure channel, which is an IKE SA. In phase 2, the peers establish a pair of IPsec SAs through the secure channel established in phase 1. IKEv2 generates the key and establishes IPsec SAs in one negotiation, simplifying the negotiation process. For details, see <a href="security_ipsec_cfg_0016.html">Understanding SA Establishment Through IKEv1 Negotiation</a> and <a href="security_ipsec_cfg_0017.html">Understanding SA Establishment Through IKEv2 Negotiation</a>.</p>
+</li><li>Supports the Online Certificate Status Protocol (OCSP) during RSA digital signature authentication.</li></ul>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0014.html">Configuring IKE Negotiation
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0016.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

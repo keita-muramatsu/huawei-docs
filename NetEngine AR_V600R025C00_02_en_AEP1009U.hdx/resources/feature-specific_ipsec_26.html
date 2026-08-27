@@ -1,0 +1,500 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring GRE over IPsec and OSPF Between the HQ and Branches for Communication">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_ipsec_0.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_ipsec_25.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_ipsec_27.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001714690193">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring GRE over IPsec and OSPF Between the HQ and Branches for Communication</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001714690193"></a><a name="EN-US_TASK_0000001714690193"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring GRE over IPsec and OSPF Between the HQ and Branches for Communication</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001714690193__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_context1677625172748"><div class="p" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_context1677625172748"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p1022745738180141">In <a href="#EN-US_TASK_0000001714690193__en-us_task_0000001694327373_fig_dc_ar_cfg_vpn_04552201">Figure 1</a>, DeviceA functions as the egress router of the HQ network and provides GRE over IPsec access for two branches. DeviceB and DeviceC are the egress routers of the two branches and connect to the HQ network through GRE over IPsec. OSPF needs to be enabled on the GRE tunnel between the HQ and each branch to encrypt the traffic exchanged between the HQ and branches.</p>
+<div class="fignone" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_fig_dc_ar_cfg_vpn_04552201"><a name="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_fig_dc_ar_cfg_vpn_04552201"></a><a name="en-us_task_0000001694327373_fig_dc_ar_cfg_vpn_04552201"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring GRE over IPsec and OSPF</span><div class="note" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_note06062035168"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p18606153111612">In this example, interface 1 and interface 2 represent 10GE 0/0/1 and 10GE 0/0/2, respectively.</p>
+</div></div>
+<br><span><img id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_image194474861211" src="figure/en-us_image_0000001645848436.png" width="NaN" height="NaN"></span></div>
+<h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p489494592211">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_ol97805132312"><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li1278662616187">Complete basic interface configurations.</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li19358183521820">Configure static routes to ensure that there are reachable routes between the HQ and branches.</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li24121555111818">Configure a GRE tunnel interface.</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li18683151015193">Configure an IPsec policy and apply it to a specific interface.</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li1630918166412">Configure OSPF.</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001714690193__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_steps10132325172748"><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_step1772842581180141"><span id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_cmd1977140389180141">Complete basic interface configurations on DeviceA, DeviceB, and DeviceC.</span><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p1587212491121"># Complete basic interface configurations on DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen025110891311">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1747012203228">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b139061823152216">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b155954286226">interface 10ge 0/0/2</strong>
+[DeviceA-10GE0/0/2] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1234115305229">ip address 10.0.0.1 255.255.255.0</strong>
+[DeviceA-10GE0/0/2] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b584043117224">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b6273133392214">interface 10ge 0/0/1</strong>
+[DeviceA-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b8933634162218">ip address 1.0.1.254 255.255.255.0</strong>
+[DeviceA-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1361983618223">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b122531638132218">interface loopback 0</strong>
+[DeviceA-LoopBack0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b3951140152219">ip address 192.168.255.255 255.255.255.255</strong>
+[DeviceA-LoopBack0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b144394418226">quit</strong> </pre>
+</p><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p1711661831419"># Complete basic interface configurations on DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen187819377143">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1154614455227">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b13789104613228">sysname DeviceB</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b249917485229">interface 10ge 0/0/2</strong>
+[DeviceB-10GE0/0/2] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b121121550172219">ip address 192.168.1.1 255.255.255.0</strong>
+[DeviceB-10GE0/0/2] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b5305205112225">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b73111453152215">interface 10ge 0/0/1</strong>
+[DeviceB-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1387925492216">ip address 1.0.2.1 255.255.255.0</strong>
+[DeviceB-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b317595632210">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b372813367285">interface loopback 0</strong>
+[DeviceB-LoopBack0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b972819366281">ip address 192.168.255.1 255.255.255.255</strong>
+[DeviceB-LoopBack0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1972811368281">quit</strong> </pre>
+</p><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p3209134451420"># Complete basic interface configurations on DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen7209144421411">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1858170102313">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b35111517235">sysname DeviceC</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b17763829238">interface 10ge 0/0/2</strong>
+[DeviceC-10GE0/0/2] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b72769422312">ip address 192.168.2.1 255.255.255.0 </strong>
+[DeviceC-10GE0/0/2] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b143111662317">quit </strong>
+[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b47111274231">interface 10ge 0/0/1</strong>
+[DeviceC-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b105101140238">ip address 1.0.3.1 255.255.255.0  </strong>
+[DeviceC-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1870214172238">quit</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b11925553124913">interface loopback 0</strong>
+[DeviceC-LoopBack0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b192555384915">ip address 192.168.255.2 255.255.255.255</strong>
+[DeviceC-LoopBack0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1292525394918">quit</strong> </pre>
+</p></li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_step391164214122"><span id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_cmd19134231210">Configure a GRE tunnel interface on DeviceA, DeviceB, and DeviceC.</span><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p180618224172"># Configure a GRE tunnel interface on DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen2292154581715">[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b627311372232">interface tunnel 1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b9231113982317">tunnel-protocol gre</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b17690164022310">ip address 192.168.0.5 255.255.255.252</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b32137421233">source 10GE0/0/1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1072315431232">destination 1.0.3.1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1692813442232">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1016624632311">interface tunnel 0</strong>
+[DeviceA-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b835612472236">tunnel-protocol gre</strong>
+[DeviceA-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1562624812230">ip address 192.168.0.1 255.255.255.252</strong>
+[DeviceA-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b01975500235">source 10GE0/0/1</strong>
+[DeviceA-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b72231451162318">destination 1.0.2.1</strong>
+[DeviceA-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1518025213238">quit</strong></pre>
+</p><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p1565511562218"># Configure a GRE tunnel interface on DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen1165518512221">[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b813432023017">interface tunnel 0</strong>
+[DeviceB-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b132522153020">tunnel-protocol gre</strong>
+[DeviceB-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b10773102323017">ip address 192.168.0.2 255.255.255.252</strong>
+[DeviceB-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b84592259306">source 10GE0/0/1</strong>
+[DeviceB-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b11826132612305">destination 1.0.1.254</strong>
+[DeviceB-Tunnel0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1288732743016">quit</strong></pre>
+<p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p853031472919"># Configure a GRE tunnel interface on DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen65301214102918">[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b182061626184910">interface tunnel 1</strong>
+[DeviceC-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b312011287497">tunnel-protocol gre</strong>
+[DeviceC-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b157042298492">ip address 192.168.0.6 255.255.255.252</strong>
+[DeviceC-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b18333183117495">source 10GE0/0/1</strong>
+[DeviceC-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b2355432124914">destination 1.0.1.254</strong>
+[DeviceC-Tunnel1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b15376173364920">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_step15351119171712"><span id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_cmd43515196179">Configure static routes on DeviceA, DeviceB, and DeviceC.</span><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p19902041204316"># Configure a static route on DeviceA.</p>
+</p><p><pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen1528613204318">[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b2362859192318">ip route-static 0.0.0.0 0.0.0.0 1.0.1.253</strong></pre>
+</p><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p9466337113012"># Configure a static route on DeviceB.</p>
+</p><p><pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen1546663717303">[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b346613723016">ip route-static 0.0.0.0 0.0.0.0 1.0.2.2</strong></pre>
+</p><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p5319183615014"># Configure a static route on DeviceC.</p>
+</p><p><pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen431973605017">[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1331993645018">ip route-static 0.0.0.0 0.0.0.0 1.0.3.2</strong></pre>
+</p></li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_step1192299242180141"><span id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_cmd803450137180141">Configure an IPsec policy on DeviceA, DeviceB, and DeviceC.</span><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p17389121618489"># Configure an IPsec policy on DeviceA.</p>
+<ol type="a" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_ol18773174015498"><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li477317407492">Configure an IPsec proposal.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen53181727185010">[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1045221712244">ipsec proposal default</strong>
+[DeviceA-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1517461952416">encapsulation-mode transport</strong>
+[DeviceA-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b18455820102411">esp authentication-algorithm sha2-256</strong>
+[DeviceA-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b890713218248">esp encryption-algorithm aes-192</strong>
+[DeviceA-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b814852310242">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li16313151712503">Configure an IKE proposal.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen1891983625219">[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b75261259242">ike proposal 5</strong>
+[DeviceA-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1963920262246">encryption-algorithm aes-128</strong>
+[DeviceA-ike-proposal-5]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b138431927202411"> dh group14</strong>
+[DeviceA-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b99391028102420">authentication-algorithm sha2-256</strong>
+[DeviceA-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b124326302244">authentication-method pre-share</strong>
+[DeviceA-ike-proposal-5]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b14682133114243"> integrity-algorithm hmac-sha2-256</strong>
+[DeviceA-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b11805332102412">prf hmac-sha2-256</strong>
+[DeviceA-ike-proposal-5]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b98852339244"> quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li46314485811">Configure an IKE peer.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen16617822185819">[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b446133762414">ike peer branch1 </strong>
+[DeviceA-ike-peer-branch1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b911238162413">ike-proposal 5 </strong>
+[DeviceA-ike-peer-branch1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1621323922410">pre-shared-key YsHsjx_202206</strong>
+[DeviceA-ike-peer-branch1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1251554014249">remote-address 1.0.2.1 </strong>
+[DeviceA-ike-peer-branch1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b20590144115241">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b15885144222419">ike peer branch2</strong>
+[DeviceA-ike-peer-branch2]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b499934362417"> ike-proposal 5 </strong>
+[DeviceA-ike-peer-branch2]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b6159645152417"> pre-shared-key YsHsjx_202206</strong>
+[DeviceA-ike-peer-branch2] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b2315846202413">remote-address 1.0.3.1 </strong>
+[DeviceA-ike-peer-branch2] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b144043472245">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li186066392112">Create an ACL rule.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen1771324115410">[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b141368514243">acl 3000 </strong>
+[DeviceA-acl4-advance-3000] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b4399145382410">rule 0 permit ip source 1.0.1.254 0 destination 1.0.2.1 0</strong>
+[DeviceA-acl4-advance-3000] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b296715452413">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1939545612243">acl 3001</strong>
+[DeviceA-acl4-advance-3001] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b8123205816248">rule 0 permit ip source 1.0.1.254 0 destination 1.0.3.1 0</strong>
+[DeviceA-acl4-advance-3001] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b148925942410">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li17483746124517">Configure an IPsec policy.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen262282264717">[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b2984171172518">ipsec policy branch 10 isakmp</strong>
+[DeviceA-ipsec-policy-isakmp-branch-10]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b112995317259"> security acl 3000</strong>
+[DeviceA-ipsec-policy-isakmp-branch-10] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b144861640256">ike-peer branch1</strong>
+[DeviceA-ipsec-policy-isakmp-branch-10] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b963414512519">proposal default</strong>
+[DeviceA-ipsec-policy-isakmp-branch-10] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1451011520919">sa trigger-mode auto</strong>
+[DeviceA-ipsec-policy-isakmp-branch-10] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b131112702510">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1146810872512">ipsec policy branch 20 isakmp</strong>
+[DeviceA-ipsec-policy-isakmp-branch-20] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b45330992512">security acl 3001</strong>
+[DeviceA-ipsec-policy-isakmp-branch-20] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1088531052513">ike-peer branch2</strong>
+[DeviceA-ipsec-policy-isakmp-branch-20] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b514810122253">proposal default</strong>
+[DeviceA-ipsec-policy-isakmp-branch-20] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1837771110912">sa trigger-mode auto</strong>
+[DeviceA-ipsec-policy-isakmp-branch-20] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b152941313112516">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_note63277385491"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p73276382495">By default, the negotiation for IPsec tunnel establishment is triggered by traffic. To enable automatic negotiation for IPsec tunnel establishment, run the <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b74117454572">sa trigger-mode auto</strong> command.</p>
+</div></div>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li3745123213499">Apply the IPsec policy to 10GE 0/0/1.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen11198189175013">[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1734319162253">interface 10ge 0/0/1</strong>
+[DeviceA-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b136716195258">ipsec policy branch</strong>
+[DeviceA-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b11287132317257">quit</strong></pre>
+</li></ol>
+</p><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p197331382319"># Configure an IPsec policy on DeviceB.</p>
+<ol type="a" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_ol16733128173118"><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li12733158183110">Configure an IPsec proposal.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen2733785312">[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b973318815317">ipsec proposal default</strong>
+[DeviceB-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b16733787314">encapsulation-mode transport</strong>
+[DeviceB-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b12733586314">esp authentication-algorithm sha2-256</strong>
+[DeviceB-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b16733178163110">esp encryption-algorithm aes-192</strong>
+[DeviceB-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b11733582314">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li073378103116">Configure an IKE proposal.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen17733986312">[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b873317815314">ike proposal 5</strong>
+[DeviceB-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b147331886311">encryption-algorithm aes-128</strong>
+[DeviceB-ike-proposal-5]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b873348113118"> dh group14</strong>
+[DeviceB-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b15733118183116">authentication-algorithm sha2-256</strong>
+[DeviceB-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1673438193111">authentication-method pre-share</strong>
+[DeviceB-ike-proposal-5]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b473419815317"> integrity-algorithm hmac-sha2-256</strong>
+[DeviceB-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b07341387312">prf hmac-sha2-256</strong>
+[DeviceB-ike-proposal-5]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1773419873117"> quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li12734189312">Configure an IKE peer.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen11734887318">[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b107341853117">ike peer center </strong>
+[DeviceB-ike-peer-center] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b073418133114">ike-proposal 5 </strong>
+[DeviceB-ike-peer-center] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b13734168193111">pre-shared-key YsHsjx_202206</strong>
+[DeviceB-ike-peer-center] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b57343883112">remote-address 1.0.1.254</strong>
+[DeviceB-ike-peer-center] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b187344818319">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li673438103118">Create an ACL rule.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen1373412816318">[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b6735587317">acl 3000 </strong>
+[DeviceB-acl4-advance-3000] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b155401488343">rule 0 permit ip source 1.0.2.1 0 destination 1.0.1.254 0</strong> 
+[DeviceB-acl4-advance-3000] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b18735582314">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li12735588315">Configure an IPsec policy.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen77355803111">[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b8735783317">ipsec policy center 1 isakmp</strong>
+[DeviceB-ipsec-policy-isakmp-center-1]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1873511813317"> security acl 3000</strong>
+[DeviceB-ipsec-policy-isakmp-center-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1673515873119">ike-peer center</strong>
+[DeviceB-ipsec-policy-isakmp-center-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1273548133118">proposal default</strong>
+[DeviceB-ipsec-policy-isakmp-center-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1629615521483">sa trigger-mode auto</strong>
+[DeviceB-ipsec-policy-isakmp-center-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b47351585313">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_note4662194512498"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p1366216459494">By default, the negotiation for IPsec tunnel establishment is triggered by traffic. To enable automatic negotiation for IPsec tunnel establishment, run the <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1493612580577">sa trigger-mode auto</strong> command.</p>
+</div></div>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li147351385317">Apply the IPsec policy to 10GE 0/0/1.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen13735989311">[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b18736188203113">interface 10ge 0/0/1</strong>
+[DeviceB-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b0736108103117">ipsec policy center</strong>
+[DeviceB-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1273638113120">quit</strong></pre>
+</li></ol>
+</p><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p6741131615111"># Configure an IPsec policy on DeviceC.</p>
+<ol type="a" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_ol18741181613513"><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li3741191675119">Configure an IPsec proposal.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen137413167515">[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b074141616515">ipsec proposal default</strong>
+[DeviceC-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b6741616125119">encapsulation-mode transport</strong>
+[DeviceC-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b167412168519">esp authentication-algorithm sha2-256</strong>
+[DeviceC-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1741161695119">esp encryption-algorithm aes-192</strong>
+[DeviceC-ipsec-proposal-default] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b2741191612512">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li1974261617512">Configure an IKE proposal.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen17742101610513">[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b20742116145119">ike proposal 5</strong>
+[DeviceC-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b174212166519">encryption-algorithm aes-128</strong>
+[DeviceC-ike-proposal-5]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b6742121675114"> dh group14</strong>
+[DeviceC-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1274221617515">authentication-algorithm sha2-256</strong>
+[DeviceC-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b167421916185111">authentication-method pre-share</strong>
+[DeviceC-ike-proposal-5]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b7742151610512"> integrity-algorithm hmac-sha2-256</strong>
+[DeviceC-ike-proposal-5] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b11742816145120">prf hmac-sha2-256</strong>
+[DeviceC-ike-proposal-5]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1274251625116"> quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li674214168513">Configure an IKE peer.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen18742416205112">[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b674315164519">ike peer center </strong>
+[DeviceC-ike-peer-center] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1774310161519">ike-proposal 5 </strong>
+[DeviceC-ike-peer-center] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b107436168513">pre-shared-key YsHsjx_202206</strong>
+[DeviceC-ike-peer-center] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b13743111695113">remote-address 1.0.1.254</strong>
+[DeviceC-ike-peer-center] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b274320160515">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li974381685117">Create an ACL rule.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen107437167513">[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b874310164517">acl 3001 </strong>
+[DeviceC-acl4-advance-3001] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b10837144845220">rule 0 permit ip source 1.0.3.1 0 destination 1.0.1.254 0 </strong>
+[DeviceC-acl4-advance-3001] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1574341625112">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li0743161617511">Configure an IPsec policy.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen1974311635111">[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b2074321619517">ipsec policy center 1 isakmp</strong>
+[DeviceC-ipsec-policy-isakmp-center-1]<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b137438163514"> security acl 3001</strong>
+[DeviceC-ipsec-policy-isakmp-center-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b47436165518">ike-peer center</strong>
+[DeviceC-ipsec-policy-isakmp-center-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b13744181615512">proposal default</strong>
+[DeviceC-ipsec-policy-isakmp-center-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b18315164210819">sa trigger-mode auto</strong>
+[DeviceC-ipsec-policy-isakmp-center-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1974491614516">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_note19652512491"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p596515117496">By default, the negotiation for IPsec tunnel establishment is triggered by traffic. To enable automatic negotiation for IPsec tunnel establishment, run the <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b985855165816">sa trigger-mode auto</strong> command.</p>
+</div></div>
+</li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_li1674418162511">Apply the IPsec policy to 10GE 0/0/1.<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen107441716145118">[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b2744516185116">interface 10ge 0/0/1</strong>
+[DeviceC-10GE0/0/1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b7744111618511">ipsec policy center</strong></pre>
+</li></ol>
+</p></li><li id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_step2084926724180141"><span id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_cmd872782169180141">Configure OSPF on DeviceA, DeviceB, and DeviceC.</span><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p99918215526"># Configure OSPF on DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen18107117145219">[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b171721726192518">router id 192.168.255.255 </strong>
+[DeviceA] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b173901127122514">ospf 1</strong>
+[DeviceA-ospf-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b44611428182517">area 0.0.0.0</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b444922992516">network 192.168.0.0 0.0.0.3</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b655903042516">network 192.168.0.4 0.0.0.3</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1087693152513">network 192.168.255.255 0.0.0.0</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b254413316251">network 10.0.0.0 0.0.0.255</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b967513462519">quit</strong>
+[DeviceA-ospf-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b55811735122517">quit</strong></pre>
+</p><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p18919213713"># Configure OSPF on DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen15918283719">[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b4992143718">router id 192.168.255.1</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b2091233720">ospf 1</strong>
+[DeviceB-ospf-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b6916283713">area 0.0.0.0</strong>
+[DeviceB-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1494215372">network 192.168.255.1 0.0.0.0</strong>
+[DeviceB-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b998263715">network 192.168.0.0 0.0.0.3</strong>
+[DeviceB-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b99102193715">network 192.168.1.0 0.0.0.255</strong>
+[DeviceB-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b491325376">quit</strong>
+[DeviceB-ospf-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b899293711">quit</strong></pre>
+</p><p><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p10519192315317"># Configure OSPF on DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen1651952317533">[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1051922319531">router id 192.168.255.2</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b115201923175313">ospf 1</strong>
+[DeviceC-ospf-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b85202239539">area 0.0.0.0</strong>
+[DeviceC-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b2520102335316">network 192.168.255.2 0.0.0.0</strong>
+[DeviceC-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b352011234531">network 192.168.0.4 0.0.0.3</strong>
+[DeviceC-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b452092345317">network 192.168.2.0 0.0.0.255</strong>
+[DeviceC-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b252092365317">quit</strong>
+[DeviceC-ospf-1] <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1852072314530">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_example121226172748"><a name="EN-US_TASK_0000001714690193__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p11148077151"># Run the <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b1722172555816"><b><span class="cmdname" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_cmdname11973153162">display ike sa</span></b></strong> command on DeviceA, DeviceB, or DeviceC to view SA information.</p>
+<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen197298883818">&lt;DeviceA&gt;display ike sa
+Total number of IKE SA in all CPU : 4
+Total number of phase 1 SA in all CPU : 2
+Total number of phase 2 SA in all CPU : 2
+
+Flag Description:
+RD--READY   ST--STAYALIVE   RL--REPLACED   FD--FADING   TO--TIMEOUT
+HRT--HEARTBEAT   LKG--LAST KNOWN GOOD SEQ NO.   BCK--BACKED UP
+M--ACTIVE   S--STANDBY   A--ALONE  NEG--NEGOTIATING
+
+Slot 0, cpu 0 IKE SA information :
+  Number of IKE SA : 4,  number of IKE SA1: 2,  number of IKE SA2: 2
+------------------------------------------------------------------------------------------------------------------------------------
+ Conn-ID    Peer                                          VPN              Flag(s)               Phase  RemoteType  RemoteID        
+------------------------------------------------------------------------------------------------------------------------------------
+ 16777286   1.0.3.1/500                                                    RD|ST|A               v2:2   IP          1.0.3.1         
+ 16777283   1.0.3.1/500                                                    RD|ST|A               v2:1   IP          1.0.3.1         
+ 16777257   1.0.2.1/500                                                    RD|A                  v2:2   IP          1.0.2.1         
+ 16777256   1.0.2.1/500                                                    RD|A                  v2:1   IP          1.0.2.1         
+ 
+------------------------------------------------------------------------------------------------------------------------------------</pre>
+<p id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p108821124165115"># Run the <strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b322161617178"><b><span class="cmdname" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_cmdname137462136213">display ip routing-table</span></b></strong> command on DeviceA, DeviceB, or DeviceC. The command output shows information about the routes from the tunnel interface to the peer end.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001714690193__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><div class="p" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p166491340143116">DeviceA<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen61111103420">#
+sysname DeviceA
+#
+router id 192.168.255.255
+#
+acl number 3000
+ rule 0 permit ip source 1.0.1.254 0 destination 1.0.2.1 0
+#
+acl number 3001
+ rule 0 permit ip source 1.0.1.254 0 destination 1.0.3.1 0
+#
+interface 10GE0/0/1
+ ip address 1.0.1.254 255.255.255.0
+ ipsec policy branch 
+#
+interface 10GE0/0/2
+ ip address 10.0.0.1 255.255.255.0
+#
+interface LoopBack0
+ ip address 192.168.255.255 255.255.255.255
+#
+interface Tunnel0
+ ip address 192.168.0.1 255.255.255.252
+ tunnel-protocol gre
+ source 10GE0/0/1
+ destination 1.0.2.1
+#
+interface Tunnel1
+ ip address 192.168.0.5 255.255.255.252
+ tunnel-protocol gre
+ source 10GE0/0/1
+ destination 1.0.3.1
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.0.0 0.0.0.3
+  network 192.168.0.4 0.0.0.3
+  network 192.168.255.255 0.0.0.0
+  network 10.0.0.0 0.0.0.255
+#
+ip route-static 0.0.0.0 0.0.0.0 1.0.1.253
+#
+ike proposal 5
+ encryption-algorithm aes-128 
+ dh group14 
+ authentication-algorithm sha2-256 
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256 
+ prf hmac-sha2-256 
+#
+ipsec proposal default
+ encapsulation-mode transport
+ esp authentication-algorithm sha2-256 
+ esp encryption-algorithm aes-192 
+#
+ike peer branch1
+ pre-shared-key %+%##!!!!!!!!!"!!!!%!!!!*!!!!}gli#|<font style="font-size:8pt" Face="Courier New" >~</font>DgU;HnL/Cfc!4'z-hB&amp;t#..{f#.,!!!!!2jp5!!!!!!;!!!!f!XFSvIHq"ZV&amp;N;q%{mSZdz:@+=(/6lu!2=!!!!!%+%#
+ ike-proposal 5
+ remote-address 1.0.2.1 
+ike peer branch2
+ pre-shared-key %+%##!!!!!!!!!"!!!!%!!!!*!!!!}gli#|<font style="font-size:8pt" Face="Courier New" >~</font>DgU+gT"D'5rmGKK,J&lt;1T\\5^!34U!!!!!2jp5!!!!!!;!!!!/3I9C/7.U+h8Z5"/R;4PUO6W%!.(2P9aQ\"!!!!!%+%#
+ ike-proposal 5
+ remote-address 1.0.3.1 
+#
+ipsec policy branch 10 isakmp
+ security acl 3000
+ ike-peer branch1
+ proposal default
+ sa trigger-mode auto
+ipsec policy branch 20 isakmp
+ security acl 3001
+ ike-peer branch2
+ proposal default
+ sa trigger-mode auto
+#
+return</pre>
+</div>
+<div class="p" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p16100556123318">DeviceB<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen910012566338">#
+sysname DeviceB
+#
+router id 192.168.255.1
+#
+acl number 3000
+ rule 0 permit ip source 1.0.2.1 0 destination 1.0.1.254 0
+#
+interface 10GE0/0/1
+ ip address 1.0.2.1 255.255.255.0
+ ipsec policy center 
+#
+interface 10GE0/0/2
+ ip address 192.168.1.1 255.255.255.0
+#
+interface LoopBack0
+ ip address 192.168.255.1 255.255.255.255
+#
+interface Tunnel0
+ ip address 192.168.0.2 255.255.255.252
+ tunnel-protocol gre
+ source 10GE0/0/1
+ destination 1.0.1.254
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.0.0 0.0.0.3
+  network 192.168.1.0 0.0.0.255
+  network 192.168.255.1 0.0.0.0
+#
+ip route-static 0.0.0.0 0.0.0.0 1.0.2.2
+#
+ike proposal 5
+ encryption-algorithm aes-128 
+ dh group14 
+ authentication-algorithm sha2-256 
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256 
+ prf hmac-sha2-256 
+#
+ipsec proposal default
+ encapsulation-mode transport
+ esp authentication-algorithm sha2-256 
+ esp encryption-algorithm aes-192 
+#
+ike peer center
+ pre-shared-key %+%##!!!!!!!!!"!!!!&amp;!!!!*!!!!bZrY"z".wAiBt33&amp;}u{H&gt;$vJ6iiQj%G/;s/!!!!!2jp5!!!!!!;!!!!}+0E#\d,8#hvKYWZ^yQ5oT{)/sN/dX]+h&lt;=!!!!!%+%#
+ ike-proposal 5
+ remote-address 1.0.1.254 
+#
+ipsec policy center 1 isakmp
+ security acl 3000
+ ike-peer center
+ proposal default
+ sa trigger-mode auto
+#
+return</pre>
+</div>
+<div class="p" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_p648245910335">DeviceC<pre class="screen" id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_screen4482205923315">#
+sysname DeviceC
+#
+router id 192.168.255.2
+#
+acl number 3001
+ rule 0 permit ip source 1.0.3.1 0 destination 1.0.1.254 0
+#
+interface 10GE0/0/1
+ ip address 1.0.3.1 255.255.255.0
+ ipsec policy center 
+#
+interface 10GE0/0/2
+ ip address 192.168.2.1 255.255.255.0
+#
+interface LoopBack0
+ ip address 192.168.255.2 255.255.255.255
+#
+interface Tunnel1
+ ip address 192.168.0.6 255.255.255.252
+ tunnel-protocol gre
+ source 10GE0/0/1
+ destination 1.0.1.254
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.0.4 0.0.0.3
+  network 192.168.2.0 0.0.0.255
+  network 192.168.255.2 0.0.0.0
+#
+ip route-static 0.0.0.0 0.0.0.0 1.0.3.2
+#
+ike proposal 5
+ encryption-algorithm aes-128 
+ dh group14 
+ authentication-algorithm sha2-256 
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256 
+ prf hmac-sha2-256 
+#
+ipsec proposal default
+ encapsulation-mode transport
+ esp authentication-algorithm sha2-256 
+ esp encryption-algorithm aes-192 
+#
+ike peer center
+ pre-shared-key %+%##!!!!!!!!!"!!!!#!!!!*!!!!d&lt;fA3nWVVV_Lv+AH:BsO&amp;\SpE\TB8'^$<font style="font-size:8pt" Face="Courier New" >~</font>WW!!!!!2jp5!!!!!!;!!!!Ov"S!\/ndTSIl&gt;AShc}BL"^%E,R%'ShyN)%!!!!!%+%#
+ ike-proposal 5
+ remote-address 1.0.1.254 
+#
+ipsec policy center 1 isakmp
+ security acl 3001
+ ike-peer center
+ proposal default
+<strong id="EN-US_TASK_0000001714690193__en-us_task_0000001694327373_b156634117813"> </strong>sa trigger-mode auto
+#
+return</pre>
+</div>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_ipsec_0.html">IPsec
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_ipsec_25.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="feature-specific_ipsec_27.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

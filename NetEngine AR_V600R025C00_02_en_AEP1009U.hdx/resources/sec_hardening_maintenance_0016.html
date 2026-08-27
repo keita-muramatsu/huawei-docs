@@ -1,0 +1,114 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="SNMP-based Device Management Security">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0011.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0017.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0018.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563772133">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>SNMP-based Device Management Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563772133"></a><a name="EN-US_CONCEPT_0000001563772133"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">SNMP-based Device Management Security</h1>
+<div><div class="section"><h4 class="sectiontitle">Overview</h4><p>SNMP is a protocol used to manage network devices. Network administrators can use SNMP to obtain data from devices and configure devices. SNMP also provides the trap function, which enables the device to report important status changes to an NMS.</p>
+<p>SNMPv1, SNMPv2c, and SNMPv3 support different security policies. </p>
+<p>SNMPv1 and SNMPv2c support ACLs and the view-based access control model (VACM). An NMS can manage a device with a specified SNMP community configured and access objects in a specified MIB view based on a specified ACL. This approach leads to enhanced system security.</p>
+<p>SNMPv3 supports USM, the MD5, SHA, SHA2-224, SHA2-256, SHA2-384, and SHA2-512 authentication algorithms, as well as DES and AES encryption algorithms. SNMPv3 authenticates and encrypts communication data to solve security problems, such as message forging and modification.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>SNMPv1 and SNMPv2c have security risks. Using SNMPv3 is recommended.</li><li>To ensure security, the SHA2-256, SHA2-384, SHA2-512, and AES algorithms are recommended.</li></ul>
+</div></div>
+<p>Community words of SNMPv1 and SNMPv2c are stored in ciphertext.</p>
+<p>When the user authentication and encrypted password are configured for an SNMPv3 user, the password must be confirmed twice. In addition, the configured password is not displayed and stored in ciphertext.</p>
+<p>Community names and user passwords are stored in ciphertext to effectively protect them from being disclosed.</p>
+<div class="p">Common SNMP attacks include the following:<ul><li>An attacker changes the source IP address of packets to obtain unauthorized operation rights.</li><li>An attacker listens in on communication between the NMS and SNMP agents to obtain such information as usernames, passwords, and community names, thereby gaining unauthorized rights. </li><li>An attacker intercepts and reorders, delays, or retransmits SNMP messages to obtain the unauthorized access rights.</li></ul>
+</div>
+<p>SNMP identifies and encrypts data in the USM to reduce and defend these attacks. </p>
+<p>Authentication: The data integrity and data source are discriminated to ensure that messages are sent from the source and data packets are not forged or modified during transmission. MD5, SHA, or SHA2 is used to generate data digests and verify if data has been modified.</p>
+<p>Encryption: Data is encrypted to prevent the interception of data packets using network technologies such as packet interception. DES or AES ensures the efficiency and strength of data encryption and decryption.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><p>To improve security, you are advised to configure SNMPv3 so that devices are managed using authentication and encryption and associate users with an ACL and MIB view to control access rights.</p>
+<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Configure an ACL numbered 2001 and define one rule to permit specific IP addresses and another rule to reject specific IP addresses.<pre class="screen"><strong>acl 2001</strong>
+<strong>rule 5 deny source 10.138.20.123 0</strong>
+<strong>rule 10 permit source 10.138.90.111 0</strong></pre>
+</li><li>Configure a MIB view named <strong>iso-view</strong>, in which users access nodes under the sub-tree whose root node is the ISO.<pre class="screen"><strong>snmp-agent mib-view included iso-view iso</strong></pre>
+</li><li>Configure an SNMPv3 group named <strong>v3group</strong>, set the read view, write view, and notification view to <strong>iso-view</strong>, and apply ACL 2001 to the SNMPv3 group.<pre class="screen"><strong>snmp-agent group v3 v3group privacy read-view iso-view write-view iso-view notify-view iso-view acl 2001</strong></pre>
+</li><li>Configure an SNMPv3 user named <strong>v3user</strong> belonging to the <strong>v3group</strong>. In this example, the authentication mode and password are <strong>sha2-512</strong> and <strong>YsHsjx_202206</strong>, respectively, and the encryption mode and the password are <strong>aes256</strong> and <strong>YsHsjx_202406</strong>, respectively. ACL 2001 is associated with the user.<pre class="screen"><strong>snmp-agent usm-user v3 v3user group v3group acl 2001</strong>
+<strong>snmp-agent usm-user v3 v3user authentication-mode sha2-512</strong>
+Please configure the authentication password (8-255) 
+Enter Password:                            
+Confirm password: </pre>
+<pre class="screen"><strong>snmp-agent usm-user v3 v3user privacy-mode aes256</strong>
+Please configure the privacy password (8-255)                                                                                      
+Enter Password:   
+Confirm password: </pre>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <strong>display current-configuration | include snmp</strong> command to check the current SNMP configuration.</p>
+<pre class="screen"><strong>display current-configuration | include snmp</strong>
+snmp-agent
+snmp-agent local-engineid 800007DB03548998F3A49C
+snmp-agent sys-info version v3
+snmp-agent group v3 vrgroup privacy read-view iso-view write-view iso-view notify-view iso-view acl 2001
+snmp-agent mib-view iso-view include iso
+snmp-agent usm-user v3 v3user
+snmp-agent usm-user v3 v3user group v3group
+snmp-agent usm-user v3 v3user authentication-mode sha2-512 cipher %^%#r4/Z<font style="font-size:8pt" Face="Courier New" >~</font>SNFK#`ym<font style="font-size:8pt" Face="Courier New" >~</font>Jl{|&gt;.g1e6-Yk$]Xj[^g4U$fk/%^%#
+snmp-agent usm-user v3 v3user privacy-mode aes256 cipher %^%#trY)F200V,=wQ{D,n7&amp;&amp;5Sss"'DceI+#p)REt9'*%^%#
+snmp-agent usm-user v3 v3user acl 2001
+undo snmp-agent protocol source-status all-interface
+undo snmp-agent protocol source-status ipv6 all-interface
+undo snmp-agent proxy protocol source-status all-interface
+undo snmp-agent proxy protocol source-status ipv6 all-interface
+snmp-agent trap enable</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0011.html">Management Plane Security (Level-1)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0017.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0018.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

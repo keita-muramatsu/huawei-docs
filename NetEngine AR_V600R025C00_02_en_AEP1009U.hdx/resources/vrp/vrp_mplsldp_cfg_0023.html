@@ -1,0 +1,124 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring LDP Label Policies">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_1004.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0022.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001337274056">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring LDP Label Policies</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001337274056"></a><a name="EN-US_TASK_0000001337274056"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring LDP Label Policies</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001337274056__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Generally, an LSR distributes labels to both upstream and downstream LDP peers, speeding up LDP LSP convergence. If a device receives all Label Mapping messages or sends Label Mapping messages to all peers, a large number of LSPs need to be established. This wastes resources and potentially causes unstable device running. To reduce the number of LSPs and memory consumption, configure the following policies as needed:</p>
+<ul><li>Configure an LDP split horizon policy.<p>DSLAMs deployed on an MPLS network for user access have low performance. If LDP distributes labels to all peers, a large number of LSPs will be established, which may result in large overhead on devices. It is recommended that split horizon be configured for LDP peers, so that an LSR distributes labels only to upstream LDP peers.</p>
+</li><li>Configure an inbound LDP policy.<p>Configure an inbound LDP policy to restrict the receiving of Label Mapping messages.</p>
+</li><li>Configure an outbound LDP policy.<p>Configure an outbound LDP policy to restrict the sending of Label Mapping messages.</p>
+</li></ul>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001337274056__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure an LDP split horizon policy.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a split horizon policy for an LDP peer to allow the LSR to distribute labels only to the upstream LDP peer.</span><p><pre class="screen"><b><span class="cmdqueryname">outbound peer</span></b> { <i><span class="varname">peer-id</span></i> | <strong><span>all</span></strong> } <strong><span>split-horizon</span></strong></pre>
+<p>By default, split horizon is not configured for LDP peers. That is, an LSR distributes labels to both upstream and downstream LDP peers.</p>
+</p></li></ol>
+</li><li><span>Configure an inbound LDP policy.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP-IPv4 view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an inbound LDP policy for specified IGP routes of a specified peer.</span><p><pre class="screen"><b><span class="cmdqueryname">inbound peer</span></b> { <i><span class="varname">peer-id</span></i> | <strong><span>peer-group</span></strong> <i><span class="varname">peer-group-name</span></i> | <strong><span>all</span></strong> } <strong><span>fec</span></strong> { <strong><span>none</span></strong> | <strong><span>host</span></strong> | <strong><span>ip-prefix</span></strong> <i><span class="varname">prefix-name</span></i> }</pre>
+<div class="p">An inbound LDP policy restricts the receiving of LDP Label Mapping messages based on the selected parameter:<ul><li><strong><span>none</span></strong>: filters out all FECs. If this parameter is set, the specified peer does not receive Label Mapping messages on any IGP route.</li><li><strong><span>host</span></strong>: allows only the FECs on host routes to pass. If this parameter is set, the specified peer receives Label Mapping messages on host routes.</li><li><strong><span>ip-prefix</span></strong>: allows only the FECs on routes in a specified IP prefix list. If this parameter is set, the specified peer receives Label Mapping messages on IGP routes in the specified IP prefix list.</li></ul>
+</div>
+<p>To apply a policy associated with the same FEC range to an LDP peer group or all LDP peers receiving Label Mapping messages, specify either <strong><span>peer-group</span></strong> <i><span class="varname">peer-group-name</span></i> or <strong><span>all</span></strong> in the command.</p>
+</p><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><div class="p">If multiple inbound policies are configured for a specified peer, the earliest configuration takes effect. For example, the following configurations are performed, in this sequence:<pre class="screen"><strong>inbound peer 2.2.2.2 fec host</strong></pre>
+<pre class="screen"><strong>inbound peer peer-group group1 fec none</strong></pre>
+As <strong>group1</strong> also contains an LDP peer with <i><span class="varname">peer-id</span></i> of 2.2.2.2, the following inbound policy takes effect:<pre class="screen"><strong>inbound peer 2.2.2.2 fec host</strong></pre>
+</div>
+<div class="p">If two inbound policies are configured one after the other and the <strong><span>peer</span></strong> parameter settings in the two commands are the same, the latter configuration overwrites the former. For example, the following configurations are performed, in this sequence:<pre class="screen"><strong>inbound peer 2.2.2.2 fec host</strong></pre>
+<pre class="screen"><strong>inbound peer 2.2.2.2 fec none</strong></pre>
+The second configuration overwrites the first one. This means that the following inbound policy takes effect for the LDP peer with <i><span class="varname">peer-id</span></i> of 2.2.2.2:<pre class="screen"><strong>inbound peer 2.2.2.2 fec none</strong></pre>
+</div>
+<div class="p">If an inbound policy for all peers is configured and another inbound policy for a specified peer or peer group is configured, the former policy has a higher priority, and the latter policy does not take effect. For example, the following configurations are performed:<pre class="screen"><strong>inbound peer all fec none</strong></pre>
+<pre class="screen"><strong>inbound peer 2.2.2.2 fec host</strong></pre>
+The following inbound policy takes effect:<pre class="screen"><strong>inbound peer all fec none</strong></pre>
+</div>
+<p>MPLS and MPLS LDP must be enabled globally before an inbound policy is configured.</p>
+<p>To delete all inbound policies simultaneously, run the <b><span class="cmdqueryname">undo inbound peer all</span></b> command.</p>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure an outbound LDP policy.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Enter the MPLS-LDP-IPv4 view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an outbound LDP policy for specified IGP routes of a specified peer.</span><p><pre class="screen"><b><span class="cmdqueryname">outbound peer</span></b> { <i><span class="varname">peer-id</span></i> | <strong><span>peer-group</span></strong> <i><span class="varname">peer-group-name</span></i> | <strong><span>all</span></strong> } <strong><span>fec</span></strong> { <strong><span>none</span></strong> | <strong><span>host</span></strong> | <strong><span>ip-prefix</span></strong> <i><span class="varname">prefix-name</span></i> }</pre>
+<div class="p">The outbound LDP policy helps an LSR provide a specific function based on one of the following parameters:<ul><li><strong><span>none</span></strong>: filters out all FECs. If this parameter is specified, the device does not send Label Mapping messages for IGP routes to specified peers.</li><li><strong><span>host</span></strong>: allows only the FECs on host routes to pass. If this parameter is specified, the device sends Label Mapping messages only for host routes to specified peers.</li><li><strong><span>ip-prefix</span></strong>: allows only the FECs on routes in a specified IP prefix list. If this parameter is specified, the device sends Label Mapping messages only for IGP routes in the specified IP prefix list to specified peers.</li></ul>
+</div>
+<p>To apply a policy associated with the same FEC range to an LDP peer group or all LDP peers sending Label Mapping messages, specify either <strong><span>peer-group</span></strong> <i><span class="varname">peer-group-name</span></i> or <strong><span>all</span></strong> in the command.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><div class="p">If multiple outbound policies are configured for a specified LDP peer, the earliest configuration takes effect. For example, the following configurations are performed in sequence:<pre class="screen"><strong>outbound peer 2.2.2.2 fec host</strong></pre>
+<pre class="screen"><strong>outbound peer peer-group group1 fec none</strong></pre>
+As group1 also contains an LDP peer with <i><span class="varname">peer-id</span></i> of 2.2.2.2, the following outbound policy takes effect for the peer:<pre class="screen"><strong>outbound peer 2.2.2.2 fec host</strong></pre>
+</div>
+<div class="p">If two outbound policies are configured in sequence and the peer parameters in the two commands are the same, the latter configuration overwrites the former. For example, the following configurations are performed, in this sequence:<pre class="screen"><strong>outbound peer 2.2.2.2 fec host</strong></pre>
+<pre class="screen"><strong>outbound peer 2.2.2.2 fec none</strong></pre>
+The second configuration overwrites the first one. This means that the following outbound policy takes effect for the LDP peer with <i><span class="varname">peer-id</span></i> of 2.2.2.2:<pre class="screen"><strong>outbound peer 2.2.2.2 fec none</strong></pre>
+</div>
+<p>MPLS and MPLS LDP must be enabled globally before an outbound policy is configured.</p>
+<p>To delete all outbound policies simultaneously, run the <b><span class="cmdqueryname">undo outbound peer all</span></b> command.</p>
+</div></div>
+</p></li></ol>
+</li></ul></div>
+<div class="result"><a name="EN-US_TASK_0000001337274056__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Result</h4>
+<div class="p"><p>Run the <b><span class="cmdqueryname">display mpls ldp lsp</span></b> <strong><span>inbound-policy</span></strong> command to check the liberal LSPs for which an inbound policy has taken effect.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_1004.html">Configuring LDP Label Advertisement and Management Modes
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0022.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

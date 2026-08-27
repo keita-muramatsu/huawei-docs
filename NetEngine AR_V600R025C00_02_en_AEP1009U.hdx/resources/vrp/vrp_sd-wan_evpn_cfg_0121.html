@@ -1,0 +1,99 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Configuring IPsec">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0120.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0122.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001176742675">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Configuring IPsec</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001176742675"></a><a name="EN-US_TASK_0000001176742675"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Configuring IPsec</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001176742675__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In an SD-WAN EVPN scenario, you need to configure an IPsec tunnel between sites to encrypt data for secure data communication.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In an SD-WAN EVPN scenario, if one end is bound to an IPsec P2MP policy, the other end must also be bound to an IPsec P2MP policy.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001176742675__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Configure a point-to-multipoint (P2MP) policy.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec p2mp-policy </span></b><i><span class="varname">policy-name</span></i></pre>
+<p>By default, no P2MP policy is configured.</p>
+</p></li><li><span>Configure an authentication algorithm for the P2MP policy.</span><p><pre class="screen"><b><span class="cmdqueryname">esp authentication-algorithm</span></b> { <i><span class="varname">sha2-256</span></i> | <i><span class="varname">sm3</span></i> }</pre>
+<p>By default, the authentication algorithm is SHA2-256.</p>
+<p>The authentication algorithms are listed in descending order of security level as follows: SM3 &gt; SHA2-256.</p>
+</p></li><li><span>Configure an encryption algorithm for the P2MP policy.</span><p><pre class="screen"><b><span class="cmdqueryname">esp encryption-algorithm</span></b> { <i><span class="varname">aes-128</span></i> | <i><span class="varname">aes-256</span></i> | <i><span class="varname">aes-128-gcm</span></i> | <i><span class="varname">aes-256-gcm</span></i> | <i><span class="varname">sm4</span></i> }</pre>
+<p>By default, the encryption algorithm is AES-256-GCM.</p>
+<p>The authentication algorithms are listed in descending order of security level as follows: SM4 &gt; AES-256-GCM &gt; AES-128-GCM &gt; AES-256 &gt; AES-128.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>SM4 can meet high confidentiality and security requirements, but takes a relatively long processing time.</p>
+<p>The AES-128 and AES-256 algorithms are not secure enough and therefore not recommended.</p>
+</div></div>
+</p></li><li><span>Configure a key exchange algorithm for the P2MP policy.</span><p><pre class="screen"><b><span class="cmdqueryname">key-exchange</span></b> { <i><span class="varname">dh-group19</span></i> | <i><span class="varname">dh-group20</span></i> | <i><span class="varname">dh-group21</span></i> } [ strict ]</pre>
+<p>By default, no key exchange algorithm is configured.</p>
+</p></li><li><span>Configure the SA lifetime for the P2MP policy.</span><p><pre class="screen"><b><span class="cmdqueryname">sa duration time-based </span></b><i><span class="varname">time-value</span></i></pre>
+<p>By default, the SA lifetime is 1440 minutes.</p>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Create a site and enter the site view.</span><p><pre class="screen"><b><span class="cmdqueryname">evpn site </span></b><i><span class="varname">site-id</span></i> [ <strong><span>site-type</span></strong> { <strong><span>cpe</span></strong> | <strong><span>rr</span></strong> | <strong><span>rr-cpe</span></strong> } ]</pre>
+<p>By default, no site is created.</p>
+</p></li><li><span>Create a TNP and enter the TNP view.</span><p><pre class="screen"><b><span class="cmdqueryname">transport-network-port </span></b><i><span class="varname">transport-network-port-id</span></i></pre>
+<p>By default, no TNP is created.</p>
+</p></li><li><span>Bind the P2MP policy to the TNP.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec-p2mp-policy </span></b><i><span class="varname">policy-name</span></i></pre>
+<p>By default, no P2MP policy is bound to a TNP.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0007.html">Configuring SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0120.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0122.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

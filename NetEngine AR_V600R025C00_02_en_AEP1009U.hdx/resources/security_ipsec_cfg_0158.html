@@ -1,0 +1,557 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Establishing an IPsec Tunnel in a NAT Scenario (NAT Is Performed by Each Branch's Gateway)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002255822473.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0282.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebNext" content="ys_sec@sec_case_ipsec_0018.xml">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001638149864">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Establishing an IPsec Tunnel in a NAT Scenario (NAT Is Performed by Each Branch's Gateway)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001638149864"></a><a name="EN-US_TASK_0000001638149864"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Establishing an IPsec Tunnel in a NAT Scenario (NAT Is Performed by Each Branch's Gateway)</h1>
+<div class="taskbody" id="taskbody0000001638149864"><div class="context"><a name="EN-US_TASK_0000001638149864__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001638149864__context479162314493"><h4 class="sectiontitle">Networking Requirements</h4><div class="p" id="EN-US_TASK_0000001638149864__p1637874773180217">In <a href="#EN-US_TASK_0000001638149864__fig1265435919118">Figure 1</a>, an enterprise has the HQ and two branches (branch 1 and branch 2).<ul id="EN-US_TASK_0000001638149864__ul753395885"><li id="EN-US_TASK_0000001638149864__li174926472311"><p id="EN-US_TASK_0000001638149864__p74920412234"><a name="EN-US_TASK_0000001638149864__li174926472311"></a><a name="li174926472311"></a>DeviceB connects branch 1 to the Internet, and DeviceC connects branch 2 to the Internet.</p>
+</li><li id="EN-US_TASK_0000001638149864__li2811967249"><p id="EN-US_TASK_0000001638149864__p108118642416"><a name="EN-US_TASK_0000001638149864__li2811967249"></a><a name="li2811967249"></a>There are reachable routes between DeviceA and DeviceB, and between DeviceA and DeviceC.</p>
+</li><li id="EN-US_TASK_0000001638149864__li203158456180217"><p id="EN-US_TASK_0000001638149864__p2132654909180217"><a name="EN-US_TASK_0000001638149864__li203158456180217"></a><a name="li203158456180217"></a>DeviceA is the NAT gateway of the HQ, while DeviceB and DeviceC are the NAT gateways of branch 1 and branch 2, respectively.</p>
+</li></ul>
+</div>
+<p id="EN-US_TASK_0000001638149864__p280077183919">Employees at the branches need to access the servers at the HQ. The information obtained from the servers is confidential and needs to be encrypted for secure transmission over the Internet through an IPsec tunnel. Data flows destined for the Internet require NAT, but data flows passing through the IPsec tunnel do not. Therefore, distinguish the data flows when configuring NAT.</p>
+<div class="fignone" id="EN-US_TASK_0000001638149864__fig1265435919118"><a name="EN-US_TASK_0000001638149864__fig1265435919118"></a><a name="fig1265435919118"></a><span class="figcap"><b>Figure 1 </b>Network diagram for establishing an IPsec tunnel in a NAT scenario (NAT is performed by each branch's gateway)</span><div class="note" id="EN-US_TASK_0000001638149864__note158711072125"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__p111124517519">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001638149864__image1065405921119" src="figure/en-us_image_0000001686526225.png" width="NaN" height="NaN"></span></div>
+<p id="EN-US_TASK_0000001638149864__p1977963961110"></p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001638149864__table11696057121" frame="border" border="1" rules="all"><thead align="left"><tr id="EN-US_TASK_0000001638149864__row3697115716211"><th align="left" class="cellrowborder" valign="top" width="17.72%" id="mcps1.3.1.6.1.3.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000001638149864__p9697257121">Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="82.28%" id="mcps1.3.1.6.1.3.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000001638149864__p1169715716219">Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000001638149864__row106976579212"><td class="cellrowborder" rowspan="4" valign="top" width="17.72%" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p206970571429">DeviceA</p>
+</td>
+<td class="cellrowborder" valign="top" width="82.28%" headers="mcps1.3.1.6.1.3.1.2 "><p id="EN-US_TASK_0000001638149864__p369717574218">Interface: <span>10GE</span> <span>0/0/1</span></p>
+<p id="EN-US_TASK_0000001638149864__p569755716213">IP address: 10.1.1.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row669795710214"><td class="cellrowborder" valign="top" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p769755718210">Interface: <span>10GE</span> <span>0/0/2</span></p>
+<p id="EN-US_TASK_0000001638149864__p269717579213">IP address: 1.1.3.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row17697357425"><td class="cellrowborder" valign="top" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p1669717572214"><strong id="EN-US_TASK_0000001638149864__b2069712571621">IPsec configuration</strong></p>
+<p id="EN-US_TASK_0000001638149864__p46975577212">Authentication type: pre-shared key</p>
+<p id="EN-US_TASK_0000001638149864__p1669710571027">PSK: YsHsjx_202206</p>
+<p id="EN-US_TASK_0000001638149864__p6394549151218">NAT traversal: enabled</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row4196201810196"><td class="cellrowborder" valign="top" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p17191334221"><strong id="EN-US_TASK_0000001638149864__b51257508223">NAT configuration</strong></p>
+<ul id="EN-US_TASK_0000001638149864__ul1928113092715"><li id="EN-US_TASK_0000001638149864__li20282730122714">Name: policy_nat1<p id="EN-US_TASK_0000001638149864__p15846271865"><a name="EN-US_TASK_0000001638149864__li20282730122714"></a><a name="li20282730122714"></a>Source IP address: 10.1.1.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p05674916614">Destination IP address: 10.1.2.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p141614031611">Destination IP address: 10.1.3.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p11530610861">Action: no-nat</p>
+</li><li id="EN-US_TASK_0000001638149864__li10901026161619">Name: policy_nat2<p id="EN-US_TASK_0000001638149864__p12903268166"><a name="EN-US_TASK_0000001638149864__li10901026161619"></a><a name="li10901026161619"></a>Source IP address: 10.1.1.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p149072691616">Action: easy-ip</p>
+</li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row156978579218"><td class="cellrowborder" rowspan="4" valign="top" width="17.72%" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p156971577218">DeviceB</p>
+<p id="EN-US_TASK_0000001638149864__p36710561312"></p>
+</td>
+<td class="cellrowborder" valign="top" width="82.28%" headers="mcps1.3.1.6.1.3.1.2 "><p id="EN-US_TASK_0000001638149864__p6697205720218">Interface: <span>10GE</span> <span>0/0/1</span></p>
+<p id="EN-US_TASK_0000001638149864__p13698165719215">IP address: 1.1.5.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row1769817577211"><td class="cellrowborder" valign="top" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p0698165713213">Interface: <span>10GE</span> <span>0/0/2</span></p>
+<p id="EN-US_TASK_0000001638149864__p1769816577217">IP address: 10.1.2.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row169855718210"><td class="cellrowborder" valign="top" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p186989571210"><strong id="EN-US_TASK_0000001638149864__b146981657528">IPsec configuration</strong></p>
+<p id="EN-US_TASK_0000001638149864__p86987574210">Remote address: 1.1.3.1</p>
+<p id="EN-US_TASK_0000001638149864__p2698657429">Authentication type: pre-shared key</p>
+<p id="EN-US_TASK_0000001638149864__p146982571521">PSK: YsHsjx_202206</p>
+<p id="EN-US_TASK_0000001638149864__p1469815717213">Local ID type: IP address</p>
+<p id="EN-US_TASK_0000001638149864__p6698157326">Remote ID type: any</p>
+<p id="EN-US_TASK_0000001638149864__p186914112132">NAT traversal: enabled</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row267145617312"><td class="cellrowborder" valign="top" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p42107623212"><strong id="EN-US_TASK_0000001638149864__b52105623219">NAT configuration</strong></p>
+<ul id="EN-US_TASK_0000001638149864__ul1221012613218"><li id="EN-US_TASK_0000001638149864__li1221026133217">Name: policy_nat1<p id="EN-US_TASK_0000001638149864__p32101961327"><a name="EN-US_TASK_0000001638149864__li1221026133217"></a><a name="li1221026133217"></a>Source IP address: 10.1.2.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p112101564329">Destination IP address: 10.1.1.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p42103633213">Destination IP address: 10.1.3.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p14210196113217">Action: no-nat</p>
+</li><li id="EN-US_TASK_0000001638149864__li192101760324">Name: policy_nat2<p id="EN-US_TASK_0000001638149864__p15210865328"><a name="EN-US_TASK_0000001638149864__li192101760324"></a><a name="li192101760324"></a>Source IP address: 10.1.2.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p82101967323">Action: easy-ip</p>
+</li></ul>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row533031114919"><td class="cellrowborder" rowspan="4" valign="top" width="17.72%" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p13715984919">DeviceC</p>
+<p id="EN-US_TASK_0000001638149864__p1589641215335"></p>
+</td>
+<td class="cellrowborder" valign="top" width="82.28%" headers="mcps1.3.1.6.1.3.1.2 "><p id="EN-US_TASK_0000001638149864__p95283410101">Interface: <span>10GE</span> <span>0/0/1</span></p>
+<p id="EN-US_TASK_0000001638149864__p4528746106">IP address: 1.1.4.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row182654124917"><td class="cellrowborder" valign="top" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p1852817461015">Interface: <span>10GE</span> <span>0/0/2</span></p>
+<p id="EN-US_TASK_0000001638149864__p1652810471019">IP address: 10.1.3.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row8722105154918"><td class="cellrowborder" valign="top" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p35291145104"><strong id="EN-US_TASK_0000001638149864__b19529545105">IPsec configuration</strong></p>
+<p id="EN-US_TASK_0000001638149864__p1252974171014">Remote address: 1.1.3.1</p>
+<p id="EN-US_TASK_0000001638149864__p1552919441019">Authentication type: pre-shared key</p>
+<p id="EN-US_TASK_0000001638149864__p4529944102">PSK: YsHsjx_202206</p>
+<p id="EN-US_TASK_0000001638149864__p752954111013">Local ID type: IP address</p>
+<p id="EN-US_TASK_0000001638149864__p125290418100">Remote ID type: any</p>
+<p id="EN-US_TASK_0000001638149864__p94259491319">NAT traversal: enabled</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001638149864__row7895181217331"><td class="cellrowborder" valign="top" headers="mcps1.3.1.6.1.3.1.1 "><p id="EN-US_TASK_0000001638149864__p18513191339"><strong id="EN-US_TASK_0000001638149864__b2012113403119">NAT configuration</strong></p>
+<ul id="EN-US_TASK_0000001638149864__ul1685519173314"><li id="EN-US_TASK_0000001638149864__li885141913310">Name: policy_nat1<p id="EN-US_TASK_0000001638149864__p98514195339"><a name="EN-US_TASK_0000001638149864__li885141913310"></a><a name="li885141913310"></a>Source IP address: 10.1.3.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p48511912332">Destination IP address: 10.1.1.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p48521923316">Destination IP address: 10.1.2.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p16851319133314">Action: no-nat</p>
+</li><li id="EN-US_TASK_0000001638149864__li485191983316">Name: policy_nat2<p id="EN-US_TASK_0000001638149864__p118517198335"><a name="EN-US_TASK_0000001638149864__li485191983316"></a><a name="li485191983316"></a>Source IP address: 10.1.3.0/24</p>
+<p id="EN-US_TASK_0000001638149864__p785419203314">Action: easy-ip</p>
+</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001638149864__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001638149864__context1677625172748"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="note" id="EN-US_TASK_0000001638149864__note1258653244117"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__p16903121817372">The tunnel negotiation parameter settings on devices at both ends of a tunnel must be the same.</p>
+<p id="EN-US_TASK_0000001638149864__p1354162310165">This example uses default security algorithms of IPsec.</p>
+<p id="EN-US_TASK_0000001638149864__p162371991502">For security purposes, you are advised not to use the weak security algorithm or weak security protocol of this feature. If you must use such weak security algorithm or protocol, run the <strong id="EN-US_TASK_0000001638149864__b13133616381">install feature-software WEAKEA</strong> command to install the weak security algorithm or protocol feature package WEAKEA.</p>
+</div></div>
+<div class="p" id="EN-US_TASK_0000001638149864__p1714915411492">The configuration roadmap is as follows:<ol id="EN-US_TASK_0000001638149864__ol84887318252"><li id="EN-US_TASK_0000001638149864__li124891315257">Configure interfaces.</li><li id="EN-US_TASK_0000001638149864__li19721545182718">Configure static routes to divert tunnel negotiation packets and encrypted data packets transmitted through the tunnel.</li><li id="EN-US_TASK_0000001638149864__li6183122942611">Configure an IPsec policy and apply an IPsec policy group to an interface. Template IPsec policies need to be configured on DeviceA at the HQ, and ISAKMP IPsec policies need to be configured on DeviceB and DeviceC at the branches.</li><li id="EN-US_TASK_0000001638149864__li1014913529379">Configure source NAT. Data flows destined for the Internet require NAT, but data flows passing through the IPsec tunnel do not. Therefore, you need to configure different actions in a NAT policy to distinguish the data flows.</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001638149864__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001638149864__steps67676594314"><li id="EN-US_TASK_0000001638149864__step14423594189"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd7907968172748">Configure public and private network interfaces on DeviceA.</span><p><p id="EN-US_TASK_0000001638149864__en-us_task_0200316860_p12605767406"># Configure the private network interface <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen111022405180216">&lt;<span class="keyword" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_keyword997514984413">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b5808950180216">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_keyword18402720442">HUAWEI</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b523482254180216">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1577378589180216">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b84181382014">undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1194099546180216">ip address 10.1.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1332938808180216">quit</strong></pre>
+<p id="EN-US_TASK_0000001638149864__en-us_task_0200316860_p145441343144020"># Configure the public network interface <span>10GE</span> <span>0/0/2</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen93228202474">[DeviceA] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1322142054719">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b92441718152015">undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b932292024715">ip address 1.1.3.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__b132981459164519">nat enable</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1832272044713">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001638149864__step168437369501"><span id="EN-US_TASK_0000001638149864__cmd48441536105014">Configure a default static route on DeviceA to divert tunnel negotiation packets and encrypted data packets transmitted through the tunnel.</span><p><div class="note" id="EN-US_TASK_0000001638149864__note16149335183614"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__p41491935153617">Assume that the next-hop IP address of the route from DeviceA to the Internet is 1.1.3.254.</p>
+</div></div>
+<pre class="screen" id="EN-US_TASK_0000001638149864__screen1723858951180216">[DeviceA] <strong id="EN-US_TASK_0000001638149864__b1253212490180216">ip route-static 0.0.0.0 0.0.0.0 1.1.3.254</strong></pre>
+</p></li><li id="EN-US_TASK_0000001638149864__step3934105710503"><span id="EN-US_TASK_0000001638149864__cmd99351574500">Configure a template IPsec policy on DeviceA and apply an IPsec policy group to <span>10GE</span> <span>0/0/2</span>.</span><ol type="a" id="EN-US_TASK_0000001638149864__substeps1918651763915"><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep6425122013393"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd1642692010394">Configure an IPsec proposal.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen1581867650180216">[DeviceA] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b768663218180216">ipsec proposal tran1</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b331159127180216">esp authentication-algorithm sha2-256</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001638149864__b8742130104011">esp encryption-algorithm </strong><strong id="EN-US_TASK_0000001638149864__b187434015405">aes-256-gcm-128</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b929573342180216">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep55661223104720"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd19566172317473">Configure an IKE proposal.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen391116656180216">[DeviceA] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1872301513180216">ike proposal 10</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1468094202180216">authentication-method pre-share</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b559125536180216">prf hmac-sha2-256</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__b311011564310">encryption-algorithm </strong><strong id="EN-US_TASK_0000001638149864__b1011185184313">aes-gcm-256</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b941258122180216">dh group14</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b750989077180216">integrity-algorithm hmac-sha2-256</strong>  
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1889795985180216">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep224463210537"><span id="EN-US_TASK_0000001638149864__cmd1124493217533">Configure an IKE peer.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen805221015180216">[DeviceA] <strong id="EN-US_TASK_0000001638149864__b1626254442180216">ike peer b</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000001638149864__b845268418180216">ike-proposal 10</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000001638149864__b1004468267180216">pre-shared-key YsHsjx_202206</strong>
+[DeviceA-ike-peer-b]<strong id="EN-US_TASK_0000001638149864__b185706417145"> nat traversal</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000001638149864__b1455519709180216">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001638149864__note8393381146"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__en-us_task_0000001563873901_p182251656104818">By default, NAT traversal is enabled. If NAT traversal is disabled, run the <strong id="EN-US_TASK_0000001638149864__en-us_task_0000001563873901_b119114509">nat traversal</strong> command to enable it again.</p>
+</div></div>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep5554162219547"><span id="EN-US_TASK_0000001638149864__cmd165541922185410">Configure an IPsec policy template.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen2035925425180216">[DeviceA] <strong id="EN-US_TASK_0000001638149864__b601304783180217">ipsec policy-template map_temp 1</strong>
+[DeviceA-ipsec-policy-templet-map_temp-1] <strong id="EN-US_TASK_0000001638149864__b1758292864180216">proposal tran1</strong>
+[DeviceA-ipsec-policy-templet-map_temp-1] <strong id="EN-US_TASK_0000001638149864__b1535044863180216">ike-peer b</strong>
+[DeviceA-ipsec-policy-templet-map_temp-1] <strong id="EN-US_TASK_0000001638149864__b2070714920180216">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep1028735374180217"><span id="EN-US_TASK_0000001638149864__cmd564588821180217">Reference the IPsec policy template <strong id="EN-US_TASK_0000001638149864__b111481944972">map_temp</strong> in the IPsec policy numbered 10 in the IPsec policy group <strong id="EN-US_TASK_0000001638149864__b1414916441074">map1</strong>.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen502843379180217">[DeviceA] <strong id="EN-US_TASK_0000001638149864__b247353628180217">ipsec policy map1 10 isakmp template map_temp</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep7391431105419"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd203963115417">Apply the IPsec policy group to <span>10GE</span> <span>0/0/2</span>.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen717889205180216">[DeviceA] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1244832124180216">interface </strong><strong id="EN-US_TASK_0000001638149864__b186723213266"><span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b648895037180216">ipsec policy map1</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1637153962180216">quit</strong></pre>
+</p></li></ol>
+</li><li id="EN-US_TASK_0000001638149864__step8521103195520"><span id="EN-US_TASK_0000001638149864__cmd452123115520">Configure NAT on DeviceA.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen1262115556573">[DeviceA] <strong id="EN-US_TASK_0000001638149864__b17100031928">nat</strong><strong id="EN-US_TASK_0000001638149864__b2025923710215">-policy</strong>
+[DeviceA-policy-nat] <strong id="EN-US_TASK_0000001638149864__b3621655125714">rule name policy_nat1</strong>
+[DeviceA-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b1962120554578">source-address 10.1.1.0 24</strong>
+[DeviceA-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b1362175520571">destination-address 10.1.2.0 24</strong>
+[DeviceA-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b166210554575">destination-address 10.1.3.0 24</strong>
+[DeviceA-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b16621455115719">action no-nat</strong>
+[DeviceA-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b162155525716">quit</strong></pre>
+<pre class="screen" id="EN-US_TASK_0000001638149864__screen2705716101116">[DeviceA-policy-nat] <strong id="EN-US_TASK_0000001638149864__b137061016151112">rule name policy_nat2</strong>
+[DeviceA-policy-nat-rule-policy_nat2] <strong id="EN-US_TASK_0000001638149864__b670621691114">source-address 10.1.1.0 24</strong>
+[DeviceA-policy-nat-rule-policy_nat2] <strong id="EN-US_TASK_0000001638149864__b87061716151115">action source-nat easy-ip</strong>
+[DeviceA-policy-nat-rule-policy_nat2] <strong id="EN-US_TASK_0000001638149864__b670621615117">quit</strong>
+[DeviceA-policy-nat] <strong id="EN-US_TASK_0000001638149864__b15547026171111">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001638149864__step1939118155211"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd693951845210">Configure public and private network interfaces on DeviceB.</span><p><p id="EN-US_TASK_0000001638149864__en-us_task_0200316860_p137598114720"># Configure the public network interface <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen17759101110714">&lt;<span class="keyword" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_keyword19759611671">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b177597119711">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_keyword1975914116711">HUAWEI</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1175931114713">sysname DeviceB</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b27591711373">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b875981118713">undo portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b47592112074">ip address 1.1.5.1 24</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__b6748204618462">nat enable</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b11759181120715">quit</strong></pre>
+<p id="EN-US_TASK_0000001638149864__en-us_task_0200316860_p187602113711"># Configure the private network interface <span>10GE</span> <span>0/0/2</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen10760211176">[DeviceB] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b16760141111712">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b20760161112712">undo portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1776013119714">ip address 10.1.2.1 24</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b12760911978">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001638149864__step9939111815527"><span id="EN-US_TASK_0000001638149864__cmd199397186529">Configure a default static route on DeviceB to divert tunnel negotiation packets and encrypted data packets transmitted through the tunnel.</span><p><div class="note" id="EN-US_TASK_0000001638149864__note83820451068"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__p143826452618">Assume that the next-hop IP address of the route from DeviceB to the Internet is 1.1.5.254.</p>
+</div></div>
+<pre class="screen" id="EN-US_TASK_0000001638149864__screen133822451966">[DeviceB] <strong id="EN-US_TASK_0000001638149864__b1638294517613">ip route-static 0.0.0.0 0.0.0.0 1.1.5.254</strong></pre>
+</p></li><li id="EN-US_TASK_0000001638149864__step593971825211"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd19391918145211">Configure an ISAKMP IPsec policy on DeviceB and apply an IPsec policy group to <span>10GE</span> <span>0/0/1</span>.</span><ol type="a" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_substeps1134111230515"><li class="substepexpand" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_substep10551431761"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd115511315616">Create the advanced ACL 3000, define the data flow to be protected, and allow devices on the network segment 10.1.2.0/24 to access the network segment 10.1.1.0/24.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen85510312615">[DeviceB] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1556531564">acl 3000</strong>
+[DeviceB-acl4-advance-3000] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1156531263">rule 5 permit ip source 10.1.2.0 0.0.0.255 destination 10.1.1.0 0.0.0.255</strong>
+[DeviceB-acl4-advance-3000] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b4563312615">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_substep125615315616"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd1256431562">Configure an IPsec proposal.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen105643119619">[DeviceB] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b135618317614">ipsec proposal tran1</strong>
+[DeviceB-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b756183119610">esp authentication-algorithm sha2-256</strong>
+[DeviceB-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001638149864__b177581414184014">esp encryption-algorithm aes-256-gcm-128</strong>
+[DeviceB-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b256103112615">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_substep4562314613"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd1856631564">Configure an IKE proposal.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen35612319610">[DeviceB] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b8565313613">ike proposal 10</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b145618318616">authentication-method pre-share</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b2566319614">prf hmac-sha2-256</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__b13637114220442">encryption-algorithm aes-gcm-256</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b185613311863">dh group14</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b75613312065">integrity-algorithm hmac-sha2-256</strong>  
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b155714311263">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_substep1957113110618"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd11576311767">Configure an IKE peer.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen8570311563">[DeviceB] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b18577311764">ike peer a</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b1657231968">ike-proposal 10</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b6575312614">remote-address 1.1.3.1</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b19579318615">pre-shared-key YsHsjx_202206</strong>
+[DeviceB-ike-peer-a]<strong id="EN-US_TASK_0000001638149864__b0828512111518"> nat traversal</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b13573311963">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001638149864__note35461116191511"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__en-us_task_0000001563873901_p182251656104818_1">By default, NAT traversal is enabled. If NAT traversal is disabled, run the <strong id="EN-US_TASK_0000001638149864__en-us_task_0000001563873901_b119114509_1">nat traversal</strong> command to enable it again.</p>
+</div></div>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_substep4572311615"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd14579318616">Configure an IPsec policy.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen857531666">[DeviceB] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b16571431364">ipsec policy map1 10 isakmp</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b25716311064">security acl 3000</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b957203115614">proposal tran1</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b195703119610">ike-peer a</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__b182448241410">sa trigger-mode auto</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b16576314610">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001638149864__note7328142818414"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__en-us_task_0000001564113977_p751115311401">By default, the negotiation for IPsec tunnel establishment is triggered by traffic. To enable automatic negotiation for IPsec tunnel establishment, run the <strong id="EN-US_TASK_0000001638149864__en-us_task_0000001564113977_b12265647152215"><b><span class="cmdqueryname" id="EN-US_TASK_0000001638149864__en-us_task_0000001564113977_cmdname12472649317">sa trigger-mode auto</span></b></strong> command.</p>
+</div></div>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_substep757143112611"><span id="EN-US_TASK_0000001638149864__en-us_task_0200316860_cmd0574311667">Apply an IPsec policy group to <span>10GE</span> <span>0/0/1</span>.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__en-us_task_0200316860_screen1857531861">[DeviceB] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b8570310612">interface</strong><strong id="EN-US_TASK_0000001638149864__b186323203019"> <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b0582031264">ipsec policy map1</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__en-us_task_0200316860_b55833117619">quit</strong></pre>
+</p></li></ol>
+</li><li id="EN-US_TASK_0000001638149864__step32462118465"><span id="EN-US_TASK_0000001638149864__cmd22468144620">Configure NAT on DeviceB.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen624613114465">[DeviceB] <strong id="EN-US_TASK_0000001638149864__b1424651134616">nat</strong><strong id="EN-US_TASK_0000001638149864__b192460120465">-policy</strong>
+[DeviceB-policy-nat] <strong id="EN-US_TASK_0000001638149864__b132462114618">rule name policy_nat1</strong>
+[DeviceB-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b5247171194618">source-address 10.1.2.0 24</strong>
+[DeviceB-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b202471112466">destination-address 10.1.1.0 24</strong>
+[DeviceB-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b82475134611">destination-address 10.1.3.0 24</strong>
+[DeviceB-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b1324781144615">action no-nat</strong>
+[DeviceB-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b224741124617">quit</strong></pre>
+<pre class="screen" id="EN-US_TASK_0000001638149864__screen1124719164618">[DeviceB-policy-nat] <strong id="EN-US_TASK_0000001638149864__b024751164611">rule name policy_nat2</strong>
+[DeviceB-policy-nat-rule-policy_nat2] <strong id="EN-US_TASK_0000001638149864__b122471517464">source-address 10.1.2.0 24</strong>
+[DeviceB-policy-nat-rule-policy_nat2] <strong id="EN-US_TASK_0000001638149864__b112475134619">action source-nat easy-ip</strong>
+[DeviceB-policy-nat-rule-policy_nat2] <strong id="EN-US_TASK_0000001638149864__b82472110466">quit</strong>
+[DeviceB-policy-nat] <strong id="EN-US_TASK_0000001638149864__b102476104618">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001638149864__step16254103811418"><span id="EN-US_TASK_0000001638149864__cmd693951845210">Configure public and private network interfaces on DeviceC.</span><p><p id="EN-US_TASK_0000001638149864__p137598114720"># Configure the public network interface <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001638149864__screen17759101110714">&lt;<span class="keyword" id="EN-US_TASK_0000001638149864__keyword19759611671">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001638149864__b177597119711">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001638149864__keyword1975914116711">HUAWEI</span>] <strong id="EN-US_TASK_0000001638149864__b1175931114713">sysname DeviceC</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001638149864__b27591711373">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__b875981118713">undo portswitch</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__b47592112074">ip address 1.1.4.1 24</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__b15596103416473">nat enable</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__b11759181120715">quit</strong></pre>
+<p id="EN-US_TASK_0000001638149864__p187602113711"># Configure the private network interface <span>10GE</span> <span>0/0/2</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001638149864__screen10760211176">[DeviceC] <strong id="EN-US_TASK_0000001638149864__b16760141111712">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__b20760161112712">undo portswitch</strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__b1776013119714">ip address 10.1.3.1 24</strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001638149864__b12760911978">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001638149864__step1014711541536"><span id="EN-US_TASK_0000001638149864__cmd1114720545317">Configure a default static route on DeviceC to divert tunnel negotiation packets and encrypted data packets transmitted through the tunnel.</span><p><div class="note" id="EN-US_TASK_0000001638149864__note114745411312"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__p9147154139">Assume that the next-hop IP address of the route from DeviceC to the Internet is 1.1.4.254.</p>
+</div></div>
+<pre class="screen" id="EN-US_TASK_0000001638149864__screen111471354333">[DeviceC] <strong id="EN-US_TASK_0000001638149864__b31479547316">ip route-static 0.0.0.0 0.0.0.0 1.1.4.254</strong></pre>
+</p></li><li id="EN-US_TASK_0000001638149864__step169718308817"><span id="EN-US_TASK_0000001638149864__cmd19391918145211">Configure an ISAKMP IPsec policy on DeviceC and apply an IPsec policy group to <span>10GE</span> <span>0/0/1</span>.</span><ol type="a" id="EN-US_TASK_0000001638149864__substeps1134111230515"><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep10551431761"><span id="EN-US_TASK_0000001638149864__cmd115511315616">Create the advanced ACL 3000, define the data flow to be protected, and allow devices on the network segment 10.1.3.0/24 to access the network segment 10.1.1.0/24.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen85510312615">[DeviceC] <strong id="EN-US_TASK_0000001638149864__b1556531564">acl 3000</strong>
+[DeviceC-acl4-advance-3000] <strong id="EN-US_TASK_0000001638149864__b1156531263">rule 5 permit ip source 10.1.3.0 0.0.0.255 destination 10.1.1.0 0.0.0.255</strong>
+[DeviceC-acl4-advance-3000] <strong id="EN-US_TASK_0000001638149864__b4563312615">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep125615315616"><span id="EN-US_TASK_0000001638149864__cmd1256431562">Configure an IPsec proposal.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen105643119619">[DeviceC] <strong id="EN-US_TASK_0000001638149864__b135618317614">ipsec proposal tran1</strong>
+[DeviceC-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001638149864__b756183119610">esp authentication-algorithm sha2-256</strong>
+[DeviceC-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001638149864__b12084238409">esp encryption-algorithm </strong><strong id="EN-US_TASK_0000001638149864__b4209623114015">aes-256-gcm-128</strong>
+[DeviceC-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001638149864__b256103112615">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep4562314613"><span id="EN-US_TASK_0000001638149864__cmd1856631564">Configure an IKE proposal.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen35612319610">[DeviceC] <strong id="EN-US_TASK_0000001638149864__b8565313613">ike proposal 10</strong>
+[DeviceC-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__b145618318616">authentication-method pre-share</strong>
+[DeviceC-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__b2566319614">prf hmac-sha2-256</strong>
+[DeviceC-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__b1390075144411">encryption-algorithm aes-gcm-256</strong>
+[DeviceC-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__b185613311863">dh group14</strong>
+[DeviceC-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__b75613312065">integrity-algorithm hmac-sha2-256</strong>  
+[DeviceC-ike-proposal-10] <strong id="EN-US_TASK_0000001638149864__b155714311263">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep1957113110618"><span id="EN-US_TASK_0000001638149864__cmd11576311767">Configure an IKE peer.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen8570311563">[DeviceC] <strong id="EN-US_TASK_0000001638149864__b18577311764">ike peer a</strong>
+[DeviceC-ike-peer-a] <strong id="EN-US_TASK_0000001638149864__b1657231968">ike-proposal 10</strong>
+[DeviceC-ike-peer-a] <strong id="EN-US_TASK_0000001638149864__b6575312614">remote-address 1.1.3.1</strong>
+[DeviceC-ike-peer-a] <strong id="EN-US_TASK_0000001638149864__b19579318615">pre-shared-key YsHsjx_202206</strong>
+[DeviceC-ike-peer-a]<strong id="EN-US_TASK_0000001638149864__b7406350161511"> nat traversal</strong>
+[DeviceC-ike-peer-a] <strong id="EN-US_TASK_0000001638149864__b13573311963">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001638149864__note1243716531153"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__en-us_task_0000001563873901_p182251656104818_2">By default, NAT traversal is enabled. If NAT traversal is disabled, run the <strong id="EN-US_TASK_0000001638149864__en-us_task_0000001563873901_b119114509_2">nat traversal</strong> command to enable it again.</p>
+</div></div>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep4572311615"><span id="EN-US_TASK_0000001638149864__cmd14579318616">Configure an IPsec policy.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen857531666">[DeviceC] <strong id="EN-US_TASK_0000001638149864__b16571431364">ipsec policy map1 10 isakmp</strong>
+[DeviceC-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__b25716311064">security acl 3000</strong>
+[DeviceC-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__b957203115614">proposal tran1</strong>
+[DeviceC-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__b195703119610">ike-peer a</strong>
+[DeviceC-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__b108861218120">sa trigger-mode auto</strong>
+ 
+[DeviceC-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001638149864__b16576314610">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001638149864__note15339182216123"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001638149864__en-us_task_0000001564113977_p751115311401_1">By default, the negotiation for IPsec tunnel establishment is triggered by traffic. To enable automatic negotiation for IPsec tunnel establishment, run the <strong id="EN-US_TASK_0000001638149864__en-us_task_0000001564113977_b12265647152215_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001638149864__en-us_task_0000001564113977_cmdname12472649317_1">sa trigger-mode auto</span></b></strong> command.</p>
+</div></div>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001638149864__substep757143112611"><span id="EN-US_TASK_0000001638149864__cmd0574311667">Apply an IPsec policy group to <span>10GE</span> <span>0/0/1</span>.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen1857531861">[DeviceC] <strong id="EN-US_TASK_0000001638149864__b8570310612">interface </strong><strong id="EN-US_TASK_0000001638149864__b1765116211212"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__b0582031264">ipsec policy map1</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001638149864__b55833117619">quit</strong></pre>
+</p></li></ol>
+</li><li id="EN-US_TASK_0000001638149864__step581194735312"><span id="EN-US_TASK_0000001638149864__cmd1181847125317">Configure NAT on DeviceC.</span><p><pre class="screen" id="EN-US_TASK_0000001638149864__screen9812471536">[DeviceC] <strong id="EN-US_TASK_0000001638149864__b481747165320">nat</strong><strong id="EN-US_TASK_0000001638149864__b168184717530">-policy</strong>
+[DeviceC-policy-nat] <strong id="EN-US_TASK_0000001638149864__b1381194712535">rule name policy_nat1</strong>
+[DeviceC-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b11828472534">source-address 10.1.3.0 24</strong>
+[DeviceC-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b198274765317">destination-address 10.1.2.0 24</strong>
+[DeviceC-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b168274719534">destination-address 10.1.1.0 24</strong>
+[DeviceC-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b5822047155318">action no-nat</strong>
+[DeviceC-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001638149864__b88204795312">quit</strong></pre>
+<pre class="screen" id="EN-US_TASK_0000001638149864__screen118214478531">[DeviceC-policy-nat] <strong id="EN-US_TASK_0000001638149864__b6827479539">rule name policy_nat2</strong>
+[DeviceC-policy-nat-rule-policy_nat2] <strong id="EN-US_TASK_0000001638149864__b198218473533">source-address 10.1.3.0 24</strong>
+[DeviceC-policy-nat-rule-policy_nat2] <strong id="EN-US_TASK_0000001638149864__b28214755312">action source-nat easy-ip</strong>
+[DeviceC-policy-nat-rule-policy_nat2] <strong id="EN-US_TASK_0000001638149864__b198204711531">quit</strong>
+[DeviceC-policy-nat] <strong id="EN-US_TASK_0000001638149864__b12829476539">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001638149864__example121226172748"><a name="EN-US_TASK_0000001638149864__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol id="EN-US_TASK_0000001638149864__ol108574409319"><li id="EN-US_TASK_0000001638149864__li1785716401334">After the configuration is complete, employees at the HQ and branches can access the Internet at any time. Check for the session entries with source addresses as the private addresses of intranet PCs. The following assumes that a PC on the HQ intranet accesses IP address 3.3.3.3. If a session entry with the source address as the private addresses of the PC is found and the post-NAT IP address is the public IP address of the public network interface, the NAT policy has been configured successfully. <pre class="screen" id="EN-US_TASK_0000001638149864__screen412101011141">&lt;<span><span class="eudemon">DeviceA</span></span>&gt; <strong id="EN-US_TASK_0000001638149864__b87979569493">display session all verbose</strong>
+  Session Table Information:
+    Protocol          : 6(TCP)
+    SrcAddr  Port Vpn : 10.1.1.3 2474
+    DestAddr Port Vpn : 3.3.3.3 80
+    Time To Live      : 60s
+    NAT Info
+      New SrcAddr     : 1.1.3.1
+      New SrcPort     : 3761
+      New DestAddr    : -
+      New DestPort    : -
+
+  Total : 1</pre>
+</li><li id="EN-US_TASK_0000001638149864__li148571240334">View IKE SAs and IPsec SAs on DeviceB and DeviceC at the branches. The following example uses the command output on DeviceB, which shows that IKE SAs and IPsec SAs have been established successfully.<pre class="screen" id="EN-US_TASK_0000001638149864__screen238482223013">&lt;DeviceB&gt; <strong id="EN-US_TASK_0000001638149864__b1540210224300">display ike sa</strong>
+Total number of IKE SA in all CPU : 2 
+Total number of phase 1 SA in all CPU : 1                                                                                           
+Total number of phase 2 SA in all CPU : 1 
+
+Flag Description: RD--READY   ST--STAYALIVE   RL--REPLACED   FD--FADING   TO--TIMEOUT 
+HRT--HEARTBEAT   LKG--LAST KNOWN GOOD SEQ NO.   BCK--BACKED UP 
+M--ACTIVE   S--STANDBY   A--ALONE  NEG--NEGOTIATING 
+
+Slot 0, cpu 0 IKE SA information :
+  Number of IKE SA : 2,  number of IKE SA1: 1,  number of IKE SA2: 1
+------------------------------------------------------------------------------------   
+  Conn-ID    Peer            VPN     Flag(s)      Phase   RemoteType  RemoteID 
+------------------------------------------------------------------------------------  
+  16782416   1.1.3.1/500             RD|ST|A      v2:2    IP          1.1.3.1  
+  16782415   1.1.3.1/500             RD|ST|A      v2:1    IP          1.1.3.1     
+------------------------------------------------------------------------------------</pre>
+<pre class="screen" id="EN-US_TASK_0000001638149864__screen7949131173019">&lt;DeviceB&gt; <strong id="EN-US_TASK_0000001638149864__b195921832193020">display ipsec sa brief</strong>
+Slot 0, cpu 0 IPSec SA information:                                                          
+  Src address   Dst address     SPI      VPN  Protocol     Algorithm       
+------------------------------------------------------------------------------- 
+   1.1.3.1        1.1.5.1    16423687          ESP       E:AES-256-GCM-128
+   1.1.5.1        1.1.3.1    274624861         ESP       E:AES-256-GCM-128
+Number of IPSec SA : 2
+-------------------------------------------------------------------------------
+Total number of IPSec SA in all CPU : 2</pre>
+</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001638149864__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001638149864__ul954805358180217"><li id="EN-US_TASK_0000001638149864__li1929651494180217"><div class="p" id="EN-US_TASK_0000001638149864__p354622664180217"><a name="EN-US_TASK_0000001638149864__li1929651494180217"></a><a name="li1929651494180217"></a>DeviceA<pre class="screen" id="EN-US_TASK_0000001638149864__screen1345709955180217">#
+ sysname DeviceA
+#                                                                               
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128
+#
+ike proposal 10
+ encryption-algorithm aes-gcm-256                                                   
+ dh group14                                                                      
+ authentication-algorithm sha2-256
+ authentication-method pre-share                                                
+ integrity-algorithm hmac-sha2-256                                              
+ prf hmac-sha2-256
+#
+ike peer b
+ pre-shared-key %@%@'OMi3SPl%@TJdx5uDE(44*I^%@%@
+ ike-proposal 10
+#
+ipsec policy-template map_temp 1
+ proposal tran1
+ ike-peer b
+#
+ipsec policy map1 10 isakmp template map_temp
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 1.1.3.1 255.255.255.0
+ nat enable
+ ipsec policy map1
+#
+ ip route-static 0.0.0.0 0.0.0.0 1.1.3.254
+#
+nat-policy  
+  rule name policy_nat1 
+    source-address 10.1.1.0 mask 255.255.255.0
+    destination-address 10.1.2.0 mask 255.255.255.0
+    destination-address 10.1.3.0 mask 255.255.255.0
+    action no-nat 
+  rule name policy_nat2
+    source-address 10.1.1.0 mask 255.255.255.0
+    action source-nat easy-ip
+#     
+return</pre>
+</div>
+</li><li id="EN-US_TASK_0000001638149864__li2109938823180217"><div class="p" id="EN-US_TASK_0000001638149864__p344335250180217"><a name="EN-US_TASK_0000001638149864__li2109938823180217"></a><a name="li2109938823180217"></a>DeviceB<pre class="screen" id="EN-US_TASK_0000001638149864__screen1800437171180217">#
+ sysname DeviceB
+#
+acl number 3000
+ rule 5 permit ip source 10.1.2.0 0.0.0.255 destination 10.1.1.0 0.0.0.255
+#                                                                               
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128
+#
+ike proposal 10
+ encryption-algorithm aes-gcm-256                                                   
+ dh group14                                                                      
+ authentication-algorithm sha2-256 
+ authentication-method pre-share                                                
+ integrity-algorithm hmac-sha2-256                                              
+ prf hmac-sha2-256 
+#
+ike peer a
+ pre-shared-key %@%@W[QD:1tV\'f"!1W&amp;yrX6v$B&gt;%@%@
+ ike-proposal 10
+ remote-address 1.1.3.1
+#
+ipsec policy map1 10 isakmp
+ security acl 3000
+ ike-peer a
+ sa trigger-mode auto
+ proposal tran1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.5.1 255.255.255.0
+ nat enable
+ ipsec policy map1
+#
+ ip route-static 0.0.0.0 0.0.0.0 1.1.5.254
+#
+nat-policy  
+  rule name policy_nat1 
+    source-address 10.1.2.0 mask 255.255.255.0
+    destination-address 10.1.1.0 mask 255.255.255.0
+    destination-address 10.1.3.0 mask 255.255.255.0
+    action no-nat 
+  rule name policy_nat2
+    source-address 10.1.2.0 mask 255.255.255.0
+    action source-nat easy-ip
+#
+return</pre>
+</div>
+</li><li id="EN-US_TASK_0000001638149864__li710203362514"><div class="p" id="EN-US_TASK_0000001638149864__p5102193313254"><a name="EN-US_TASK_0000001638149864__li710203362514"></a><a name="li710203362514"></a>DeviceC<pre class="screen" id="EN-US_TASK_0000001638149864__screen1110223352511">#
+ sysname DeviceC
+#
+acl number 3000
+ rule 5 permit ip source 10.1.3.0 0.0.0.255 destination 10.1.1.0 0.0.0.255
+#                                                                               
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128
+#
+ike proposal 10
+ encryption-algorithm aes-gcm-256                                                   
+ dh group14                                                                      
+ authentication-algorithm sha2-256
+ authentication-method pre-share                                                
+ integrity-algorithm hmac-sha2-256                                              
+ prf hmac-sha2-256 
+#
+ike peer a
+ pre-shared-key %@%@W[QD:1tV\'f"!1W&amp;yrX6v$B&gt;%@%@
+ ike-proposal 10
+ remote-address 1.1.3.1
+#
+ipsec policy map1 10 isakmp
+ security acl 3000
+ ike-peer a
+ sa trigger-mode auto
+ proposal tran1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.3.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.4.1 255.255.255.0
+ nat enable
+ ipsec policy map1
+#
+ ip route-static 0.0.0.0 0.0.0.0 1.1.4.254
+nat-policy  
+  rule name policy_nat1 
+    source-address 10.1.3.0 mask 255.255.255.0
+    destination-address 10.1.1.0 mask 255.255.255.0
+    destination-address 10.1.2.0 mask 255.255.255.0
+    action no-nat 
+  rule name policy_nat2
+    source-address 10.1.3.0 mask 255.255.255.0
+    action source-nat easy-ip
+#
+return</pre>
+</div>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002255822473.html">Applications of IPsec with NAT
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0282.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

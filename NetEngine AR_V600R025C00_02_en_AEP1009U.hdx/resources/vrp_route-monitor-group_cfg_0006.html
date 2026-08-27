@@ -1,0 +1,88 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an IPv6 Route Monitoring Group">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_route-monitor-group_cfg_0004.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_route-monitor-group_cfg_0005.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Route Monitoring Group">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Route Monitoring Group">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="Route Monitoring Group">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001993275464">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an IPv6 Route Monitoring Group</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001993275464"></a><a name="EN-US_TASK_0000001993275464"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an IPv6 Route Monitoring Group</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001993275464__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p id="EN-US_TASK_0000001993275464__en-us_task_0000001993115716_p1613994662214040">To improve network reliability, most carriers implement device-level redundancy by deploying two devices, which back up each other or balance traffic. In a dual-homing scenario where two devices work in active/standby mode, if one device fails, the other device takes over services from the faulty device.</p>
+<div class="p" id="EN-US_TASK_0000001993275464__en-us_task_0000001993115716_p1963567149214040">In <a href="#EN-US_TASK_0000001993275464__en-us_task_0000001993115716_fig_dc_vrp_cfg_route_rmg_000501">Figure 1</a>, DeviceA and DeviceB back up each other. DeviceE, DeviceF, and DeviceG are dual-homed to DeviceA and DeviceB to implement load balancing. Network-side devices (DeviceC and DeviceD) are connected to the Internet.<ul id="EN-US_TASK_0000001993275464__en-us_task_0000001993115716_ul1995873885214040"><li id="EN-US_TASK_0000001993275464__en-us_task_0000001993115716_li527439473214040">If a link between DeviceA and DeviceC or between DeviceA and DeviceD fails, the link bandwidth between DeviceA and the Internet decreases. However, DeviceE, DeviceF, and DeviceG cannot detect the fault in time and keep sending packets to the Internet through DeviceA (rather than DeviceB). As a result, network congestion may occur between DeviceA and the Internet.</li><li id="EN-US_TASK_0000001993275464__en-us_task_0000001993115716_li1253391323214040">If all the links between DeviceA and DeviceC and between DeviceA and DeviceD fail, only the links between DeviceB and the Internet are available on the network side. However, DeviceE, DeviceF, and DeviceG cannot detect the fault in time and keep sending packets to the Internet through DeviceA (rather than DeviceB). As a result, traffic loss may occur between DeviceA and the Internet.</li></ul>
+</div>
+<div class="fignone" id="EN-US_TASK_0000001993275464__en-us_task_0000001993115716_fig_dc_vrp_cfg_route_rmg_000501"><a name="EN-US_TASK_0000001993275464__en-us_task_0000001993115716_fig_dc_vrp_cfg_route_rmg_000501"></a><a name="en-us_task_0000001993115716_fig_dc_vrp_cfg_route_rmg_000501"></a><span class="figcap"><b>Figure 1 </b>Typical network diagram with a route monitoring group</span><br><span><img id="EN-US_TASK_0000001993275464__en-us_task_0000001993115716_image915723054117" src="figure/en-us_image_0000002127254377.png" width="NaN" height="NaN"></span></div>
+<p id="EN-US_TASK_0000001993275464__en-us_task_0000001993115716_p1140165078214040">It is required that a route monitoring group be configured on DeviceA (active device) and that the network-side routes be added to the group so that their status can be monitored. When the status of a certain proportion of network-side routes changes, the RM module notifies the corresponding service module on DeviceA of the change. Then, a primary/backup link switchover is performed on the access side. This allows DeviceE, DeviceF, and DeviceG to access the network through DeviceB, preventing traffic loss and ensuring service continuity.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001993275464__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an IPv6 route monitoring group and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 route-monitor-group</span></b> <i><span class="varname">group-name</span></i></pre>
+</p></li><li><span>Add an IPv6 route to the IPv6 route monitoring group.</span><p><pre class="screen"><b><span class="cmdqueryname">track ipv6 route</span></b> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ] <i><span class="varname">destination</span></i> <i><span class="varname">mask-length</span></i> [ <strong><span>down-weight</span></strong> <i><span class="varname">down-weight-value</span></i> ]</pre>
+</p><p><p>To add more IPv6 routes to the IPv6 route monitoring group, repeat this step.</p>
+</p></li><li><span>(Optional) Configure a delay after which the RM module instructs the service modules associated with the IPv6 route monitoring group to perform a switchback.</span><p><pre class="screen"><b><span class="cmdqueryname">trigger-up-delay</span></b> <i><span class="varname">delay-value</span></i></pre>
+</p><p><p>By default, the delay for the IPv6 RM module to instruct the service modules to perform a switchback is 5s.</p>
+<p>When an IPv6 route in an IPv6 route monitoring group becomes active again, the IPv6 RM module needs to re-deliver the route to the forwarding table and create forwarding entries, which takes some time. If the IPv6 RM module immediately instructs the service modules to perform a link switchback, packet loss may occur. To prevent this problem, run the <b><span class="cmdqueryname">trigger-up-delay</span></b> command to configure a delay for the IPv6 RM module to instruct the service modules to perform a link switchback so that the RM module instructs the service modules to perform a link switchback after forwarding entries are created.</p>
+</p></li><li><span>Enable the IPv6 route monitoring group function.</span><p><pre class="screen"><b><span class="cmdqueryname">monitor enable</span></b></pre>
+</p><p><p>By default, the IPv6 route monitoring group function is disabled.</p>
+<p>When a large number of IPv6 routes are added to or deleted from an IPv6 route monitoring group, the down-weight sum of the route monitoring group may change frequently, which in turn leads to service flapping of the service modules associated with the route monitoring group. To prevent such service flapping, run the <strong>undo</strong> <b><span class="cmdqueryname">monitor enable</span></b> command to dissociate the IPv6 route monitoring group from all service modules. After the configuration is complete, run the <b><span class="cmdqueryname">monitor enable</span></b> command to re-associate the IPv6 route monitoring group with the service modules.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001993275464__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After configuring the IPv6 route monitoring group, verify its configurations.</p>
+<ul><li>Run the <b><span class="cmdqueryname">display ipv6 route-monitor-group</span></b> [ <i><span class="varname">group-name</span></i> ] command to check IPv6 route monitoring group information.</li><li>Run the <b><span class="cmdqueryname">display ipv6 route-monitor-group track-route</span></b> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ] <i><span class="varname">destination</span></i> <i><span class="varname">mask-length</span></i> command to check information about all IPv6 route monitoring groups to which a route has been added.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_route-monitor-group_cfg_0004.html">Configuring a Route Monitoring Group
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_route-monitor-group_cfg_0005.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

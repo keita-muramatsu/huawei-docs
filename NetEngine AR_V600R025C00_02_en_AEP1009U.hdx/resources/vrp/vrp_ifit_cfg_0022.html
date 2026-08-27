@@ -1,0 +1,97 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring IFIT Tunnel-Level Quality Measurement">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ifit_cfg_0021.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ifit_cfg_0008_2.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001863735844">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring IFIT Tunnel-Level Quality Measurement</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001863735844"></a><a name="EN-US_TASK_0000001863735844"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring IFIT Tunnel-Level Quality Measurement</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001863735844__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring IFIT to implement tunnel-level quality measurement in an SRv6 scenario, you have completed the following tasks:</p>
+<ul><li><a href="../vrp_srv6_cfg_0102.html">Configure an SRv6 TE Policy manually</a> or <a href="../vrp_srv6_cfg_0111.html">use a controller to dynamically deliver an SRv6 TE Policy</a>.<p>Bidirectional binding SIDs must be configured to ensure normal MCP calculation.</p>
+</li><li>Configure basic NTP functions to implement clock synchronization between devices.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001863735844__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Users want to use the controller to monitor the tunnel quality on the network in real time so that tunnel exceptions can be quickly detected and paths can be switched in a timely manner. You can configure IFIT measurement on devices so that the devices can periodically measure the packet loss rate and delay and perform intelligent traffic steering through tunnel quality analysis, simplifying the O&amp;M process and improving O&amp;M experience.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The following steps need to be performed only on the ingress and egress nodes.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001863735844__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IFIT measurement for an SRv6 TE Policy.</span><p><ol type="a"><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the SRv6 view.<pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6</span></b></pre>
+</li><li>Enter the SRv6 TE Policy view.<pre class="screen"><b><span class="cmdqueryname">srv6-te policy</span></b> <i><span class="varname">name-value</span></i> <strong><span>endpoint</span></strong> <i><span class="varname">endpoint-ip</span></i> <strong><span>color</span></strong> <i><span class="varname">color-value</span></i></pre>
+</li><li>Enable IFIT packet loss measurement for the SRv6 TE Policy.<pre class="screen"><b><span class="cmdqueryname">ifit loss-measure enable</span></b></pre>
+</li><li>Enable IFIT delay measurement for the SRv6 TE Policy.<pre class="screen"><b><span class="cmdqueryname">ifit delay-measure enable</span></b></pre>
+</li><li>(Optional) Configure the IFIT measurement interval for the SRv6 TE Policy.<pre class="screen"><b><span class="cmdqueryname">ifit interval</span></b> <i><span class="varname">interval-value</span></i></pre>
+</li><li>Exit the SRv6 TE Policy view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Return to the system view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li></ol>
+</p></li><li><span>Enable IFIT globally and enter the IFIT view.</span><p><pre class="screen"><b><span class="cmdqueryname">ifit</span></b></pre>
+</p></li><li><span>Configure the IFIT NE ID.</span><p><pre class="screen"><b><span class="cmdqueryname">node-id</span></b> <i><span class="varname">node-id</span></i></pre>
+</p></li><li><span>Configure an IFIT working mode and enter the IFIT working mode view.</span><p><pre class="screen"><b><span class="cmdqueryname">work-mode</span></b> [ <strong><span>mcp</span></strong> | <strong><span>dcp</span></strong> | <strong><span>auto</span></strong> ]</pre>
+</p></li><li><span>Set the service type for IFIT measurement to SRv6 TE Policy.</span><p><pre class="screen"><b><span class="cmdqueryname">service-type</span></b> <strong><span>srv6-segment-list</span></strong></pre>
+</p></li><li><span>Return to the IFIT view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>(Optional) Set the aging time of IFIT dynamic flows to a multiple of the measurement interval.</span><p><pre class="screen"><b><span class="cmdqueryname">dynamic-flow age interval-multiplier</span></b> <i><span class="varname">multi-value</span></i></pre>
+</p></li><li><span>(Optional) Clear an IFIT dynamic flow instance.</span><p><pre class="screen"><b><span class="cmdqueryname">reset dynamic</span></b> <strong><span>flow</span></strong> { <i><span class="varname">flowId</span></i> | <strong><span>all</span></strong> }</pre>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001863735844__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display ifit</span></b> command to check IFIT flow information.</li><li>Run the <b><span class="cmdqueryname">display ifit dynamic-hop</span></b> [ <strong><span>flow-id</span></strong> <i><span class="varname">flow-id</span></i> ] command to check IFIT flow information on the transit and egress nodes.</li><li>Run the <b><span class="cmdqueryname">display ifit srv6-segment-list</span></b> [ <i><span class="varname">segment-list-id</span></i> ] command to check SRv6 TE Policy measurement instance information.</li><li>Run the <b><span class="cmdqueryname">display ifit statistic-type</span></b> { <strong><span>two-way-delay</span></strong> | <strong><span>one-way-loss</span></strong> } { <strong><span>srv6-segment-list</span></strong> <i><span class="varname">segment-list-id</span></i> | <strong><span>flow-id</span></strong> <i><span class="varname">flowId</span></i> } command to check original performance data on the MCP.</li></ul>
+<h4 class="sectiontitle">Follow-up Procedure</h4><p>After the preceding configuration is complete, the IFIT measurement result is reported to the SPR module for intelligent traffic steering. For details, see <a href="../vrp_srv6_cfg_0162.html">Configuring TE-Class-based Traffic Steering into an SRv6 TE Policy</a>.</p>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_ifit_cfg_0021.html">Configuring IFIT Tunnel-Level Quality Measurement
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_ifit_cfg_0008_2.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="BFD Security">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0031.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0114.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564012033">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>BFD Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564012033"></a><a name="EN-US_TASK_0000001564012033"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">BFD Security</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001564012033__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>If a network requires high security, you can configure BFD session authentication to improve network security. BFD session authentication verifies BFD packets when a BFD session is created. As shown in <a href="#EN-US_TASK_0000001564012033__fig845143735212">Figure 1 BFD session setup</a>, the BFD session between <span class="keyword">Device</span>A and <span class="keyword">Device</span>B is in the DOWN state initially. After a device receives a BFD packet with the State field set to DOWN from the peer, the device does not switch the BFD session state to INIT. Instead, it checks whether the authentication information in the packet is the same as the local authentication information. If they are the same, the device sends a BFD packet with the State field set to INIT to the peer. After receiving the packet with the State field set to INIT, the peer device compares the authentication information in the packet with the local authentication information. If the authentication information is the same, it changes the local BFD session state to UP. This ensures the security of the BFD session.</p>
+<div class="fignone" id="EN-US_TASK_0000001564012033__fig845143735212"><a name="EN-US_TASK_0000001564012033__fig845143735212"></a><a name="fig845143735212"></a><span class="figcap"><b>Figure 1 </b>BFD session setup</span><br><span><img class="vsd" src="figure/en-us_image_0000001675773714.png" width="NaN" height="NaN"></span></div>
+<p>BFD session authentication applies to multicast BFD sessions, single-hop BFD for IP sessions, and multi-hop BFD for IP sessions. After negotiation packet authentication is configured, the A flag in the BFD packet header is set to 1, and the 28-byte authentication field is added to the payload. The receiver decapsulates the packet. If the A flag in the packet header is different from the local one, the receiver discards the packet. If they are the same, the receiver checks whether the authentication field is the same as the local configuration. If they are the same, the BFD session is set up. If they are different, the receiver discards the packet.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When configuring session authentication, ensure that the same authentication mode, authentication password, and authentication timeout interval are configured on the sender and receiver.</p>
+<p>An authentication password can be configured in cleartext or ciphertext mode. In both modes, the password is displayed in ciphertext in the configuration file.</p>
+</div></div>
+<h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001564012033__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure authentication information for a multicast BFD session.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BFD session view.</span><p><pre class="screen"><b><span class="cmdqueryname">bfd</span></b> <i><span class="varname">session-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure authentication information for a multicast BFD session.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication-mode</span></b> <strong><span>met-sha1 </span></strong><strong><span>key-id</span></strong> <i><span class="varname">key-id-value</span></i> <strong><span>cipher </span></strong><i><span class="varname">cipher-text</span></i> <strong><span>nego-packet</span></strong> [ <strong><span>enhanced </span></strong>] [ <strong><span>timeout-interval </span></strong>&lt;<i><span class="varname">interval-value</span></i>&gt; ]</pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The <strong><span>enhanced</span></strong> parameter indicates the enhanced authentication mode. In this mode, a BFD session in the Up state needs to be authenticated when it receives AdminDown, Down, or P/F packets. In normal authentication mode, a BFD session needs to be authenticated only when it receives Down packets.</p>
+<p>Before configuring BFD authentication information in multicast scenarios, you need to create a multicast BFD session. The BFD session must use the multicast address for detection.</p>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure negotiation packet authentication for a BFD for IPv4 single-hop session.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BFD view.</span><p><pre class="screen"><b><span class="cmdqueryname">bfd</span></b> </pre>
+</p></li><li class="substepexpand"><span>Configure authentication information for a single-hop BFD for IPv4 session.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">bfd</span></b> </strong><strong><span class="cmdqueryname">single-hop peer-ip</span></strong><strong> </strong><em><i><span class="varname">ip-address</span></i></em> [ <strong><span>vpn-instance</span></strong> <em><i><span class="varname">vpn-name</span></i></em> ] <strong><strong><span>authentication-mode</span></strong></strong> <strong><strong><span>met-sha1</span></strong></strong> <strong><strong><span>key-id</span></strong></strong> <em><i><span class="varname">key-id-value</span></i></em> <strong><strong><span>cipher</span></strong></strong> <em><i><span class="varname">cipher-text</span></i></em> <strong><strong><span>nego-packet</span></strong></strong></pre>
+</p></li></ol>
+</li><li><span>Configure authentication information for a single-hop BFD for IPv6 session.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BFD view.</span><p><pre class="screen"><b><span class="cmdqueryname">bfd</span></b> </pre>
+</p></li><li class="substepexpand"><span>Configure authentication information for a single-hop BFD for IPv6 session.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">bfd</span></b> </strong><strong><span class="cmdqueryname">single-hop peer-ipv6</span></strong><strong> </strong><i><span class="varname">ipv6-address</span></i> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-name</span></i> ] <strong><strong><span>authentication-mode</span></strong></strong> <strong><strong><span>met-sha1</span></strong></strong> <strong><strong><span>key-id</span></strong></strong> <em><i><span class="varname">key-id-value</span></i></em> <strong>cipher</strong> <em><i><span class="varname">cipher-text</span></i></em> <strong>nego-packet</strong></pre>
+</p></li></ol>
+</li><li><span>Configure authentication information for a multi-hop BFD for IPv4 session.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BFD view.</span><p><pre class="screen"><b><span class="cmdqueryname">bfd</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure negotiation packet authentication for a BFD for IPv4 multi-hop session.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">bfd</span></b> <strong><span>multi-hop peer-ip</span></strong> </strong><i><span class="varname">ip-address</span></i> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-name</span></i> ] <strong><span>authentication-mode met-sha1</span></strong> <strong><span>key-id</span></strong> <i><span class="varname">key-id-value</span></i> <strong><span>cipher</span></strong> <i><span class="varname">cipher-text</span></i> <strong><span>nego-packet</span></strong></pre>
+</p></li></ol>
+</li><li><span>Configure authentication information for a multi-hop BFD for IPv6 session.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BFD view.</span><p><pre class="screen"><b><span class="cmdqueryname">bfd</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure negotiation packet authentication for a BFD for IPv6 multi-hop session.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">bfd</span></b> <strong><span>multi-hop peer-ipv6</span></strong></strong><em> </em><i><span class="varname">ipv6-address</span></i> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-name</span></i> ] <strong><span>authentication-mode met-sha1</span></strong><strong> </strong><strong><span>key-id</span></strong> <i><span class="varname">key-id-value</span></i> <strong><span>cipher</span></strong> <i><span class="varname">cipher-text</span></i> <strong><span>nego-packet</span></strong></pre>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001564012033__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <b><span class="cmdqueryname">display bfd session all verbose</span></b> command to check the status of the authenticated BFD session.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0031.html">Control Plane Security (Level-2)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0114.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

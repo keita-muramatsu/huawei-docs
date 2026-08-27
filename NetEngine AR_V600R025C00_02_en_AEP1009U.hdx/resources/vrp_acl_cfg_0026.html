@@ -1,0 +1,125 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Using a Basic ACL to Control Access to an FTP Server">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0028.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_XTASK_0000001570413141">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Using a Basic ACL to Control Access to an FTP Server</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_XTASK_0000001570413141"></a><a name="EN-US_XTASK_0000001570413141"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Using a Basic ACL to Control Access to an FTP Server</h1>
+<div><div class="section"><h4 class="sectiontitle">Networking Requirements</h4>
+<div class="p"><p>As shown in <a href="#EN-US_XTASK_0000001570413141__fig115606340019">Figure 1</a>, the switch functions as an FTP server and grants different access rights to different users.</p>
+<ul><li>All the users on subnet 1 (172.16.105.11/24) are allowed to access the FTP server at any time.</li><li>All the users on subnet 2 (172.16.107.11/24) are allowed to access the FTP server only within a specified time range.</li><li>Other users are not allowed to access the FTP server.</li></ul>
+<p>The routes between the switch and subnets are reachable. You need to configure the switch to control access to the FTP server.</p>
+<div class="fignone" id="EN-US_XTASK_0000001570413141__fig115606340019"><a name="EN-US_XTASK_0000001570413141__fig115606340019"></a><a name="fig115606340019"></a><span class="figcap"><b>Figure 1 </b>Network diagram of using a basic ACL to control access to an FTP server</span><br><span><img src="figure/en-us_image_0000002299214689.png"></span></div>
+<div class="p"><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>FTP can be used only after the weak security algorithm/protocol feature package (WEAKEA) has been installed using the <strong>install feature-software WEAKEA</strong> command in the system view.</p>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li><span>Configure time ranges.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname <span class="keyword">Switch</span></strong>
+[Switch]<strong> time-range ftp-access from 0:0 2023/1/1 to 23:59 2023/12/31</strong>
+[Switch] <strong>time-range ftp-access 14:00 to 18:00 off-day</strong></pre>
+</p></li><li><span>Configure a basic ACL.</span><p><pre class="screen">[Switch] <strong>acl number 2001</strong>
+[Switch-acl-number-2001]<strong> rule permit source 172.16.105.0 0.0.0.255</strong>
+[Switch-acl-number-2001]<strong> </strong><strong>rule permit source 172.16.107.0 0.0.0.255 time-range ftp-access</strong>
+[Switch-acl-number-2001]<strong> </strong><strong>rule deny source any</strong>
+[Switch-acl-number-2001]<strong> </strong><strong>quit</strong></pre>
+</p></li><li><span>Configure basic FTP functions.</span><p><pre class="screen">[Switch] <strong>ftp server enable</strong>
+[Switch] <strong>ftp server source -i Vlanif 10</strong>
+[Switch] <strong>aaa</strong>
+[Switch-aaa] <strong>local-user huawei password irreversible-cipher SetUserPassword@123</strong>
+[Switch-aaa] <strong>local-user huawei privilege level 15</strong>
+[Switch-aaa] <strong>local-user huawei service-type ftp</strong>
+[Switch-aaa] <strong>local-user huawei ftp-directory flash:/</strong>
+[Switch-aaa] <strong>quit</strong></pre>
+</p></li><li><span>Configure access rights on the FTP server.</span><p><pre class="screen">[Switch] <strong>ftp</strong><strong> server acl 2001</strong></pre>
+</p></li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Verifying the Configuration</h4>
+<div class="p"><p>Run the <strong>ftp 172.16.104.110</strong> command on PC1 (172.16.105.11/24) in subnet 1. The command output shows that PC1 can connect to the FTP server.</p>
+<p>Run the <strong>ftp 172.16.104.110</strong> command on PC2 (172.16.107.11/24) in subnet 2 on Monday in 2023. The command output shows that PC2 cannot connect to the FTP server. Run the <strong>ftp 172.16.104.110</strong> command on PC2 (172.16.107.11/24) in subnet 2 at 15:00 on Saturday in 2023. The command output shows that PC2 can connect to the FTP server.</p>
+<p>Run the <strong>ftp 172.16.104.110</strong> command on PC3 (10.10.10.1/24). The command output shows that PC3 cannot connect to the FTP server.</p>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4>
+<div class="p"><div class="p">Switch<pre class="screen"># 
+sysname Switch
+# 
+ftp server enable 
+ftp server source -i Vlanif 10 
+ftp server acl 2001 
+# 
+time-range ftp-access 14:00 to 18:00 off-day 
+time-range ftp-access from 00:00 2023/1/1 to 23:59 2023/12/31 
+# 
+acl number 2001 
+ rule 5 permit source 172.16.105.0 0.0.0.255 
+ rule 10 permit source 172.16.107.0 0.0.0.255 time-range ftp-access 
+ rule 15 deny  
+# 
+aaa 
+ local-user huawei password irreversible-cipher SetUserPassword@123
+ local-user huawei privilege level 15 
+ local-user huawei ftp-directory flash:/
+ local-user huawei service-type ftp 
+# 
+return</pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_acl_cfg_0016.html">Configuration Examples for ACLs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_acl_cfg_0028.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

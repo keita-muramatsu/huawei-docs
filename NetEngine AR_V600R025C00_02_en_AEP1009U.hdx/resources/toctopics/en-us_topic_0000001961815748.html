@@ -1,0 +1,315 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Example for Configuring L2TP over IPsec for Enterprise Interconnection">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001538075105.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001998495833.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000002210368849.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001961815748">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring L2TP over IPsec for Enterprise Interconnection</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001961815748"></a><a name="EN-US_TOPIC_0000001961815748"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring L2TP over IPsec for Enterprise Interconnection</h1>
+<div><div class="section"><h4 class="sectiontitle">Applicable Products and Versions</h4><p>This example applies to AR routers running V600R024C00 and later versions.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Overview</h4><p>This document provides a typical configuration example for L2TP over IPsec. It presents a detailed plan of network deployment on branch and HQ routers, provides a configuration example based on the plan, and offers references for networking planning and device configuration.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Networking Requirements</h4><div class="p">As shown in <a href="#EN-US_TOPIC_0000001961815748__fig115376256474">Figure 1</a>, Devices A and B are gateways of an enterprise's branch and HQ, respectively. DeviceA connects the branch to the HQ through an L2TP tunnel by using the automatic dial-up function. The enterprise requires that services transmitted over the L2TP tunnel be protected to prevent eavesdropping and tampering. To meet this requirement, L2TP over IPsec can be configured to encrypt service packets transmitted between the HQ and branch.<div class="fignone" id="EN-US_TOPIC_0000001961815748__fig115376256474"><a name="EN-US_TOPIC_0000001961815748__fig115376256474"></a><a name="fig115376256474"></a><span class="figcap"><b>Figure 1 </b>Network diagram of L2TP over IPsec</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent 10GE 0/0/1 and 10GE 0/0/2, respectively.</p>
+</div></div>
+<br><span><img class="imgResize" src="../images/en-us_image_0000001962870672.png" width="523.6875" height="115.034227" title="Click to enlarge"></span></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4><p>Note: An AR router cannot function as an LNS. The configuration procedure varies according to the LNS device type. For details, see the relevant documentation.</p>
+<ol><li>Configure IP addresses for interfaces on DeviceA.</li><li>Configure L2TP on DeviceA.</li><li>On DeviceA, configure a static route destined for the LNS and enable the automatic dial-up function.</li><li>On DeviceA, configure a static route pointing to the HQ, with the dialer interface as the outbound interface.</li><li>Configure an ISAKMP IPsec policy on DeviceA and apply the IPsec policy to 10GE0/0/1.</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Data Planning</h4>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Data</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="27.642764276427638%" id="mcps1.3.5.2.2.4.1.1" liSelected="liSelected"><p>Device</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="39.02390239023902%" id="mcps1.3.5.2.2.4.1.2" liSelected="liSelected"><p>Interface</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.5.2.2.4.1.3" liSelected="liSelected"><p>IP Address</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" rowspan="2" valign="top" width="27.642764276427638%" headers="mcps1.3.5.2.2.4.1.1 "><p>DeviceA</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.02390239023902%" headers="mcps1.3.5.2.2.4.1.2 "><p>Interface1</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.3 "><p>1.1.2.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>Interface2</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>192.168.10.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="2" valign="top" width="27.642764276427638%" headers="mcps1.3.5.2.2.4.1.1 "><p>DeviceB</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.02390239023902%" headers="mcps1.3.5.2.2.4.1.2 "><p>Interface1</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.3 "><p>1.1.1.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>Interface2</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>192.168.20.1</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Precautions</h4><p>None</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li>Configure IP addresses for interfaces on DeviceA.<div class="p"># Configure a public IP address.<pre class="screen">&lt;Huawei&gt; <strong>system-view</strong>
+[Huawei] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>interface 10GE0/0/1</strong>
+[DeviceA-10GE0/0/1] <strong>ip address 1.1.2.1 255.255.255.0</strong> 
+[DeviceA-10GE0/0/1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a user-side IP address.<pre class="screen">[DeviceA] <strong>interface 10GE0/0/2</strong>
+[DeviceA-10GE0/0/2] <strong>ip address 192.168.10.1 255.255.255.0 </strong>
+[DeviceA-10GE0/0/2] <strong>quit</strong></pre>
+</div>
+</li><li>Configure L2TP.<div class="p"># Enable L2TP globally, create an L2TP group, and establish an L2TP connection with DeviceB.<pre class="screen">[DeviceA] <strong>l2tp enable</strong>
+[DeviceA] <strong>l2tp-group 1</strong>
+[DeviceA-l2tp-group 1] <strong>tunnel name huawei</strong>
+[DeviceA-l2tp-group 1] <strong>start l2tp ip 1.1.1.1</strong>
+Warning: This operation may cause traffic interruption, Continue? [Y/N]:y</pre>
+</div>
+<div class="p"># Enable tunnel authentication and set a password for tunnel authentication.<pre class="screen">[DeviceA-l2tp-group 1] <strong>tunnel authentication</strong>
+[DeviceA-l2tp-group 1] <strong>tunnel password cipher YsHsjx_123456</strong>
+Warning: This operation may cause traffic interruption, Continue? [Y/N]:y
+[DeviceA-l2tp-group 1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a dialer interface and configure the user name, password, PPP authentication mode, and IP address of a PPP user.<pre class="screen">[DeviceA] <strong>interface Dialer 1</strong>
+[DeviceA-Dialer1] <strong>link-protocol ppp</strong>
+[DeviceA-Dialer1] <strong>ppp chap user huawei</strong>
+[DeviceA-Dialer1] <strong>ppp chap password cipher YsHsjx_202206</strong>
+[DeviceA-Dialer1] <strong>ip address ppp-negotiate</strong>
+[DeviceA-Dialer1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a public network route to DeviceB. In this example, configure a static route with the next hop of 1.1.2.2.<pre class="screen">[DeviceA] <strong>ip route-static 1.1.1.1 255.255.255.255 1.1.2.2</strong></pre>
+</div>
+<div class="p"># Trigger dial-up to establish an L2TP tunnel.<pre class="screen">[DeviceA] <strong>interface Dialer 1</strong>
+[DeviceA-Dialer1] <strong>l2tp-auto-client l2tp-group 1</strong>
+[DeviceA-Dialer1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a private network route to allow access from enterprise branch users to the HQ private network.<pre class="screen">[DeviceA] <strong>ip route-static 192.168.20.0 255.255.255.0 Dialer 1</strong></pre>
+</div>
+</li><li>Configure an ISAKMP IPsec policy on DeviceA and apply the IPsec policy to 10GE0/0/1.<ol type="a"><li>Create advanced ACL 3000 to define the data flows to be protected.<pre class="screen">[DeviceA] <strong>acl 3000</strong>
+[DeviceA-acl4-advance-3000] <strong>rule 1 permit ip</strong>
+[DeviceA-acl4-advance-3000] <strong>quit</strong></pre>
+</li><li>Configure an IPsec proposal.<pre class="screen">[DeviceA] <strong>ipsec proposal tran1</strong>
+[DeviceA-ipsec-proposal-tran1] <strong>esp authentication-algorithm sha2-256</strong>
+[DeviceA-ipsec-proposal-tran1] <strong>esp encryption-algorithm aes-256-gcm-128</strong>
+[DeviceA-ipsec-proposal-tran1] <strong>quit</strong></pre>
+</li><li>Configure an IKE proposal.<pre class="screen">[DeviceA] <strong>ike proposal 10</strong>
+[DeviceA-ike-proposal-10] <strong>authentication-method pre-share</strong>
+[DeviceA-ike-proposal-10] <strong>prf hmac-sha2-256</strong>
+[DeviceA-ike-proposal-10] <strong>encryption-algorithm aes-gcm-256</strong>
+[DeviceA-ike-proposal-10] <strong>dh group14</strong>
+[DeviceA-ike-proposal-10] <strong>integrity-algorithm hmac-sha2-256</strong>  
+[DeviceA-ike-proposal-10] <strong>quit</strong></pre>
+</li><li>Configure an IKE peer.<pre class="screen">[DeviceA] <strong>ike peer b</strong>
+[DeviceA-ike-peer-b] <strong>ike-proposal 10</strong>
+[DeviceA-ike-peer-b] <strong>remote-address 1.1.1.1</strong>
+[DeviceA-ike-peer-b] <strong>pre-shared-key YsHsjx_202206</strong>
+[DeviceA-ike-peer-b] <strong>quit</strong></pre>
+</li><li>Configure an IPsec policy.<pre class="screen">[DeviceA] <strong>ipsec policy map1 10 isakmp</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong>security acl 3000</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong>proposal tran1</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong>ike-peer b</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong>sa trigger-mode auto</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong>quit</strong></pre>
+</li><li>Apply the IPsec policy to 10GE 0/0/1.<pre class="screen">[DeviceA] <strong>interface 10ge 0/0/1</strong>
+[DeviceA-10GE0/0/1] <strong>ipsec policy map1</strong>
+[DeviceA-10GE0/0/1] <strong>quit</strong></pre>
+</li></ol>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Verifying the Configuration</h4><div class="p"># Verify that PC1 can access PC2. Run the <strong>display Ike sa </strong>and <strong>display ipsec sa</strong> commands on DeviceA to check whether IKE SAs and IPsec SAs are established. If the following information is displayed, IKE SAs and IPsec SAs are successfully established.<pre class="screen">[DeviceA] <strong>display ike sa</strong>
+Total number of IKE SA in all CPU : 4
+Total number of phase 1 SA in all CPU : 1
+Total number of phase 2 SA in all CPU : 3
+Flag Description:
+ RD--READY   ST--STAYALIVE   RL--REPLACED   FD--FADING   TO--TIMEOUT
+ HRT--HEARTBEAT   LKG--LAST KNOWN GOOD SEQ NO.   BCK--BACKED UP
+ M--ACTIVE   S--STANDBY   A--ALONE  NEG--NEGOTIATING
+Slot 0, cpu 0 IKE SA information :
+  Number of IKE SA : 4,  number of IKE SA1: 1,  number of IKE SA2: 3
+------------------------------------------------------------------------------------------------------------------------------------
+ Conn-ID    Peer                                          VPN              Flag(s)               Phase  RemoteType  RemoteID        
+------------------------------------------------------------------------------------------------------------------------------------
+ 33554436   1.1.1.1/500                                                    RD|A                  v2:2   IP          1.1.1.1       
+ 33554435   1.1.1.1/500                                                    RD|A                  v2:2   IP          1.1.1.1       
+ 33554434   1.1.1.1/500                                                    RD|A                  v2:2   IP          1.1.1.1       
+ 33554433   1.1.1.1/500                                                    RD|A                  v2:1   IP          1.1.1.1       
+------------------------------------------------------------------------------------------------------------------------------------</pre>
+<pre class="screen">[DeviceA] <strong>display ipsec sa brief</strong>
+Slot 0, cpu 0 IPSec SA information:
+   Src address                           Dst address                            SPI
+   VPN                                   Protocol                               Algorithm
+ --------------------------------------------------------------------------------------------------------------------------
+   1.1.1.1                               1.1.2.1                               5728969   
+                                           ESP                                     E:AES-GCM-256 
+   1.1.1.1                               1.1.2.1                               11268733  
+                                           ESP                                     E:AES-GCM-256 
+   1.1.2.1                               1.1.1.1                               15263524  
+                                           ESP                                     E:AES-GCM-256 
+   1.1.1.1                               1.1.2.1                               14424157  
+                                           ESP                                     E:AES-GCM-256 
+   1.1.2.1                               1.1.1.1                               15706569  
+                                           ESP                                     E:AES-GCM-256 
+   1.1.2.1                               1.1.1.1                               4465898   
+                                           ESP                                     E:AES-GCM-256 
+  Number of IPSec SA : 6
+ --------------------------------------------------------------------------------------------------------------------------
+ Total number of IPSec SA in all CPU : 6</pre>
+</div>
+<div class="p"># Run the <strong>display l2tp tunnel </strong>command on DeviceA. The command output shows that an L2TP tunnel and an L2TP session have been established.<pre class="screen">[DeviceA] <strong>display l2tp tunnel</strong>
+------------------------------------------------------------------------                                                            
+Local Info:                                                                                                                         
+  Tunnel ID      : 1                  Tunnel Name      : huawei                                                                        
+  Negotiation IP : 1.1.2.1            Negotiation Port : 1701                                                                       
+  RWS            : 16                 State            : UP                                                                         
+  Group Number   : 1                  Nego Interface   : 10GE0/0/1                                                                    
+  Session Number : 16                                                                                                               
+Remote Info:                                                                                                                        
+  Tunnel ID      : 1                  Tunnel Name      : AR                                                                      
+  Tunnel IP      : 1.1.1.1            Tunnel Port      : 1701                                                                       
+  RWS            : 16                                                                                                               
+------------------------------------------------------------------------                                                            
+Total Number of L2TP Tunnel: 1                                                                                                      
+------------------------------------------------------------------------</pre>
+<pre class="screen">[DeviceA] <strong>display l2tp session</strong> <strong>all</strong>
+------------------------------------------------------------------------
+Local Info: 
+Session ID     : 1                  Tunnel Name      : huawei 
+Negotiation IP : 1.1.2.1            Negotiation Port : 1701 
+State          : UP                 Interface        : Dialer1 
+Tunnel Id      : 1                  Nego Interface   : 10GE0/0/1 
+Group Number   : 1                  Last Fail Reason : -- 
+                                    Last Fail Time   : --
+Remote Info: 
+Session ID     : 1                  Tunnel Name      : AR 
+Tunnel IP      : 1.1.1.1            Tunnel Port      : 1701 
+Tunnel Id      : 1
+------------------------------------------------------------------------
+Total Number of L2TP Sessions: 1
+------------------------------------------------------------------------</pre>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#  
+sysname DeviceA
+#
+l2tp enable
+#
+l2tp-group 1
+ tunnel name huawei
+ tunnel password cipher %+%##!!!!!!!!!"!!!!)!!!!*!!!!7LTnVOK_g:AC.o<font style="font-size:8pt" Face="Courier New" >~</font>D;\G<font style="font-size:8pt" Face="Courier New" >~</font>0R&amp;L:-mp\=`iR-M!!!!!2jp5!!!!!!;!!!!$aPo+P'rR&lt;Bc05*+Je,T@+AQW9,\6Zav4n$!!!!!%+%#
+ start l2tp ip 1.1.1.1
+#
+acl number 3000
+ rule 1 permit ip
+#
+interface Dialer1
+ link-protocol ppp
+ ip address ppp-negotiate
+ ppp chap user huawei
+ ppp chap password cipher %+%##!!!!!!!!!"!!!!)!!!!*!!!!7LTnVOK_g:k@G@G#egCJ)G`/@Qo692iz'&lt;Q!!!!!2jp5!!!!!!;!!!!lab_7tWI&gt;*nL[cLR&lt;2S$'H/FXa|\sGXA{J3!!!!!%+%#
+ l2tp-auto-client l2tp-group 1
+#
+interface 10GE0/0/1
+ ip address 1.1.2.1 255.255.255.0
+ ipsec policy map1 
+#
+interface 10GE0/0/2
+ ip address 192.168.10.1 255.255.255.0
+#
+ip route-static 1.1.1.1 255.255.255.255 1.1.2.2 
+ip route-static 192.168.20.0 255.255.255.0 Dialer1
+#
+ike proposal 10
+ encryption-algorithm aes-gcm-256 
+ dh group14 
+ authentication-algorithm sha2-256 
+ authentication-method pre-share
+ integrity-algorithm hmac-sha2-256 
+ prf hmac-sha2-256 
+#
+ipsec proposal tran1
+ esp authentication-algorithm sha2-256 
+ esp encryption-algorithm aes-256-gcm-128 
+#
+ike peer b
+ pre-shared-key %+%##!!!!!!!!!"!!!!)!!!!*!!!!7LTnVOK_g:u.@DOSpT%@XBrPW<font style="font-size:8pt" Face="Courier New" >~~</font>x7"lRcVL!!!!!2jp5!!!!!!;!!!!F`{ULFl^F6&gt;f8/KP,dPPe&lt;_MY(VM\!l;Mh5!!!!!%+%#
+ ike-proposal 10
+ remote-address 1.1.1.1
+#
+ipsec policy map1 10 isakmp
+ security acl 3000
+ ike-peer b
+ proposal tran1
+ sa trigger-mode auto
+#
+return</pre>
+<p></p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_topic_0000001538075105.html">Comprehensive Scenario Cases
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_topic_0000001998495833.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_topic_0000002210368849.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

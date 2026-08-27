@@ -1,0 +1,426 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring AP-Offline Service Continuity">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_service_survival_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_service_survival_cfg_0032.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="WLAN Service Survival">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="WLAN Service Survival">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="WLAN Service Survival">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563772861">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring AP-Offline Service Continuity</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563772861"></a><a name="EN-US_TASK_0000001563772861"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring AP-Offline Service Continuity</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563772861__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>Users can access the network through WLANs, meeting the basic mobile office requirements. Furthermore, users' services are not affected during STA roaming in the coverage area.</p>
+<p>The enterprise requires that data forwarding be still available even if the WAC is faulty to improve service data transmission reliability.</p>
+<ul><li>WAC networking mode: Layer 2 off-path networking</li><li>DHCP deployment mode: DeviceA functions as a DHCP server to assign IP addresses to APs and STAs.</li></ul>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Network diagram of AP-offline service continuity</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001512852962.png"></span></div>
+<p>To complete the configuration, you need the following data:</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Data planning</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.1.7.2.3.1.1" liSelected="liSelected"><p>Configuration Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.1.7.2.3.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>Management VLANs for APs</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><p>VLAN 100</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>Service VLAN for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><p>VLAN 101</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>DHCP server</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><p>DeviceA functions as a DHCP server to assign IP addresses to APs and STAs.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>IP address pool for APs</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><p>10.1.1.3–10.1.1.254/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>IP address pool for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><p>10.1.2.3–10.1.2.254/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>Gateway for APs</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><p>10.1.1.1/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>Gateway for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><p>10.1.2.1/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>IP address of the WAC's source interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><p>VLANIF 100: 10.1.1.2/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>AP group</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><ul><li>Name: <strong>ap-group1</strong></li><li>Referenced profiles: AP system profile <strong>ap-system</strong>, VAP profile <strong>wlan-net</strong>, and regulatory domain profile <strong>default</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>Regulatory domain profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><ul><li>Name: <strong>default</strong></li><li>Country code: CN (China)</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>SSID profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><ul><li>Profile name: <strong>wlan-net</strong></li><li>SSID name: <strong>wlan-net</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>Security profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><ul><li>Profile name: <strong>wlan-net</strong></li><li>Security policy: WPA/WPA2-PSK</li><li>Password: <span>YsHsjx_202206</span></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>VAP profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><ul><li>Name: <strong>wlan-net</strong></li><li>Forwarding mode: direct forwarding</li><li>Service VLAN: VLAN 101</li><li>Referenced profiles: SSID profile <strong>wlan-net</strong> and security profile <strong>wlan-net</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.1 "><p>AP system profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.1.7.2.3.1.2 "><ul><li>Name: <strong>ap-system</strong></li><li>AP-offline service continuity: enabled</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563772861__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><ul><li>No ACK mechanism is available for multicast packet transmission over unstable wireless links of air interfaces. For this reason, multicast packets are usually sent at low rates to ensure stable transmission. However, if a large number of multicast packets are sent from the network side, air interfaces may be congested. Therefore, you are advised to configure multicast packet suppression to reduce the impact of numerous low-rate multicast packets on the wireless network. Exercise caution when configuring the rate limit if there are multicast services on the network, as this may affect the multicast services.<p id="EN-US_TASK_0000001563772861__en-us_topic_0000001328373018_p5428813182810">Configure multicast packet suppression on interfaces directly connecting the device to APs.</p>
+<p id="EN-US_TASK_0000001563772861__en-us_topic_0000001328373018_p6732512102516">For details on how to configure traffic suppression, see <a href="https://support.huawei.com/hedex/hdx.do?docid=EDOC1100316023&amp;id=EN-US_TOPIC_0000001349438864" target="_blank" rel="noopener noreferrer">How Do I Configure Multicast Packet Suppression to Reduce Impact of a Large Number of Low-Rate Multicast Packets on the Wireless Network?</a></p>
+</li><li>The port isolation configuration is recommended on the ports of the device directly connected to APs. If port isolation is not configured and direct forwarding is used, a large number of unnecessary broadcast packets may be generated in the VLAN, blocking the network and degrading user experience.</li></ul>
+<ul><li><span>The CAPWAP source interface or source address can be successfully configured only when all of the following security-related configurations exist: PSK for DTLS encryption, user name and password for logging in to an AP, and password for logging in to the global offline management VAP. If any of these configurations does not exist, the system prompts you to supplement related configurations first.</span></li><li><span>If DTLS encryption for CAPWAP control tunnels is enabled, APs fail to go online after being imported. In this case, run the <strong id="EN-US_TASK_0000001563772861__en-us_topic_0000001328373018_b8973932151512">capwap dtls no-auth enable</strong> command to enable the function of establishing CAPWAP DTLS sessions in none authentication mode so that the APs can obtain security credentials. After the APs go online, run the <strong id="EN-US_TASK_0000001563772861__en-us_topic_0000001328373018_b14794740111511">undo capwap dtls no-auth enable</strong> command to disable this function promptly to prevent unauthorized APs from going online.</span></li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563772861__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure network connectivity between the WAC, APs, and other network devices.</li><li>Configure APs to go online.<ol type="a"><li>Create an AP group and add APs that require the same configuration to the group for unified configuration.</li><li>Configure system parameters for the WAC, including the country code and WAC's source interface for communication with APs.</li><li>Configure the AP authentication mode and import APs so that they can go online normally.</li></ol>
+</li><li>Configure WLAN service parameters for STAs to access the WLAN.</li><li>Configure AP-offline service continuity to improve service data transmission reliability so that data forwarding is not affected even when the WAC is faulty.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563772861__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure devices to implement network connectivity.</span><p><p># On DeviceA, create VLANs 100 and 101, and configure them as the management VLAN and service VLAN, respectively. Set the link type of <span>10GE</span><span>0/0/1</span> connecting DeviceA to the AP to trunk and the PVID of the interface to VLAN 100, and configure the interface to allow packets from VLANs 100 and 101 to pass through. Set the link type of <span>10GE</span><span>0/0/2</span> on DeviceA to trunk and configure the interface to allow packets from VLAN 100 to pass through.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>vlan batch 100 101</strong>
+[DeviceA] <strong>interface </strong><strong><span>10ge</span></strong><strong> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port trunk pvid vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 100 to 101</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port-isolate enable</strong> <strong>group 1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface </strong><strong><span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port trunk allow-pass vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<div class="p"># On DeviceB, add <span>10GE</span><span>0/0/3</span> to VLAN 101, create VLANIF 101, and configure the IP address 10.1.2.2/24 for VLANIF 101.<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname </strong><strong>DeviceB</strong>
+[DeviceB] <strong>vlan batch 101</strong>
+[DeviceB] <strong>interface </strong><strong><span>10ge</span></strong><strong> <span>0/0/3</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong>portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong>port link-type trunk</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong>port trunk allow-pass vlan 101</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[DeviceB] <strong>interface vlanif 101</strong>
+[DeviceB-Vlanif101] <strong>ip address 10.1.2.2 24</strong>
+[DeviceB-Vlanif101] <strong>quit</strong></pre>
+</div>
+</p><p><p># Add <span>10GE</span><span>0/0/1</span> connecting the WAC to DeviceA to VLAN 100, and configure the IP address 10.1.1.2/24 for VLANIF 100.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname WAC</strong>
+[WAC] <strong>vlan batch 100</strong>
+[WAC] <strong>interface </strong><strong><span>10ge</span> <span>0/0/1</span></strong>
+[WAC-<span>10GE</span><span>0/0/1</span>] <strong>portswitch</strong>
+[WAC-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[WAC-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 100</strong>
+[WAC-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[WAC] <strong>interface vlanif 100</strong>
+[WAC-Vlanif100] <strong>ip address 10.1.1.2 24</strong>
+[WAC-Vlanif100] <strong>quit</strong></pre>
+</p></li><li><span>Configure the DHCP server to assign IP addresses to the APs and STAs.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Configure the DNS server address as required by using the following methods:</p>
+<ul><li>In the interface address pool scenario, run the <b><span class="cmdqueryname">dhcp server dns-list</span></b> <i><span class="varname">ip-address</span></i> &amp;&lt;1-8&gt; command in the VLANIF interface view.</li><li>In the global address pool scenario, run the <b><span class="cmdqueryname">dns-list</span></b> <i><span class="varname">ip-address</span></i> &amp;&lt;1-8&gt; command in the IP address pool view.</li></ul>
+</div></div>
+</p><p><p># On DeviceA, configure VLANIF 100 to use the interface address pool to assign IP addresses to APs.</p>
+<pre class="screen">[DeviceA] <strong>dhcp enable</strong>
+[DeviceA] <strong>interface vlanif 100</strong>
+[DeviceA-Vlanif100] <strong>ip address 10.1.1.1 24</strong>
+[DeviceA-Vlanif100] <strong>dhcp select interface</strong>
+[DeviceA-Vlanif100] <strong>dhcp server excluded-ip-address 10.1.1.2</strong>
+[DeviceA-Vlanif100] <strong>quit</strong></pre>
+<p># On DeviceA, configure VLANIF 101 to use the interface address pool to assign IP addresses to STAs.</p>
+<pre class="screen">[DeviceA] <strong>interface vlanif 101</strong>
+[DeviceA-Vlanif101] <strong>ip address 10.1.2.1 24</strong>
+[DeviceA-Vlanif101] <strong>dhcp server excluded-ip-address 10.1.2.2</strong>
+[DeviceA-Vlanif101] <strong>dhcp select interface</strong>
+[DeviceA-Vlanif101] <strong>quit</strong></pre>
+</p></li><li><span>Configure APs to go online.</span><p><div class="p"># Create an AP group to which APs requiring the same configuration are added.<pre class="screen">[WAC] <strong>wlan</strong>
+[WAC-wlan] <strong>ap-group name ap-group1</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>quit</strong></pre>
+</div>
+</p><p><div class="p"># Create a regulatory domain profile, configure the country code of the WAC in the profile, and bind the profile to the AP group.<pre class="screen">[WAC-wlan] <strong>regulatory-domain-profile name default</strong>
+[WAC-<span>wlan-regulate-domain</span>-default] <strong>country-code cn</strong>
+Warning: Modifying the country code will clear the channel and power configurations of radios, and requires the APs to be restarted if they run V200R019C10 or earlier. Continue? [Y/N]:<strong>y</strong>
+[WAC-<span>wlan-regulate-domain</span>-default] <strong>quit</strong>
+[WAC-wlan] <strong>ap-group name ap-group1</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>regulatory-domain-profile default</strong>
+Warning: This configuration change will clear the channel and power configurations of radios, and may restart APs. Continue? [Y/N]:<strong>y</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>quit</strong>
+[WAC-wlan] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure the WAC's source interface.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The CAPWAP source interface or source address can be successfully configured only when all of the following security-related configurations exist: PSK for DTLS encryption, user name and password for logging in to an AP, and password for logging in to the global offline management VAP. If any of these configurations does not exist, the system prompts you to supplement related configurations first.</p>
+</div></div>
+</div>
+<pre class="screen">[WAC] <strong>capwap source interface vlanif 100</strong>
+Set the DTLS PSK(contains 8-32 plain-text characters, or 128 or 148 cipher-text characters that must be a combination of at least tw
+o of the following: lowercase letters a to z, uppercase letters A to Z, digits, and special characters):********
+Confirm PSK:********
+Set the user name for FIT APs(The value is a string of 4 to 31 characters, which can contain letters, underscores, and digits, and m
+ust start with a letter):********
+Set the password for FIT APs(plain-text password of 8-128 characters or cipher-text password of 128-268 characters that must be a co
+mbination of at least three of the following: lowercase letters a to z, uppercase letters A to Z, digits, and special characters):******
+Confirm password:********
+Set the PSK of the global offline management VAP(plain-text password of 8-63 characters or cipher-text password of 128-188 character
+s that must be a combination of at least two of the following: lowercase letters a to z, uppercase letters A to Z, digits, and speci
+al characters):********
+Confirm PSK:********
+</pre>
+<div class="p"># Import an AP on the WAC, and add the AP to the AP group <span class="parmvalue"><b>ap-group1</b></span>. This example assumes that the MAC address of an AP is 00e0-fc12-3456 <span>(if the MAC address obtained is in the format of 00e0fc123456, use the format of 00e0-fc12-3456 in the configuration)</span>. Configure a name for the AP based on the AP's deployment location, so that the AP can be easily located based on its name. For example, name the AP <strong>area_1</strong> if it is deployed in area 1.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The default AP authentication mode is MAC address authentication. If the default setting has not been changed, you do not need to run the <b><span class="cmdqueryname">ap auth-mode mac-auth</span></b> command.</p>
+<p>In this example, the AP has two radios: radio 0 (2.4 GHz) and radio 1 (5 GHz).</p>
+</div></div>
+<pre class="screen">[WAC] <strong>wlan</strong>
+[WAC-wlan] <strong>ap auth-mode mac-auth</strong>
+[WAC-wlan] <strong>ap-id 1 ap-mac 00e0-fc12-3456</strong>
+[WAC-wlan-ap-1] <strong>ap-name area_1</strong>
+[WAC-wlan-ap-1] <strong>ap-group ap-group1</strong>
+<span>Warning: This operation may cause AP <span>to go offline and then online</span>. If the country code changes, it will clear channel, power and antenna gain configuration s of the radio, Whether to continue? [Y/N]:<strong>y</strong>  </span>
+[WAC-wlan-ap-1] <strong>quit</strong></pre>
+</div>
+<div class="p"># Power on the AP and run the <b><span class="cmdqueryname">display ap all</span></b> command to check the AP state. If the <span class="parmvalue"><b>State</b></span> field displays <span class="parmvalue"><b>nor</b></span>, the AP goes online successfully.<pre class="screen">[WAC-wlan] <strong>display ap all</strong>
+Total AP information:
+nor  : normal          [1]
+ExtraInfo : Extra information
+P  : insufficient power supply
+Total: 1
+----------------------------------------------------------------------------------------------------
+ID   MAC            Name   Group     IP         Type                 State STA Uptime      ExtraInfo
+----------------------------------------------------------------------------------------------------
+1    00e0-fc12-3456 area_1 ap-group1 10.1.1.254 AirEngine8760-X1-PRO nor   0   10S         -
+----------------------------------------------------------------------------------------------------</pre>
+</div>
+</p></li><li><span>Configure WLAN service parameters.</span><p><div class="p"># Create the security profile <span class="parmvalue"><b>wlan-net</b></span> and configure a security policy in the profile.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, the security policy is set to WPA/WPA2-PSK. In practice, configure the security policy according to service requirements.</p>
+</div></div>
+<pre class="screen">[WAC] <strong>wlan</strong>
+[WAC-wlan] <strong>security-profile name wlan-net</strong>
+[WAC-wlan-sec-prof-wlan-net] <strong>security wpa-wpa2 psk</strong> <strong>pass-phrase YsHsjx_202206</strong> <strong>aes</strong>
+[WAC-wlan-sec-prof-wlan-net] <strong>quit</strong></pre>
+</div>
+<div class="p"># Create the SSID profile <span class="parmvalue"><b>wlan-net</b></span> and set the SSID name to <span class="parmvalue"><b>wlan-net</b></span>.<pre class="screen">[WAC-wlan] <strong>ssid-profile name wlan-net</strong>
+[WAC-wlan-ssid-prof-wlan-net] <strong>ssid wlan-net</strong>
+[WAC-wlan-ssid-prof-wlan-net] <strong>quit</strong></pre>
+</div>
+</p><p><p># Create the AP system profile <span class="parmvalue"><b>ap-system</b></span> and configure the function of allowing new STAs to access offline APs.</p>
+<pre class="screen">[WAC-wlan] <strong>ap-system-profile name ap-system</strong>
+[WAC-wlan-ap-system-prof-ap-system] <strong>keep-service enable allow new-access</strong>
+[WAC-wlan-ap-system-prof-ap-system] <strong>quit</strong></pre>
+<p># Create the VAP profile <span class="parmvalue"><b>wlan-net</b></span>, set the service VLAN, and bind the security profile and SSID profile to the VAP profile.</p>
+<pre class="screen">[WAC-wlan] <strong>vap-profile name wlan-net</strong>
+[WAC-wlan-vap-prof-wlan-net] <strong>service-vlan vlan-id 101</strong>
+[WAC-wlan-vap-prof-wlan-net] <strong>security-profile wlan-net</strong>
+[WAC-wlan-vap-prof-wlan-net] <strong>ssid-profile wlan-net</strong>
+[WAC-wlan-vap-prof-wlan-net] <strong>quit</strong></pre>
+<p># Bind the AP system profile <span class="parmvalue"><b>ap-system</b></span> and the VAP profile <span class="parmvalue"><b>wlan-net</b></span> to radio 0 and radio 1 of APs in the AP group.</p>
+<pre class="screen">[WAC-wlan] <strong>ap-group name ap-group1</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>ap-system-profile ap-system</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>vap-profile wlan-net wlan 1 radio 0</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>vap-profile wlan-net wlan 1 radio 1</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>quit</strong></pre>
+</p></li><li><span>Configure channels and power for AP radios.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The Dynamic Channel Assignment (DCA) and Transmit Power Control (TPC) functions are enabled by default. The manual channel and power configurations take effect only when the two functions are disabled.</p>
+<p>The channel and power settings for the AP radios in this example are for reference only. In practice, configure the channel and power of AP radios based on the actual country code and network planning.</p>
+</div></div>
+<div class="p"># Disable the DCA and TPC functions of AP radio 0, and configure its channel and power.<pre class="screen">[WAC-wlan] <strong>ap-id 1</strong>
+[WAC-wlan-ap-1] <strong>radio 0</strong>
+[WAC-wlan-ap-1-radio-0] <strong>calibrate auto-channel-select disable</strong>
+[WAC-wlan-ap-1-radio-0] <strong>calibrate auto-txpower-select disable</strong>
+[WAC-wlan-ap-1-radio-0] <strong>channel 20mhz 6</strong>
+<span>Warning: This action may cause service interruption. Continue?[Y/N]<strong id="EN-US_TASK_0000001563772861__en-us_task_0000001512691658_b2973194704714">y</strong> </span>
+<span>Info: The channel value and bandwidth value take effect only when automatic channel selection is disabled, and the value depends on the AP specifications and local laws and regulations.</span>
+[WAC-wlan-ap-1-radio-0] <strong>eirp 127</strong>
+<span>Info: The EIRP value takes effect only when automatic transmit power selection is disabled, and the value depends on the AP specifications and local laws and regulations.</span>
+[WAC-wlan-ap-1-radio-0] <strong>quit</strong></pre>
+</div>
+<div class="p"># Disable the DCA and TPC functions of AP radio 1, and configure its channel and power.<pre class="screen">[WAC-wlan-ap-1] <strong>radio 1</strong>
+[WAC-wlan-ap-1-radio-1] <strong>calibrate auto-channel-select disable</strong>
+[WAC-wlan-ap-1-radio-1] <strong>calibrate auto-txpower-select disable</strong>
+[WAC-wlan-ap-1-radio-1] <strong>channel 20mhz 149</strong>
+<span>Warning: This action may cause service interruption. Continue?[Y/N]<strong id="EN-US_TASK_0000001563772861__en-us_task_0000001512691658_b2973194704714_1">y</strong> </span>
+<span>Info: The channel value and bandwidth value take effect only when automatic channel selection is disabled, and the value depends on the AP specifications and local laws and regulations.</span>
+[WAC-wlan-ap-1-radio-1] <strong>eirp 127</strong>
+<span>Info: The EIRP value takes effect only when automatic transmit power selection is disabled, and the value depends on the AP specifications and local laws and regulations.</span>
+[WAC-wlan-ap-1-radio-1] <strong>quit</strong>
+[WAC-wlan-ap-1] <strong>quit</strong></pre>
+</div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563772861__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>STAs can detect the WLAN with the SSID <strong>wlan-net</strong> and go online normally. If the CAPWAP link is disconnected due to WAC power-off, service data forwarding of STAs in area A is not affected.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001563772861__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+ vlan batch 100 to 101
+#
+ dhcp enable
+#
+interface Vlanif100
+ ip address 10.1.1.1 255.255.255.0
+ dhcp select interface
+ dhcp server excluded-ip-address 10.1.1.2
+#
+interface Vlanif101
+ ip address 10.1.2.1 255.255.255.0
+ dhcp select interface
+ dhcp server excluded-ip-address 10.1.2.2
+# 
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk pvid vlan 100
+ port trunk allow-pass vlan 100 to 101
+ port-isolate enable group 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ port link-type trunk
+ port trunk allow-pass vlan 100
+#
+return</pre>
+</li><li><p>DeviceB</p>
+<pre class="screen">#
+sysname DeviceB
+#
+vlan batch 101
+#
+interface Vlanif101
+ ip address 10.1.2.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 101
+#
+return</pre>
+</li><li><div class="p">WAC<pre class="screen">#
+sysname WAC
+#
+vlan batch 100
+#
+interface Vlanif100
+ ip address 10.1.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 100
+#
+capwap source interface vlanif 100
+#
+wlan
+ security-profile name wlan-net
+  security wpa-wpa2 psk pass-phrase %+%##!!!!!!!!!"!!!!&amp;!!!!*!!!!TO`v+9!HZQ*'MwP$"W\<font style="font-size:8pt" Face="Courier New" >~</font>s^P:!D7:;W\<font style="font-size:8pt" Face="Courier New" >~</font>F*,!!!!!2jp5!!!!!!&gt;!!!![/E|(@o7RFX|
+z-"CB=W;Ri){8hdvq.kKoG3J(e3O%+%# aes
+ ssid-profile name wlan-net
+  ssid wlan-net
+ vap-profile name wlan-net
+  service-vlan vlan-id 101
+  ssid-profile wlan-net
+  security-profile wlan-net
+ regulatory-domain-profile name default
+ ap-system-profile name ap-system
+  keep-service enable allow new-access
+ ap-group name ap-group1
+  radio 0
+   vap-profile wlan-net wlan 1
+  radio 1
+   vap-profile wlan-net wlan 1
+ ap-id 1 type-id 125 ap-mac 00e0-fc12-3456 ap-sn 210235554710CB000042
+  ap-name area_1
+  ap-group ap-group1
+  radio 0
+   channel 20mhz 6
+   eirp 127
+   calibrate auto-channel-select disable  
+   calibrate auto-txpower-select disable
+  radio 1
+   channel 20mhz 149
+   eirp 127
+   calibrate auto-channel-select disable  
+   calibrate auto-txpower-select disable
+#
+return</pre>
+</div>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_service_survival_cfg_0016.html">Configuration Examples for WLAN Service Survival
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_wlan_service_survival_cfg_0032.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

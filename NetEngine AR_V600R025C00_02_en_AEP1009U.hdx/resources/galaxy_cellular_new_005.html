@@ -1,0 +1,63 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Cellular Network Implementation">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_cellular_new_003.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_cellular_new_004.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001723671576">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Cellular Network Implementation</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001723671576"></a><a name="EN-US_CONCEPT_0000001723671576"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Cellular Network Implementation</h1>
+<div><div class="section"><h4 class="sectiontitle">Cellular Function Modules</h4><p>The device uses a cellular card and a SIM card to implement the cellular function. A cellular card is provided by Huawei and delivers the cellular function, which involves a cellular modem, a cellular interface, and cellular channel interfaces. <a href="#EN-US_CONCEPT_0000001723671576__fig20752958272">Figure 1</a> shows the relationships between these function modules. The functions of a SIM card are provided by the carrier. On the device, you need to configure functions of the cellular card and bind the cellular function modules with the SIM card.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001723671576__fig20752958272"><a name="EN-US_CONCEPT_0000001723671576__fig20752958272"></a><a name="fig20752958272"></a><span class="figcap"><b>Figure 1 </b>Cellular function modules</span><br><span><img src="figure/en-us_image_0000002134265097.png" width="NaN" height="NaN"></span></div>
+<ul><li>Cellular modem: implements the cellular function on the cellular card. All cellular functions of the device need to invoke the cellular modem capability. The cellular modem is configured through a cellular profile and APN profile.</li><li>Cellular interface: a logical interface generated after a cellular card is installed on a device. This interface can be queried using the <strong>display interface</strong> command. The interface name is Cellular <em>n</em>/0/0, where <em>n</em> is the slot number of the cellular card. To enable a cellular interface to invoke the cellular modem capability, you need to apply a configured cellular profile to the cellular interface. In this way, services defined in the cellular profile are applied to the cellular interface.</li><li>Cellular channel interface: a sub-interface of a cellular interface. A cellular card can provide a single, two, or four channel interfaces. <a href="#EN-US_CONCEPT_0000001723671576__fig20752958272">Figure 1</a> shows a cellular card that provides two channel interfaces. For a cellular card that provides a single channel interface, the channel interface is named Cellular <em>n</em>/0/0:1. For a cellular card that provides two channel interfaces, the channel interfaces are named Cellular <em>n</em>/0/0:1 and Cellular <em>n</em>/0/0:2. Cellular channel interfaces can be associated with different network service types. To achieve this, you need to apply different APN profiles to cellular channel interfaces. The cellular modem capability can then be used.</li></ul>
+<p>According to the description above, the cellular network configuration on a device is implemented based on cellular and APN profiles.</p>
+<ul><li>You can configure the following information in a cellular profile: carrier (by configuring PLMN information), network generation (3G/4G/5G, by configuring the cellular network connection mode), wireless network operating frequency band, wireless network dial-up interval, and international mobile subscriber identity (IMSI) authentication information of a SIM card.</li><li>You can configure the following information in an APN profile: network service type (such as the voice service, SMS service, and Internet service, specified by the APN name), associated SIM card, and security authentication information (PIN and PUK) of the SIM card.</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>Some models have built-in cellular modems. These models have cellular interfaces and cellular channel interfaces available even if you do not install a cellular card on them.</li><li>The ID of the cellular interface and the number of cellular channel interfaces vary according to devices.</li><li>By default, the device can automatically match the PLMN information of a SIM card. If the SIM card supports only a single carrier, there is no need to specify the PLMN information. However, if the SIM card supports multiple carriers, the device can match PLMN information of multiple carriers and automatically connects to the PLMN with the strongest signal. To avoid switching between carriers, you are advised to specify PLMN information on the cellular modem.</li><li>You can set the default network service type (default APN) in a cellular profile. Note that if the default APN is configured in a cellular profile, all cellular channel interfaces use the default APN to set up dial-up connections.</li></ul>
+</div></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Cellular Dial-up Connection</h4><p>The device connects to a carrier network in dial-up mode. After auto dial-up is enabled, the device automatically tries to set up a dial-up connection with the carrier network without being triggered by data packets. If the dial-up fails, the device tries again at specified intervals. <a href="#EN-US_CONCEPT_0000001723671576__fig1891245715136">Figure 2</a> shows the dial-up connection process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001723671576__fig1891245715136"><a name="EN-US_CONCEPT_0000001723671576__fig1891245715136"></a><a name="fig1891245715136"></a><span class="figcap"><b>Figure 2 </b>Dial-up connection process</span><br><span><img src="figure/en-us_image_0000002098470368.png" width="NaN" height="NaN"></span></div>
+<p>The process is as follows:</p>
+<ol><li>The cellular channel interface sends a connection setup request to the cellular modem.</li><li>The cellular modem sends a connection setup request to the carrier network. The request contains authentication information about the device identity, like the APN, user name, and password.</li><li>The carrier network authenticates the device identity. After authentication succeeds, the core network sets up a connection with the cellular modem and assigns an IP address to the modem.</li><li>The cellular modem instructs the cellular channel interface to go up.</li><li>The cellular channel interface negotiates with the cellular modem for an IP address, and obtains the IP address assigned by the cellular modem.</li><li>The cellular channel interface sets up a connection with the carrier network for data service forwarding.</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_cellular_new_003.html">Understanding Cellular
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_cellular_new_004.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

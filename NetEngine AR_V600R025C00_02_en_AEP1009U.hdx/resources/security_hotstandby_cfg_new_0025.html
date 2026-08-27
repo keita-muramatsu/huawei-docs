@@ -1,0 +1,84 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an SD-WAN EVPN Dual-Gateway Site">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_hotstandby_cfg_new_0001.html">
+<meta name="DC.Relation" scheme="URI" content="security_hotstandby_cfg_new_0019.html">
+<meta name="DC.Relation" scheme="URI" content="security_hotstandby_cfg_new_0067.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Hot Standby">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Hot Standby">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513032486">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an SD-WAN EVPN Dual-Gateway Site</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513032486"></a><a name="EN-US_TASK_0000001513032486"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an SD-WAN EVPN Dual-Gateway Site</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001513032486__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring an SD-WAN EVPN dual-gateway site, you have completed the following tasks:</p>
+<ul><li>Configure SD-WAN EVPN sites on the two devices that form a hot standby group. For details, see Steps 1 through 3 in "Configuring TNP" in <i><cite><span>CLI Configuration Guide</span>-VPN Configuration &gt; SD-WAN EVPN Configuration.</cite></i></li><li>Configure hot standby. For details, see <a href="security_hotstandby_cfg_new_0019.html">Configuring Hot Standby</a>.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513032486__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The dual-gateway mode improves reliability and increases bandwidth for sites in the SD-WAN EVPN solution. In this mode, the two devices use the hot-standby channel to transmit the information that must be synchronized and the status entry information required by dual-gateway mode. For details, see <a href="security_hotstandby_cfg_new_0016_AR.html">Status Information Backup</a>.</p>
+<p>To determine the application type of packets and execute appropriate route selection policies, devices need to learn the complete TCP session interaction process. If packets are sent and received over different paths, the devices at either end of the link process only unidirectional packets and cannot determine their application types. Upon receipt of TCP-ACK packet, if the local device finds that it did not process the corresponding TCP-SYN packet and it does not have the application identification information of the session table corresponding to the TCP-ACK packet, it sends the TCP-ACK packet and subsequent packets to the peer device through the specified link. After processing bidirectional packets, the peer device determines the application type of the packets, records the application type in the application identification information of the session table, and forwards the packets based on a route selection policy. The local device can also process subsequent packets after the application identification information of the session table is synchronized to it.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513032486__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the site view.</span><p><pre class="screen"><b><span class="cmdqueryname">evpn site</span></b> <i><span class="varname">site-id</span></i> </pre>
+</p></li><li><span>Set the gateway type of the site to dual-gateway.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">gateway</span></b> </strong><strong><span>dual</span></strong> <strong><span>peer-system-id</span></strong> <i><span class="varname">peer-system-id</span></i></pre>
+<p>The device configured with dual-gateway exchanges status information with the peer device through HRP packets.</p>
+<p>By default, the gateway type of a site is single-gateway. If TNP is configured for a site, the gateway type cannot be changed. To change the gateway type, run the <b><span class="cmdqueryname">undo transport-network-port</span></b> command to delete the TNP configuration first.</p>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">interface</span></b></strong><em> </em><i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Configure an interface type.</span><p><pre class="screen"><b><span class="cmdqueryname">port-type</span></b> { <strong><span>uni</span></strong> | <strong><span>nni</span></strong> | <strong><span>ini</span></strong> }</pre>
+<p>If the local device does not process the TCP request packet corresponding to a TCP reply packet it receives from a WAN interface (NNI), it sends the reply packet to the peer device through the interlink interface.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_hotstandby_cfg_new_0001.html">Hot Standby Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_hotstandby_cfg_new_0019.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_hotstandby_cfg_new_0067.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

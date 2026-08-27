@@ -1,0 +1,120 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Routes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_cfg_dsvpn_0021.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_cfg_dsvpn_0006.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_cfg_dsvpn_0008.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001851069834">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring Routes</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001851069834"></a><a name="EN-US_TASK_0000001851069834"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Routes</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001851069834__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The hub and spokes must have routes with tunnel addresses as next hops, so that they can forward mGRE-encapsulated packets properly. These routes can be either static or dynamic routes.</p>
+<p>DSVPN supports the following route learning modes:</p>
+<ul><li><p>Route learning between spokes (non-shortcut mode)</p>
+<p>In this mode, the next-hop address of the route from one spoke to another is the tunnel address of the destination spoke. Each spoke needs to learn routes to all other spokes. This consumes many CPU and memory resources and requires large routing tables and high performance on spokes. In practice, spokes have relatively low performance and can store a limited number of routes. As such, this route learning mode applies only to small and midsize networks where there are a few network nodes and a small number of routes.</p>
+<p>On such a DSVPN network, mGRE tunnels between spokes are set up in non-shortcut mode.</p>
+</li><li><p>Route summarization on the hub (shortcut mode)</p>
+<p>In this mode, the next-hop address of the route from one spoke to another is the tunnel address of the hub, and spokes only save routes destined for the hub. This mode reduces the number of routes on spokes, which makes it suitable for large networks with many spokes.</p>
+<p>On such a DSVPN network, mGRE tunnels between spokes are set up in shortcut mode.</p>
+</li></ul>
+<p>On a DSVPN network, route learning in either mode can be achieved through static route configuration or a dynamic routing protocol (OSPF or BGP).</p>
+<p>Perform the following configurations on the hub and spokes.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001851069834__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span><strong>Configuring a static route</strong></span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a static route.</span><p><pre class="screen"><b><span class="cmdqueryname">ip route-static</span></b> <i><span class="varname">ip-address</span></i> { <i><span class="varname">mask</span></i> | <i><span class="varname">mask-length</span></i> } <i><span class="varname">nexthop-address</span></i> [ <strong><span>description</span></strong> <i><span class="varname">text</span></i> ]</pre>
+</p><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li><p>If you want spokes to learn routes from each other, specify the peer end's tunnel address as the next-hop address of the static route from a spoke to the hub or another spoke.</p>
+</li><li><p>If you want to achieve route summarization on the hub, specify the hub's tunnel address as the next-hop address of the static route from a spoke to the hub or another spoke.</p>
+</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span><strong>Configuring a dynamic routing protocol</strong></span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a dynamic routing protocol.</span><p><p>The dynamic routing protocol can be OSPF or <span>BGP</span>. For the configuration of a dynamic routing protocol, see the <i><cite><em><span>CLI Configuration Guide</span> - IP Routing</em></cite></i>.</p>
+</p><p><p>When configuring different dynamic routing protocols, note the following points.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="35.809999999999995%" id="mcps1.3.2.2.2.2.3.2.1.4.1.1" liSelected="liSelected"><p>Scenario and Routing Protocol</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.09%" id="mcps1.3.2.2.2.2.3.2.1.4.1.2" liSelected="liSelected"><p>OSPF</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="31.1%" id="mcps1.3.2.2.2.2.3.2.1.4.1.3" liSelected="liSelected"><p>BGP</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="35.809999999999995%" headers="mcps1.3.2.2.2.2.3.2.1.4.1.1 "><p>Non-shortcut scenario</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.09%" headers="mcps1.3.2.2.2.2.3.2.1.4.1.2 "><p>Run the <b><span class="cmdqueryname">ospf network-type</span></b> <strong><span>broadcast</span></strong> command to set the OSPF network type to broadcast on the hub and spokes.</p>
+</td>
+<td class="cellrowborder" valign="top" width="31.1%" headers="mcps1.3.2.2.2.2.3.2.1.4.1.3 "><p>There is no need to configure <a href="../vrp_bgp_cfg_0061.html">route summarization</a> on the hub.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="35.809999999999995%" headers="mcps1.3.2.2.2.2.3.2.1.4.1.1 "><p>Shortcut scenario</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.09%" headers="mcps1.3.2.2.2.2.3.2.1.4.1.2 "><p>Run the <b><span class="cmdqueryname">ospf network-type</span></b> <strong><span>p2mp</span></strong> command to set the OSPF network type to P2MP on the hub and spokes.</p>
+</td>
+<td class="cellrowborder" valign="top" width="31.1%" headers="mcps1.3.2.2.2.2.3.2.1.4.1.3 "><p>Configure <a href="../vrp_bgp_cfg_0061.html">route summarization</a> on the hub.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/dc_cfg_dsvpn_0021.html">Configuring Basic DSVPN Functions
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/dc_cfg_dsvpn_0006.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/dc_cfg_dsvpn_0008.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

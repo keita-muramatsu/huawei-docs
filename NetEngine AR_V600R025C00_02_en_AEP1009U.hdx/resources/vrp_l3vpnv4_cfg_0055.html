@@ -1,0 +1,90 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="VPN NSR">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0002.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0056.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001335871030">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>VPN NSR</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001335871030"></a><a name="EN-US_CONCEPT_0000001335871030"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">VPN NSR</h1>
+<div><p>VPN non-stop routing (NSR) is a technique which ensures that if an active main board (AMB) failure causes the control plane of a specific node to fail, the node retains its control plane connections to neighboring nodes and ensures uninterrupted traffic transmission on the forwarding plane.</p>
+<div class="section"><h4 class="sectiontitle">Context</h4><p>With rapid network development, carriers have increasing demand for IP network reliability. Conventional non-stop forwarding (NSF) and graceful restart (GR) techniques cannot prevent traffic interruptions if a peer does not support GR or multiple peers fail simultaneously during a GR process. Traffic is interrupted temporarily before the GR process is complete because a GR-enabled router cannot obtain routing information from or establish control plane connections to its peers during the GR process. This is where NSR comes into play. NSR is an innovation, compared with NSF. NSR can be used to ensure uninterrupted traffic transmission and retain control plane connections if a software or hardware fault occurs on the control plane of a device. In addition, the fault is transparent to the control planes of its peers.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Related Concepts</h4><div class="p" id="EN-US_CONCEPT_0000001335871030__en-us_concept_0000001176663699_p2129890794214010">BGP NSR involves the following concepts:<ul id="EN-US_CONCEPT_0000001335871030__en-us_concept_0000001176663699_ul669662915214010"><li id="EN-US_CONCEPT_0000001335871030__en-us_concept_0000001176663699_li1375689069214010">High availability (HA): supports data backup between the active and slave main boards.</li><li id="EN-US_CONCEPT_0000001335871030__en-us_concept_0000001176663699_li476591683214010">NSR: a routing technique that prevents neighbors or peers from detecting a control plane protocol fault on a device with a backup control plane. If a fault occurs, NSR ensures that the neighbor or peer relationships set up through specific routing protocols, as well as the sessions of signaling protocols and the protocols that are used to meet service requirements, are not interrupted.</li><li id="EN-US_CONCEPT_0000001335871030__en-us_concept_0000001176663699_li405204695214010">NSF: enables a device to use the GR mechanism to ensure uninterrupted service forwarding during an active/slave main board switchover.</li><li id="EN-US_CONCEPT_0000001335871030__en-us_concept_0000001176663699_li258589607214010">Active main board (AMB) and slave main board (SMB): boards that are used to carry control plane processes.</li></ul>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Implementation</h4><div class="p">The AMB backs up VPN data to the standby main board (SMB) on a specific node to implement NSR. The following key VPN data is synchronized between the AMB and SMB:<ul><li><div class="p">VPN routes, including:<ul><li><p>Routes imported by running the <b><span class="cmdqueryname">import-route</span></b> or <b><span class="cmdqueryname">network</span></b> command in the BGP VPN instance IPv4 address family view<span> or BGP VPN instance IPv6 address family view</span>.</p>
+</li><li><p>Locally leaked routes</p>
+</li><li><p>Remotely leaked routes</p>
+</li></ul>
+</div>
+</li><li><p>Attributes carried by routes</p>
+</li><li><p>VPN labels</p>
+</li><li><p>Next-hop information about routes</p>
+</li></ul>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The active and standby control planes of an NSR-capable device must run on the AMB and SMB, respectively.</p>
+</div></div>
+<div class="p">NSR is implemented as follows:<ul><li><p>Batch backup: The AMB backs up data in batches to the SMB immediately after the SMB starts.</p>
+</li><li><p>Real-time backup: During service running, the AMB backs up data in real time to the SMB. Moreover, the AMB and SMB both receive packets.</p>
+</li><li><p>Switchover: If the AMB fails, the SMB takes over services. Because data is synchronous between the AMB and SMB, neither the control plane nor the forwarding plane is interrupted.</p>
+</li></ul>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Related Functions</h4><p>An NSR-enabled device can function as a GR helper to communicate with NSR-incapable devices and respond to peers' GR help requests during an AMB/SMB switchover on the device.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Benefits</h4><ul><li><p>NSR ensures that neither the control plane nor the forwarding plane is interrupted when a fault occurs on the VPN control plane.</p>
+</li><li><p>A node can implement NSR independently, without the assistance of neighboring nodes. NSR can help multiple nodes implement AMB/SMB switchovers if the control planes of these nodes over an MPLS network fail.</p>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0002.html">Understanding IPv4 L3VPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0003.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_L3VPNv4_cfg_0056.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

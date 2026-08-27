@@ -1,0 +1,268 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a Static LSP">
+<meta name="abstract" content="This section provides an example for configuring a static LSP.">
+<meta name="description" content="This section provides an example for configuring a static LSP.">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_example_1001.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0029.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001799766432">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a Static LSP</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001799766432"></a><a name="EN-US_TASK_0000001799766432"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a Static LSP</h1>
+<div class="taskbody"><p>This section provides an example for configuring a static LSP.</p>
+<div class="context"><a name="EN-US_TASK_0000001799766432__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001799766432__fig1583514614710">Figure 1</a>, all nodes support MPLS. OSPF is configured on the MPLS backbone network. Configure a static LSP from LSRA to LSRC to transmit services, such as L2VPN and L3VPN services, on the public network.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent Eth-Trunk10 and Eth-Trunk20, respectively.</p>
+</div></div>
+<div class="fignone" id="EN-US_TASK_0000001799766432__fig1583514614710"><a name="EN-US_TASK_0000001799766432__fig1583514614710"></a><a name="fig1583514614710"></a><span class="figcap"><b>Figure 1 </b>Configuring a static LSP</span><p><span><img src="figure/en-us_image_0000001846645353.png"></span></p>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001799766432__1.4.2"></a><a name="1.4.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Assign an IP address to each interface and configure a loopback address as an LSR ID on each node. Configure OSPF to advertise the route to the network segment connected to each interface and to advertise the host route to each LSR ID.</p>
+</li><li><p>Enable MPLS globally on each node.</p>
+</li><li><p>Enable MPLS on each interface.</p>
+</li><li><p>On the ingress, specify the destination address, next hop, and outgoing label value for the LSP.</p>
+</li><li><p>On each transit node, specify the incoming label value (same as the outgoing label value on the previous node), outbound interface, next hop, and outgoing label value for the LSP.</p>
+</li><li><p>On the egress, specify the inbound interface and incoming label value (same as the outgoing label value on the previous node) for the LSP.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001799766432__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IP address to each interface.</span><p><p>Assign an IP address and a mask to each interface (including loopback interfaces) according to <a href="#EN-US_TASK_0000001799766432__section_05">Configuration Scripts</a>.</p>
+</p></li><li><span>Configure OSPF to advertise the route to the network segment connected to each interface and to advertise the host route to each LSR ID.</span><p><p># Configure LSRA.</p>
+<pre class="screen">[LSRA] <strong>ospf 1</strong></pre>
+<pre class="screen">[LSRA-ospf-1]<strong> area 0</strong></pre>
+<pre class="screen">[LSRA-ospf-1-area-0.0.0.0] <strong>network 192.168.1.9 0.0.0.0</strong></pre>
+<pre class="screen">[LSRA-ospf-1-area-0.0.0.0]<strong> network 10.1.1.0 0.0.0.255</strong></pre>
+<pre class="screen">[LSRA-ospf-1-area-0.0.0.0] <strong>quit</strong></pre>
+<pre class="screen">[LSRA-ospf-1] <strong>quit</strong></pre>
+<p># Configure LSRB.</p>
+<pre class="screen">[LSRB] <strong>ospf 1</strong></pre>
+<pre class="screen">[LSRB-ospf-1]<strong> area 0</strong></pre>
+<pre class="screen">[LSRB-ospf-1-area-0.0.0.0] <strong>network 192.168.2.9 0.0.0.0</strong></pre>
+<pre class="screen">[LSRB-ospf-1-area-0.0.0.0] <strong>network 10.1.1.0 0.0.0.255</strong></pre>
+<pre class="screen">[LSRB-ospf-1-area-0.0.0.0] <strong>network 10.2.1.0 0.0.0.255</strong></pre>
+<pre class="screen">[LSRB-ospf-1-area-0.0.0.0] <strong>quit</strong></pre>
+<pre class="screen">[LSRB-ospf-1] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">[LSRC] <strong>ospf 1</strong></pre>
+<pre class="screen">[LSRC-ospf-1]<strong> area 0</strong></pre>
+<pre class="screen">[LSRC-ospf-1-area-0.0.0.0] <strong>network 192.168.3.9 0.0.0.0</strong></pre>
+<pre class="screen">[LSRC-ospf-1-area-0.0.0.0] <strong>network 10.2.1.0 0.0.0.255</strong></pre>
+<pre class="screen">[LSRC-ospf-1-area-0.0.0.0] <strong>quit</strong></pre>
+<pre class="screen">[LSRC-ospf-1] <strong>quit</strong></pre>
+<p>After completing the configuration, run the <strong>display ip routing-table</strong> command on each node to check whether all the nodes have learned routes from each other. </p>
+<p>The following example uses the command output on LSRA.</p>
+<pre class="screen">[LSRA]<strong> display ip routing-table</strong></pre>
+<pre class="screen">Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route
+------------------------------------------------------------------------------
+Routing Table : _public_
+         Destinations : 11       Routes : 11        
+
+Destination/Mask    Proto   Pre  Cost        Flags NextHop         Interface
+
+       10.1.1.0/24  Direct  0    0             D   10.1.1.1       Eth-Trunk10
+       10.1.1.1/32  Direct  0    0             D   127.0.0.1      Eth-Trunk10
+    192.168.1.9/32  Direct  0    0             D   127.0.0.1       LoopBack1
+     10.1.1.255/32  Direct  0    0             D   127.0.0.1      Eth-Trunk10
+       10.2.1.0/24  OSPF    10   2             D   10.1.1.2       Eth-Trunk10
+    192.168.2.9/32  OSPF    10   1             D   10.1.1.2       Eth-Trunk10
+    192.168.3.9/32  OSPF    10   2             D   10.1.1.2       Eth-Trunk10</pre>
+<p>The next hop and outbound interface of the static LSP 192.168.3.9/32 from LSRA to LSRC are determined by the routing table. In this example, the next-hop IP address is 10.1.1.2/24.</p>
+</p></li><li><span>Enable MPLS globally on each node.</span><p><p># Configure LSRA.</p>
+<pre class="screen">[LSRA]<strong> mpls lsr-id 192.168.1.9</strong></pre>
+<pre class="screen">[LSRA]<strong> mpls</strong></pre>
+<pre class="screen">[LSRA-mpls] <strong>quit</strong></pre>
+<p># Configure LSRB.</p>
+<pre class="screen">[LSRB]<strong> mpls lsr-id 192.168.2.9</strong></pre>
+<pre class="screen">[LSRB]<strong> mpls</strong></pre>
+<pre class="screen">[LSRB-mpls] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">[LSRC]<strong> mpls lsr-id 192.168.3.9</strong></pre>
+<pre class="screen">[LSRC]<strong> mpls</strong></pre>
+<pre class="screen">[LSRC-mpls] <strong>quit</strong></pre>
+</p></li><li><span>Enable MPLS on each interface.</span><p><p># Configure LSRA.</p>
+<pre class="screen">[LSRA] <strong>interface Eth-Trunk10</strong></pre>
+<pre class="screen">[LSRA-Eth-Trunk10] <strong>mpls</strong></pre>
+<pre class="screen">[LSRA-Eth-Trunk10] <strong>quit</strong></pre>
+<p># Configure LSRB.</p>
+<pre class="screen">[LSRB] <strong>interface Eth-Trunk10</strong></pre>
+<pre class="screen">[LSRB-F] <strong>mpls</strong></pre>
+<pre class="screen">[LSRB-Eth-Trunk10] <strong>quit</strong></pre>
+<pre class="screen">[LSRB] <strong>interface Eth-Trunk20</strong></pre>
+<pre class="screen">[LSRB-Eth-Trunk20] <strong>mpls</strong></pre>
+<pre class="screen">[LSRB-Eth-Trunk20] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">[LSRC] <strong>interface Eth-Trunk10</strong></pre>
+<pre class="screen">[LSRC-Eth-Trunk10] <strong>mpls</strong></pre>
+<pre class="screen">[LSRC-Eth-Trunk10] <strong>quit</strong></pre>
+</p></li><li><span>Create a static LSP from LSRA to LSRC.</span><p><p># Configure LSRA as the ingress.</p>
+<pre class="screen">[LSRA]<strong> static-lsp ingress AtoC destination 192.168.3.9 32 nexthop 10.1.1.2 out-label 20</strong></pre>
+<p># Configure LSRB as a transit node.</p>
+<pre class="screen">[LSRB]<strong> static-lsp transit AtoC in-label 20 outgoing-interface Eth-Trunk20 nexthop 10.2.1.2 out-label 40</strong></pre>
+<p># Configure LSRC as the egress.</p>
+<pre class="screen">[LSRC] <strong>static-lsp egress AtoC incoming-interface Eth-Trunk10 in-label 40</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p>After completing the configuration, run the <strong>display mpls static-lsp</strong> or <strong>display mpls static-lsp verbose</strong> command on each node to check the status of the static LSP. The following example uses the command output on LSRA.</p>
+<pre class="screen">[LSRA]<strong> display mpls static-lsp</strong></pre>
+<pre class="screen">TOTAL          : 1     STATIC LSP(S)
+UP             : 1     STATIC LSP(S)
+DOWN           : 0     STATIC LSP(S)
+Name                FEC                I/O Label        I/O If                                Status
+AtoC                192.168.3.9/32     NULL/20          -/Eth-Trunk10                           Up</pre>
+<pre class="screen">[LSRA]<strong> display mpls static-lsp verbose</strong></pre>
+<pre class="screen"> No              : 1
+ LSP-Name        : AtoC
+ LSR-Type        : Ingress
+ FEC             : 192.168.3.9/32
+ In-Label        : NULL
+ Out-Label       : 20
+ In-Interface    : -
+ Out-Interface   : Eth-Trunk10
+ NextHop         : 10.1.1.2
+ Static-Lsp Type : Normal
+ Lsp Status      : Up</pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001799766432__section_05"><a name="EN-US_TASK_0000001799766432__section_05"></a><a name="section_05"></a><a name="EN-US_TASK_0000001799766432__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>LSRA</p>
+<pre class="screen">#
+sysname LSRA
+#
+mpls lsr-id 192.168.1.9
+#
+mpls
+#
+interface Eth-Trunk10 
+ ip address 10.1.1.1 255.255.255.0
+ mpls
+#
+interface <span>10GE</span><span>0/0/1</span>
+ eth-trunk10
+#               
+interface LoopBack1
+ ip address 192.168.1.9 255.255.255.255
+#               
+ospf 1          
+ area 0.0.0.0   
+  network 10.1.1.0 0.0.0.255
+  network 192.168.1.9 0.0.0.0
+#               
+ static-lsp ingress AtoC destination 192.168.3.9 32 nexthop 10.1.1.2 out-label 20
+#
+return</pre>
+</li><li><p>LSRB</p>
+<pre class="screen">#
+sysname LSRB
+#
+mpls lsr-id 192.168.2.9
+#
+mpls
+#
+interface Eth-Trunk10
+ ip address 10.1.1.2 255.255.255.0
+ mpls           
+#               
+interface Eth-Trunk20
+ ip address 10.2.1.1 255.255.255.0
+ mpls     
+#
+interface <span>10GE</span><span>0/0/1</span>
+ eth-trunk10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ eth-trunk20
+#               
+interface LoopBack1
+ ip address 192.168.2.9 255.255.255.255
+#               
+ospf 1          
+ area 0.0.0.0   
+  network 10.1.1.0 0.0.0.255
+  network 10.2.1.0 0.0.0.255
+  network 192.168.2.9 0.0.0.0
+# 
+ static-lsp transit AtoC in-label 20 outgoing-interface Eth-Trunk20 nexthop 10.2.1.2 out-label 40
+#
+return</pre>
+</li><li><p>LSRC</p>
+<pre class="screen">#
+sysname LSRC
+#
+mpls lsr-id 192.168.3.9
+#
+mpls
+#
+interface Eth-Trunk20
+ ip address 10.2.1.2 255.255.255.0
+ mpls    
+#
+interface <span>10GE</span><span>0/0/1</span>
+ eth-trunk20
+#               
+interface LoopBack1
+ ip address 192.168.3.9 255.255.255.255
+#               
+ospf 1          
+ area 0.0.0.0   
+  network 10.2.1.0 0.0.0.255
+  network 192.168.3.9 0.0.0.0
+#
+ static-lsp egress AtoC incoming-interface Eth-Trunk10 in-label 40
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_example_1001.html">Configuration Examples for MPLS LDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0029.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

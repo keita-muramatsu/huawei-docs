@@ -1,0 +1,586 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring SD-WAN EVPN">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0011.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001130783030">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring SD-WAN EVPN</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001130783030"></a><a name="EN-US_TASK_0000001130783030"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring SD-WAN EVPN</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001130783030__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>An enterprise network consists of the headquarters and multiple branches. In <a href="#EN-US_TASK_0000001130783030__fig17880133711164">Figure 1</a>, DeviceA and DeviceB function as the egresses of the branches, and DeviceC functions as the headquarters egress. CPE sites need to communicate with each other, and data traffic between CPE sites needs to pass through the RR site. DeviceA and DeviceB function as CPEs, and DeviceC functions as an RR.</p>
+<div class="fignone" id="EN-US_TASK_0000001130783030__fig17880133711164"><a name="EN-US_TASK_0000001130783030__fig17880133711164"></a><a name="fig17880133711164"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring SD-WAN EVPN</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Interface 1 and interface 2 in this example represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000001903480690.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001130783030__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="p">The configuration roadmap is as follows:<ol><li>Configure OSPF on the RR, CPE1, and CPE2 to ensure that there are reachable routes between them.</li><li>Configure TNPs on the RR, CPE1, and CPE2.</li><li>Configure the RR as the DTLS server and configure CPE1 and CPE2 as the DTLS clients to establish a DTLS connection.</li><li>Configure VPN instances on the RR, CPE1, and CPE2.</li><li>Configure SD-WAN tunnel services on the RR, CPE1, and CPE2.</li><li>Configure BGP SD-WAN peers and BGP EVPN peers on the RR, CPE1, and CPE2.</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001130783030__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign IP addresses to interfaces.</span><p><p># Configure CPE1.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname CPE1</strong>
+[CPE1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[CPE1-<span>10GE</span><span>0/0/1</span>] <strong>ip address 1.1.1.1 24</strong>
+[CPE1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[CPE1] <strong>interface loopback0</strong>
+[CPE1-LoopBack0] <strong>ip address 10.1.1.1 32</strong>
+[CPE1-LoopBack0] <strong>quit</strong></pre>
+<p>The configurations of the RR and CPE2 are similar to the configuration of CPE1. For detailed configurations, see Configuration Scripts.</p>
+</p></li><li><span>Configure OSPF.</span><p><p># Configure CPE1.</p>
+<pre class="screen">[CPE1]<strong> ospf 1</strong>
+[CPE1-ospf-1]<strong> area 0</strong>
+[CPE1-ospf-1-area-0.0.0.0]<strong> network 1.1.1.0 0.0.0.255</strong>
+[CPE1-ospf-1-area-0.0.0.0]<strong> quit</strong>
+[CPE1-ospf-1]<strong> quit</strong></pre>
+<p># Configure the RR.</p>
+<pre class="screen">[RR]<strong> ospf 1</strong>
+[RR-ospf-1]<strong> area 0</strong>
+[RR-ospf-1-area-0.0.0.0]<strong> network 2.1.1.0 0.0.0.255</strong>
+[RR-ospf-1-area-0.0.0.0]<strong> quit</strong>
+[RR-ospf-1]<strong> quit</strong></pre>
+<p># Configure CPE2.</p>
+<pre class="screen">[CPE2]<strong> ospf 1</strong>
+[CPE2-ospf-1]<strong> area 0</strong>
+[CPE2-ospf-1-area-0.0.0.0]<strong> network 3.1.1.0 0.0.0.255</strong>
+[CPE2-ospf-1-area-0.0.0.0]<strong> quit</strong>
+[CPE2-ospf-1]<strong> quit</strong></pre>
+</p></li><li><span>Configure a TNP.</span><p><p># Configure CPE1.</p>
+<pre class="screen">[CPE1]<strong> evpn site 1 site-type CPE</strong>
+[CPE1-site-1]<strong> system-id 10.1.1.1</strong>
+[CPE1-site-1]<strong> transport-network 10 name mpls </strong>
+[CPE1-site-1]<strong> routing-domain 100 name mpls </strong>
+[CPE1-site-1]<strong> transport-network-port 1</strong>
+[CPE1-site-1-transport-network-port-1]<strong> transport-network mpls </strong>
+[CPE1-site-1-transport-network-port-1]<strong> routing-domain mpls </strong>
+[CPE1-site-1-transport-network-port-1]<strong> source-interface <span>10ge</span> <span>0/0/1</span></strong>
+[CPE1-site-1-transport-network-port-1]<strong> quit </strong>
+[CPE1-site-1]<strong> quit</strong></pre>
+<p># Configure the RR.</p>
+<pre class="screen">[RR]<strong> evpn site 2 site-type RR</strong>
+[RR-site-2]<strong> system-id 10.2.2.2</strong>
+[RR-site-2]<strong> transport-network 10 name mpls </strong>
+[RR-site-2]<strong> routing-domain 100 name mpls </strong>
+[RR-site-2]<strong> transport-network-port 1</strong>
+[RR-site-2-transport-network-port-1]<strong> transport-network mpls </strong>
+[RR-site-2-transport-network-port-1]<strong> routing-domain mpls </strong>
+[RR-site-2-transport-network-port-1]<strong> source-interface <span>10ge</span> <span>0/0/1</span></strong>
+[RR-site-2-transport-network-port-1]<strong> quit </strong>
+[RR-site-2]<strong> quit</strong></pre>
+<p># Configure CPE2.</p>
+<pre class="screen">[CPE2]<strong> evpn site 3 site-type CPE</strong>
+[CPE2-site-3]<strong> system-id 10.3.3.3</strong>
+[CPE2-site-3]<strong> transport-network 10 name mpls </strong>
+[CPE2-site-3]<strong> routing-domain 100 name mpls </strong>
+[CPE2-site-3]<strong> transport-network-port 1</strong>
+[CPE2-site-3-transport-network-port-1]<strong> transport-network mpls </strong>
+[CPE2-site-3-transport-network-port-1]<strong> routing-domain mpls </strong>
+[CPE2-site-3-transport-network-port-1]<strong> source-interface <span>10ge</span> <span>0/0/1</span></strong>
+[CPE2-site-3-transport-network-port-1]<strong> quit </strong>
+[CPE2-site-3]<strong> quit</strong></pre>
+</p></li><li><span>Configure DTLS.</span><p><p># Configure the RR as the DTLS server.</p>
+<pre class="screen">[RR]<strong> dtls server </strong>
+[RR-dtls-server]<strong> dtls server enable </strong>
+[RR-dtls-server]<strong> listening-port 11111</strong>
+[RR-dtls-server]<strong> listening-ip 2.1.1.1</strong>
+[RR-dtls-server]<strong> quit</strong></pre>
+</p><p><p># Configure CPE1 as a DTLS client.</p>
+<pre class="screen">[CPE1]<strong> dtls client</strong>
+[CPE1-client]<strong> peer system-id 10.2.2.2 ip 2.1.1.1 port 11111</strong>
+[CPE1-client]<strong> quit</strong></pre>
+</p><p><p># Configure CPE2 as a DTLS client.</p>
+<pre class="screen">[CPE2]<strong> dtls client</strong>
+[CPE2-client]<strong> </strong><strong>peer system-id 10.2.2.2 ip 2.1.1.1 port 11111</strong>
+[CPE2-client]<strong> quit</strong></pre>
+</p></li><li><span>Configure SD-WAN tunnels on the underlay network.</span><p><p># Configure an SD-WAN tunnel on CPE1.</p>
+<pre class="screen">[CPE1]<strong> interface Tunnel 0 </strong>
+[CPE1-Tunnel0]<strong> tunnel-protocol sd-wan</strong>
+[CPE1-Tunnel0] <strong>sd-wan service enable</strong>
+[CPE1-Tunnel0]<strong> </strong><strong>ip address 10.11.11.11 32</strong>
+[CPE1-Tunnel0]<strong> quit</strong></pre>
+<p>The configurations of the RR and CPE2 are similar to the configuration of CPE1. For detailed configurations, see Configuration Scripts.</p>
+</p></li><li><span>Configure static routes on the CPEs and RR to ensure that the IP addresses used to establish BGP peer relationships are reachable.</span><p><p># Configure CPE1.</p>
+<pre class="screen">[CPE1] <strong>ip route-static 10.2.2.2 32 color 2</strong></pre>
+<p># Configure the RR.</p>
+<pre class="screen">[RR] <strong>ip route-static 10.1.1.1 32 color 1</strong>
+[RR] <strong>ip route-static 10.3.3.3 32 color 3</strong></pre>
+<p># Configure CPE2.</p>
+<pre class="screen">[CPE2] <strong>ip route-static 10.2.2.2 32 color 2</strong></pre>
+</p></li><li><span>Configure a VPN instance.</span><p><p># Configure CPE1.</p>
+<pre class="screen">[CPE1] <strong>route-policy test permit node 10</strong>
+[CPE1-route-policy]<strong> apply extcommunity priority-color 10:1</strong>
+[CPE1-route-policy]<strong> quit </strong>
+[CPE1]<strong> </strong><strong>ip vpn-instance vpn1</strong>
+[CPE1-vpn-instance-vpn1]<strong> ipv4-family </strong>
+[CPE1-vpn-instance-vpn1-af-ipv4]<strong> route-distinguisher 9:1 </strong>
+[CPE1-vpn-instance-vpn1-af-ipv4]<strong> export route-policy test evpn </strong>
+[CPE1-vpn-instance-vpn1-af-ipv4]<strong> vpn-target 111:1 export-extcommunity evpn </strong>
+[CPE1-vpn-instance-vpn1-af-ipv4]<strong> vpn-target 111:1 import-extcommunity evpn </strong>
+[CPE1-vpn-instance-vpn1-af-ipv4]<strong> quit </strong>
+[CPE1-vpn-instance-vpn1]<strong> vn-id 90</strong>
+[CPE1-vpn-instance-vpn1]<strong> quit</strong>
+[CPE1]<strong> interface <span>10ge</span> <span>0/0/2</span> </strong>
+[CPE1-<span>10GE</span><span>0/0/2</span>]<strong> ip binding vpn-instance vpn1 </strong>
+[CPE1-<span>10GE</span><span>0/0/2</span>]<strong> ip address 192.168.1.1 24</strong>
+[CPE1-<span>10GE</span><span>0/0/2</span>]<strong> quit</strong></pre>
+<p># Configure the RR.</p>
+<pre class="screen">[RR] <strong>route-policy test permit node 10</strong>
+[RR-route-policy]<strong> apply extcommunity priority-color 10:2</strong>
+[RR-route-policy]<strong> quit </strong>
+[RR]<strong> </strong><strong>ip vpn-instance vpn1</strong>
+[RR-vpn-instance-vpn1]<strong> ipv4-family </strong>
+[RR-vpn-instance-vpn1-af-ipv4]<strong> route-distinguisher 9:2</strong>
+[RR-vpn-instance-vpn1-af-ipv4]<strong> export route-policy test evpn </strong>
+[RR-vpn-instance-vpn1-af-ipv4]<strong> vpn-target 111:1 export-extcommunity evpn </strong>
+[RR-vpn-instance-vpn1-af-ipv4]<strong> vpn-target 111:1 import-extcommunity evpn </strong>
+[RR-vpn-instance-vpn1-af-ipv4]<strong> quit </strong>
+[RR-vpn-instance-vpn1]<strong> vn-id 90</strong>
+[RR-vpn-instance-vpn1]<strong> quit</strong></pre>
+<p># Configure CPE2.</p>
+<pre class="screen">[CPE2] <strong>route-policy test permit node 10</strong>
+[CPE2-route-policy]<strong> apply extcommunity priority-color 10:3</strong>
+[CPE2-route-policy]<strong> quit </strong>
+[CPE2]<strong> </strong><strong>ip vpn-instance vpn1</strong>
+[CPE2-vpn-instance-vpn1]<strong> ipv4-family </strong>
+[CPE2-vpn-instance-vpn1-af-ipv4]<strong> route-distinguisher 9:3</strong>
+[CPE2-vpn-instance-vpn1-af-ipv4]<strong> export route-policy test evpn </strong>
+[CPE2-vpn-instance-vpn1-af-ipv4]<strong> vpn-target 111:1 export-extcommunity evpn </strong>
+[CPE2-vpn-instance-vpn1-af-ipv4]<strong> vpn-target 111:1 import-extcommunity evpn </strong>
+[CPE2-vpn-instance-vpn1-af-ipv4]<strong> quit </strong>
+[CPE2-vpn-instance-vpn1]<strong> vn-id 90</strong>
+[CPE2-vpn-instance-vpn1]<strong> quit</strong>
+[CPE2]<strong> interface <span>10ge</span> <span>0/0/2</span> </strong>
+[CPE2-<span>10GE</span><span>0/0/2</span>]<strong> ip binding vpn-instance vpn1 </strong>
+[CPE2-<span>10GE</span><span>0/0/2</span>]<strong> ip address 192.168.3.1 24</strong>
+[CPE2-<span>10GE</span><span>0/0/2</span>]<strong> quit</strong></pre>
+</p></li><li><span>Configure SD-WAN tunnels on the overlay network.</span><p><p># Configure an SD-WAN tunnel on CPE1.</p>
+<pre class="screen">[CPE1]<strong> interface tunnel 1 </strong>
+[CPE1-Tunnel1]<strong> ip binding vpn-instance vpn1 </strong>
+[CPE1-Tunnel1]<strong> tunnel-protocol sd-wan</strong>
+[CPE1-Tunnel1]<strong> </strong><strong>ip address 22.22.22.22 32</strong>
+[CPE1-Tunnel1]<strong> sd-wan service enable </strong>
+[CPE1-Tunnel1]<strong> quit</strong></pre>
+<p>The configurations of the RR and CPE2 are similar to the configuration of CPE1. For detailed configurations, see Configuration Scripts.</p>
+</p></li><li><span>Configure a BGP SD-WAN peer and a BGP EVPN peer.</span><p><p># Configure CPE1.</p>
+<pre class="screen">[CPE1]<strong> bgp 100 </strong>
+[CPE1-bgp]<strong> router-id 10.1.1.1</strong>
+[CPE1-bgp]<strong> peer 10.2.2.2 as-number 100</strong>
+[CPE1-bgp]<strong> peer 10.2.2.2 connect-interface Loopback0</strong>
+[CPE1-bgp]<strong> ipv4-family sd-wan </strong>
+[CPE1-bgp-af-ipv4-sdwan]<strong> peer 10.2.2.2 enable</strong>
+[CPE1-bgp-af-ipv4-sdwan]<strong> peer 10.2.2.2 advertise-community</strong>
+[CPE1-bgp-af-ipv4-sdwan]<strong> quit </strong>
+[CPE1-bgp]<strong> l2vpn-family evpn </strong>
+[CPE1-bgp-af-evpn]<strong> peer 10.2.2.2 enable</strong>
+[CPE1-bgp-af-evpn]<strong> peer 10.2.2.2 advertise encap-type sd-wan</strong>
+[CPE1-bgp-af-evpn]<strong> peer 10.2.2.2 advertise-community</strong>
+[CPE1-bgp-af-evpn]<strong> quit </strong>
+[CPE1-bgp]<strong> ipv4-family vpn-instance vpn1 </strong>
+[CPE1-bgp-vpn1]<strong> import-route direct </strong>
+[CPE1-bgp-vpn1]<strong> advertise l2vpn evpn </strong>
+[CPE1-bgp-vpn1]<strong> quit</strong></pre>
+</p><p><p># Configure the RR.</p>
+<pre class="screen">[RR]<strong> bgp 100 </strong>
+[RR-bgp]<strong> router-id 10.2.2.2</strong>
+[RR-bgp]<strong> peer 10.1.1.1 as-number 100</strong>
+[RR-bgp]<strong> peer 10.1.1.1 connect-interface Loopback0</strong>
+[RR-bgp]<strong> ipv4-family sd-wan </strong>
+[RR-bgp-af-ipv4-sdwan]<strong> peer 10.1.1.1 enable</strong>
+[RR-bgp-af-ipv4-sdwan]<strong> peer 10.1.1.1 advertise-community</strong>
+[RR-bgp-af-ipv4-sdwan]<strong> peer 10.1.1.1 reflect-client</strong>
+[RR-bgp-af-ipv4-sdwan]<strong> quit </strong>
+[RR-bgp]<strong> l2vpn-family evpn </strong>
+[RR-bgp-af-evpn]<strong> reflect change-path-attribute </strong>
+[RR-bgp-af-evpn]<strong> peer 10.1.1.1 enable</strong>
+[RR-bgp-af-evpn]<strong> peer 10.1.1.1 advertise encap-type sd-wan</strong>
+[RR-bgp-af-evpn]<strong> peer 10.1.1.1 advertise-community</strong>
+[RR-bgp-af-evpn]<strong> peer 10.1.1.1 reflect-client</strong>
+[RR-bgp-af-evpn]<strong> quit </strong>
+[RR-bgp]<strong> peer 10.3.3.3 as-number 100</strong>
+[RR-bgp]<strong> peer 10.3.3.3 connect-interface Loopback0</strong>
+[RR-bgp]<strong> ipv4-family sd-wan </strong>
+[RR-bgp-af-ipv4-sdwan]<strong> peer 10.3.3.3 enable</strong>
+[RR-bgp-af-ipv4-sdwan]<strong> peer 10.3.3.3 advertise-community</strong>
+[RR-bgp-af-ipv4-sdwan]<strong> peer 10.3.3.3 reflect-client</strong>
+[RR-bgp-af-ipv4-sdwan]<strong> quit </strong>
+[RR-bgp]<strong> l2vpn-family evpn </strong>
+[RR-bgp-af-evpn]<strong> reflect change-path-attribute </strong><strong> </strong>
+[RR-bgp-af-evpn]<strong> peer 10.3.3.3 enable</strong>
+[RR-bgp-af-evpn]<strong> peer 10.3.3.3 advertise encap-type sd-wan</strong>
+[RR-bgp-af-evpn]<strong> peer 10.3.3.3 advertise-community</strong>
+[RR-bgp-af-evpn]<strong> peer 10.3.3.3 reflect-client</strong>
+[RR-bgp-af-evpn]<strong> quit </strong>
+[RR-bgp]<strong> ipv4-family vpn-instance vpn1 </strong>
+[RR-bgp-vpn1]<strong> import-route direct </strong>
+[RR-bgp-vpn1]<strong> advertise l2vpn evpn</strong>
+[RR-bgp-vpn1]<strong> quit</strong>
+[RR-bgp]<strong> quit</strong>
+[RR]<strong> ip extcommunity-list priority-color basic cpe2 permit 10:3 </strong>
+[RR]<strong> route-policy cpe2 permit node 10 </strong>
+[RR-route-policy]<strong> if-match extcommunity-list priority-color cpe2 </strong>
+[RR-route-policy]<strong> apply ip-address next-hop 10.2.2.2</strong>
+[RR-route-policy]<strong> apply extcommunity priority-color 10:2 </strong>
+[RR-route-policy]<strong> quit </strong>
+[RR]<strong> route-policy cpe2 permit node 11 </strong>
+[RR-route-policy]<strong> quit </strong>
+[RR]<strong> bgp 100 </strong>
+[RR-bgp]<strong> l2vpn-family evpn </strong>
+[RR-bgp-af-evpn]<strong> peer 10.1.1.1 route-policy cpe2 export</strong>
+[RR-bgp-af-evpn]<strong> quit </strong>
+[RR-bgp]<strong> quit </strong>
+[RR]<strong> ip extcommunity-list priority-color basic cpe1 permit 10:1 </strong>
+[RR]<strong> route-policy cpe1 permit node 10 </strong>
+[RR-route-policy]<strong> if-match extcommunity-list priority-color cpe1 </strong>
+[RR-route-policy]<strong> apply ip-address next-hop 10.2.2.2</strong>
+[RR-route-policy]<strong> apply extcommunity priority-color 10:2 </strong>
+[RR-route-policy]<strong> quit </strong>
+[RR]<strong> route-policy cpe1 permit node 11 </strong>
+[RR-route-policy]<strong> quit </strong>
+[RR]<strong> bgp 100 </strong>
+[RR-bgp]<strong> l2vpn-family evpn </strong>
+[RR-bgp-af-evpn]<strong> peer 10.3.3.3 route-policy cpe1 export</strong>
+[RR-bgp-af-evpn]<strong> quit </strong>
+[RR-bgp]<strong> quit</strong></pre>
+<p># Configure CPE2.</p>
+<pre class="screen">[CPE2]<strong> bgp 100 </strong>
+[CPE2-bgp]<strong> router-id 10.3.3.3</strong>
+[CPE2-bgp]<strong> peer 10.2.2.2 as-number 100</strong>
+[CPE2-bgp]<strong> peer 10.2.2.2 connect-interface Loopback0</strong>
+[CPE2-bgp]<strong> ipv4-family sd-wan </strong>
+[CPE2-bgp-af-ipv4-sdwan]<strong> peer 10.2.2.2 enable</strong>
+[CPE2-bgp-af-ipv4-sdwan]<strong> peer 10.2.2.2 advertise-community</strong>
+[CPE2-bgp-af-ipv4-sdwan]<strong> quit </strong>
+[CPE2-bgp]<strong> l2vpn-family evpn </strong><strong> </strong>
+[CPE2-bgp-af-evpn]<strong> peer 10.2.2.2 enable</strong>
+[CPE2-bgp-af-evpn]<strong> peer 10.2.2.2 advertise encap-type sd-wan</strong>
+[CPE2-bgp-af-evpn]<strong> peer 10.2.2.2 advertise-community</strong>
+[CPE2-bgp-af-evpn]<strong> quit </strong>
+[CPE2-bgp]<strong> ipv4-family vpn-instance vpn1 </strong>
+[CPE2-bgp-vpn1]<strong> import-route direct </strong>
+[CPE2-bgp-vpn1]<strong> advertise l2vpn evpn </strong>
+[CPE2-bgp-vpn1]<strong> quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001130783030__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><div class="p"># Run the ping command to check the connectivity between CPE1 and CPE2.<pre class="screen">[CPE1] <strong>ping -vpn-instance vpn1 192.168.3.2</strong>
+  PING 192.168.3.2: 56  data bytes, press CTRL_C to break
+    Reply from 192.168.3.2: bytes=56 Sequence=1 ttl=254 time=31 ms
+    Reply from 192.168.3.2: bytes=56 Sequence=2 ttl=254 time=47 ms
+    Reply from 192.168.3.2: bytes=56 Sequence=3 ttl=254 time=31 ms
+    Reply from 192.168.3.2: bytes=56 Sequence=4 ttl=254 time=16 ms
+    Reply from 192.168.3.2: bytes=56 Sequence=5 ttl=254 time=31 ms
+
+  --- 192.168.3.2 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 16/31/47 ms</pre>
+</div>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001130783030__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li>CPE1<pre class="screen">#
+sysname CPE1
+#
+ip vpn-instance vpn1
+ ipv4-family
+  route-distinguisher 9:1
+  export route-policy test evpn
+  vpn-target 111:1 export-extcommunity evpn
+  vpn-target 111:1 import-extcommunity evpn
+ vn-id 90
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpn1
+ ip address 192.168.1.1 255.255.255.0
+#
+interface LoopBack0
+ ip address 10.1.1.1 255.255.255.255
+#
+interface Tunnel0
+ ip address 10.11.11.11 255.255.255.255
+ tunnel-protocol sd-wan
+ sd-wan service enable
+#
+interface Tunnel1
+ ip binding vpn-instance vpn1
+ ip address 22.22.22.22 255.255.255.255
+ tunnel-protocol sd-wan
+ sd-wan service enable
+#
+ospf 1
+ area 0
+  network 1.1.1.0 0.0.0.255
+#
+bgp 100
+ router-id 10.1.1.1
+ peer 10.2.2.2 as-number 100
+ peer 10.2.2.2 connect-interface loopback0
+ #
+ ipv4-family vpn-instance vpn1
+  import-route direct
+  advertise l2vpn evpn
+ #
+ l2vpn-family evpn
+  peer 10.2.2.2 enable
+  peer 10.2.2.2 advertise encap-type sd-wan
+  peer 10.2.2.2 advertise-community
+ #
+ ipv4-family sd-wan
+  peer 10.2.2.2 enable
+  peer 10.2.2.2 advertise-community 
+ #
+route-policy test permit node 10
+ apply extcommunity priority-color 10:1
+#
+ip route-static 10.2.2.2 32 color 2
+#
+evpn site 1 site-type CPE
+ system-id 10.1.1.1
+ routing-domain 100 name mpls
+ transport-network 10 name mpls
+  transport-network-port 1
+  routing-domain mpls
+  transport-network mpls
+  source-interface <span>10GE</span><span>0/0/1</span>
+#
+dtls client
+ peer system-id 10.2.2.2 ip 2.1.1.1 port 11111 
+#
+return</pre>
+</li><li>RR<pre class="screen">#
+sysname RR
+#
+ip vpn-instance vpn1
+ ipv4-family
+  route-distinguisher 9:2
+  export route-policy test evpn
+  vpn-target 111:1 export-extcommunity evpn
+  vpn-target 111:1 import-extcommunity evpn
+ vn-id 90
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 2.1.1.1 255.255.255.0
+#
+interface LoopBack0
+ ip address 10.2.2.2 255.255.255.255
+#
+interface Tunnel0
+ ip address 10.11.11.12 255.255.255.255
+ tunnel-protocol sd-wan
+ sd-wan service enable
+#
+interface Tunnel1
+ ip binding vpn-instance vpn1
+ ip address 22.22.22.21 255.255.255.255
+ tunnel-protocol sd-wan
+ sd-wan service enable
+#
+ospf 1
+ area 0
+  network 2.1.1.0 0.0.0.255
+#
+ip extcommunity-list priority-color basic cpe2 permit 10:3
+#
+route-policy cpe2 permit node 10
+ if-match extcommunity-list priority-color cpe2
+ apply ip-address next-hop 10.2.2.2
+ apply extcommunity priority-color 10:2
+#
+route-policy cpe2 permit node 11
+#
+ip extcommunity-list priority-color basic cpe1 permit 10:1
+#
+route-policy cpe1 permit node 10
+ if-match extcommunity-list priority-color cpe1
+ apply ip-address next-hop 10.2.2.2
+ apply extcommunity priority-color 10:2
+#
+route-policy cpe1 permit node 11
+#
+bgp 100
+ router-id 10.2.2.2
+ peer 10.1.1.1 as-number 100
+ peer 10.3.3.3 as-number 100
+ peer 10.1.1.1 connect-interface loopback0
+ peer 10.3.3.3 connect-interface loopback0
+ #
+ ipv4-family vpn-instance vpn1
+  import-route direct
+  advertise l2vpn evpn
+ #
+ l2vpn-family evpn
+  reflect change-path-attribute 
+  peer 10.1.1.1 enable
+  peer 10.3.3.3 enable
+  peer 10.1.1.1 advertise encap-type sd-wan
+  peer 10.3.3.3 advertise encap-type sd-wan
+  peer 10.1.1.1 advertise-community
+  peer 10.3.3.3 advertise-community
+  peer 10.1.1.1 reflect-client
+  peer 10.3.3.3 reflect-client
+  peer 10.1.1.1 route-policy cpe2 export
+  peer 10.3.3.3 route-policy cpe1 export
+ #
+ ipv4-family sd-wan
+  peer 10.1.1.1 enable
+  peer 10.3.3.3 enable
+  peer 10.1.1.1 advertise-community
+  peer 10.3.3.3 advertise-community 
+  peer 10.1.1.1 reflect-client
+  peer 10.3.3.3 reflect-client
+ #
+route-policy test permit node 10
+<strong> </strong>apply extcommunity priority-color 10:2
+#
+ip route-static 10.1.1.1 32 color 1
+ip route-static 10.3.3.3 32 color 3
+#
+evpn site 2 site-type RR
+ system-id 10.2.2.2
+ routing-domain 100 name mpls
+ transport-network 10 name mpls
+  transport-network-port 1
+  routing-domain mpls
+  transport-network mpls
+  source-interface <span>10GE</span><span>0/0/1</span>
+#
+dtls server
+ dtls server enable
+ listening-port 11111
+ listening-ip 2.1.1.1
+#
+return</pre>
+</li><li>CPE2<pre class="screen">#
+sysname CPE2
+#
+ip vpn-instance vpn1
+ ipv4-family
+  route-distinguisher 9:3
+  export route-policy test evpn
+  vpn-target 111:1 export-extcommunity evpn
+  vpn-target 111:1 import-extcommunity evpn
+ vn-id 90
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 3.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpn1
+ ip address 192.168.3.1 255.255.255.0
+#
+interface LoopBack0
+ ip address 10.3.3.3 255.255.255.255
+#
+interface Tunnel0
+ ip address 10.11.11.13 255.255.255.255
+ tunnel-protocol sd-wan
+ sd-wan service enable
+#
+interface Tunnel1
+ ip binding vpn-instance vpn1
+ ip address 22.22.22.23 255.255.255.255
+ tunnel-protocol sd-wan
+ sd-wan service enable
+#
+ospf 1
+ area 0
+  network 3.1.1.0 0.0.0.255
+#
+bgp 100
+ router-id 10.3.3.3
+ peer 10.2.2.2 as-number 100
+ peer 10.2.2.2 connect-interface loopback0
+ #
+ ipv4-family vpn-instance vpn1
+  import-route direct
+  advertise l2vpn evpn
+ #
+ l2vpn-family evpn
+  peer 10.2.2.2 enable
+  peer 10.2.2.2 advertise encap-type sd-wan
+  peer 10.2.2.2 advertise-community
+ #
+ ipv4-family sd-wan
+  peer 10.2.2.2 enable
+  peer 10.2.2.2 advertise-community
+ #
+route-policy test permit node 10
+ apply extcommunity priority-color 10:3
+#
+ip route-static 10.2.2.2 32 color 2
+#
+evpn site 3 site-type CPE
+ system-id 10.3.3.3
+ routing-domain 100 name mpls
+ transport-network 10 name mpls
+  transport-network-port 1
+  routing-domain mpls
+  transport-network mpls
+  source-interface <span>10GE</span><span>0/0/1</span>
+#
+dtls client
+ peer system-id 10.2.2.2 ip 2.1.1.1 port 11111 
+#
+return</pre>
+</li></ul>
+<p></p>
+<p></p>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0007.html">Configuring SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0011.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

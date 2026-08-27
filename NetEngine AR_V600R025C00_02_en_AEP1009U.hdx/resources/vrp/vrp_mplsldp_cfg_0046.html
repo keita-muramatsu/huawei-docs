@@ -1,0 +1,486 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring LDP Auto FRR">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_example_1001.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0040.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0050.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001338195222">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring LDP Auto FRR</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001338195222"></a><a name="EN-US_TASK_0000001338195222"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring LDP Auto FRR</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001338195222__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>Network services, such as VoIP, online gaming, and online video services, have higher requirements on real-time performance. Many services are based on VPNs, and VPN services are usually transmitted over LDP tunnels. Data loss caused by link faults severely affects these services.</p>
+<p>To address such issues, LDP FRR can be manually configured. If a fault occurs, public network service traffic can be forwarded along the backup LSP before routes re-converge and a new primary LSP is generated. Traffic loss during fault detection and traffic switchover lasts less than 50 ms. However, after route re-convergence is complete, the time for a VPN service to switch to the new primary LSP depends on the VPN implementation. In order to keep the VPN service interruption time within 50 ms, the speed of switching the VPN service to the new primary LSP needs to be improved. Configure LDP Auto FRR to address this need.</p>
+<p>On the network shown in <a href="#EN-US_TASK_0000001338195222__fig_dc_vrp_ldp-p2p_cfg_005401">Figure 1</a>, primary and backup LSPs are established from LSRA to LSRC. The LSP over the path LSRA -&gt; LSRC is the primary one, and the LSP over the path LSRA -&gt; LSRB -&gt; LSRC is the backup one. To allow traffic to rapidly switch to the backup LSP if the primary LSP fails, configure LDP Auto FRR on LSRA to enable LSRA to automatically establish a backup LSP. Traffic can then be rapidly switched to the backup LSP if a fault occurs in the primary LSP, minimizing traffic loss.</p>
+<div class="fignone" id="EN-US_TASK_0000001338195222__fig_dc_vrp_ldp-p2p_cfg_005401"><a name="EN-US_TASK_0000001338195222__fig_dc_vrp_ldp-p2p_cfg_005401"></a><a name="fig_dc_vrp_ldp-p2p_cfg_005401"></a><span class="figcap"><b>Figure 1 </b>Configuring LDP Auto FRR</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001397750993.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001338195222__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Assign IP addresses to interfaces on each node and configure the loopback addresses to be used as LSR IDs.</p>
+</li><li><p>Configure IS-IS to advertise the route to each network segment of each interface and to advertise the host route to each LSR ID.</p>
+</li><li><p>Enable MPLS and MPLS LDP globally and on the interfaces of each node.</p>
+</li><li><p>Enable IS-IS Auto FRR on the ingress LSR to protect traffic.</p>
+</li><li><p>Configure a policy for triggering LDP LSP establishment based on all routes.</p>
+</li><li><p>Configure a policy for triggering backup LDP LSP establishment on LSRA.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001338195222__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IP address to each interface.</span><p><p>Assign an IP address and a mask to each interface (including loopback interfaces) according to <a href="#EN-US_TASK_0000001338195222__fig_dc_vrp_ldp-p2p_cfg_005401">Figure 1</a>.</p>
+</p></li><li><span>Configure IS-IS to advertise the route to each network segment of each interface and to advertise the host route to each LSR ID.</span><p><p># Configure LSRA.</p>
+<pre class="screen">&lt;LSRA&gt; <strong>system-view</strong>
+[LSRA] <strong>isis 1</strong>
+[LSRA-isis-1] <strong>network-entity 10.0000.0000.0001.00</strong>
+[LSRA-isis-1] <strong>quit</strong>
+[LSRA] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRA-<span>10GE</span><span>0/0/1</span>] <strong>isis enable 1</strong>
+[LSRA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[LSRA] <strong>interface <span>10GE</span><span>0/0/2</span></strong>
+[LSRA-<span>10GE</span><span>0/0/2</span>] <strong>isis enable 1</strong>
+[LSRA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[LSRA] <strong>interface loopBack 0</strong>
+[LSRA-LoopBack0] <strong>isis enable 1</strong>
+[LSRA-LoopBack0] <strong>quit</strong></pre>
+<p># Configure LSRB.</p>
+<pre class="screen">&lt;LSRB&gt; <strong>system-view</strong>
+[LSRB] <strong>isis 1</strong>
+[LSRB-isis-1] <strong>network-entity 10.0000.0000.0002.00</strong>
+[LSRB-isis-1] <strong>quit</strong>
+[LSRB] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRB-<span>10GE</span><span>0/0/1</span>] <strong>isis enable 1</strong>
+[LSRB-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[LSRB] <strong>interface <span>10GE</span><span>0/0/2</span></strong>
+[LSRB-<span>10GE</span><span>0/0/2</span>] <strong>isis enable 1</strong>
+[LSRB-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[LSRB] <strong>interface loopBack 0</strong>
+[LSRB-LoopBack0] <strong>isis enable 1</strong>
+[LSRB-LoopBack0] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">&lt;LSRC&gt; <strong>system-view</strong>
+[LSRC] <strong>isis 1</strong>
+[LSRC-isis-1] <strong>network-entity 10.0000.0000.0003.00</strong>
+[LSRC-isis-1] <strong>quit</strong>
+[LSRC] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRC-<span>10GE</span><span>0/0/1</span>] <strong>isis enable 1</strong>
+[LSRC-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[LSRC] <strong>interface <span>10GE</span><span>0/0/2</span></strong>
+[LSRC-<span>10GE</span><span>0/0/2</span>] <strong>isis enable 1</strong>
+[LSRC-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[LSRC] <strong>interface <span>10GE</span><span>0/0/3</span></strong>
+[LSRC-<span>10GE</span><span>0/0/3</span>] <strong>isis enable 1</strong>
+[LSRC-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[LSRC] <strong>interface loopBack 0</strong>
+[LSRC-LoopBack0] <strong>isis enable 1</strong>
+[LSRC-LoopBack0] <strong>quit</strong></pre>
+<p># Configure LSRD.</p>
+<pre class="screen">&lt;LSRD&gt; <strong>system-view</strong>
+[LSRD] <strong>isis 1</strong>
+[LSRD-isis-1] <strong>network-entity 10.0000.0000.0004.00</strong>
+[LSRD-isis-1] <strong>quit</strong>
+[LSRD] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRD-<span>10GE</span><span>0/0/1</span>] <strong>isis enable 1</strong>
+[LSRD-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[LSRD] <strong>interface loopBack 0</strong>
+[LSRD-LoopBack0] <strong>isis enable 1</strong>
+[LSRD-LoopBack0] <strong>quit</strong></pre>
+</p></li><li><span>Configure MPLS and MPLS LDP globally and on interfaces on each node so that the network can forward MPLS traffic. Then, check information about established LSPs.</span><p><p># Configure LSRA.</p>
+<pre class="screen">[LSRA]<strong> mpls lsr-id 1.1.1.9</strong>
+[LSRA]<strong> mpls</strong>
+[LSRA-mpls] <strong>quit</strong>
+[LSRA]<strong> mpls ldp</strong>
+[LSRA-mpls-ldp] <strong>quit</strong>
+[LSRA]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRA-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[LSRA-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong>
+[LSRA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[LSRA]<strong> interface <span>10GE</span><span>0/0/2</span></strong>
+[LSRA-<span>10GE</span><span>0/0/2</span>] <strong>mpls</strong>
+[LSRA-<span>10GE</span><span>0/0/2</span>] <strong>mpls ldp</strong>
+[LSRA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Configure LSRB.</p>
+<pre class="screen">[LSRB]<strong> mpls lsr-id 2.2.2.9</strong>
+[LSRB]<strong> mpls</strong>
+[LSRB-mpls]<strong> quit</strong>
+[LSRB]<strong> mpls ldp</strong>
+[LSRB-mpls-ldp] <strong>quit</strong>
+[LSRB]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRB-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[LSRB-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong>
+[LSRB-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[LSRB]<strong> interface <span>10GE</span><span>0/0/2</span></strong>
+[LSRB-<span>10GE</span><span>0/0/2</span>] <strong>mpls</strong>
+[LSRB-<span>10GE</span><span>0/0/2</span>] <strong>mpls ldp</strong>
+[LSRB-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">[LSRC]<strong> mpls lsr-id 3.3.3.9</strong>
+[LSRC] <strong>mpls</strong>
+[LSRC-mpls] <strong>quit</strong>
+[LSRC] <strong>mpls ldp</strong>
+[LSRC-mpls-ldp] <strong>quit</strong>
+[LSRC]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRC-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[LSRC-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong>
+[LSRC-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[LSRC]<strong> interface <span>10GE</span><span>0/0/2</span></strong>
+[LSRC-<span>10GE</span><span>0/0/2</span>] <strong>mpls</strong>
+[LSRC-<span>10GE</span><span>0/0/2</span>] <strong>mpls ldp</strong>
+[LSRC-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[LSRC]<strong> interface <span>10GE</span><span>0/0/3</span></strong>
+[LSRC-<span>10GE</span><span>0/0/3</span>] <strong>mpls</strong>
+[LSRC-<span>10GE</span><span>0/0/3</span>] <strong>mpls ldp</strong>
+[LSRC-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong></pre>
+<p># Configure LSRD.</p>
+<pre class="screen">[LSRD]<strong> mpls lsr-id 4.4.4.9</strong>
+[LSRD]<strong> mpls</strong>
+[LSRD-mpls] <strong>quit</strong>
+[LSRD]<strong> mpls ldp</strong>
+[LSRD-mpls-ldp] <strong>quit</strong>
+[LSRD]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[LSRD-<span>10GE</span><span>0/0/1</span>] <strong>mpls</strong>
+[LSRD-<span>10GE</span><span>0/0/1</span>] <strong>mpls ldp</strong>
+[LSRD-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># After completing the preceding configuration, run the <b><span class="cmdqueryname">display mpls lsp</span></b> command on LSRA to check information about established LSPs.</p>
+<pre class="screen">[LSRA] <strong>display mpls lsp</strong>
+Flag after Out IF: (I) - RLFA Iterated LSP, (I*) - Normal and RLFA Iterated LSP  
+Flag after LDP FRR: (L) - Logic FRR LSP 
+------------------------------------------------------------------------------- 
+                 LSP Information: LDP LSP 
+------------------------------------------------------------------------------- 
+FEC                In/Out Label    In/Out IF                      Vrf Name 
+1.1.1.9/32         3/NULL          -/-                            -- 
+2.2.2.9/32         NULL/3          -/<span>10GE</span><span>0/0/1</span>                    -- 
+2.2.2.9/32         1024/3          -/<span>10GE</span><span>0/0/1</span>                    -- 
+3.3.3.9/32         NULL/3          -/<span>10GE</span><span>0/0/2</span>                    -- 
+3.3.3.9/32         1025/3          -/<span>10GE</span><span>0/0/2</span>                    -- 
+4.4.4.9/32         NULL/1026       -/<span>10GE</span><span>0/0/2</span>                    -- 
+4.4.4.9/32         1026/1026       -/<span>10GE</span><span>0/0/2</span>                    --</pre>
+<p>The command output shows that LDP uses host routes with 32-bit addresses to trigger LSP establishment by default.</p>
+</p></li><li><span>Enable IS-IS Auto FRR on LSRA and check routing information and backup LSP information.</span><p><p># Enable IS-IS Auto FRR on LSRA.</p>
+<pre class="screen">[LSRA] <strong>isis</strong>
+[LSRA-isis-1] <strong>frr</strong>
+[LSRA-isis-1-frr] <strong>loop-free-alternate</strong>
+[LSRA-isis-1-frr] <strong>quit</strong>
+[LSRA-isis-1] <strong>quit</strong></pre>
+<p># Check information about the direct routes between LSRA and LSRC and between LSRC and LSRD.</p>
+<pre class="screen">[LSRA] <strong>display ip routing-table 10.1.4.0 verbose</strong>
+Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route 
+ ------------------------------------------------------------------------------ 
+ Routing Table : _public_ 
+ Summary Count : 1 
+  
+ Destination: 10.1.4.0/24 
+      Protocol: ISIS            Process ID: 1 
+    Preference: 15                    Cost: 20 
+       NextHop: 10.1.2.2         Neighbour: 0.0.0.0 
+         State: Active Adv             Age: 00h05m38s 
+           Tag: 0                 Priority: low 
+         Label: NULL               QoSInfo: 0x0 
+    IndirectID: 0x0 
+  RelayNextHop: 0.0.0.0          Interface: <span>10GE</span><span>0/0/2</span> 
+      TunnelID: 0x0                  Flags: D 
+     <strong>BkNextHop: 10.1.1.2       BkInterface: <span>10GE</span><span>0/0/1</span></strong> 
+       BkLabel: NULL           SecTunnelID: 0x0 
+  BkPETunnelID: 0x0        BkPESecTunnelID: 0x0 
+  BkIndirectID: 0x0</pre>
+<p>The command output shows that a backup IS-IS route is generated after IS-IS Auto FRR is enabled.</p>
+<p># Run the <b><span class="cmdqueryname">display mpls lsp</span></b> command on LSRA to check information about established LSPs.</p>
+<pre class="screen">[LSRA] <strong>display mpls lsp</strong>
+Flag after Out IF: (I) - RLFA Iterated LSP, (I*) - Normal and RLFA Iterated LSP  
+Flag after LDP FRR: (L) - Logic FRR LSP 
+------------------------------------------------------------------------------- 
+                 LSP Information: LDP LSP 
+------------------------------------------------------------------------------- 
+FEC                In/Out Label    In/Out IF                      Vrf Name 
+1.1.1.9/32         3/NULL          -/-                            -- 
+2.2.2.9/32         NULL/3          -/<span>10GE</span><span>0/0/1</span>                    -- 
+2.2.2.9/32         23/3            -/<span>10GE</span><span>0/0/1</span>                    -- 
+   **LDP FRR**     NULL/17         -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     23/17           -/<span>10GE</span><span>0/0/2</span>                    -- 
+3.3.3.9/32         NULL/18         -/<span>10GE</span><span>0/0/2</span>                    -- 
+3.3.3.9/32         24/18           -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     NULL/18         -/<span>10GE</span><span>0/0/1</span>                    -- 
+   **LDP FRR**     24/18           -/<span>10GE</span><span>0/0/1</span>                    -- 
+4.4.4.9/32         NULL/3          -/<span>10GE</span><span>0/0/2</span>                    -- 
+4.4.4.9/32         25/3            -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     NULL/19         -/<span>10GE</span><span>0/0/1</span>                    -- 
+   **LDP FRR**     25/19           -/<span>10GE</span><span>0/0/1</span>                    --</pre>
+<p>The command output shows that LDP uses backup routes with 32-bit addresses to trigger backup LSP establishment by default.</p>
+</p></li><li><span>Configure LDP to trigger LSP establishment based on all routes. Check the LSP information.</span><p><p># Run the <b><span class="cmdqueryname">lsp-trigger</span></b> command on LSRA to allow LDP to use all routes to trigger LSP establishment. Check the LSP information.</p>
+<pre class="screen">[LSRA] <strong>mpls</strong>
+[LSRA-mpls] <strong>lsp-trigger all</strong>
+[LSRA-mpls] <strong>quit</strong></pre>
+<p># Run the <b><span class="cmdqueryname">lsp-trigger</span></b> command on LSRB to allow LDP to use all routes to trigger LSP establishment.</p>
+<pre class="screen">[LSRB] <strong>mpls</strong>
+[LSRB-mpls] <strong>lsp-trigger all</strong>
+[LSRB-mpls] <strong>quit</strong></pre>
+<p># Run the <b><span class="cmdqueryname">lsp-trigger</span></b> command on LSRC to allow LDP to use all routes to trigger LSP establishment.</p>
+<pre class="screen">[LSRC] <strong>mpls</strong>
+[LSRC-mpls] <strong>lsp-trigger all</strong>
+[LSRC-mpls] <strong>quit</strong></pre>
+<p># Run the <b><span class="cmdqueryname">lsp-trigger</span></b> command on LSRD to allow LDP to use all routes to trigger LSP establishment.</p>
+<pre class="screen">[LSRD] <strong>mpls</strong>
+[LSRD-mpls] <strong>lsp-trigger all</strong>
+[LSRD-mpls] <strong>quit</strong></pre>
+<p># Run the <b><span class="cmdqueryname">display mpls lsp</span></b> command on LSRA to check information about established LSPs.</p>
+<pre class="screen">[LSRA] <strong>display mpls lsp</strong>
+Flag after Out IF: (I) - RLFA Iterated LSP, (I*) - Normal and RLFA Iterated LSP  
+Flag after LDP FRR: (L) - Logic FRR LSP 
+------------------------------------------------------------------------------- 
+                 LSP Information: LDP LSP 
+------------------------------------------------------------------------------- 
+FEC                In/Out Label    In/Out IF                      Vrf Name 
+1.1.1.9/32         3/NULL          -/-                            -- 
+2.2.2.9/32         NULL/3          -/<span>10GE</span><span>0/0/1</span>                    -- 
+2.2.2.9/32         23/3            -/<span>10GE</span><span>0/0/1</span>                    -- 
+   **LDP FRR**     NULL/17         -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     23/17           -/<span>10GE</span><span>0/0/2</span>                    -- 
+3.3.3.9/32         NULL/18         -/<span>10GE</span><span>0/0/2</span>                    -- 
+3.3.3.9/32         24/18           -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     NULL/18         -/<span>10GE</span><span>0/0/1</span>                    -- 
+   **LDP FRR**     24/18           -/<span>10GE</span><span>0/0/1</span>                    -- 
+4.4.4.9/32         NULL/3          -/<span>10GE</span><span>0/0/2</span>                    -- 
+4.4.4.9/32         25/3            -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     NULL/19         -/<span>10GE</span><span>0/0/1</span>                    -- 
+   **LDP FRR**     25/19           -/<span>10GE</span><span>0/0/1</span>                    -- 
+10.1.1.0/24        3/NULL          -/-                            -- 
+10.1.2.0/24        3/NULL          -/-                            -- 
+10.1.3.0/24        NULL/3          -/<span>10GE</span><span>0/0/1</span>                    -- 
+10.1.3.0/24        28/3            -/<span>10GE</span><span>0/0/1</span>                    -- 
+10.1.3.0/24        NULL/3          -/<span>10GE</span><span>0/0/2</span>                    -- 
+10.1.3.0/24        28/3            -/<span>10GE</span><span>0/0/2</span>                    -- 
+10.1.4.0/24        NULL/3          -/<span>10GE</span><span>0/0/2</span>                    -- 
+10.1.4.0/24        29/3            -/<span>10GE</span><span>0/0/2</span>                    --</pre>
+<p>The command output shows that LSPs are triggered by routes with 24-bit addresses.</p>
+</p></li><li><span>Configure a policy for triggering backup LSP establishment based all routes.</span><p><p># Run the <b><span class="cmdqueryname">auto-frr lsp-trigger</span></b> command on LSRA to allow LDP to establish backup LSPs for all backup routes.</p>
+<pre class="screen">[LSRA] <strong>mpls ldp</strong>
+[LSRA-mpls-ldp] <strong>auto-frr lsp-trigger all</strong>
+[LSRA-mpls-ldp] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p># After completing the preceding configuration, run the <b><span class="cmdqueryname">display mpls lsp</span></b> command on LSRA to check information about backup LSPs.</p>
+<pre class="screen">[LSRA] <strong>display mpls lsp</strong>
+Flag after Out IF: (I) - RLFA Iterated LSP, (I*) - Normal and RLFA Iterated LSP  
+Flag after LDP FRR: (L) - Logic FRR LSP 
+------------------------------------------------------------------------------- 
+                 LSP Information: LDP LSP 
+------------------------------------------------------------------------------- 
+FEC                In/Out Label    In/Out IF                      Vrf Name 
+1.1.1.9/32         3/NULL          -/-                            -- 
+2.2.2.9/32         NULL/3          -/<span>10GE</span><span>0/0/1</span>                    -- 
+2.2.2.9/32         23/3            -/<span>10GE</span><span>0/0/1</span>                    -- 
+   **LDP FRR**     NULL/17         -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     23/17           -/<span>10GE</span><span>0/0/2</span>                    -- 
+3.3.3.9/32         NULL/18         -/<span>10GE</span><span>0/0/2</span>                    -- 
+3.3.3.9/32         24/18           -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     NULL/18         -/<span>10GE</span><span>0/0/1</span>                    --
+   **LDP FRR**     24/18           -/<span>10GE</span><span>0/0/1</span>                    -- 
+4.4.4.9/32         NULL/3          -/<span>10GE</span><span>0/0/2</span>                    -- 
+4.4.4.9/32         25/3            -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     NULL/19         -/<span>10GE</span><span>0/0/1</span>                    -- 
+   **LDP FRR**     25/19           -/<span>10GE</span><span>0/0/1</span>                    -- 
+10.1.1.0/24        3/NULL          -/-                            -- 
+10.1.2.0/24        3/NULL          -/-                            -- 
+10.1.3.0/24        NULL/3          -/<span>10GE</span><span>0/0/1</span>                    -- 
+10.1.3.0/24        28/3            -/<span>10GE</span><span>0/0/1</span>                    -- 
+10.1.3.0/24        NULL/3          -/<span>10GE</span><span>0/0/2</span>                    -- 
+10.1.3.0/24        28/3            -/<span>10GE</span><span>0/0/2</span>                    -- 
+10.1.4.0/24        NULL/3          -/<span>10GE</span><span>0/0/2</span>                    -- 
+10.1.4.0/24        29/3            -/<span>10GE</span><span>0/0/2</span>                    -- 
+   **LDP FRR**     NULL/26         -/<span>10GE</span><span>0/0/1</span>                    -- 
+   **LDP FRR**     29/26           -/<span>10GE</span><span>0/0/1</span>                    --</pre>
+<p>The command output shows that a backup LSP is established for the primary LSP that is on the path LSRA -&gt; LSRC -&gt; LSRD.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001338195222__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>LSRA</p>
+<pre class="screen">#
+sysname LSRA
+#
+mpls lsr-id 1.1.1.9
+#
+mpls
+ lsp-trigger all
+#
+mpls ldp
+ #
+ ipv4-family
+  auto-frr lsp-trigger all
+#
+isis 1
+ frr
+  loop-free-alternate level-1
+  loop-free-alternate level-2
+ network-entity 10.0000.0000.0001.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.1 255.255.255.0
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 1.1.1.9 255.255.255.255
+ isis enable 1
+#
+return</pre>
+</li><li><p>LSRB</p>
+<pre class="screen">#
+sysname LSRB
+#
+mpls lsr-id 2.2.2.9
+#
+mpls
+ lsp-trigger all
+#
+mpls ldp
+ #
+ ipv4-family
+#
+isis 1
+ network-entity 10.0000.0000.0002.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.2 255.255.255.0
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.3.1 255.255.255.0
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 2.2.2.9 255.255.255.255
+ isis enable 1
+#
+return</pre>
+</li><li><p>LSRC</p>
+<pre class="screen">#
+sysname LSRC
+#
+mpls lsr-id 3.3.3.9
+#
+mpls
+ lsp-trigger all
+#
+mpls ldp
+ #
+ ipv4-family
+#
+isis 1
+ network-entity 10.0000.0000.0003.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.4.1 255.255.255.0
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.2 255.255.255.0
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.1.3.2 255.255.255.0
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 3.3.3.9 255.255.255.255
+ isis enable 1
+#
+return</pre>
+</li><li><p>LSRD</p>
+<pre class="screen">#
+ sysname LSRD
+#
+mpls lsr-id 4.4.4.9
+#
+mpls
+ lsp-trigger all
+#
+mpls ldp
+ #
+ ipv4-family
+#
+isis 1
+ network-entity 10.0000.0000.0004.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.4.2 255.255.255.0
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 4.4.4.9 255.255.255.255
+ isis enable 1
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_example_1001.html">Configuration Examples for MPLS LDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0040.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0050.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

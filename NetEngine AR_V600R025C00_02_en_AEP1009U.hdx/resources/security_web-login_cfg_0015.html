@@ -1,0 +1,193 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Example for Configuring Web UI Login Through HTTPS (Two-Factor Authentication)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_web-login_cfg_0014.html">
+<meta name="DC.Relation" scheme="URI" content="security_web-login_cfg_0009.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Web UI-based Login">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Web UI-based Login">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featurename" content="Web UI-based Login">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001564005597">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Web UI Login Through HTTPS (Two-Factor Authentication)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001564005597"></a><a name="EN-US_TOPIC_0000001564005597"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Web UI Login Through HTTPS (Two-Factor Authentication)</h1>
+<div><div class="section"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TOPIC_0000001564005597__fig261814714330">Figure 1</a>, an administrator account <strong>admin123@huawei.com</strong> is configured on the RADIUS server, and the account can be used to log in to the web UI of DeviceA through HTTPS. DeviceA uses two factors ("user name + password" and verification code) to authenticate the administrator. The RADIUS server sends a dynamic code or SMS verification code to the administrator.</p>
+<div class="fignone" id="EN-US_TOPIC_0000001564005597__fig261814714330"><a name="EN-US_TOPIC_0000001564005597__fig261814714330"></a><a name="fig261814714330"></a><span class="figcap"><b>Figure 1 </b>Networking diagram for web UI login through HTTPS (two-factor authentication)</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, Interface1 and Interface2 represent GE0/0/1 and GE0/0/2, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001512686222.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Data Planning</h4>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.2.1.3.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.2.2.1.3.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.1.3.1.1 "><p>User name</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.1.3.1.2 "><p>admin123@huawei.com</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p>The user name must be in the format of <em>XX</em><strong>@</strong><em>domain name</em>. The domain name after @ must be the same as that created using the <strong>domain</strong> command.</p>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.1.3.1.1 "><p>Password</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.1.3.1.2 "><p>YsHsjx_202206</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.1.3.1.1 "><p>Service type</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.1.3.1.2 "><p>HTTPS</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.1.3.1.1 "><p>User privilege level</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.2.2.1.3.1.2 "><p>3</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure all interfaces to be used to access the web UI.</li><li>Configure a login interface for the device.</li><li>Configure the interface connecting the device to the RADIUS server.</li><li>Configure a security policy.</li><li>Configure a RADIUS server template.</li><li>Configure an authentication scheme.</li><li>Configure an authentication domain and reference the RADIUS server template and authentication scheme.</li><li>Configure a RADIUS server.</li><li>Log in to web UI using the administrator account and password.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This example describes only the administrator configuration on the device. For details about the RADIUS two-factor authentication process, see <a href="toctopics/en-us_concept_0000001563875585.html">RADIUS Two-Factor Authentication</a>.</p>
+</div></div>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li>Configure all interfaces to be used to access the web UI.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>  
+[HUAWEI] <strong>sysname DeviceA</strong> 
+[DeviceA] <strong>web-manager server-source all-interface</strong></pre>
+</li><li>Configure a login interface for the device.<ol type="a"><li>Configure IP addresses for interfaces.<pre class="screen">[DeviceA] <strong>interface </strong><strong>ge 0/0/1</strong>
+[DeviceA-GE0/0/1] <strong>ip address 10.3.0.1 255.255.255.0</strong>
+[DeviceA-GE0/0/1] <strong>quit</strong></pre>
+</li><li>Add an interface to a security zone.<pre class="screen">[DeviceA] <strong>firewall zone trust</strong>  
+[DeviceA-zone-dmz] <strong>add interface ge 0/0/1</strong> 
+[DeviceA-zone-dmz] <strong>quit</strong></pre>
+</li></ol>
+</li><li>Enable the web service function.<ol type="a"><li>Enable the web server function to allow HTTPS access using port 443.<pre class="screen">[DeviceA]<strong> web-manager enable port </strong><strong>443</strong></pre>
+</li><li>Enable forcible redirection from HTTP to HTTPS.<pre class="screen">[DeviceA]<strong> web-manager</strong> <strong><span>http forward enable</span></strong></pre>
+</li></ol>
+</li><li>Configure the interface connecting the device to the RADIUS server and add the interface to a security zone.<ol type="a"><li>Configure an IP address for an interface.<pre class="screen">[DeviceA] <strong>interface </strong><strong>ge 0/0/2</strong> 
+[DeviceA-GE0/0/2] <strong>ip address 172.16.0.1 255.255.255.0</strong> 
+[DeviceA-GE0/0/2] <strong>quit</strong></pre>
+</li><li>Add an interface to a security zone.<pre class="screen">[DeviceA] <strong>firewall zone dmz</strong>  
+[DeviceA-zone-dmz] <strong>add interface ge 0/0/2</strong> 
+[DeviceA-zone-dmz] <strong>quit</strong></pre>
+</li></ol>
+</li><li>Configure a security policy so that the device can proactively communicate with the RADIUS server.<pre class="screen">[DeviceA] <strong>security-policy</strong> 
+[DeviceA-policy-security] <strong>rule name rule1</strong> 
+[DeviceA-policy-security-rule-rule1] <strong>source-zone local</strong> 
+[DeviceA-policy-security-rule-rule1] <strong>destination-zone dmz</strong> 
+[DeviceA-policy-security-rule-rule1] <strong>destination-address 172.16.0.2 24</strong> 
+[DeviceA-policy-security-rule-rule1] <strong>action permit</strong> 
+[DeviceA-policy-security-rule-rule1] <strong>quit</strong> 
+[DeviceA-policy-security] <strong>quit</strong></pre>
+</li><li>Configure a RADIUS server template to implement communication between the device and the RADIUS server.<pre class="screen">[DeviceA] <strong>radius-server template radius_server</strong> 
+[DeviceA-radius-radius_server] <strong>radius-server authentication 172.16.0.2 1812</strong> 
+[DeviceA-radius-radius_server] <strong>radius-server shared-key cipher Huawei@123</strong><strong>456789</strong> 
+[DeviceA-radius-radius_server] <strong>quit</strong></pre>
+</li><li>Configure an authentication scheme and set the authentication mode to RADIUS.<pre class="screen">[DeviceA] <strong>aaa</strong> 
+[DeviceA-aaa] <strong>authentication-scheme auth1</strong> 
+[DeviceA-aaa-authen-auth1] <strong>authentication-mode radius</strong> 
+[DeviceA-aaa-authen-auth1] <strong>quit</strong></pre>
+</li><li>Configure an authentication domain and reference the RADIUS server template and authentication scheme.<pre class="screen">[DeviceA-aaa] <strong>domain huawei.com</strong> 
+[DeviceA-aaa-domain-huawei.com] <strong>authentication-scheme auth1</strong> 
+[DeviceA-aaa-domain-huawei.com] <strong>radius-server </strong><strong>radius_server</strong> 
+[DeviceA-aaa-domain-huawei.com] <strong>quit</strong> 
+[DeviceA-aaa] <strong>quit</strong></pre>
+</li><li>Configure a RADIUS server.<p>The configuration includes adding a device, adding a user, and setting the user privilege level to 3. For details, see the related documents of the RADIUS server.</p>
+</li><li>Log in to web UI using the administrator account and password.<ol type="a"><li>Set the IP address of the administrator's PC to 10.3.0.100/24.</li><li>Open the browser on the PC and access <strong>https://10.3.0.1:443</strong>.</li><li>Enter the created web user account (user name: <strong>admin123@huawei.com</strong>; password: <strong>YsHsjx_202206</strong>) and click <strong>Login</strong>.</li><li>After the user name and password are authenticated, the RADIUS server sends a verification code to the mobile phone or email address of the administrator. On the page that is displayed, enter the received verification code and click <strong>Submit</strong> to log in to the device web UI.</li></ol>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Verifying the Configuration</h4><p>The administrator uses a web browser to access the device web UI and checks whether the login is successful based on the two factors ("user name + password" and SMS verification code).</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#                                                                                
+sysname DeviceA            
+# 
+web-manager server-source all-interface 
+web-manager enable port 443
+web-manager http forward enable
+# 
+ ip address 10.3.0.1 255.255.255.0
+# 
+ ip address 172.16.0.1 255.255.255.0     
+#  
+firewall zone trust   
+ set priority 85   
+ add interface GE0/0/1 
+#  
+firewall zone dmz   
+ set priority 50   
+ add interface GE0/0/2
+# 
+security-policy
+ rule name rule1
+ source-zone local
+ destination-zone dmz
+ destination-address 172.16.0.2 24
+ action permit 
+#
+radius-server template radius_server  
+ radius-server authentication 172.16.0.2 1812  
+ radius-server shared-key cipher %@%@*y:3*ZN}.%%qcL1cCyDwlB.|@XBVMDWq'6JF(iOz2D8&gt;A\SN%@%@  
+#
+aaa  
+ authentication-scheme auth1
+  authentication-mode radius
+ domain huawei.com
+  authentication-scheme auth1 
+  radius-server radius_server 
+#
+return</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_web-login_cfg_0014.html">Configuration Examples for Web UI-based Login
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_web-login_cfg_0009.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

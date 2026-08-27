@@ -1,0 +1,83 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring the MLO Function">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_sta_management_cfg_0020.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_sta_management_cfg_0023.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_sta_management_cfg_0025.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="WLAN STA Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="WLAN STA Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="WLAN STA Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001676758026">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring the MLO Function</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001676758026"></a><a name="EN-US_TASK_0000001676758026"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring the MLO Function</h1>
+<div class="taskbody" id="taskbody0000001676758026"><div class="context"><a name="EN-US_TASK_0000001676758026__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p" id="EN-US_TASK_0000001676758026__context1677625172748"><p id="EN-US_TASK_0000001676758026__p161881151175013">When a STA communicates with an AP, the STA selects only one radio to set up a connection, for example, on the 2.4 GHz or 5 GHz frequency band. The maximum air interface rate of the STA is the maximum capability supported by the current radio. To further improve the air interface rate and reduce latency, 802.11be introduces the Multi-Link Operation (MLO) function that allows for link setup on multiple radios for communication. To improve the air interface rate, transmit different data on different radios at the same time. Radios can back up each other so when the channel is busy on a radio, data is quickly switched to another radio for transmission, reducing air interface latency.</p>
+<div class="p" id="EN-US_TASK_0000001676758026__p8301105712470">The MLO function takes effect only when the following conditions are met:<ul id="EN-US_TASK_0000001676758026__en-us_cliref_0000001549250094_ul14264519308"><li id="EN-US_TASK_0000001676758026__en-us_cliref_0000001549250094_li17427756305">A VAP profile is bound to multiple radios of an AP, and the WLAN IDs of the radios are the same.</li><li id="EN-US_TASK_0000001676758026__en-us_cliref_0000001549250094_li8471145514341">The radios work in 802.11be mode.</li><li id="EN-US_TASK_0000001676758026__en-us_cliref_0000001549250094_li88831534143514">The security policy is open, WPA2, WPA3, WPA2-WPA3, or OWE. Because the 6 GHz frequency band supports only WPA3 and OWE, only the security policies open, WPA2, and WPA2-WPA3 support only 2.4 GHz + 5 GHz radio combinations.</li><li id="EN-US_TASK_0000001676758026__li1442740412">The encryption algorithm is not TKIP.</li></ul>
+</div>
+<p id="EN-US_TASK_0000001676758026__p2101637171112">Currently, an AP supports a maximum of two concurrent radios, for example, 2.4 GHz + 5 GHz radios or 5 GHz + 6 GHz radios.</p>
+<p id="EN-US_TASK_0000001676758026__p3101837191114">Both the AP and the STA need to support the MLO function. If both the AP and STA support the MLO function on the 2.4 GHz, 5 GHz, and 6 GHz frequency bands, the high-speed 5 GHz + 6 GHz radios are used to set up a link between the AP and STA. If the STA supports the MLO function only on the 2.4 GHz and 5 GHz frequency bands, the link can be set up only using 2.4 GHz + 5 GHz radios.</p>
+<p id="EN-US_TASK_0000001676758026__p1310183741110">After the MLO function is enabled, if the configuration of one radio is modified and the modification affects MLO link renegotiation, VAP services on the two radios are interrupted, causing STAs to go offline and online again. Services of other VAPs on the radios are not affected. The configurations that affect MLO link renegotiation include: whether MLO is enabled, radio type, whether the radio is enabled, binding relationship between the VAP profile and radio, security policy, and SSID name.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001676758026__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001676758026__steps10132325172748"><li id="EN-US_TASK_0000001676758026__step5253145172748"><span id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_cmd7907968172748">Enter the system view.</span><p><pre class="screen" id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_screen17886155013143"><b><span class="cmdqueryname" id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_cmdname97152991520">system-view</span></b></pre>
+</p></li><li id="EN-US_TASK_0000001676758026__step64001619256"><span id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_cmd2122155018214">Enter the WLAN view.</span><p><pre class="screen" id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_screen1883418343227"><b><span class="cmdqueryname" id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_cmdname12189311132211">wlan</span></b></pre>
+</p></li><li id="EN-US_TASK_0000001676758026__step570613116258"><span id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_cmd1090825913478">Create a VAP profile view and enter its view.</span><p><pre class="screen" id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_screen20908145920473"><b><span class="cmdqueryname" id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_cmdname169081559154718">vap-profile name</span></b> <i><span class="varname" id="EN-US_TASK_0000001676758026__en-us_task_0000001564130897_varname1590875984710">profile-name</span></i></pre>
+</p></li><li id="EN-US_TASK_0000001676758026__step1021071317257"><span id="EN-US_TASK_0000001676758026__cmd32104135250">Configure the MLO function.</span><p><pre class="screen" id="EN-US_TASK_0000001676758026__screen16812815162710"><b><span class="cmdqueryname" id="EN-US_TASK_0000001676758026__cmdname1121483815416">mlo</span></b> { <strong><span id="EN-US_TASK_0000001676758026__cmdparmname146814374212">enable</span></strong> | <strong><span id="EN-US_TASK_0000001676758026__cmdparmname15611081421">disable</span></strong> }</pre>
+<p id="EN-US_TASK_0000001676758026__p16550201222710">By default, MLO is disabled.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_sta_management_cfg_0020.html">Configuring Enhanced WLAN Functions
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_wlan_sta_management_cfg_0023.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_wlan_sta_management_cfg_0025.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding IPv4 L3VPN over MPLS Inter-AS Option B (Basic Networking)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0039.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0053.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001386066969">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Understanding IPv4 L3VPN over MPLS Inter-AS Option B (Basic Networking)</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001386066969"></a><a name="EN-US_CONCEPT_0000001386066969"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding IPv4 L3VPN over MPLS Inter-AS Option B (Basic Networking)</h1>
+<div><ul><li><strong>Inter-AS VPN Option B Overview</strong><p>On the inter-AS VPN Option B network shown in <a href="#EN-US_CONCEPT_0000001386066969__fig_dc_fd_l3vpn_000704">Figure 1</a>, two ASBRs use MP-EBGP to exchange labeled VPN-IPv4 routes received from local PEs in their respective ASs. A VPN LSP indicates a private network tunnel, and an LSP indicates a public network tunnel.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001386066969__fig_dc_fd_l3vpn_000704"><a name="EN-US_CONCEPT_0000001386066969__fig_dc_fd_l3vpn_000704"></a><a name="fig_dc_fd_l3vpn_000704"></a><span class="figcap"><b>Figure 1 </b>Inter-AS VPN Option B networking</span><br><span><img class="imgResize" src="figure/en-us_image_0000001386350057.png" width="494.9360419589579" title="Click to enlarge"></span></div>
+<p>In inter-AS VPN Option B, ASBRs receive all inter-AS VPN-IPv4 routes from the local and external ASs and then advertise these routes. In basic MPLS VPN implementation, a PE stores only the VPN routes that match the VPN targets of its local VPN instances. The ASBRs are configured to store all the received VPN routes, regardless of whether these routes match the VPN targets of its local VPN instances.</p>
+<p>The advantage of this solution is that all traffic is forwarded by ASBRs. In this way, traffic is controllable, but the loads on the ASBRs are heavy. BGP routing policies, such as VPN target-based filtering policies, can be configured on ASBRs, so that ASBRs only save some of VPN-IPv4 routes.</p>
+</li><li><strong>Route Advertisement in an Inter-AS VPN Option B Scenario</strong><div class="p"><a href="#EN-US_CONCEPT_0000001386066969__fig_dc_fd_l3vpn_000705">Figure 2</a> shows a route advertisement example. In this example, CE1 advertises route 10.1.1.1/24 to CE2. NH indicates the next hop, and L1, L2, and L3 the VPN labels. This figure does not show the distribution of public network IGP routes and labels.<div class="fignone" id="EN-US_CONCEPT_0000001386066969__fig_dc_fd_l3vpn_000705"><a name="EN-US_CONCEPT_0000001386066969__fig_dc_fd_l3vpn_000705"></a><a name="fig_dc_fd_l3vpn_000705"></a><span class="figcap"><b>Figure 2 </b>Route advertisement in an inter-AS VPN Option B scenario</span><br><span><img class="imgResize" src="figure/en-us_image_0000001386510025.png" width="494.9360419589579" title="Click to enlarge"></span></div>
+The specific process is as follows:<ol><li>CE1 uses BGP, OSPF, or RIP to advertise the route to PE1 in AS 100.</li><li>PE1 in AS 100 uses MP-IBGP to advertise the labeled VPNv4 route to ASBR1 in AS 100. If an RR is deployed on the network, PE1 advertises the VPNv4 route to the RR, and the RR then reflects the route to ASBR1.</li><li>ASBR1 uses MP-EBGP to advertise the labeled VPNv4 route to ASBR2. Because MP-EBGP changes the next hop of a route when advertising the route, ASBR1 allocates a new label to the VPNv4 route.</li><li>ASBR2 uses MP-IBGP to advertise the labeled VPNv4 route to PE2 in AS 200. If an RR is deployed on the network, ASBR2 advertises the VPNv4 route to the RR, and the RR then reflects the route to PE2. When ASBR2 advertises routes to an MP-IBGP peer in the local AS, it changes the next hop of the routes to itself.</li><li>PE2 in AS 200 uses BGP, OSPF, or RIP to advertise the route to CE2.</li></ol>
+ASBR1 and ASBR2 both swap the inner labels of VPNv4 routes and use BGP to transmit inter-AS label information. Therefore, LDP does not need to run between ASBRs.</div>
+</li><li><strong>Packet Forwarding in an Inter-AS VPN Option B Scenario</strong><p><a href="#EN-US_CONCEPT_0000001386066969__fig_dc_fd_l3vpn_000706">Figure 3</a> shows packet forwarding over an LSP on the public network. Here, L1, L2, and L3 indicate VPN labels, and Lx and Ly indicate public network labels (outer tunnel labels).</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001386066969__fig_dc_fd_l3vpn_000706"><a name="EN-US_CONCEPT_0000001386066969__fig_dc_fd_l3vpn_000706"></a><a name="fig_dc_fd_l3vpn_000706"></a><span class="figcap"><b>Figure 3 </b>Packet forwarding in an inter-AS VPN Option B scenario</span><br><span><img class="imgResize" src="figure/en-us_image_0000001335390502.png" width="494.9360419589579" title="Click to enlarge"></span></div>
+</li></ul>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0039.html">Configuring IPv4 L3VPN over MPLS Inter-AS Option B (Basic Networking)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0053.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

@@ -1,0 +1,75 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding SA Establishment Through IKEv2 Negotiation">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0014.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0018.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563994165">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding SA Establishment Through IKEv2 Negotiation</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563994165"></a><a name="EN-US_CONCEPT_0000001563994165"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding SA Establishment Through IKEv2 Negotiation</h1>
+<div><p>The process of establishing SAs through IKEv2 negotiation is much simpler than that through IKEv1 negotiation. To establish a pair of IPsec SAs, IKEv1 requires two phases: main or aggressive mode + quick mode. At least nine messages are exchanged in main mode + quick mode, and at least six messages are exchanged in aggressive mode + quick mode. In normal cases, IKEv2 requires only two exchanges, totaling four messages, to establish a pair of IPsec SAs. One additional <a href="#EN-US_CONCEPT_0000001563994165__section10742329104413">Create_Child_SA Exchange</a> can be used to establish another pair of IPsec SAs if required, during which only two messages are exchanged.</p>
+<p>IKEv2 defines three exchanges: Initial Exchanges, Create_Child_SA Exchange, and Informational Exchange.</p>
+<div class="section"><h4 class="sectiontitle">Initial Exchanges</h4><p>In normal cases, IKEv2 establishes the first pair of IPsec SAs through Initial Exchanges. Corresponding to IKEv1 phase 1, Initial Exchanges involves four messages in two exchanges, as shown in <a href="#EN-US_CONCEPT_0000001563994165__fig206121510467">Figure 1</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563994165__fig206121510467"><a name="EN-US_CONCEPT_0000001563994165__fig206121510467"></a><a name="fig206121510467"></a><span class="figcap"><b>Figure 1 </b>Initial Exchanges process</span><br><span><img class="vsd" src="figure/en-us_image_0000001513034054.png" width="NaN" height="NaN"></span></div>
+<ul><li>Messages 1 and 2 are used in exchange 1 (called IKE_SA_INIT).<p>In exchange 1, IKE SA parameters are negotiated in plain text, including the encryption key, authentication key, random number, and DH key. After IKE_SA_INIT is complete, shared keying material is generated, from which all keys used by IPsec SAs are derived.</p>
+</li><li>Messages 3 and 4 are used in exchange 2 (called IKE_AUTH).<p>In exchange 2, identities of the two parties and the first two messages are authenticated, and IPsec SA parameters are negotiated. The two messages are encrypted. IKEv2 supports PSK authentication, RSA signature authentication, and digital envelop authentication.</p>
+</li></ul>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001563994165__section10742329104413"><a name="EN-US_CONCEPT_0000001563994165__section10742329104413"></a><a name="section10742329104413"></a><h4 class="sectiontitle">Create_Child_SA Exchange</h4><p>After one pair of IPsec SAs is established based on an IKE SA, Create_Child_SA Exchange can be performed to negotiate more pairs of IPsec SAs. In addition, Create_Child_SA Exchange can be performed for IKE SA re-negotiation.</p>
+<p>Create_Child_SA Exchange involves two messages in one exchange and corresponds to <a href="security_ipsec_cfg_0016.html#EN-US_CONCEPT_0000001564114017__section6527163763414">IKEv1 phase 2</a>. The initiator in Create_Child_SA Exchange can be the initiator or responder in Initial Exchanges. Create_Child_SA Exchange can be performed only after Initial Exchanges are complete. Messages transmitted in Create_Child_SA Exchange are protected by keys negotiated in Initial Exchanges. Similar to IKEv1, when PFS is enabled, Create_Child_SA Exchange requires an additional DH exchange to generate new keying material. All keys used by child SAs are derived from this keying material.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Informational Exchange</h4><p>IKEv2 peers perform Informational Exchange to exchange control information, including error information and notifications, as shown in <a href="#EN-US_CONCEPT_0000001563994165__fig1180915019485">Figure 2</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563994165__fig1180915019485"><a name="EN-US_CONCEPT_0000001563994165__fig1180915019485"></a><a name="fig1180915019485"></a><span class="figcap"><b>Figure 2 </b>Informational Exchange process</span><br><span><img class="vsd" src="figure/en-us_image_0000001512674894.png" width="NaN" height="NaN"></span></div>
+<p>Informational Exchange must be performed under the protection of an IKE SA. Specifically, Informational Exchange is performed after Initial Exchanges are complete. Control information may belong to an IKE SA or a child SA. Therefore, Informational Exchange must be protected by the IKE SA or the IKE SA based on which the child SA is established accordingly.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0014.html">Configuring IKE Negotiation
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0016.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0018.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

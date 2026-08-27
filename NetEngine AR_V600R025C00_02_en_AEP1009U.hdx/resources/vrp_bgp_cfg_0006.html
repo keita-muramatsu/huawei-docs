@@ -1,0 +1,99 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="BGP Route Selection Rules">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0005.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0159.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001130783894">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>BGP Route Selection Rules</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001130783894"></a><a name="EN-US_CONCEPT_0000001130783894"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">BGP Route Selection Rules</h1>
+<div><div class="p">When a BGP device has multiple routes to the same destination, BGP selects routes based on the following rules, which are listed in descending order of priority:<ol><li>Prefers the routes received from the peers that are not in GR state.<p>By default, the function of preferentially selecting the routes received from the peers that are not in GR state is not configured. In this case, this rule is skipped during route selection.</p>
+<p>After the <b><span class="bestroute non-gr-prior">bestroute non-gr-prior</span></b> command is run, the device preferentially selects the routes received from the peers that are not in GR state. This rule takes effect only for routes in the BGP IPv6 SR-Policy address family and BGP IPv4 SD-WAN address family.</p>
+</li><li><p>Prefers the route with the largest PreVal value.</p>
+<p>PrefVal is Huawei-specific, and is valid only on the device with the attribute configured.</p>
+</li><li><p>Prefers the route with the largest Local_Pref value.</p>
+<p>If a route does not carry the Local_Pref, BGP uses the default value of 100 for this attribute during route selection. To change the default Local_Pref of BGP routes, run the <b><span class="default local-preference">default local-preference</span></b> command.</p>
+</li><li><p>Prefers a locally originated route to a route learned from a peer.</p>
+<div class="p">Locally originated routes include routes imported using the <b><span class="network">network</span></b> or <b><span class="import-route">import-route</span></b> command, as well as manually and automatically generated summary routes.<ol type="a"><li>Prefers a summary route to a non-summary route.</li><li>Prefers a summary route manually generated using the <b><span class="cmdqueryname">aggregate</span></b> command to a summary route automatically generated using the <b><span class="cmdqueryname">summary automatic</span></b> command.</li><li>Prefers a route imported using the <b><span class="cmdqueryname">network</span></b> command to a route imported using the <b><span class="cmdqueryname">import-route</span></b> command.</li></ol>
+</div>
+</li><li><div class="p">Prefers the route with the shortest AS_Path length.<ul><li>The AS_Path length excludes the AS_Confed_Sequence and AS_Confed_Set.</li><li>The length of AS_SET is 1, regardless of the number of AS numbers in AS_SET.</li></ul>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>After the <b><span class="bestroute as-path-ignore">bestroute as-path-ignore</span></b> command is run, BGP does not compare the AS_Path attributes during route selection.</p>
+<p>After the <b><span class="load-balancing as-path-ignore">load-balancing as-path-ignore</span></b> command is run, the routes with different AS_Paths can load-balance traffic.</p>
+</div></div>
+</li><li><p>Prefers routes with the Origin attribute in descending order of priority as follows: IGP &gt; EGP &gt; Incomplete.</p>
+</li><li><div class="p">Prefers the route with the smallest MED value.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the <b><span class="bestroute med-plus-igp">bestroute med-plus-igp</span></b> command is run, BGP preferentially selects the route with the smallest sum of the MED multiplied by a MED multiplier and the IGP cost multiplied by an IGP cost multiplier.</p>
+</div></div>
+<ul><li>BGP compares the MEDs of only routes from the same AS (excluding sub-ASs in a confederation). That is, BGP compares the MEDs of two routes only when the first AS number in the AS_Sequence (excluding the AS_Confed_Sequence) of one route is the same as its counterpart in the other route.</li><li>If a route does not carry a MED, BGP considers its MED as the default value (0) during route selection. If the <b><span class="bestroute med-none-as-maximum">bestroute med-none-as-maximum</span></b> command is run, BGP considers its MED as the largest MED value (4294967295) in this case.</li><li>If the <b><span class="cmdqueryname">compare-different-as-med</span></b> command is run, BGP compares the MEDs of routes even when the routes are received from peers in different ASs. Do not use the <b><span class="compare-different-as-med">compare-different-as-med</span></b> command unless it is confirmed that different ASs use the same IGP and route selection mode. Otherwise, loops may occur.</li><li>If the <b><span class="cmdqueryname">deterministic-med</span></b> command is run, routes are no longer selected in the sequence in which they are received.</li></ul>
+</div>
+</li><li><p>Prefers EBGP routes over IBGP routes among the routes learned from peers. In the VPNv4, EVPN, and VPNv6 address families, the routes sent by the local VRF take precedence over the routes learned from peers.</p>
+</li><li><div class="p">Prefers the BGP route that recurses to an IGP route with the smallest cost.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the <b><span class="bestroute igp-metric-ignore">bestroute igp-metric-ignore</span></b> command is run, BGP does not compare the IGP costs of candidate routes.</p>
+<p>After the <b><span class="load-balancing igp-metric-ignore">load-balancing igp-metric-ignore</span></b> command is run, the routes with different IGP metric values can participate in load balancing.</p>
+</div></div>
+</div>
+</li><li><p>Prefers the route with the shortest Cluster_List length.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>By default, Cluster_List comparison is prior to router ID comparison during BGP route selection. If the <b><span class="bestroute routerid-prior-clusterlist">bestroute routerid-prior-clusterlist</span></b> command is run, router ID comparison is prior to Cluster_List comparison during BGP route selection.</p>
+</div></div>
+</li><li><p>Prefers the route advertised by the device with the smallest router ID.</p>
+<p>If the <strong>bestroute router-id-ignore</strong> command is run, BGP does not compare router IDs during route selection.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If each candidate route carries an Originator_ID, BGP compares the Originator_IDs, rather than router IDs, during route selection, and selects the route with the smallest Originator_ID.</p>
+</div></div>
+</li><li><p>Prefers the route learned from the peer with the smallest IP address.</p>
+</li><li><p>Prefers the routes in the RM routing table among locally imported routes.</p>
+<p>If a direct route, static route, and IGP route are all imported, BGP selects routes in descending order of priority as follows: direct route &gt; static route &gt; IGP route.</p>
+</li><li><p>Prefers the Add-Path route with the smallest recv pathID.</p>
+</li><li><p>Prefers locally received routes to the routes imported between VPN and public network instances.</p>
+</li><li><p>Prefers the route that was learned the earliest.</p>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_bgp_cfg_0003.html">Understanding BGP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bgp_cfg_0005.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_bgp_cfg_0159.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

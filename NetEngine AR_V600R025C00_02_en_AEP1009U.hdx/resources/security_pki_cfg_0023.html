@@ -1,0 +1,171 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Certificate Revocation Status Check">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_pki_cfg_0022.html">
+<meta name="DC.Relation" scheme="URI" content="security_pki_cfg_0024.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="PKI">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="PKI">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featurename" content="PKI">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563886001">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Certificate Revocation Status Check</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563886001"></a><a name="EN-US_TASK_0000001563886001"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Certificate Revocation Status Check</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563886001__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>During an attempt to establish a secure connection between two PKI entities, the two entities must check each other's local certificate. If the certificate is invalid, a secure connection cannot be established. However, the CA sometimes needs to unbind a public key from related PKI entities due to factors such as user name change, private key leak, or service interruption. A PKI entity must obtain the certificate status of the peer entity in a timely manner to ensure communication security.</p>
+<p>The device provides the following certificate status check modes: CRL, OCSP, and None.</p>
+<p>If multiple methods are configured, the system checks the certificate revocation status in the configured sequence. The latter mode is used only when the current mode is unavailable (for example, the server cannot be connected). When the configured CRL or OCSP mode is unavailable and None is configured, the certificate is considered valid. For example, if the <b><span class="cmdqueryname">certificate-check</span></b> <strong><span>crl</span></strong> <strong><span>ocsp</span></strong> <strong><span>none</span></strong> command is configured, the device checks whether a certificate is valid using the CRL mode. If the CRL mode is unavailable, the device then uses the OCSP mode. If both modes are unavailable, the device considers the certificate valid.</p>
+<p>You can select a mode for checking the certificate revocation status as required.</p>
+<ul><li><p>CRL</p>
+<p>The status of a certificate is determined by checking whether the certificate is included in the CRL that is saved in the CRL database. After a certificate is revoked, the SN of the certificate is recorded in the CRL. When a PKI entity authenticates the local certificate of the peer entity, it searches for the certificate in the CRL stored in local memory. If the certificate is included in the CRL, it indicates that the certificate has been revoked. If no CRL is available in local memory, the CRL needs to be downloaded and installed into the local memory.</p>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Certificate status check in the CRL mode</span><br><span><img class="vsd" src="figure/en-us_image_0000001563886049.png" width="NaN" height="NaN"></span></div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>A PKI entity can download a CRL using an LDAPv3 template. A PKI entity must frequently download the CRL to keep it up to date. By default, the device allocates about 5 KB memory space for processing and caching the CRL. If the reserved memory space is insufficient, new certificate revocation data cannot be imported. If you want to import new certificate revocation data, delete the old data first.</p>
+</div></div>
+</li><li><p>OCSP</p>
+<p>When two PKI entities use certificates to perform IPsec negotiation, they can check the peer certificate status through OCSP in real time. OCSP does not require the PKI entity to frequently download the CRL so as to keep the CRL up to date. When a PKI entity accesses an OCSP server, the entity requests the certificate status. The OCSP server replies with a valid, expired, or unknown state.</p>
+<ul><li><p>Valid indicates that the certificate has not been revoked.</p>
+</li><li><p>Expired indicates that the certificate has been revoked.</p>
+</li><li><p>Unknown indicates that the OCSP server cannot determine the requested certificate status.</p>
+</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Currently, the OCSP mode can be used only in IPsec scenarios.</p>
+</div></div>
+<div class="fignone"><span class="figcap"><b>Figure 2 </b>Certificate status check in the OCSP mode</span><br><span><img class="vsd" src="figure/en-us_image_0000001564006317.png" width="NaN" height="NaN"></span></div>
+</li><li><p>None</p>
+<p>If no CRL<span> or OCSP server</span> is available for the PKI entity, or the local certificate status of the PKI entity does not need to be checked, you can use the None mode, which does not check whether the certificate is revoked.</p>
+</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The global certificate revocation status can be checked in CRL mode or None mode.</p>
+<p>The certificate revocation status in a PKI realm can be checked in CRL, OCSP, or None mode.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563886001__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><span><b><span class="cmdqueryname">system-view</span></b></span></pre>
+</p></li><li><span>Create a PKI realm and enter its view, or enter the view of an existing PKI realm.</span><p><pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <i><span class="varname">realm-name</span></i></pre>
+<p><span>By default, the  system has a PKI realm named <strong>default</strong>. This realm can be modified but cannot be deleted.</span></p>
+</p></li><li><span>Configure the mode of checking certificate revocation status in the PKI realm.</span><p><pre class="screen"><b><span class="cmdqueryname">certificate-check</span></b> { { <strong><span>crl</span></strong> | <strong><span>ocsp</span></strong> } <sup>*</sup> [ <strong><span>none</span></strong> ] | <strong><span>none</span></strong> }</pre>
+<p>By default, the mode of checking certificate revocation status is not configured in a PKI realm.</p>
+<p>If this command is not configured, the global certificate revocation status check mode is used. That is, the configuration of the <b><span class="cmdqueryname">pki certificate-check crl</span></b> [ <strong><span>none</span></strong> ], <b><span class="cmdqueryname">pki certificate-check none</span></b>, or <b><span class="cmdqueryname">undo pki certificate-check</span></b> command in the system view takes effect.</p>
+</p></li><li><span>Select a mode to check peer certificate status according to the service types provided by the CA:</span><p><ul><li><p>Automatic CRL Update</p>
+<ol type="a"><li><p>Return to the system view.</p>
+<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Configure the file format in which the device saves the CRL.<pre class="screen"><b><span class="cmdqueryname">pki file-format</span></b> {<strong><span> der</span></strong> |<strong><span>pem</span></strong> }</pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>By default, the device saves the CRL in PEM format.</p>
+</div></div>
+</li><li><strong>Optional: </strong>Enable the CRL mode for global certificate revocation status check.<pre class="screen"><b><span class="cmdqueryname">pki certificate-check crl</span></b> [ <strong><span>none</span></strong> ]</pre>
+<p>By default, global certificate revocation status check in CRL mode is enabled, and a certificate is regarded valid if the CRL mode is unavailable.</p>
+</li><li>Enter the PKI realm view and enable the automatic CRL update function.<pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <i><span class="varname">realm-name</span></i>
+<b><span class="cmdqueryname">crl auto-update enable</span></b></pre>
+<p>By default, automatic CRL update is disabled.</p>
+</li><li>Set the interval for automatic CRL update.<pre class="screen"><b><span class="cmdqueryname">crl update-period</span></b> <i><span class="varname">interval</span></i></pre>
+<p>By default, the automatic CRL update interval is 8 hours.</p>
+</li><li>Configure the attribute and identifier that the system uses to obtain CRLs from the LDAP server.<pre class="screen"><b><span class="cmdqueryname">crl ldap</span></b> [ <strong><span>attribute</span></strong> <i><span class="varname">attr-value</span></i> ] <strong><span>dn</span></strong> <i><span class="varname">dn-value</span></i></pre>
+<p>By default, no attribute or identifier is configured for the system to obtain CRLs from the LDAP server.</p>
+</li><li>Configure automatic CRL update using an LDAPv3 template.<pre class="screen"><b><span class="cmdqueryname">ldap-server-template</span></b> <em>template-name</em></pre>
+<p>The <b><span class="cmdqueryname">ldap-server-template</span></b> <em>template-name</em> command references an LDAP server template in a PKI realm. <span>For details about how to configure an LDAP server template, see <span class="uicontrol"><b>Configuring an LDAP Server Connected to the Device</b></span> under "AAA Configuration" in <span><span>CLI Configuration Guide</span> &gt; User Access and Authentication Configuration</span>.</span></p>
+</li><li><strong>Optional: </strong>Update the CRL immediately and import the CRL to the device memory.<div class="p">The CRL can be automatically updated only when the time for automatic CRL update arrives. To update the CRL immediately, you can use immediate CRL update function.<pre class="screen"><b><span class="cmdqueryname">pki get-crl</span></b> <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i>
+<b><span class="cmdqueryname">pki import-crl</span></b> <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i></pre>
+</div>
+<p>After the CRL is updated immediately, the new CRL replaces the old CRL in the device storage, and is automatically imported to the device memory to replace the old one.</p>
+</li><li><strong>Optional: </strong>Enable CRL expiration check, and configure the CRL expiration check period and the prewarning percentage of remaining CRL validity period.<pre class="screen"><b><span class="cmdqueryname">pki crl expiration-check enable</span></b>
+<strong>pki crl expiration-check interval</strong> <i><span class="varname">interval-time</span></i>
+<strong>pki crl expiration-check prewarning remain-percent</strong> <i><span class="varname">percent</span></i></pre>
+</li></ol>
+</li><li>Manual CRL update<ol type="a"><li><p>Return to the system view.</p>
+<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Configure the file format in which the device saves the CRL.<pre class="screen"><b><span class="cmdqueryname">pki file-format</span></b> { <strong><span>der</span></strong> | <strong><span>pem</span></strong> }</pre>
+</li><li>Configure CRL download through LDAP.<pre class="screen"><b><span class="cmdqueryname">pki ldap-server-template </span></b><i><span class="varname">template-name</span></i> <strong><span>attribute</span></strong> <i><span class="varname">attr-value</span></i> <i><span class="varname">save-name</span></i> <strong><span>dn</span></strong> <i><span class="varname">dn-value</span></i></pre>
+</li><li>Import the CRL to the device memory.<pre class="screen"><b><span class="cmdqueryname">pki import-crl</span></b> [ <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> ] <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i></pre>
+</li></ol>
+</li><li>OCSP<ol type="a"><li>In the PKI realm view, configure a CA name for the PKI realm.<pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <i><span class="varname">realm-name</span></i>
+<b><span class="cmdqueryname">ca-name</span></b> { <i><span class="varname">name-string</span></i> | <strong><span>from-certificate</span></strong> <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i> }</pre>
+<p>By default, no CA name is configured for a PKI realm.</p>
+<p>Before specifying the name of a CA certificate in a PKI realm, you must import the CA certificate to the PKI realm. After the CA name is specified in a PKI realm, the PKI realm is associated with the specified CA. The PKI realm can be determined based on the CA name, and then configuration items such as the certificate revocation status check mode can be determined.</p>
+<p>When specifying the <i><span class="varname">name-string</span></i> parameter, ensure that units, such as CN, O, and OU, in the subject name of the CA certificate are in the same sequence as those in the configured CA name. To avoid errors caused by manual configurations, specify the <strong><span>from-certificate</span></strong> parameter so as to obtain the CA name from the CA certificate.</p>
+</li><li><strong>Optional: </strong>Configure the source address used in TCP connection setup.<pre class="screen"><b><span class="cmdqueryname">source</span></b> { <strong><span>interface</span></strong> <i><span class="varname">interface-type interface-number</span></i> | <i><span class="varname">ip-address</span></i> }</pre>
+<p>By default, the device uses an outbound interface's IP address as the source address used in TCP connection setup.</p>
+<p>To specify an interface, ensure that the interface is a Layer 3 interface with an IP address configured.</p>
+</li><li>Configure a URL for the OCSP server.<pre class="screen"><b><span class="cmdqueryname">ocsp url</span></b> [ <strong><span>esc</span></strong> ] <i><span class="varname">url-address</span></i></pre>
+<div class="p">Alternatively, configure the device to obtain the OCSP server's URL from the AIA option in the CA certificate.<pre class="screen"><b><span class="cmdqueryname">ocsp-url from-ca</span></b></pre>
+</div>
+</li><li><strong>Optional: </strong>Configure the OCSP requests sent by a PKI entity to contain the Nonce extension.<pre class="screen"><b><span class="cmdqueryname">ocsp nonce enable</span></b></pre>
+<p>By default, the OCSP requests sent by a PKI entity contain the Nonce extension.</p>
+<p>This function helps to enhance communication security and reliability between the PKI entity and OCSP server. After the configuration, the OCSP requests sent during the communication between the PKI entity and OCSP server contain the Nonce extension, and the Nonce extension content is randomly generated. The response packets sent by the OCSP server may not contain the Nonce extension. If the response packets contain the Nonce extension, it must be the same as that configured for OCSP requests.</p>
+</li><li><strong>Optional: </strong>Enable the function of signing OCSP requests.<pre class="screen"><b><span class="cmdqueryname">ocsp signature enable</span></b>
+<span><b><span class="cmdqueryname">quit</span></b></span></pre>
+<p>By default, the function of signing OCSP requests is disabled.</p>
+<p>This command is required if the OCSP server requires signature verification for OCSP requests.</p>
+</li><li><strong>Optional: </strong>Import the OCSP server certificate to the device memory in the system view.<pre class="screen"><b><span class="cmdqueryname">pki import-certificate</span></b> <strong><span>ocsp</span></strong> [ <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> ] { <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> } <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i> [ <strong>cert-name</strong> <em>cert-name</em> ] [ <strong>no-check-same-name</strong> ]</pre>
+</li><li><strong>Optional: </strong>Enable the function of verifying OCSP server packets using the OCSP server certificate.<pre class="screen"><b><span class="cmdqueryname">pki validate ocsp-server-certificate enable</span></b></pre>
+<p><span>By default, the function of verifying OCSP server packets using the OCSP server certificate is enabled.</span></p>
+</li><li>Enable the PKI entity to cache OCSP responses.<pre class="screen"><b><span class="cmdqueryname">pki ocsp response cache enable</span></b></pre>
+<p>By default, the PKI entity does not cache OCSP responses.</p>
+<p>After you enable a PKI entity to cache OCSP responses, the PKI entity first searches its cache for the certificate revocation status when it uses OCSP to check the certificate revocation status. If the search fails, the PKI entity sends a request to the OCSP server. In addition, the PKI entity caches valid OCSP responses for subsequent query.</p>
+<p>OCSP responses have a validity period. After the OCSP response cache function is enabled, the PKI entity updates cached OCSP responses every 1 minute and deletes the expired responses.</p>
+</li><li><strong>Optional: </strong>Configure the maximum number of OCSP responses that a PKI entity can cache.<pre class="screen"><b><span class="cmdqueryname">pki ocsp response cache number</span></b> <i><span class="varname">number</span></i></pre>
+<p>By default, a PKI entity can cache up to 1000 OCSP responses.</p>
+</li><li><strong>Optional: </strong>Configure the interval at which the PKI entity refreshes the OCSP response cache.<pre class="screen"><b><span class="cmdqueryname">pki ocsp response cache refresh interval</span></b> <i><span class="varname">interval</span></i></pre>
+<p>By default, the interval at which a PKI entity refreshes the OCSP response cache is 5 minutes.</p>
+</li></ol>
+</li></ul>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563886001__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display pki crl</span></b> [ <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> | <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i> ] command to check the CRL content on the device.</li><li>Run the <b><span class="cmdqueryname">display pki certificate</span></b> <strong><span>ocsp</span></strong> [ <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> | <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i> ] command to check the OCSP server certificate loaded on the device.</li><li>Run the <b><span class="cmdqueryname">display pki ocsp cache statistics</span></b> <strong><span>slot</span></strong><strong> </strong><i><span class="varname">slot-id</span></i><strong> <strong><span>cpu</span></strong> </strong><i><span class="varname">cpu-id</span></i> command to check statistics about cached OCSP responses.</li><li>Run the <b><span class="cmdqueryname">display pki ocsp server down-information</span></b> <strong><span>slot</span></strong><strong> </strong><i><span class="varname">slot-id</span></i><strong> <strong><span>cpu</span></strong> </strong><i><span class="varname">cpu-id</span></i> command to check the Down state information of the OCSP server.</li><li>Run the <b><span class="cmdqueryname">display pki ocsp cache detail</span></b> <strong><span>slot</span></strong><strong> </strong><i><span class="varname">slot-id</span></i><strong> <strong><span>cpu</span></strong> </strong><i><span class="varname">cpu-id</span></i> command to check detailed information about cached OCSP responses.</li></ul>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001563886001__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>If a CRL expires or is not used, run the <b><span class="cmdqueryname">pki delete-crl</span></b> { <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> | <strong><span>filename</span></strong> <i><span class="varname">filename</span></i> } command to delete the CRL from the device memory.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_pki_cfg_0022.html">Authenticating the Peer Entity's Certificate
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_pki_cfg_0024.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

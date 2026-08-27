@@ -1,0 +1,153 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Using a Layer 2 ACL to Prevent a Specified User from Accessing the Internet">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0026.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0030.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_XTASK_0000001533908068">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Using a Layer 2 ACL to Prevent a Specified User from Accessing the Internet</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_XTASK_0000001533908068"></a><a name="EN-US_XTASK_0000001533908068"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Using a Layer 2 ACL to Prevent a Specified User from Accessing the Internet</h1>
+<div><div class="section"><h4 class="sectiontitle">Networking Requirements</h4>
+<div class="p"><p>As shown in <a href="#EN-US_XTASK_0000001533908068__fig19962551469">Figure 1</a>, the switch functions as a gateway and connects to PCs. The routes between the switch and subnets are reachable. The user of PC1 (MAC address: 00e0-fc12-3456) is an unauthorized user and is not allowed to access the Internet.</p>
+<div class="fignone" id="EN-US_XTASK_0000001533908068__fig19962551469"><a name="EN-US_XTASK_0000001533908068__fig19962551469"></a><a name="fig19962551469"></a><span class="figcap"><b>Figure 1 </b>Network diagram of using a Layer 2 ACL to prevent a specified user from accessing the Internet</span><br><span><img src="figure/en-us_image_0000002299332061.png"></span></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4>
+<div class="p"><p>The configuration roadmap is as follows:</p>
+<ol><li>Configure a Layer 2 ACL and ACL-based traffic classifier to filter packets with the MAC address 00e0-ffc12-3456, thereby preventing the corresponding user from accessing the Internet.</li><li>Configure a traffic behavior to deny the packets matching the ACL.</li><li>Configure and apply a traffic policy for the ACL and traffic behavior to take effect.</li></ol>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li><span>Configure a Layer 2 ACL.</span><p><p># Configure a Layer 2 ACL that meets requirements.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span class="keyword">Switch</span></strong>
+[Switch]<strong> </strong><strong>acl 4000</strong>
+[Switch-acl-L2-4000] <strong>rule deny source-mac 00e0-fc12-3456</strong>
+[Switch-acl-L2-4000] <strong>quit</strong></pre>
+</p></li><li><span>Configure a Layer 2 ACL-based traffic classifier.</span><p><p># Configure a traffic classifier named <strong>tc1</strong> to classify packets that match ACL 4000.</p>
+<pre class="screen">[Switch] <strong>traffic classifier tc1</strong>
+[Switch-classifier-tc1] <strong>if-match acl 4000</strong>
+[Switch-classifier-tc1] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic behavior.</span><p><p># Configure a traffic behavior named <strong>tb1</strong> to deny packets.</p>
+<pre class="screen">[Switch] <strong>traffic behavior tb1</strong>
+[Switch-behavior-tb1] <strong>deny</strong>
+[Switch-behavior-tb1] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic policy.</span><p><p># Configure a traffic policy named <strong>tp1</strong> and associate <strong>tc1</strong> and <strong>tb1</strong> with the traffic policy.</p>
+<pre class="screen">[Switch] <strong>traffic policy tp1</strong>
+[Switch-trafficpolicy-tp1] <strong>classifier tc1</strong> <strong>behavior tb1</strong>
+[Switch-trafficpolicy-tp1] <strong>quit</strong></pre>
+</p></li><li><span>Apply the traffic policy.</span><p><p># Apply the traffic policy <strong>tp1</strong> to the inbound direction of <span>10GE</span><span>0/0/4</span> (because packets from PC1 enter the switch through <span>10GE</span><span>0/0/4</span> and flow to the Internet).</p>
+<pre class="screen">[Switch] <strong>interface <span>10GE</span> <span>0/0/4</span></strong>
+[Switch-<span>10GE</span><span>0/0/4</span>] <strong>traffic-policy tp1 inbound</strong>
+[Switch-<span>10GE</span><span>0/0/4</span>] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p># Check the ACL rule configuration.</p>
+<pre class="screen">[Switch] <strong>display acl 4000</strong>
+L2 ACL 4000, 1 rule                                                              
+Acl's step is 5                                                                  
+ rule 5 deny source-mac 00e0-fc12-3456 (0 times matched) </pre>
+<p># Check the traffic classifier configuration.</p>
+<pre class="screen">[Switch] <strong>display </strong><strong>traffic classifier</strong>
+  Traffic Classifier Information:   
+   Classifier: tc1     
+     Type: OR     
+     Rule(s) :
+        if-match acl 4000                                                                                   
+
+Total classifier number is 1  </pre>
+<p># Check the traffic policy configuration.</p>
+<pre class="screen">[Switch] <strong>display </strong><strong>traffic policy tp1</strong>
+  Traffic Policy Information:                                         
+    Policy: tp1                                                                      
+      Classifier: tc1                                                                 
+        Type: OR                                                                   
+      Behavior: tb1                                                                 
+        Deny  </pre>
+<p># Check the traffic policy application records.</p>
+<pre class="screen">[Switch] <strong>display </strong><strong>traffic-policy applied-record</strong>
+Total record : 1                                                                                                                                    
+-------------------------------------------------------------                                                                                     
+ Policy Type/Name:    Apply Parameter      Slot       State
+--------------------------------------------------------------
+   tp1                10GE1/0/5(IN)       1/5      success      
+--------------------------------------------------------------    </pre>
+<p># Check that the user with the MAC address 00e0-fc12-3456 cannot access the Internet.</p>
+</p></li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4>
+<div class="p"><div class="p">Switch<pre class="screen"># 
+sysname Switch 
+# 
+acl number 4000  
+ rule 5 deny source-mac 00e0-fc12-3456
+# 
+traffic classifier tc1 type or   
+ if-match acl 4000 
+# 
+traffic behavior tb1  
+ deny 
+# 
+traffic policy tp1 
+ classifier tc1 behavior tb1 precedence 5
+# 
+interface <span>10GE</span><span>0/0/4</span>  
+ traffic-policy tp1 inbound   
+# 
+return </pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_acl_cfg_0016.html">Configuration Examples for ACLs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_acl_cfg_0026.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_acl_cfg_0030.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

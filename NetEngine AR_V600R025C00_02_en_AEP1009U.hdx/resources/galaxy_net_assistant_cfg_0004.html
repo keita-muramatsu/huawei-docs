@@ -1,0 +1,74 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Establishment of the Net Assistant Network">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0005.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002133710001">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Establishment of the Net Assistant Network</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002133710001"></a><a name="EN-US_CONCEPT_0000002133710001"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Establishment of the Net Assistant Network</h1>
+<div><div class="section"><h4 class="sectiontitle">Network Architecture</h4><p><a href="#EN-US_CONCEPT_0000002133710001__fig39002319330">Figure 1</a> shows the basic architecture of the net assistant network.</p>
+<p></p>
+<div class="fignone" id="EN-US_CONCEPT_0000002133710001__fig39002319330"><a name="EN-US_CONCEPT_0000002133710001__fig39002319330"></a><a name="fig39002319330"></a><span class="figcap"><b>Figure 1 </b>Basic architecture of the net assistant network</span><br><span><img src="figure/en-us_image_0000002203411402.png"></span></div>
+<ul><li>There are two network roles in the network architecture:<ul><li>Master: a network device that has the net assistant function enabled. It can manage other devices, providing automatic management of all devices on the network. Only one master device can be configured on a network.</li><li>Member: other devices discovered and managed by the master device.</li></ul>
+</li><li>For details about the list of master and member devices, see <a href="toctopics/en-us_topic_0000002094799160.html">Models of the Master Device and Member Devices</a>.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Network Setup Process</h4><div class="p">Prerequisites:<ul><li>All devices have been connected through physical cables.</li><li>The devices have been powered on and started with the default configurations.</li></ul>
+</div>
+<p><a href="#EN-US_CONCEPT_0000002133710001__fig10680730162117">Figure 2</a> shows the network setup process when a device functions as both the master device and the DHCP server.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002133710001__fig10680730162117"><a name="EN-US_CONCEPT_0000002133710001__fig10680730162117"></a><a name="fig10680730162117"></a><span class="figcap"><b>Figure 2 </b>Network Setup Process</span><br><span><img src="figure/en-us_image_0000002419050609.png"></span></div>
+<ol><li>Enabling the DHCP function:<ul><li>Enabling the DHCP server function: After the DHCPv4 server is started with default configurations, VLANIF1 is automatically created. You need to enable the DHCP server function on this interface.</li><li>Enabling the DHCP client function: After the master device and member devices are started with default configurations, VLANIF1 is automatically created, and the DHCP client function is automatically enabled on this interface.</li><li>Allocating an IP address: The DHCP server automatically allocates a management IP address to the DHCP client.</li></ul>
+</li><li>Enabling the net assistant function: You need to enable the net assistant function on the master device.<ul><li>A default virtual IP address (10.231.10.253) is automatically generated.</li><li>An SSL policy named <strong>netasstpolicy</strong> is automatically created and bound to the PKI realm named <strong>default</strong> (no PKI certificate is automatically loaded to the PKI realm). The SSL policy is configured for the net assistant function to enable the SSL peer verification function. That is, the master device verifies the SSL certificates of member devices.</li><li>You can create a local AAA user on the master device and log in to WebMaster as this user.</li></ul>
+</li><li>Automatic discovery of member devices: The Ubiquitous Autonomy Link (UAL) protocol is used to automatically discover member devices.<ul><li>The master device periodically sends broadcast packets carrying information such as the system MAC address, ESN, and device type to check whether member devices exist on the network.</li><li>After receiving the broadcast packets, member devices record the master device's information and send response packets carrying their basic information (such as their MAC addresses and IP addresses) to the master device.</li><li>Upon receiving the response packets, the master device records the member devices' basic information and adds them to the device approval list.</li></ul>
+</li><li>You need to import the initial CA certificate (default_ca) to the default domain on the master device.</li><li>Creating a network-wide username and password: You need to configure a network-wide username and password on the master device, which then uses these credentials to create a local administrator.</li><li>Approving and managing member devices: You need to approve member devices on the master device.<ul><li>After a member device is approved, the master device sends an HTTPS connection request to the member device. After receiving this request, the member device sends a response packet and local certificate to the master device, which then verifies the certificate using the CA certificate in the PKI realm specified by the SSL policy. It also verifies the CN field in the local certificate based on the member device's ESN to authenticate its identity. The master and member devices then establish a secure HTTPS channel with each other.</li><li>The master device sends a packet carrying the network-wide username and password to the member device through the HTTPS channel. The member device uses these credentials to create a local administrator.</li><li>The master device manages the member device.</li></ul>
+</li><li>Generating a network topology and delivering network-wide configurations:<ul><li>The master device generates a network topology by obtaining LLDP neighbor information of the member devices.</li><li>The master device delivers network-wide configurations (such as network-wide VLAN orchestration, newly configured network-wide username and password, and basic wireless configurations) to member devices based on the topology to complete automatic deployment of network devices.</li></ul>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Net_Assistant_cfg_0003.html">Understanding Net Assistant
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Net_Assistant_cfg_0005.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

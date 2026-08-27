@@ -1,0 +1,87 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="NTP Security">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0031.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0070.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563891769">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>NTP Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563891769"></a><a name="EN-US_TASK_0000001563891769"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">NTP Security</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001563891769__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>Network Time Protocol (NTP) packets need to be protected against tampering because NTP packet attacks may cause network interruptions, synchronization issues, and data loss.</p>
+<p>NTP provides the following security policies at the protocol layer to improve security:</p>
+<ul><li>NTP supports the authentication function, which helps defend against error packets and replay attacks.</li><li>NTP supports the whitelist function, which helps defend against DoS attacks. Specifically, packets sent from a port that is not on the whitelist are allocated only a limited default bandwidth, whereas a "whitelist security" tag is created for each known port to achieve quick exchange of packets. This is vital for fast convergence on the network.</li><li>NTP supports access control, which protects each local NTP service by setting the access authority.</li></ul>
+<h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001563891769__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure key authentication on a client and a server to improve security.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable the NTP authentication function.</span><p><pre class="screen"><b><span class="cmdqueryname">ntp authentication enable</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an NTP authentication key.</span><p><pre class="screen"><b><span class="cmdqueryname">ntp authentication-keyid</span></b> <i><span class="varname">keyId</span></i> <strong><span>authentication-mode</span></strong> { <strong>md5</strong> | <strong>hmac-sha256</strong> | <strong><span>aes-128-cmac</span></strong> | <strong><span>aes-256-cmac</span></strong> } { <em>password</em> | <strong>cipher</strong> <em>password</em> }</pre>
+<p>MD5 is a weak security algorithm. To use MD5, you need to run the <strong><span>install feature-software WEAKEA</span></strong> command to install the weak security algorithm/protocol feature package. You are advised to use other security algorithms for NTP key authentication.</p>
+</p></li></ol>
+</li><li><span>Configure NTP access authority on the local device.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Allow peers that match ACL IPv4 or ACL IPv6 to perform time request, query control, and time synchronization on the local device.</span><p><pre class="screen"><b><span class="cmdqueryname">ntp access</span></b> { <strong><span>peer </span></strong>| <strong><span>query </span></strong>| <strong><span>server </span></strong>| <strong><span>synchronization </span></strong>| <strong><span>limited </span></strong>} { { <i><span class="varname">acl-number</span></i> | <strong><span>acl-name </span></strong><i><span class="varname">aclname</span></i> } [ <strong><span>ipv6 </span></strong>{ <i><span class="varname">acl6-number</span></i> | <strong><span>acl6-name</span></strong> <i><span class="varname">acl6name </span></i>} ] | <strong><span>ipv6</span></strong> { <i><span class="varname">acl6-number</span></i> | <strong><span>acl6-name</span></strong> <i><span class="varname">acl6name</span></i> } [ { <i><span class="varname">acl-number</span></i> | <strong><span>acl-name </span></strong><i><span class="varname">aclname</span></i> } ] }</pre>
+<p>Before specifying <em>acl-number</em>, ensure that an ACL has been configured.</p>
+<p>The last ACL rule must deny all IP addresses. To allow the ACL to filter IP addresses in a VPN, run the <b><span class="cmdqueryname">rule</span></b> [ <i><span class="varname">rule-id</span></i> ] <strong><span>deny</span></strong> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> command in the ACL view.</p>
+</p></li></ol>
+</li><li><span>Change the port number for sending NTP packets.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Change the port number for sending NTP packets.</span><p><pre class="screen"><b><span class="cmdqueryname">ntp source-port</span></b> <i><span class="varname">portNum</span></i></pre>
+<p>You can change the default port number for sending NTP packets to prevent DoS attacks.</p>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001563891769__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Checking the Security Hardening Result</h4><ul><li>Run the <b><span class="cmdqueryname">display ntp sessions</span></b> command to check the status of NTP sessions.</li><li>Run the <b><span class="cmdqueryname">display ntp status</span></b> command to check the status of the NTP service.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0031.html">Control Plane Security (Level-2)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0070.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

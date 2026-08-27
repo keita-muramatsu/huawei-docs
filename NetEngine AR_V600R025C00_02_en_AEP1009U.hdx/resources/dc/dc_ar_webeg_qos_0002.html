@@ -1,0 +1,87 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring QoS to Limit the Bandwidth Shared by Some Intranet IP Addresses">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../dc/dc_ar_web_QOS_0001.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002409535957">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring QoS to Limit the Bandwidth Shared by Some Intranet IP Addresses</title>
+</head>
+<body><a name="EN-US_TASK_0000002409535957"></a><a name="EN-US_TASK_0000002409535957"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring QoS to Limit the Bandwidth Shared by Some Intranet IP Addresses</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002409535957__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Applicable Product and Version</h4><p>This example applies to all models of routers running V600R025C00 and later versions.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002409535957__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000002409535957__fig_dc_ar_faq_qos_02600901">Figure 1</a>, Router serves as an enterprise's egress gateway and connects to the Internet through 10GE0/0/9. This interface is configured with a static IP address of 10.1.1.110/24, a gateway address of 10.1.1.1, and DNS server addresses 203.10.1.150 and 203.1.1.148. NAT is deployed on Router to enable Internet access for internal users through address translation. To regulate Internet access bandwidth, the enterprise wants to apply traffic rate limits to specific IP ranges. For IP addresses from 192.168.10.110 to 192.168.10.254 in the 192.168.10.0/24 subnet, the upload rate needs to be capped at 5 Mbit/s and the download rate at 10 Mbit/s, while other IP addresses in the same subnet are not subject to any rate limits. Additionally, it is required that users in the 192.168.20.0/24 subnet are limited to 15 Mbit/s for upload and 30 Mbit/s for download.</p>
+<div class="fignone" id="EN-US_TASK_0000002409535957__fig_dc_ar_faq_qos_02600901"><a name="EN-US_TASK_0000002409535957__fig_dc_ar_faq_qos_02600901"></a><a name="fig_dc_ar_faq_qos_02600901"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring traffic policing</span><br><span><img src="figure/en-us_image_0000002409616485.png" width="432.915" height="324.1875" title="Click to enlarge" class="imgResize"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002409535957__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="p">The configuration roadmap is as follows:<ol><li>Complete basic network configurations. If basic network configurations have been completed, skip this step and go to step <a href="#EN-US_TASK_0000002409535957__step2072734164319">2</a>.<ul><li><p>Set parameters for 10GE0/0/9, such as the interface IP address and gateway address.</p>
+</li><li><p>Create VLAN 10 and VLANIF 10, and specify VLANIF 10 as the gateway of the 192.168.10.0/24 subnet. Similarly, create VLAN 20 and VLANIF 20, and specify VLANIF 20 as the gateway of the 192.168.20.0/24 subnet. Add the Layer 2 Ethernet interface 10GE0/0/2 connecting Router to Switch to VLAN 10 and VLAN 20 as a trunk interface.</p>
+</li></ul>
+</li><li>Configure rate limits based on IP ranges on VLANIF 10 and VLANIF 20.</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002409535957__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an IP address for 10GE0/0/9, create VLANs 10 and 20, and add 10GE0/0/2 to the VLANs.</span><ol type="a"><li class="substepexpand"><span>Choose <span class="menucascade"><b><span class="uicontrol" id="EN-US_TASK_0000002409535957__en-us_topic_0000002309191133_uicontrol1424872817450">Config</span></b> &gt; <b><span class="uicontrol" id="EN-US_TASK_0000002409535957__en-us_topic_0000002309191133_uicontrol1474085018185">Config Wizard &gt; Online Config Wizard</span></b></span> and set <strong>Internet access mode</strong> to <strong>Static IP</strong>, as shown in <a href="#EN-US_TASK_0000002409535957__fig195204166459">Figure 2</a>.</span><p><div class="fignone" id="EN-US_TASK_0000002409535957__fig195204166459"><a name="EN-US_TASK_0000002409535957__fig195204166459"></a><a name="fig195204166459"></a><span class="figcap"><b>Figure 2 </b>Internet access through a static IP address</span><br><span><img src="figure/en-us_image_0000002409536317.png" height="560.595" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+</p></li><li class="substepexpand"><span>Choose <span class="menucascade"><b><span class="uicontrol" id="EN-US_TASK_0000002409535957__en-us_topic_0000002309191133_uicontrol75791256163318">Config</span></b> &gt; <b><span class="uicontrol" id="EN-US_TASK_0000002409535957__en-us_topic_0000002309191133_uicontrol135791956143319">LAN Configuration &gt; VLAN</span></b></span>. The <span class="wintitle"><b>VLAN</b></span> page is displayed, as shown in <a href="#EN-US_TASK_0000002409535957__fig157031918378">Figure 3</a>.</span><p><div class="fignone" id="EN-US_TASK_0000002409535957__fig157031918378"><a name="EN-US_TASK_0000002409535957__fig157031918378"></a><a name="fig157031918378"></a><span class="figcap"><b>Figure 3 </b>VLAN list</span><br><span><img src="figure/en-us_image_0000002376016878.png" height="114.7125" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+</p></li><li class="substepexpand"><span>On the <span class="wintitle"><b>VLAN</b></span> page, click <span class="uicontrol"><b>Create</b></span>. On the <span class="wintitle"><b>Create VLAN</b></span> page that is displayed, set the VLAN ID to 10, as shown in <a href="#EN-US_TASK_0000002409535957__fig117645264599">Figure 4</a>.</span><p><div class="fignone" id="EN-US_TASK_0000002409535957__fig117645264599"><a name="EN-US_TASK_0000002409535957__fig117645264599"></a><a name="fig117645264599"></a><span class="figcap"><b>Figure 4 </b>Creating a VLAN</span><br><span><img src="figure/en-us_image_0000002409536325.png" height="397.005" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+</p></li><li class="substepexpand"><span>Click <span><img src="figure/en-us_image_0000002409616501.png"></span>, select 10GE0/0/2, set the interface mode to <strong>Trunk</strong>, and click <span class="uicontrol"><b>OK</b></span>, as shown in <a href="#EN-US_TASK_0000002409535957__fig446313478559">Figure 5</a>.</span><p><div class="fignone" id="EN-US_TASK_0000002409535957__fig446313478559"><a name="EN-US_TASK_0000002409535957__fig446313478559"></a><a name="fig446313478559"></a><span class="figcap"><b>Figure 5 </b>Select Interface</span><br><span><img src="figure/en-us_image_0000002375857014.png" height="236.4075" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+</p></li><li class="substepexpand"><span>Select <span><img src="figure/en-us_image_0000002409536341.png"></span> next to <strong>Create a VLANIF Interface</strong>, and enter the IPv4 address 192.168.10.1 and mask 255.255.255.0, as shown in <a href="#EN-US_TASK_0000002409535957__fig536382570">Figure 6</a>.</span><p><div class="fignone" id="EN-US_TASK_0000002409535957__fig536382570"><a name="EN-US_TASK_0000002409535957__fig536382570"></a><a name="fig536382570"></a><span class="figcap"><b>Figure 6 </b>Creating a VLANIF interface</span><br><span><img src="figure/en-us_image_0000002376016890.png" height="338.15250000000003" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+</p></li></ol>
+<p><p>Repeat this step to configure VLAN 20.</p>
+</p></li><li id="EN-US_TASK_0000002409535957__step2072734164319"><span id="EN-US_TASK_0000002409535957__">Configure rate limits based on source IP ranges on the VLANIF interfaces.</span><p><div class="p">Choose <span class="menucascade"><b><span class="uicontrol" id="EN-US_TASK_0000002409535957__en-us_topic_0000002309191133_en-us_topic_0000002309191133_uicontrol13545912102814">Config &gt; QoS &gt; Network Behavior Management</span></b></span>. On the <strong>Network Behavior Management</strong> page that is displayed, click <strong>Create</strong>, configure upload and download rate limits for VLANIF 10 and VLANIF 20, and click <strong>OK</strong>.<div class="fignone"><span class="figcap"><b>Figure 7 </b>Configuring an upload rate limit for VLANIF 10</span><br><span><img src="figure/en-us_image_0000002409536349.png" height="292.26750000000004" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+<div class="fignone"><span class="figcap"><b>Figure 8 </b>Configuring a download rate limit for VLANIF 10</span><br><span><img src="figure/en-us_image_0000002376016898.png" height="293.26500000000004" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+<div class="fignone"><span class="figcap"><b>Figure 9 </b>Configuring an upload rate limit for VLANIF 20</span><br><span><img src="figure/en-us_image_0000002409536357.png" height="294.2625" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+<div class="fignone"><span class="figcap"><b>Figure 10 </b>Configuring a download rate limit for VLANIF 20</span><br><span><img src="figure/en-us_image_0000002376016906.png" height="293.26500000000004" width="523.6875" title="Click to enlarge" class="imgResize"></span></div>
+</div>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000002409535957__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Precautions</h4><ol><li>In this example, rate limits are configured on the interfaces connecting Router to the internal network. This approach is commonly used when rate limits are required for specific users or network segments within the internal network. Since NAT is configured on the Internet-facing interface on Router, applying rate limits for internal users on that interface will complicate the configuration, resulting in increased device resource consumption and degraded performance.</li><li>Set <strong>Direction</strong> to <strong>Inbound</strong> or <strong>Outbound</strong> based on the direction of the traffic to be rate limited.<ul><li>For an intranet-facing interface, <strong>Inbound traffic</strong> refers to traffic traveling from internal PCs to the router, typically representing upload traffic sent by PCs to the Internet. <strong>Outbound traffic</strong>, by contrast, flows from the router to internal PCs, corresponding to download traffic received from the Internet.</li><li>For a WAN interface, <strong>Inbound traffic</strong> denotes traffic entering the router from the Internet, representing download traffic destined for internal PCs. <strong>Outbound traffic</strong> refers to traffic leaving the router toward the Internet, indicating upload traffic originating from internal PCs.</li></ul>
+</li></ol>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../dc/dc_ar_web_QOS_0001.html">Deploying QoS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

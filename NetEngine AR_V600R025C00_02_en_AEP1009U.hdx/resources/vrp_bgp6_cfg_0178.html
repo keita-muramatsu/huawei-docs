@@ -1,0 +1,124 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring IPv6 BGP-LS">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp6_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp6_cfg_0203.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp6_cfg_0168_ar.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BGP4+">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BGP4+">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001407477794">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring IPv6 BGP-LS</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001407477794"></a><a name="EN-US_TASK_0000001407477794"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring IPv6 BGP-LS</h1>
+<div class="taskbody"><p></p>
+<div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001407477794__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><div class="p">Before configuring IPv6 BGP-LS, you have completed the following tasks:<ul><li><a href="vrp_isis_ipv4_cfg_000026.html">Configure basic IPv6 IS-IS functions.</a></li></ul>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001407477794__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><div class="p">On a network without BGP-LS, a device uses an IGP (IS-IS) to collect information about the network topology and report information about each area's topology separately to an upper-layer controller. This method has the following disadvantages:<ul><li>The controller must have high computing capabilities and support both the IGP and its algorithm.</li><li>The controller cannot obtain complete information about the inter-IGP area topology. As a result, it cannot compute E2E optimal paths.</li><li>Different routing protocols report topology information separately to the controller, which complicates the controller's analysis and processing.</li></ul>
+</div>
+<div class="p">After BGP-LS is introduced, BGP summarizes topology information collected by the IGP and reports it to an upper-layer controller. With BGP's powerful route selection capabilities, BGP-LS has the following advantages:<ul><li>Lowers the requirements on the controller's computing capabilities and no longer requires IGP capabilities on the controller.</li><li>Facilitates route selection and computation on the controller by using BGP to summarize process or AS topology information and report the complete information to the controller.</li><li>Requires only one routing protocol (BGP) to report topology information to the controller.</li></ul>
+</div>
+<p>BGP-LS needs to be deployed on the devices connected to the controller.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001407477794__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enable IS-IS topology advertisement.</span><ol type="a"><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="system-view">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Start an IS-IS process and enter the IS-IS view.</span><p><pre class="screen"><b><span class="isis vpn-instance">isis</span></b> [ <i><span class="varname">process-id</span></i> ]<span> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ]</span></pre>
+</p></li><li class="substepexpand"><span>Configure an IS-IS cost style.</span><p><pre class="screen"><b><span class="cost-style narrow wide wide-compatible compatible">cost-style</span></b> { { <strong><span>narrow</span></strong> | <strong><span>wide</span></strong> | <strong><span>wide-compatible</span></strong> } | { <strong><span>compatible</span></strong> | <strong><span>narrow-compatible</span></strong> } [ <strong><span>relax-spf-limit</span></strong> ] }</pre>
+<p>By default, a device sends and accepts routes with the IS-IS cost style being narrow. The cost value range of an interface and the cost value range of the routes that can be accepted by the interface vary with the cost style.</p>
+<p>If the cost style is <strong>narrow</strong>, the cost of an interface ranges from 1 to 63. The maximum cost of the routes accepted by the device is 1023.</p>
+<p>If the cost style is <strong>narrow-compatible</strong> or <strong>compatible</strong>, the cost of an interface ranges from 1 to 63. The cost of the routes accepted by the device is related to <strong><span>relax-spf-limit</span></strong>.</p>
+<p>If the cost style is <strong>wide</strong> or <strong>wide-compatible</strong>, the cost of an interface ranges from 1 to 16777214 or the maximum value (16777215). The maximum cost of the routes that can be accepted by the interface is 16777214.</p>
+</p></li><li class="substepexpand"><span>Enable TE for the IS-IS process of a specified level.</span><p><pre class="screen"><b><span class="traffic-eng level-1 level-2 level-1-2">traffic-eng</span></b> [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> | <strong><span>level-1-2</span></strong> ]</pre>
+</p></li><li class="substepexpand"><span>Enable IPv6 TE for the IS-IS process of a specified level.</span><p><pre class="screen"><b><span class="ipv6 traffic-eng level-1 level-2 level-1-2">ipv6 traffic-eng</span></b> [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> | <strong><span>level-1-2</span></strong> ]</pre>
+</p></li><li class="substepexpand"><span>Enable IS-IS SRv6.</span><p><pre class="screen"><b><span class="segment-routing ipv6 locator auto-sid-disable">segment-routing ipv6</span></b> <strong><span>locator</span></strong> <i><span class="varname">locator-name</span></i> [ <strong><span>auto-sid-disable</span></strong> ]</pre>
+</p></li><li class="substepexpand"><span>Enable IS-IS topology advertisement.</span><p><pre class="screen"><b><span class="ipv6 bgp-ls enable level-1 level-2 level-1-2">ipv6 bgp-ls enable</span></b> [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> | <strong><span>level-1-2</span></strong> ] [ <strong><span>exclude-prefix</span></strong> ]</pre>
+</p></li><li class="substepexpand"><span>(Optional) Set a BGP-LS identifier for IS-IS.</span><p><pre class="screen"><b><span class="bgp-ls identifier">bgp-ls identifier</span></b> <i><span class="varname">identifier-value</span></i></pre>
+</p><p><p>The default BGP-LS identifier of IS-IS is 0.</p>
+</p></li></ol>
+</li><li><span>Enable BGP-LS.</span><ol type="a"><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="system-view">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="bgp">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Specify the IP address of a peer and the number of the AS where the peer resides.</span><p><pre class="screen"><b><span class="peer as-number">peer</span></b> <i><span class="varname">ipv6-address</span></i> <b><span class="as-number">as-number</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Enable BGP-LS and enter the BGP-LS address family view.</span><p><pre class="screen"><b><span class="link-state-family unicast">link-state-family unicast</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable the device to exchange BGP-LS routes with the specified peer.</span><p><pre class="screen"><b><span class="peer enable">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>enable</span></strong></pre>
+</p></li><li class="substepexpand"><span>(Optional) Set a BGP-LS domain ID.</span><p><pre class="screen"><b><span class="domain identifier">domain identifier</span></b> <i><span class="varname">domain-id</span></i></pre>
+<p>A BGP-LS domain ID identifies a device on which BGP-LS is enabled. If no BGP-LS domain ID is set, the router ID of BGP is used as a BGP-LS domain ID by default. The same BGP-LS domain ID can be configured for different devices. This is required if a controller needs to compute paths based on the combined topology information reported by the devices.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the BGP-LS domain ID is set to 0.0.0.0, this domain ID does not take effect.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>(Optional) Set a BGP-LS domain AS number.</span><p><pre class="screen"><b><span class="domain as">domain as</span></b> <em><i><span class="varname">domain-asNum</span></i></em></pre>
+<p><span>By default, the AS number of BGP is used as a BGP-LS domain AS number. </span>If a controller needs to compute paths based on the combined topology information reported by two devices that have different BGP AS numbers, run the <b><span class="cmdqueryname">domain as</span></b> command to set the same BGP-LS domain AS number for the two devices.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure the device as an RR, and specify a client for it.</span><p><pre class="screen"><b><span class="peer reflect-client">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>reflect-client</span></strong></pre>
+</p><p><p>The device configured with the <b><span class="cmdqueryname">peer reflect-client</span></b> command functions as an RR, and the specified peer functions as a client.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the clients of an RR are fully meshed, you can run the <b><span class="cmdqueryname">undo reflect between-clients</span></b> command to disable route reflection among these clients through the RR to reduce the cost.</p>
+<p>If a cluster has multiple RRs, you can configure the same cluster ID for them using the <b><span class="cmdqueryname">reflector cluster-id</span></b> { <em><i><span class="varname">cluster-id-value</span></i></em> | <i><span class="varname">cluster-id-ipv4</span></i> } command. This command can be configured only on RRs.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>(Optional) Set the maximum number of BGP-LS routes that can be accepted from the specified peer.</span><p><pre class="screen"><b><span class="peer route-limit alert-only idle-forever idle-timeout">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>route-limit</span></strong> <i><span class="varname">limit</span></i> [ <i><span class="varname">percentage</span></i> ] [ <strong><span>alert-only</span></strong> | <strong><span>idle-forever</span></strong> | <strong><span>idle-timeout</span></strong> <i><span class="varname">times</span></i> ]</pre>
+</p><p><p>Generally, a BGP-LS routing table contains a large number of routes. If a large number of routes are received from peers, excessive system resources are consumed. To prevent this problem, run this command to set the maximum number of routes that a BGP device is allowed to receive from a peer. By default, there is no limit on the number of routes that can be accepted from a peer.</p>
+</p></li><li class="substepexpand"><span>(Optional) Apply a route-policy to BGP-LS routes to be received from or advertised to the specified peer.</span><p><pre class="screen"><b><span class="peer route-policy import export">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> { <strong><span>import</span></strong> | <strong><span>export</span></strong> }</pre>
+</p><p><p>After a route-policy is created, you can run the <b><span class="cmdqueryname">peer route-policy</span></b> command to apply the route-policy to filter the BGP-LS routes to be received from or advertised to a specified peer. The command configuration ensures that only desired routes are accepted or advertised. This facilitates route management and reduces the size of the BGP-LS routing table and consumption of system resources.</p>
+</p></li><li class="substepexpand"><span>(Optional) Set an interval at which Update messages carrying the same route prefix are sent to the specified peer.</span><p><pre class="screen"><b><span class="peer route-update-interval">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>route-update-interval</span></strong> <i><span class="varname">interval</span></i></pre>
+</p><p><p>When BGP-LS routes change, a device sends Update messages to notify its peers of the changes. If a route changes frequently, run this command to set a proper interval at which the device sends Update messages carrying the same route prefix to a specified peer. This prevents the device from sending Update messages upon each route change. By default, a device sends Update messages to IBGP peers at an interval of 15s and to EBGP peers at an interval of 30s.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure a mode in which the device processes specified BGP path attributes.</span><p><pre class="screen"><b><span class="peer path-attribute-treat attribute-id to discard withdraw">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>path-attribute-treat attribute-id </span></strong>{ <i><span class="varname">id</span></i> [ <strong><span>to</span></strong> <i><span class="varname">id2</span></i> ] } &amp;&lt;1-255&gt; { <strong><span>discard</span></strong> | <strong><span>withdraw</span></strong> | <strong><span>treat-as-unknown</span></strong> }</pre>
+</p><p><p>BGP Update messages contain various path attributes. If the local device receives any Update message with an incorrect format, BGP session flapping may occur. To enhance reliability, you can run this command to configure a mode for the device to process specified BGP path attributes. By default, BGP path attributes are processed according to the standard protocol.</p>
+</p></li><li class="substepexpand"><span>(Optional) Set the maximum number of AS number repetitions in the AS_Path attribute allowed by a peer.</span><p><pre class="screen"><b><span class="peer allow-as-loop">peer</span></b> <i><span class="varname">ipv6-address</span></i> <strong><span>allow-as-loop</span></strong> [ <em><i><span class="varname">number</span></i></em> ]</pre>
+</p></li></ol>
+</li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001407477794__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After the configuration is complete, verify it.</p>
+<ul><li>Run the <b><span class="cmdqueryname">display bgp link-state unicast peer</span></b> command to check information about BGP-LS peers and their status.</li><li>Run the <b><span class="cmdqueryname">display bgp link-state unicast routing-table</span></b> command to check information about BGP-LS routes.</li><li>Run the <b><span class="cmdqueryname">display bgp link-state unicast routing-table statistics</span></b> command to check statistics about BGP-LS routes.</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_bgp6_cfg_0001.html">BGP4+ Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bgp6_cfg_0203.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_bgp6_cfg_0168_ar.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

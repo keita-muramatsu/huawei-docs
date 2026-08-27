@@ -1,0 +1,423 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring OSPFv3 Route Filtering">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_153.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_155.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001572674326">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring OSPFv3 Route Filtering</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001572674326"></a><a name="EN-US_TASK_0000001572674326"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring OSPFv3 Route Filtering</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001572674326__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_section_dc_vrp_ospf_cfg_009401"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p9411133183614">On the network shown in <a href="#EN-US_TASK_0000001572674326__en-us_task_0000001608937697_fig_dc_vrp_ospf_cfg_009401">Figure 1</a>, DeviceA, DeviceB, DeviceC, DeviceD and DeviceE run OSPFv3 to implement interworking, and DeviceE and DeviceF run RIPng to implement interworking. OSPFv3 and RIPng are configured to import routes from each other on DeviceE so that all Devices can communicate with each other. PC1 is connected to the network through DeviceC; PC2 and PC3 are connected to the network through DeviceD; PC4 and PC5 are connected to the network through DeviceF. The requirements are as follows:</p>
+<ul id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_ul202005218505"><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li1420062125014">Configure DeviceE to filter imported routes so that the network segment where PC4 resides cannot access PC1, PC2, or PC3.</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li1145763518273">Configure route filtering on DeviceC so that the network segment where PC1 resides cannot access PC2.</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li102785413281">Configure route filtering on DeviceD so that the network segment where PC2 resides and the network segment where PC3 resides cannot access PC5.</li></ul>
+<div class="fignone" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_fig_dc_vrp_ospf_cfg_009401"><a name="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_fig_dc_vrp_ospf_cfg_009401"></a><a name="en-us_task_0000001608937697_fig_dc_vrp_ospf_cfg_009401"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring OSPFv3 route filtering</span><div class="note" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_note381779966214036"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p2042234973214036">In this example, interface 1, interface 2, and interface 3 represent <span>10GE</span> <span>0/0/1</span>, <span>10GE</span> <span>0/0/2</span>, and <span>10GE</span> <span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_image1126540792214036" src="vrp/figure/en-us_image_0000001558098598.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001572674326__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_section_dc_vrp_ospf_cfg_009402"><h4 class="sectiontitle">Precautions</h4><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p390246039214036">Note the following during the configuration:</p>
+<ul id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_ul1721620011214036"><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li17554271016">Router IDs must be manually specified during OSPFv3 configuration.</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li1792575203510">During route filtering, the keyword <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b487394011614">export</strong> filters the imported external routes to be advertised and takes effect only on ASBRs.</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li20456175813359">The route filtering function filters the routing information in the routing table rather than the LSAs advertised by OSPFv3.</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li19502127183615">Route communication is bidirectional. After a destination network segment is filtered out through the route filtering function, other network segments connected to the device cannot access the devices on the destination network segment, and nor can the devices on the destination network segment access the devices on the source network segment.</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li96362010133618">If an ACL is used to filter routes, its last rule must be configured to permit all source addresses; otherwise, all network segment routes may be filtered out.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001572674326__1.3.3"></a><a name="1.3.3"></a>
+<div class="p" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_section_dc_vrp_ospf_cfg_009403"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p741322563214036">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_ol510334477214036"><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li682426377214036"><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p1977443259214036"><a name="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li682426377214036"></a><a name="en-us_task_0000001608937697_li682426377214036"></a>Enable OSPFv3 or RIPng on each device according to the networking diagram.</p>
+</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li4830921133910">Configure OSPFv3 and RIPng to import routes from each other.</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li101541329143914">Configure ACLv6 rules and route filtering.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001572674326__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_section_dc_vrp_ospf_cfg_009405"><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_step1134782607214036"><span id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_cmd489006842214036">Assign an IPv6 address to each interface. For detailed configurations, see Configuration Scripts.</span></li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_step869700182214036"><span id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_cmd1277257392214036">Configure basic OSPFv3 functions.</span><p><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p732293599214036"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen74431791954">[DeviceA] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1046816917514">ospfv3 1</strong>
+[DeviceA-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1578631723712">router-id 1.1.1.1</strong>
+[DeviceA-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1246810919513">area 0</strong>
+[DeviceA-ospfv3-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b121934301618">quit</strong>
+[DeviceA-ospfv3-1]<strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b18674955752"> area 1</strong>
+[DeviceA-ospfv3-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b145483345618">quit</strong>
+[DeviceA-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b81721954154212">area 2</strong>
+[DeviceA-ospfv3-1-area-0.0.0.2] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b16721181194016">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b82413242407">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b175218244111"> <span>10ge</span><span>0/0/1</span> </strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b7236124104110">ospfv3 1 area 0 </strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b740184019461">quit </strong>
+[DeviceA] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b02210674816">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b14227614488"> <span>10ge</span><span>0/0/2</span> </strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1474544224816">ospfv3 1 area 2</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b4686101684916">quit </strong>
+[DeviceA] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b106868167497">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b768618164494"> <span>10ge</span><span>0/0/3</span> </strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b06861162494">ospfv3 1 area 1</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b9715612496">quit </strong></pre>
+<p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p103769630214036"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen4291102310510">[DeviceB] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b2029102319516">ospfv3 1</strong>
+[DeviceB-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b5291102311513">router-id 2.2.2.2</strong>
+[DeviceB-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b17291923125118">area 0</strong>
+[DeviceB-ospfv3-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b5872159977">quit</strong>
+[DeviceB-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1029211237514">area 3</strong>
+[DeviceB-ospfv3-1-area-0.0.0.3] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b429202312514">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b14292162313511">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b13292323155117"> <span>10ge</span><span>0/0/1</span> </strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1029202319516">ospfv3 1 area 0 </strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1929215234514">quit </strong>
+[DeviceB] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b152923232516">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1229262310510"> <span>10ge</span><span>0/0/2</span> </strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1329212395116">ospfv3 1 area 3</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1629222311512">quit </strong></pre>
+<p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p88154611214036"># Configure DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen183632813531">[DeviceC] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b73632835320">ospfv3 1</strong>
+[DeviceC-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b123635815532">router-id 3.3.3.3</strong>
+[DeviceC-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b93637815532">area 2</strong>
+[DeviceC-ospfv3-1-area-0.0.0.2] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b636411813533">quit</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b936418115315">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b73648819535"> <span>10ge</span><span>0/0/1</span> </strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b163640815313">ospfv3 1 area 2</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b9364168115311">quit </strong>
+[DeviceC] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b8364881539">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b93641287537"> <span>10ge</span><span>0/0/2</span> </strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1036478115319">ospfv3 1 area 2</strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1636448125312">quit </strong></pre>
+<p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p1517634524214036"># Configure DeviceD.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen09214719543">[DeviceD] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1592112720541">ospfv3 1</strong>
+[DeviceD-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b15921167115417">router-id 4.4.4.4</strong>
+[DeviceD-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b10921167125410">area 3</strong>
+[DeviceD-ospfv3-1-area-0.0.0.3] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b59211275541">quit</strong>
+[DeviceD] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b49218745414">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b10921077546"> <span>10ge</span><span>0/0/1</span> </strong>
+[DeviceD-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b59221275548">ospfv3 1 area 3 </strong>
+[DeviceD-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b892257175418">quit </strong>
+[DeviceD] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b149225755418">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1792247205415"> <span>10ge</span><span>0/0/2</span> </strong>
+[DeviceD-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b149221775548">ospfv3 1 area 3</strong>
+[DeviceD-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b2922117185413">quit </strong>
+[DeviceD] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b13922147115412">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b2092287145415"> <span>10ge</span><span>0/0/3</span> </strong>
+[DeviceD-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1992217715416">ospfv3 1 area 3</strong>
+[DeviceD-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b109231570549">quit </strong></pre>
+<p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p1021256209214036"># Configure DeviceE.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen8894181918559">[DeviceE] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b108941319155511">ospfv3 1</strong>
+[DeviceE-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1894191945520">router-id 5.5.5.5</strong>
+[DeviceE-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b389581916551">area 1</strong>
+[DeviceE-ospfv3-1-area-0.0.0.1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b18895121985518">quit</strong>
+[DeviceE] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b58951119125518">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b689511917552"> <span>10ge</span><span>0/0/1</span> </strong>
+[DeviceE-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b8895151911556">ospfv3 1 area 1 </strong>
+[DeviceE-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1589571915554">quit </strong>
+[DeviceE]<strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b270324813576"> ripng 1</strong>
+[DeviceE-ripng-1]<strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b10925165235712"> quit</strong>
+[DeviceE] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b13895191910555">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b68951719135515"> <span>10ge</span><span>0/0/2</span> </strong>
+[DeviceE-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b19895151911557">ripng 1 enable</strong>
+[DeviceE-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1895131919554">quit </strong></pre>
+<p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p575449582214036"># Configure DeviceF.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen181168268614">[DeviceF] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b58763590473">ripng 1</strong>
+[DeviceF-ripng-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1961213271202">quit</strong>
+[DeviceF] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b112093471809">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b122095471809"> <span>10ge</span><span>0/0/1</span> </strong>
+[DeviceF-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b72097475018">ripng 1 enable </strong>
+[DeviceF-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b22098478013">quit </strong>
+[DeviceF] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b820915471002">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1220914714014"> <span>10ge</span><span>0/0/2</span> </strong>
+[DeviceF-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b17686934015">ripng 1 enable</strong>
+[DeviceF-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b10210147004">quit </strong>
+[DeviceF] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b17210447901">interface</strong><strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b12101847904"> <span>10ge</span><span>0/0/3</span> </strong>
+[DeviceF-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b695635511113">ripng 1 enable</strong>
+[DeviceF-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b521064718013">quit </strong></pre>
+</p></li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_step58893441014"><span id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_cmd138897441019">Configure OSPFv3 and RIPng to import routes from each other.</span><p><pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen106738223113">[DeviceE] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b15221657183418">ospfv3 1</strong>
+[DeviceE-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b926312472504">import-route direct</strong>
+[DeviceE-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1150313811517">import-route ripng 1</strong>
+<span>[DeviceE-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b423223755120">quit</strong></span>
+[DeviceE] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1367472213118">ripng 1</strong>
+[DeviceE-ripng-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b10494626135214">import-route direct</strong>
+[DeviceE-ripng-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1134115314521">import-route ospfv3 1</strong>
+<span>[DeviceE-ripng-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1169735345212">quit</strong></span></pre>
+</p></li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_step1444513265414"><span id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_cmd134451332195412">Configure ACLv6 rules and route filtering.</span><p><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p13120859558"># Configure DeviceE to filter imported routes so that the network segment where PC4 resides cannot access PC1, PC2, or PC3.</p>
+</p><p><pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen987710014552">[DeviceE] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b2077803735618">acl ipv6 number 2000</strong>
+[DeviceE-acl6-basic-2000] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b123561646165618">rule 0 deny source 2001:DB8:10:4::1 96</strong>
+[DeviceE-acl6-basic-2000] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b364911985715">rule 5 permit</strong>
+[DeviceE<span>-acl6-basic-2000</span>] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1126384025918">quit</strong>
+[DeviceE] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1143610595345">ospfv3 1</strong>
+[DeviceE-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b19447101413">filter-policy 2000 export ripng 1</strong>
+[DeviceE-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b88781207559">quit</strong></pre>
+<p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p177131347565"># Configure route filtering on DeviceC so that the network segment where PC1 resides cannot access PC2.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen1216016173568">[DeviceC] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b103314471471">acl ipv6 number 2000</strong>
+[DeviceC-acl6-basic-2000] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b53211734626">rule 0 deny source 2001:DB8:10:2::1 96</strong>
+[DeviceC-acl6-basic-2000] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b20160181719564">rule 5 permit</strong>
+<span>[DeviceC-acl6-basic-2000] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b55810409316">quit</strong></span>
+[<span></span>DeviceC] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b197211033519">ospfv3 1</strong>
+[DeviceC-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b7752315418">filter-policy 2000 import</strong>
+[DeviceC-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b121617176566">quit</strong></pre>
+<p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p049474117559"># Configure route filtering on DeviceD so that the network segment where PC2 resides and the network segment where PC3 resides cannot access PC5.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen1216714315512">[DeviceD] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b332945119717">acl ipv6 number 2000</strong>
+[DeviceD-acl6-basic-2000] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b13167137520">rule 0 deny source 2001:DB8:10:5::1 96</strong>
+[DeviceD-acl6-basic-2000] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b91671731859">rule 5 permit</strong>
+<span>[DeviceD-acl6-basic-2000] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b0167133656">quit</strong></span>
+[<span></span>DeviceD] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b207400053511">ospfv3 1</strong>
+[DeviceD-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b3167143253">filter-policy 2000 import</strong>
+[DeviceD-ospfv3-1] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b4167931352">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_section_dc_vrp_ospf_cfg_009406"><a name="EN-US_TASK_0000001572674326__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p7523121513710"># On DeviceF, use the source address 2001:DB8:10:4::1 to ping destination addresses 2001:DB8:10:3::1, 2001:DB8:10:2::1, and 2001:DB8:10:1::1. The ping operations fail, indicating that the network segment where PC4 resides cannot access the network segments where PC1, PC2, and PC3 reside.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen1376212918129">[DeviceF] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b139602055181118">ping ipv6 -a 2001:DB8:10:4::1 2001:DB8:10:3::1</strong>
+  PING 2001:DB8:10:3::1 : 56  data bytes, press CTRL_C to break
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+
+  --- 2001:DB8:10:3::1 ping statistics ---
+    5 packet(s) transmitted
+    0 packet(s) received
+    100.00% packet loss
+    round-trip min/avg/max=0/0/0 ms</pre>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen149081851171217">[DeviceF] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b6673349201014">ping ipv6 -a 2001:DB8:10:4::1 2001:DB8:10:2::1</strong>
+  PING 2001:DB8:10:2::1 : 56  data bytes, press CTRL_C to break
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+
+  --- 2001:DB8:10:2::1 ping statistics ---
+    5 packet(s) transmitted
+    0 packet(s) received
+    100.00% packet loss
+    round-trip min/avg/max=0/0/0 ms</pre>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen07713112135">[DeviceF] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b205699547109">ping ipv6 -a 2001:DB8:10:4::1 2001:DB8:10:1::1</strong>
+  PING 2001:DB8:10:1::1 : 56  data bytes, press CTRL_C to break
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+
+  --- 2001:DB8:10:1::1 ping statistics ---
+    5 packet(s) transmitted
+    0 packet(s) received
+    100.00% packet loss
+    round-trip min/avg/max=0/0/0 ms</pre>
+<p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p608672071214036"># On DeviceC, use the source address 2001:DB8:10:3::1 to ping the destination address 2001:DB8:10:2::1. The ping operation fails, indicating that the network segment where PC1 resides cannot access the network segment where PC2 resides.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen4649181075">[DeviceC] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b185015513119">ping ipv6 -a 2001:DB8:10:3::1 2001:DB8:10:2::1</strong>
+  PING 2001:DB8:10:2::1 : 56  data bytes, press CTRL_C to break
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+
+  --- 2001:DB8:10:2::1 ping statistics ---
+    5 packet(s) transmitted
+    0 packet(s) received
+    100.00% packet loss
+    round-trip min/avg/max=0/0/0 ms</pre>
+<p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p1195438622214036"># On DeviceD, use source addresses 2001:DB8:10:1::1 and 2001:DB8:10:2::1 to ping the destination address 2001:DB8:10:5::1. The ping operations fail, indicating that the network segment where PC2 resides and the network segment where PC3 resides cannot access PC5.</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen397913251577">[DeviceD] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b9369239101117">ping ipv6 -a 2001:DB8:10:1::1 2001:DB8:10:5::1</strong>
+  PING 2001:DB8:10:5::1 : 56  data bytes, press CTRL_C to break
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+
+  --- 2001:DB8:10:5::1 ping statistics ---
+    5 packet(s) transmitted
+    0 packet(s) received
+    100.00% packet loss
+    round-trip min/avg/max=0/0/0 ms</pre>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen182391811915">[DeviceD] <strong id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_b1416319781218">ping ipv6 -a 2001:DB8:10:2::1 2001:DB8:10:5::1</strong>
+  PING 2001:DB8:10:5::1 : 56  data bytes, press CTRL_C to break
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+    Request time out
+
+  --- 2001:DB8:10:5::1 ping statistics ---
+    5 packet(s) transmitted
+    0 packet(s) received
+    100.00% packet loss
+    round-trip min/avg/max=0/0/0 ms</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001572674326__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_ul301323100214036"><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li194222922214036"><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p129506614214036"><a name="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li194222922214036"></a><a name="en-us_task_0000001608937697_li194222922214036"></a>DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen8632175684717">#
+sysname DeviceA
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:1::1/96
+ ospfv3 1 area 0.0.0.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:2::1/96
+ ospfv3 1 area 0.0.0.2
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:4::1/96
+ ospfv3 1 area 0.0.0.1
+#
+ospfv3 1
+ router-id 1.1.1.1
+ area 0.0.0.0
+ area 0.0.0.1
+ area 0.0.0.2
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li1295926546214036"><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p858310748214036"><a name="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li1295926546214036"></a><a name="en-us_task_0000001608937697_li1295926546214036"></a>DeviceB</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen20617201294820">#
+sysname DeviceB
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:1::2/96
+ ospfv3 1 area 0.0.0.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:3::1/96
+ ospfv3 1 area 0.0.0.3
+#
+ospfv3 1 
+ router-id 2.2.2.2
+ area 0.0.0.0
+ area 0.0.0.3
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li619515929214036"><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p1203498047214036"><a name="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li619515929214036"></a><a name="en-us_task_0000001608937697_li619515929214036"></a>DeviceC</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen1672185835019">#
+sysname DeviceC
+#
+acl ipv6 number 2000   
+ rule 0 deny source 2001:DB8:10:2::1/96
+ rule 5 permit
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:2::2/96
+ ospfv3 1 area 0.0.0.2
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:10:3::1/96
+ ospfv3 1 area 0.0.0.2
+#
+ospfv3 1  
+ router-id 3.3.3.3
+ filter-policy 2000 import   
+ area 0.0.0.2
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li371903269214036"><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p1400829313214036"><a name="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li371903269214036"></a><a name="en-us_task_0000001608937697_li371903269214036"></a>DeviceD</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen117725122518">#
+sysname DeviceD
+#
+acl ipv6 number 2000   
+ rule 0 deny source 2001:DB8:10:5::1/96
+ rule 5 permit
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:3::2/96
+ ospfv3 1 area 0.0.0.3
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:10:1::1/96
+ ospfv3 1 area 0.0.0.3
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:10:2::1/96
+ ospfv3 1 area 0.0.0.3
+#
+ospfv3 1    
+ router-id 4.4.4.4
+ filter-policy 2000 import    
+ area 0.0.0.3
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li1021702980214036"><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p482743448214036"><a name="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li1021702980214036"></a><a name="en-us_task_0000001608937697_li1021702980214036"></a>DeviceE</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen13735162513516">#
+sysname DeviceE
+#
+acl ipv6 number 2000   
+ rule 0 deny source 2001:DB8:10:4::1/96
+ rule 5 permit
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:4::2/96
+ ospfv3 1 area 0.0.0.1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:5::1/96
+ ripng 1 enable
+#
+ospfv3 1
+ router-id 5.5.5.5
+ import-route direct
+ import-route ripng 1
+ filter-policy 2000 export ripng 1
+ area 0.0.0.1
+#
+ripng 1
+ import-route direct 
+ import-route ospfv3 1 
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li2093956098214036"><p id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_p158132050214036"><a name="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_li2093956098214036"></a><a name="en-us_task_0000001608937697_li2093956098214036"></a>DeviceF</p>
+<pre class="screen" id="EN-US_TASK_0000001572674326__en-us_task_0000001608937697_screen8984338115119">#
+sysname DeviceF
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:5::2/96
+ ripng 1 enable
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:10:4::1/96
+ ripng 1 enable
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:10:5::1/96
+ ripng 1 enable
+#
+ripng 1
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_153.html">OSPFv3
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_155.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

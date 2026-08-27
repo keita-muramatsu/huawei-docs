@@ -1,0 +1,96 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Preparing Deployment Files">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0051.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0154.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0057.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_deployment.ditamap">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001669910437">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Preparing Deployment Files</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001669910437"></a><a name="EN-US_TASK_0000001669910437"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Preparing Deployment Files</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001669910437__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Deployment files need to be prepared before intermediate file-based deployment. For the types of deployment files that can be loaded to a device, see the enumerated values of the <a href="galaxy_ztp01_cfg_0054.html#EN-US_CONCEPT_0000001631092261__p2913343162516">*TYPE_n</a> parameter in the .ini intermediate file. Among the deployment files, a configuration file can be manually compiled or copied from other devices, while other deployment files such as the system software package need to be downloaded from Huawei technical support website.</p>
+<p>The configuration file name is a string of 5 to 64 characters and suffixed with .zip or .cfg. The configuration file is used for the next startup.</p>
+<p>You can obtain a configuration file from other devices in either of the following ways:</p>
+<ul><li>Saving the configuration file: Run the <strong>save shareable-configuration</strong> command on the device that provides the configuration file to save the configuration file, and then export the configuration file using SFTP or other methods.</li><li>Changing the system master key: Run the <strong>set <b><span class="cmdqueryname">master-key</span></b></strong> command to change the system master key, save the configuration file, and export the configuration file using SFTP or other methods.</li></ul>
+<p>All passwords in the configuration file obtained are encrypted to ensure security. The device to be deployed can use the password configured in the intermediate file to decrypt the ciphertext in the configuration file during startup.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>To ensure security, you are advised to export a configuration file from another device instead of compiling it manually.</p>
+<p>Ensure that the configuration file for deployment contains the console port password or an AAA user name that can be used to log in to the device remotely. Otherwise, the configuration file cannot be successfully set, causing a deployment to fail.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001669910437__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Obtain the configuration file from another device.</span><ul><li>Obtaining a configuration file through saving the configuration file on another device</li></ul>
+<ol type="a"><li class="substepexpand"><span>Save the configuration file.</span><p><pre class="screen"><b><span class="cmdqueryname">save shareable-configuration</span></b> <i><span class="varname">configuration-file</span></i><em> </em>[<em> </em><strong><span>password</span></strong> ]</pre>
+<p>If the <strong><span>password</span></strong> parameter is not specified, the configuration file uses the default key information. If the <strong><span>password</span></strong> parameter is specified, the device generates key information in the configuration file based on the password entered in interactive mode.</p>
+</p></li><li class="substepexpand"><span>Export the configuration file using SFTP.</span><p><p>For details, see "Backing Up the Configuration File to an SFTP Server or Client" in the <span>CLI Configuration Guide</span> &gt; <em>Basic Configuration</em> &gt; <em>Configuration File Management</em>.</p>
+</p></li></ol>
+<ul><li>Obtaining the configuration file through changing the system master key</li></ul>
+<ol type="a"><li class="substepexpand"><span>Change the system master key.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>set <b><span class="cmdqueryname">master-key</span></b></strong>
+Enter the user password:       //Enter the current user password instead of the current system master key.
+Warning: This operation will automatically save configurations. Are you sure you want to perform it? [Y/N]:y 
+Do you want to enter the master key? (If you enter Y, you need to manually enter the master key and automatic key update stops. If you enter N, the system  automatically generates a master key. If you enter D, the system will change the current master key to the default master key.) [Y/N/D]:y 
+Info: Enter a new master key:   // Enter the system master key.
+Info: Confirm the new master key:
+Warning: Keep the new master key well.</pre>
+<p>For details, see "System Master Key Configuration" in <span>CLI Configuration Guide</span> &gt; User Access and Authentication Configuration.</p>
+</p></li><li class="substepexpand"><span>Export the configuration file using SFTP.</span><p><p>For details, see "Backing Up the Configuration File to an SFTP Server or Client" in the <span>CLI Configuration Guide</span> &gt; <em>Basic Configuration</em> &gt; <em>Configuration File Management</em>.</p>
+</p></li></ol>
+</li><li><span>Download other deployment files.</span></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ztp01_cfg_0051.html">Configuring Intermediate File-based Deployment
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ztp01_cfg_0154.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ztp01_cfg_0057.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

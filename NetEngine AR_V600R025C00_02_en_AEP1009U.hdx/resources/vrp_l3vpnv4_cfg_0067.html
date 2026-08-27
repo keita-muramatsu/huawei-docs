@@ -1,0 +1,98 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Route Exchange Between the PE and CE">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0035.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0066.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0042.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001387113097">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Route Exchange Between the PE and CE</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001387113097"></a><a name="EN-US_TASK_0000001387113097"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Route Exchange Between the PE and CE</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001387113097__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The routing protocol run between Spoke-PEs and Spoke-CEs is related to the routing protocol run between the Hub-PE and Hub-CE. EBGP, IGP, and static routes (including default routes) can be used between the Hub-PE and Hub-CE. Determine which one to use as required.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001387113097__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure EBGP between the Hub-PE and Hub-CE.</span><p><p>For configuration details, see <a href="vrp_L3VPNv4_cfg_0006.html">Configuring an IPv4 VPN Instance</a>.</p>
+<p>In this mode, EBGP, IGP, or static routes (including default routes) can be used between Spoke-PEs and Spoke-CEs.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If EBGP runs both between Spoke-PEs and Spoke-CEs and between the Hub-PE and Hub-CE, you must run the <b><span class="cmdqueryname">peer</span></b> <i><span class="varname">ip-address</span></i> <strong><span>allow-as-loop</span></strong> [ <i><span class="varname">number</span></i> ] command in the BGP-VPN instance<span> IPv4 address family</span> view of the Hub-PE to allow routing loops. If <i><span class="varname">number</span></i> is set to 1, routes with the local AS number repeated once in the AS_Path list are allowed.</p>
+</div></div>
+</p></li><li><span>Configure IGP between the Hub-PE and Hub-CE.</span><p><p>For configuration details, see <a href="vrp_L3VPNv4_cfg_0006.html">Configuring an IPv4 VPN Instance</a>.</p>
+<p>In this mode, only IGP or static routes (including default routes) can be used between Spoke-PEs and Spoke-CEs. </p>
+</p></li><li><span>Configure static routes (including default routes) between the Hub-PE and Hub-CE.</span><p><p>For configuration details, see <a href="vrp_L3VPNv4_cfg_0006.html">Configuring an IPv4 VPN Instance</a>.</p>
+<p>In this mode, EBGP, IGP, or static routes (including default routes) can be used between Spoke-PEs and Spoke-CEs.</p>
+<ul><li>In a CE dual-link access scenario, if the Hub-CE adopts the default route to access the Hub-PE, you need to run the following commands on the Hub-PE to enable it to advertise the default route to all the Spoke-PEs.<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Configure a default route.<pre class="screen"><b><span class="cmdqueryname">ip route-static vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> <strong><span>0.0.0.0</span></strong> <strong><span>0.0.0.0</span></strong> <i><span class="varname">nexthop-address</span></i> [ <strong><span>tag</span></strong> <i><span class="varname">tag</span></i> ] [ <strong><span>description</span></strong> <i><span class="varname">text</span></i> ]</pre>
+<p>In this example, <i><span class="varname">vpn-instance-name</span></i> specifies <strong>vpn_out</strong> and <i><span class="varname">nexthop-address</span></i> specifies the IP address of the Hub-CE interface that connects to the Hub-PE interface bound to <strong>vpn_out</strong>.</p>
+</li><li>Enter the BGP view.<pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i>  </pre>
+</li><li>Enter the BGP-VPN instance<span> IPv4 address family</span> view.<pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i></pre>
+</li><li>Import the default route of the local site.<pre class="screen"><b><span class="cmdqueryname">network</span></b> <strong><span>0.0.0.0</span></strong> <strong><span>0</span></strong></pre>
+</li></ol>
+</li></ul>
+<ul><li>If the Hub-PE and Hub-CE are connected over a single link, the Hub-CE needs to use the default route to access the Hub-PE. In this case, perform the following operations in the BGP view of the Hub-CE:<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the BGP view.<pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i>  </pre>
+</li><li>Configure a peer.<pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>as-number</span></strong> <i><span class="varname">as-number</span></i> </pre>
+</li><li>Configure the Hub-CE to send the default route to the Hub-PE.<pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>default-route-advertise</span></strong> [ <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ] [ <strong><span>conditional-route-match-all</span></strong> { <i><span class="varname">ipv4-address1</span></i> { <i><span class="varname">mask1</span></i> | <i><span class="varname">mask-length1</span></i> } } &amp;&lt;1-4&gt; | <strong><span>conditional-route-match-any</span></strong> { <i><span class="varname">ipv4-address2</span></i> { <i><span class="varname">mask2</span></i> | <i><span class="varname">mask-length2</span></i> } } &amp;&lt;1-4&gt; ]</pre>
+</li></ol>
+</li></ul>
+</p></li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0035.html">Configuring IPv4 L3VPN over MPLS Hub-Spoke
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0066.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_L3VPNv4_cfg_0042.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

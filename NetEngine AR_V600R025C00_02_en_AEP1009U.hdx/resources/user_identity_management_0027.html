@@ -1,0 +1,250 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring TSM SSO">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="User_Identity_Management_0044.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebNext" content="ys_sec@User_Identity_Management_0018_web.xml">
+<meta name="AddWebNext" content="ys_sec@User_Identity_Management_0017_web.xml">
+<meta name="featurename" content="Identity Management">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Identity Management">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563872333">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring TSM SSO</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563872333"></a><a name="EN-US_TASK_0000001563872333"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring TSM SSO</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563872333__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001563872333__fig01">Figure 1</a>, an enterprise deploys DeviceA as the egress gateway at the network border to connect the intranet and the Internet. The details are as follows:</p>
+<ul><li>The TSM identity authentication mechanism has been deployed on the intranet, and the TSM SSO server (iMaster NCE-Campus) stores information about users and security groups.</li><li>Users on the enterprise network include R&amp;D and marketing employees.</li></ul>
+<p>The network administrator of the enterprise wants to use the user management mechanism provided by DeviceA to identify intranet IP addresses as users and security groups so as to provide reference for performing security group-based network behavior control and network permission assignment. The specific requirements are as follows:</p>
+<ul><li>R&amp;D and marketing employees can access network resources without being authenticated again after their TSM accounts and passwords are authenticated. The identifiers of the R&amp;D and marketing employees are the accounts used in the TSM authentication.</li><li>DeviceA implements policy control based on the organization to which the user belongs, that is, the security group.</li></ul>
+<div class="fignone" id="EN-US_TASK_0000001563872333__fig01"><a name="EN-US_TASK_0000001563872333__fig01"></a><a name="fig01"></a><span class="figcap"><b>Figure 1 </b>Networking diagram of TSM SSO</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001563752705.png"></span></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="30%" id="mcps1.3.1.7.1.4.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="30%" id="mcps1.3.1.7.1.4.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="40%" id="mcps1.3.1.7.1.4.1.3" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="30%" headers="mcps1.3.1.7.1.4.1.1 "><p>TSM SSO server</p>
+</td>
+<td class="cellrowborder" valign="top" width="30%" headers="mcps1.3.1.7.1.4.1.2 "><ul><li><p>TSM SSO server IP address: 10.2.0.50</p>
+</li><li><p>Server port number: 8445</p>
+</li><li><p>Encryption algorithm: AES-256-GCM</p>
+</li><li><p>Shared key: Admin2012@123</p>
+</li></ul>
+</td>
+<td class="cellrowborder" valign="top" width="40%" headers="mcps1.3.1.7.1.4.1.3 "><p>Configure the TSM SSO server on DeviceA. In other words, set a series of parameters used by DeviceA to communicate with the TSM SSO server.</p>
+<p>The parameter settings must be the same as those on the TSM SSO server.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="30%" headers="mcps1.3.1.7.1.4.1.1 "><p>Security group to which the user belongs</p>
+</td>
+<td class="cellrowborder" valign="top" width="30%" headers="mcps1.3.1.7.1.4.1.2 "><p>Security group name for R&amp;D employees: research</p>
+<p>Security group name for marketing employees: marketing</p>
+</td>
+<td class="cellrowborder" valign="top" width="40%" headers="mcps1.3.1.7.1.4.1.3 "><p>On DeviceA, create a security group with the same name as that on the TSM SSO server.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="30%" headers="mcps1.3.1.7.1.4.1.1 "><p>TSM SSO</p>
+</td>
+<td class="cellrowborder" valign="top" width="30%" headers="mcps1.3.1.7.1.4.1.2 "><p>TSM SSO: enabled</p>
+</td>
+<td class="cellrowborder" valign="top" width="40%" headers="mcps1.3.1.7.1.4.1.3 "><p>Set SSO parameters on DeviceA.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563872333__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This example describes only the configuration of user authentication.</p>
+</div></div>
+<ol><li>Add DeviceA to the TSM SSO server and configure the TSM SSO server on DeviceA so that DeviceA can communicate with the server.</li><li>Set TSM SSO parameters on DeviceA.</li><li>Frequent expiration of the online user timeout period during working hours (assuming 8 hours) results in frequent re-authentication on the TSM SSO server. To avoid this, set the online user timeout period to 480 minutes.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563872333__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Add DeviceA on the TSM SSO server.</span><p><p>On the TSM SSO server, configure the IP address, device name, port, encryption algorithm, access key, and endpoint IPv4 address list of the online behavior management device. The port, encryption algorithm, and access key must be the same as those configured on DeviceA. For details, see the configuration of online behavior management in the iMaster NCE-Campus product documentation.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Protocol version identifier of iMaster NCE-Campus must be set to 100.0 or later.</p>
+<p>In the interface configuration procedure on DeviceA, only the VPN instance bound to the interface connected to the TSM SSO server is provided. The VPN configuration for the basic network is not described in this example.</p>
+</div></div>
+</p></li><li><span>Configure interfaces on DeviceA.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span><span class="eudemon">DeviceA</span></span></strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>interface </strong><strong><span>10ge</span> <span>0/0/3</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/3</span>] <strong>ip address 10.3.0.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>firewall zone trust</strong>
+[<span><span class="eudemon">DeviceA</span></span>-zone-trust] <strong>add interface </strong><strong><span>10ge</span> <span>0/0/3</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-zone-trust] <strong>quit</strong>
+[DeviceA] <strong>ip vpn-instance vpn1</strong>
+[DeviceA-vpn-instance-vpn1] <strong>route-distinguisher 100:1</strong>
+[DeviceA-vpn-instance-vpn1-af-ipv4] <strong>quit</strong>
+[DeviceA-vpn-instance-vpn1] <strong>quit</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>interface </strong><strong><span>10ge</span> <span>0/0/2</span></strong>
+[<span><span class="eudemon">DeviceA-<span>10GE</span><span>0/0/2</span></span></span>] <strong>ip binding vpn-instance vpn</strong><strong>1</strong> 
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.2.0.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>interface </strong><strong><span>10ge</span> <span>0/0/1</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>ip address 1.1.1.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>firewall zone untrust</strong>
+[<span><span class="eudemon">DeviceA</span></span>-zone-untrust] <strong>add interface </strong><strong><span>10ge</span> <span>0/0/1</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-zone-untrust] <strong>quit</strong></pre>
+</p></li><li><span>Set the TSM SSO server and SSO parameters on DeviceA.</span><p><p>The TSM SSO server parameters set on DeviceA must be the same as those on the TSM SSO server.</p>
+<pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>identity-management</strong>
+[<span><span class="eudemon">DeviceA</span></span>-identity-management]<strong> sso-tsm</strong>
+[<span><span class="eudemon">DeviceA</span></span>-identity-management-sso-tsm] <strong>server ip 10.2.0.50 port 8445 shared-key Admin2012@123 vpn-instance vpn1</strong>
+[<span><span class="eudemon">DeviceA</span></span>-identity-management-sso-tsm]<strong> tsm-sso enable</strong>
+[<span><span class="eudemon">DeviceA</span></span>-identity-management-sso-tsm] <strong>local-server ip 10.2.0.1 port 8001 vpn-instance vpn1</strong>
+[<span><span class="eudemon">DeviceA</span></span>-identity-management-sso-tsm]<strong> online-user aging-time</strong> <strong>480</strong>
+[<span><span class="eudemon">DeviceA</span></span>-identity-management-sso-tsm]<strong> quit</strong>
+[<span><span class="eudemon">DeviceA</span></span>-identity-management]<strong> quit</strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When iMaster NCE-Campus functions as a TSM SSO server, the server port number is fixed to 8445.</p>
+</div></div>
+</p></li><li><span>Create security groups on DeviceA.</span><p><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>]<strong> ucl-group name </strong><strong>research</strong>
+[<span><span class="eudemon">DeviceA</span></span>]<strong> ucl-group name </strong><strong>marketing</strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The configured security group name must be the same as that on the TSM SSO server. Otherwise, DeviceA cannot perform policy control based on the security group after obtaining the security group to which the user belongs from the user login message sent by the TSM SSO server.</p>
+</div></div>
+</p></li><li><span>Configure the user escape function on DeviceA.</span><p><p>When DeviceA cannot find the user name corresponding to the source IP address of traffic, DeviceA uses the temporary user name and security group to bring the user online.</p>
+<pre class="screen">[<span><span class="eudemon">DeviceA</span></span>]<strong> ucl-group name </strong><strong>group-temp</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong>identity-management</strong>
+[<span><span class="eudemon">DeviceA</span></span>-identity-management]<strong> </strong><strong>temporary-access username user-temp ucl-group group-temp</strong>
+[<span><span class="eudemon">DeviceA</span></span>-identity-management]<strong> </strong><strong>quit</strong></pre>
+</p></li><li><span>Configure a security policy to allow users to access the Internet.</span><p><pre class="screen">[<span><span class="eudemon">DeviceA</span></span>] <strong>security-policy</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security] <strong>rule name policy_sec_02</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security-rule-policy_sec_02] <strong>source-zone trust</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security-rule-policy_sec_02] <strong>destination-zone untrust</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security-rule-policy_sec_02] <strong>user </strong><strong>ucl-group</strong> <strong>research</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security-rule-policy_sec_02] <strong>user </strong><strong>ucl-group</strong> <strong>marketing</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security-rule-policy_sec_02] <strong>user </strong><strong>ucl-group</strong> <strong>group-temp</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security-rule-policy_sec_02] <strong>action permit</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security-rule-policy_sec_02] <strong>quit</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security-rule-policy_sec_02] <strong>default action deny</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-security] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563872333__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>R&amp;D employees can access network resources after successful logins based on TSM accounts and passwords.</li><li>Marketing employees can access network resources after successful logins based on TSM accounts and passwords.</li><li>Run the <strong>display identity-management online-user all-vpn-instance</strong> command on DeviceA to view information about online users.<pre class="screen">&lt;<span><span class="eudemon">DeviceA</span></span>&gt; <strong>display identity-management online-user verbose all-vpn-instance </strong>                                                                           
+Current Total Number: 2                                                                                                         
+-------------------------------------------------------------------------------                                                   
+IP Address: 10.3.0.2
+User Name : user1                                                                                                                   
+Login Time: 2022-10-27 20:26:05  Online Time 00:07:58  Time-left: 07:52:02
+Authentication Mode: TSM SSO Authentication   
+Access Mode: SSO                                                      
+Security Group: research 
+MAC           : -
+VLAN ID       : -
+IMSI          : -
+IMEI          : -
+MSISDN        : -
+User Defined  : -
+--------------------------------------------------------------------------------
+IP Address: 10.3.0.3
+User Name : user2                                                                                                                   
+Login Time: 2022-10-27 20:26:01  Online Time 00:08:02  Time-left: 07:51:58
+Authentication Mode: TSM SSO Authentication
+Access Mode: SSO                                                      
+Security Group: marketing
+MAC           : -
+VLAN ID       : -
+IMSI          : -
+IMEI          : -
+MSISDN        : -
+User Defined  : -
+--------------------------------------------------------------------------------</pre>
+</li></ul>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001563872333__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#
+sysname <span><span class="eudemon">DeviceA</span></span>
+#
+ip vpn-instance vpn1
+route-distinguisher 100:1   
+#  
+ucl-group name research
+ucl-group name marketing
+ucl-group name group-temp
+#
+identity-management
+ sso-tsm
+  server<strong> </strong>ip 10.2.0.50 port<strong> </strong>8445 shared-key %$%$|5&lt;h@/062'gA|%:9CO.2/JA8%$%$ vpn-instance vpn1
+  tsm-sso<strong> </strong>enable
+  local-server ip 10.2.0.1 port<strong> </strong>8001 vpn-instance vpn1
+  online-user<strong> </strong>aging-time 480
+ temporary-access username user-temp ucl-group group-temp
+#
+security-policy
+ rule name policy_sec_02    
+  source-zone trust
+  user<strong> </strong>ucl-group research
+  user<strong> </strong>ucl-group marketing
+  user<strong> </strong>ucl-group group-temp
+  destination-zone untrust
+  action permit
+<strong> </strong>default action deny
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.1.1 255.255.255.0 
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpn1 
+ ip address 10.2.0.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.3.0.1 255.255.255.0 
+#
+firewall zone trust
+ add interface <span>10GE</span><span>0/0/3</span>
+#
+firewall zone untrust
+ add interface <span>10GE</span><span>0/0/1</span>
+#</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="User_Identity_Management_0044.html">Configuration Examples for Identity Management
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

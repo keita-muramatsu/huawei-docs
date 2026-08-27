@@ -1,0 +1,117 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an AD Server Template">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_aaa-ad_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_aaa-ad_cfg_0002.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featurename" content="HWTACACS">
+<meta name="featurename" content="LDAP">
+<meta name="featurename" content="RADIUS">
+<meta name="featurename" content="Local User">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563755941">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an AD Server Template</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563755941"></a><a name="EN-US_TASK_0000001563755941"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an AD Server Template</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563755941__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In an AD server template, you must specify the server type, IP address, and port number. The other parameters have default settings, for example, the Base DN. These default settings can be modified as needed.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>The system time and time zone of the device must be the same as those on the AD server.</li></ul>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563755941__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an AD server template and enter the AD server template view.</span><p><pre class="screen"><b><span class="cmdqueryname">ad-server template</span></b> <i><span class="varname">template-name</span></i></pre>
+</p></li><li><span>Configure an AD server. You can specify an AD server using either of the following methods:</span><p><p>One method is to specify the IP address of the AD server.</p>
+<pre class="screen"><b><span class="cmdqueryname">ad-server authentication</span></b> <i><span class="varname">ip-address port</span></i> [ <strong><span>secondary</span></strong> | <strong><span>third</span></strong> ] [ <strong><span>ldap-over-ssl</span></strong> | <strong>no-ssl</strong> ]</pre>
+<p>The other method is to specify the URL of the AD server.</p>
+<pre class="screen"><b><span class="cmdqueryname">ad-server authenticatio</span></b>n <strong><span>server-url</span></strong> <i><span class="varname">url</span></i> [ <i><span class="varname">port</span></i> ] [ <strong><span>ldap-over-ssl</span></strong> | <strong><span>no-ssl</span></strong> ]</pre>
+<p>By default, no AD server is configured. Note the following when configuring an AD server:</p>
+<ul><li><i><span class="varname">port</span></i> specifies the port number of the AD server. The default value is 88.</li><li>Before specifying a URL to configure an AD server, ensure that the DNS server has been configured. The first three IP addresses parsed by the DNS server are assigned to the primary, secondary, and tertiary AD servers respectively.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>After the FIPS mode is enabled, the <strong>no-ssl</strong> parameter cannot be used.</p>
+</div></div>
+</li></ul>
+</p></li><li><span>(Optional) Configure the source IP address for communication between the device and AD server.</span><p><pre class="screen"><b><span class="cmdqueryname">ad-server source</span></b> { <strong><span>loopback</span></strong> <i><span class="varname">interface-number</span></i> | <strong><span>ip-address</span></strong> <i><span class="varname">ip-address</span></i> | <strong><span>vlanif</span></strong> <i><span class="varname">interface-number</span></i> }</pre>
+<p>By default, when the device sends packets to the AD server, the IP address of the outbound interface is used as the source IP address.</p>
+<p>If the specified loopback interface or VLANIF interface is not created or has no IP address configured, the IP address of the outbound interface is used as the source IP address.</p>
+</p></li><li><span>Configure the Base DN of the AD server.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">ad-server authentication base-dn</span></b></strong> <i><span class="varname">base-dn</span></i></pre>
+<p>By default, the Base DN is dc=my-domain,dc=com.</p>
+</p></li><li><span>Configure the administrator DN and password of the AD server.</span><p><pre class="screen"><span><b><span class="cmdqueryname">ad-server authentication manager</span></b> <i><span class="varname">manager</span></i> <i><span class="varname">password</span></i></span></pre>
+<p>By default, no administrator DN and password are configured for an AD server.</p>
+<p>For security purposes, it is recommended that the password contain at least eight characters and at least three types of the following characters: uppercase letters, lowercase letters, digits, and special characters.</p>
+<p>If you run the <strong>ad-server authentication manager-anonymous enable</strong> command after the administrator DN and password of the AD server are set, the administrator DN and password settings will be automatically cleared, and the Base DN will also be deleted.</p>
+</p></li><li><span>(Optional) Configure the AD server to allow administrators to log in anonymously.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>An anonymous login does not require the user name and password, posing security risks. Determine whether to enable anonymous login after risk assessment.</p>
+</div></div>
+<pre class="screen"><strong><b><span class="cmdqueryname">ad-server authentication manager-anonymous enable</span></b></strong></pre>
+<p>By default, administrators are not allowed to access the AD server anonymously.</p>
+<p>After this command is configured, if you run the <b><span class="cmdqueryname">ad-server authentication manager</span></b> <i><span class="varname">manager</span></i> <i><span class="varname">password</span></i> command to configure the administrator DN and password of the AD server, the anonymous login configuration will be cleared.</p>
+</p></li><li><span>Set a host name for the AD server.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">ad-server authentication host-name</span></b></strong> <i><span class="varname">host-name</span></i> [ <strong><span>secondary</span></strong> | <strong><span>third</span></strong> ]</pre>
+<p>By default, no host name is set for an AD server.</p>
+</p></li><li><span>Configure the LDAP port number of the AD server and the SSL-encrypted LDAP port number.</span><p><pre class="screen"><b><span class="cmdqueryname">ad-server authentication ldap-port</span></b> <em>port</em> <strong>ldap-ssl-port </strong><em>port</em></pre>
+<p>By default, the LDAP port number of the AD server is 389, and the SSL-encrypted LDAP port number is 636.</p>
+</p></li><li><span>(Optional) Enable user binding during AD authorization.</span><p><pre class="screen"><b><span class="cmdqueryname">ad-server authorization bind-user enable</span></b></pre>
+<p>By default, user binding is required during AD authorization.</p>
+</p></li><li><span>(Optional) Configure the user attribute filter field value of the AD server.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">ad-server user-filter</span></b> </strong><em>field</em></pre>
+<p>By default, the user attribute filter field value used as a user name on an AD server is sAMAccountName.</p>
+</p></li><li><span>(Optional) Configure the group attribute filter field value of the AD server.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">ad-server group-filter</span></b></strong><em> field</em></pre>
+<p>By default, the group attribute filter field value is ou.</p>
+</p></li><li><span>(Optional) Configure an administrator DN of the AD server to contain the Base DN.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">ad-server authentication manager-with-base-dn enable</span></b></strong></pre>
+<p>By default, an administrator DN contains the Base DN.</p>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001563755941__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display ad-server template</span></b> [ <strong>name</strong> <i><span class="varname">template-name</span></i> ] command to check the AD server template configuration.</li><li>Run the <b><span class="cmdqueryname">test-aaa</span></b> <i><span class="varname">user-name</span></i> <i><span class="varname">user-password</span></i> <strong><span>ad-template</span></strong> <i><span class="varname">template-name</span></i> command to test the connectivity between the device and server. For details about common fault information and troubleshooting methods, see <a href="galaxy_aaa_cfg_0054.html">Testing the Server Connectivity</a>.</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_aaa-ad_cfg_0001.html">Configuring AD Authentication and Authorization
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_aaa-ad_cfg_0002.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

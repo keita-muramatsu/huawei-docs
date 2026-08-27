@@ -1,0 +1,144 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an AP PKI Realm Profile">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0033.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0101.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564125601">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an AP PKI Realm Profile</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564125601"></a><a name="EN-US_TASK_0000001564125601"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an AP PKI Realm Profile</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001564125601__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Prepare a certification authority (CA) certificate, certificate revocation list (CRL) file, local certificate, and private key file, and upload them to the root directory of the flash memory on the WAC.</p>
+<p>If multiple CA certificates are required, use the OpenSSL tool to combine them into one.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564125601__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>A public key infrastructure (PKI) realm is a set of identity information required by a PKI entity to enroll a certificate. An AP PKI realm profile allows you to configure the CA certificate, local certificate, certificate revocation list (CRL) file, and private key file for APs. After the configuration is complete, the certificate files need to be delivered to the APs by using the <b><span class="cmdqueryname">load-file</span></b> command.</p>
+<p>A certificate may need to be revoked for the reasons such as entity name changing, private key leaking, or service termination. Revoking a certificate is to unbind the public key from PKI entity identity information. The PKI uses the CRL to revoke certificates.</p>
+<p>After a certificate is revoked, the CA issues a CRL to declare that the certificate is invalid and lists the serial numbers of revoked certificates. The CRL provides a method to verify certificate validity.</p>
+<div class="p">The PKI system uses certificate authentication technology to verify the validity of access devices, improving system security. PKI certificates can be used for authentication when APs go online, access the web system, or be upgraded through the Huawei Online Upgrade Repository (HOUP). By default, an AP provides three PKI realms named <strong>default</strong>, <strong>defaultPki_houp</strong>, and <strong>user-define</strong>. Initial certificates are configured in the <strong>default</strong> and <strong>defaultPki_houp</strong> realms to support the authentication scenarios listed in <a href="#EN-US_TASK_0000001564125601__table1745119312233">Table 1</a>. There is no default configuration in the <strong>user-define</strong> realm, which can be used for other authentication scenarios. In addition, you can define two default AP PKI realms for other authentication functions.
+<div class="tableBorder"><a name="EN-US_TASK_0000001564125601__table1745119312233"></a><a name="table1745119312233"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001564125601__table1745119312233" frame="border" border="1" rules="all"><caption><b>Table 1 </b>PKI realms in AP certificate authentication scenarios</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="34.31%" id="mcps1.3.2.4.8.2.3.1.1" liSelected="liSelected"><p>Certificate Usage Scenario</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="65.69%" id="mcps1.3.2.4.8.2.3.1.2" liSelected="liSelected"><p>AP PKI Realm</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="34.31%" headers="mcps1.3.2.4.8.2.3.1.1 "><p>DTLS authentication during AP onboarding</p>
+</td>
+<td class="cellrowborder" valign="top" width="65.69%" headers="mcps1.3.2.4.8.2.3.1.2 "><p><strong>default</strong>, containing the initial certificate</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.31%" headers="mcps1.3.2.4.8.2.3.1.1 "><p>Device authentication for accessing the web system</p>
+</td>
+<td class="cellrowborder" valign="top" width="65.69%" headers="mcps1.3.2.4.8.2.3.1.2 "><p><strong>default</strong>, containing the initial certificate</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="34.31%" headers="mcps1.3.2.4.8.2.3.1.1 "><p>Device authentication for accessing the HOUP for smart upgrade</p>
+</td>
+<td class="cellrowborder" valign="top" width="65.69%" headers="mcps1.3.2.4.8.2.3.1.2 "><p><strong>defaultPki_houp</strong>, where the CA certificate is <strong>Actalis_CA.cer</strong></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>An AP PKI realm profile on the WAC allows you to configure an AP PKI realm and the CA certificate, local certificate, CRL file, and private key file in the PKI realm to uniformly manage and maintain certificates on APs.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>A maximum of five PKI realms can be configured in an AP PKI realm profile, and a maximum of three PKI realms support the private key configuration (specified by the parameter <strong><span>private-key</span></strong>). One private key must be reserved in both the <strong>default</strong> and <strong>defaultPki_houp</strong> realms, and the remaining private key can be configured in the <strong>user-define</strong> realm or a user-defined realm. To check the configuration of an AP PKI realm profile, run the <b><span class="cmdqueryname">display ap-pki-profile</span></b> command. If automatic AP certificate renewal is configured, a default private key is automatically created for the PKI realm used to renew the AP certificate. The private key also occupies the remaining quota of the private key. However, information about the private key is not displayed in the <b><span class="cmdqueryname">display ap-pki-profile</span></b> command output.</p>
+</div></div>
+<p>When APs can access the CA server that supports the CMPv2 or SCEP protocol, you can configure the automatic certificate renewal function for the APs. Then the APs can automatically obtain the local certificate and private key file from the CA server. This reduces the workload of maintenance personnel and reduces the risk of delayed certificate renewal.</p>
+<p>An AP PKI realm profile defines information used for automatic certificate renewal, including the PKI entity common name, CA server information, automatic renewal time, and authentication code. After the configuration is complete on the WAC, APs automatically obtain and replace certificates based on the certificate status in each PKI realm and information in the corresponding profile.</p>
+<ul><li>If a certificate exists in the PKI realm of an AP, the AP continuously checks whether the automatic renewal time is reached. When the automatic renewal time is reached, the AP automatically sends a certificate renewal request to the CA server to replace the certificate.</li><li>If no certificate is available in the PKI realm of an AP, the AP applies for a certificate from the CA server and periodically replaces the certificate based on the automatic renewal time.</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The initial certificate exists in the AP PKI realm <strong>default</strong>. After the certificate is automatically renewed, related functions may be abnormal. Therefore, you are not advised to enable the automatic certificate renewal function in the <strong>default</strong> realm.</p>
+<p>When an AP applies for a local certificate for the first time, the CA certificate in the <strong>default</strong> realm is used. Therefore, you need to configure the CA certificate in the AP PKI realm <strong>default</strong> before configuring automatic certificate renewal for the AP.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564125601__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">wlan</span></b></pre>
+</p></li><li><span>Create an AP PKI realm profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">ap-pki-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, no AP PKI realm profile is created on the device.</p>
+</p></li><li><span>Configure a name for the AP PKI realm and bind the CA certificate, local certificate, and private key file to the realm.</span><p><pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <i><span class="varname">realm-name</span></i> { { <strong><span>ca</span></strong> <strong><span>format</span></strong> { <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> } <i><span class="varname">ca-file-name</span></i> } | { <strong><span>local</span></strong> <strong><span>format</span></strong> { <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> } <i><span class="varname">local-file-name</span></i> [ <strong><span>private-key</span></strong> <strong><span>format</span></strong> { <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> } <i><span class="varname">private-key-file-name</span></i> <strong><span>password</span></strong> <i><span class="varname">password</span></i> ] } } <sup>*</sup></pre>
+<p>By default, the name of an AP PKI realm is not configured on the device, and an AP PKI realm is not bound with any CA certificate, local certificate, or private key file.</p>
+</p></li><li><span>Configure a name for the AP PKI realm and import a CRL file to the realm.</span><p><pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <i><span class="varname">realm-name</span></i> <strong><span>crl-filename</span></strong> <i><span class="varname">crl-filename</span></i></pre>
+<p>By default, the name of an AP PKI realm is not configured on the device, and no CRL file is configured to be imported to the AP PKI realm.</p>
+</p></li><li><span>Configure an AP PKI realm name. Configure the parameters for automatic certificate renewal, including the PKI entity common name, CA server URL and name, percentage of the certificate's validity period for automatic renewal, and reference and secret values of the message authentication code.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">pki realm</span></b></strong> <em><i><span class="varname">real-name</span></i></em> <b><span class="cmdqueryname">auto-enroll</span></b> {<strong><strong><span> common-name</span></strong></strong> <em><i><span class="varname">name</span></i></em> | <strong><span>url</span></strong> <em><i><span class="varname">url</span></i></em> <strong><span>ca-id</span></strong> <em><i><span class="varname">id</span></i> </em>| <strong><span>percent</span></strong> <i><span class="varname">percent </span></i><strong><span>message-authentication-code</span></strong> <i><span class="varname">reference-value </span></i><i><span class="varname">secret-value</span></i> } <sup>*</sup></pre>
+<p>By default, no AP PKI realm name is configured, and no parameters for automatic certificate renewal are configured. The parameters include the PKI entity common name, CA server URL and name, percentage of the certificate's validity period for automatic renewal, and reference and secret values of the message authentication code.</p>
+</p></li><li><span>(Optional) Configure automatic certificate renewal for APs.</span><ol type="a"><li class="substepexpand"><span>Configure the protocol used to automatically renew AP certificates.</span><p><pre class="screen"><b><span class="pki realm auto-enroll type">pki realm</span></b> <i><span class="varname">realm-name</span></i> <strong><span>auto-enroll</span></strong> <strong><span>type</span></strong> { <strong><span>cmpv2</span></strong> | <strong><span>scep</span></strong> }</pre>
+<p>By default, the CMPv2 protocol is used to automatically renew AP certificates.</p>
+</p></li><li class="substepexpand"><span>Configure the digital CA certificate fingerprint used in CA certificate authentication.</span><p><pre class="screen"><b><span class="pki realm auto-enroll fingerprint">pki realm</span></b> <i><span class="varname">realm-name</span></i> <strong><span>auto-enroll</span></strong> <strong><span>fingerprint</span></strong> { <strong><span>md5</span></strong> | <strong><span>sha1</span></strong> | <strong><span>sha256</span></strong> } <i><span class="varname">fingerprint</span></i></pre>
+<p>By default, no digital CA certificate fingerprint used in CA certificate authentication is configured.</p>
+</p></li><li class="substepexpand"><span>Configure the RSA or ECC key pair and modulus used in SCEP certificate request.</span><p><pre class="screen"><b><span class="pki realm auto-enroll local-key-pair">pki realm</span></b> <i><span class="varname">realm-name</span></i> <strong><span>auto-enroll</span></strong> { <strong><span>rsa</span></strong> <strong><span>local-key-pair</span></strong> <i><span class="varname">rsa-modulus-size</span></i> | <strong><span>ecc</span></strong> <strong><span>local-key-pair</span></strong> <i><span class="varname">ecc-hostkey-length</span></i> }</pre>
+<p>By default, no key pair used in SCEP certificate request is configured.</p>
+</p></li><li class="substepexpand"><span>Configure the challenge password used in SCEP certificate request, which is also used to revoke a certificate.</span><p><pre class="screen"><b><span class="pki realm auto-enroll password">pki realm</span></b> <i><span class="varname">realm-name</span></i> <strong><span>auto-enroll</span></strong> <strong><span>password</span></strong> <i><span class="varname">password</span></i></pre>
+<p>By default, no challenge password used in SCEP certificate request is configured.</p>
+</p></li><li class="substepexpand"><span>Configure the percentage threshold for the validity period of SCEP certificate renewal.</span><p><pre class="screen"><b><span class="pki realm auto-enroll percent">pki realm</span></b> <i><span class="varname">realm-name</span></i> <strong><span>auto-enroll</span></strong> <strong><span>percent</span></strong> <i><span class="varname">percent</span></i></pre>
+<p>The default value of <em>percent</em> is 100, indicating that the system automatically requests a new certificate when the existing one is about to expire.</p>
+</p></li></ol>
+</li><li><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Enter the AP view or AP group view.</span><ul><li>Enter the AP group view.<pre class="screen"><b><span class="cmdqueryname">ap-group</span></b> <strong><span>name</span></strong> <i><span class="varname">group-name</span></i></pre>
+</li><li>Enter the AP view.<pre class="screen"><b><span class="cmdqueryname">ap-id</span></b> <i><span class="varname">ap-id</span></i></pre>
+</li></ul>
+</li><li><span>Bind the AP PKI realm profile to the AP group or a single AP.</span><p><pre class="screen"><b><span class="cmdqueryname">ap-pki-profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, no AP PKI realm profile is bound to an AP group or AP.</p>
+</p></li><li><span>Return to the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Manually deliver the certificate file to APs.</span><p><pre class="screen"><b><span class="cmdqueryname">load-file</span></b> { <strong><span>ap-id</span></strong> <i><span class="varname">ap-id</span></i> | <strong><span>ap-group</span></strong> <i><span class="varname">group-name</span></i> | <strong><span>all</span></strong> }</pre>
+<p>By default, manual loading of certificate files to APs is not configured.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564125601__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display ap-pki-profile</span></b> { <strong><span>all</span></strong> | <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i> } command to check the configuration of an AP PKI realm profile.</li><li>Run the <b><span class="cmdqueryname">display references ap-pki-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i> command to check reference information about an AP PKI realm profile.</li><li>Run the <b><span class="cmdqueryname">display ap pki status</span></b> [ <strong><span>ap-id</span></strong> <i><span class="varname">ap-id</span></i> ] command to check the status of an AP PKI realm and certificates.</li><li>Run the <b><span class="cmdqueryname">display ap file status</span></b> <strong><span>all</span></strong> [ <strong><span>succeed</span></strong> | <strong><span>fail</span></strong> ] or <b><span class="cmdqueryname">display ap file status</span></b> { <strong><span>ap-id</span></strong> <i><span class="varname">ap-id</span></i> | <strong><span>ap-mac</span></strong> <i><span class="varname">ap-mac</span></i> } command to check certificate loading information on APs.</li><li>Run the <b><span class="cmdqueryname">display ap pki certificate</span></b> <strong><span>ap-id</span></strong> <i><span class="varname">ap-id</span></i> { <strong><span>ca</span></strong> | <strong><span>local</span></strong> } <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> command to check information about the CA and local certificates in a specified AP PKI realm.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ap_management_cfg_0001.html">AP Management Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ap_management_cfg_0033.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ap_management_cfg_0101.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

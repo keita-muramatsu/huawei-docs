@@ -1,0 +1,242 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring 802.1X Authentication Bypass (Used When Both the Active and Standby RADIUS Servers Are Faulty)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_cfg_nac_0245.html">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_task_0000002357763617.html">
+<meta name="DC.Relation" scheme="URI" content="dc/dc_cfg_nac_0106p.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="MAC Address Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513160170">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring 802.1X Authentication Bypass (Used When Both the Active and Standby RADIUS Servers Are Faulty)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513160170"></a><a name="EN-US_TASK_0000001513160170"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring 802.1X Authentication Bypass (Used When Both the Active and Standby RADIUS Servers Are Faulty)</h1>
+<div class="taskbody" id="taskbody0000001134608073"><div class="context"><a name="EN-US_TASK_0000001513160170__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001513160170__context518894553180144"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001513160170__p1943070574180144">On the enterprise network shown in <a href="#EN-US_TASK_0000001513160170__fig_dc_cfg_aaa_602301">Figure 1</a>, DeviceA functions as the access device, and two RADIUS servers are deployed for 802.1X and RADIUS authentication of users on the enterprise network. Users can access the Internet only after being successfully authenticated. The administrator requires that users can enter the bypass state and access the Internet when the two RADIUS servers are faulty and that users can be re-authenticated and re-authorized by the RADIUS servers after the RADIUS servers recover.</p>
+<div class="fignone" id="EN-US_TASK_0000001513160170__fig_dc_cfg_aaa_602301"><a name="EN-US_TASK_0000001513160170__fig_dc_cfg_aaa_602301"></a><a name="fig_dc_cfg_aaa_602301"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring 802.1X authentication bypass (used when both the active and standby RADIUS servers are faulty)</span><div class="note" id="EN-US_TASK_0000001513160170__note4431204417521"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513160170__p74311544145216">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001513160170__image1800479713180144" src="figure/en-us_image_0000001563880337.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513160170__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001513160170__context540414015286"><h4 class="sectiontitle">Precautions</h4><ul id="EN-US_TASK_0000001513160170__ul1016982215519"><li id="EN-US_TASK_0000001513160170__li231394754613">This section describes only NAC configurations on DeviceA. The RADIUS server configurations are not provided here.</li><li id="EN-US_TASK_0000001513160170__li11827127182112"><p id="EN-US_TASK_0000001513160170__p18827112722114"><a name="EN-US_TASK_0000001513160170__li11827127182112"></a><a name="li11827127182112"></a>The RADIUS authentication and accounting keys configured on the RADIUS server must be the same as the RADIUS server's shared key configured on the device.</p>
+</li><li id="EN-US_TASK_0000001513160170__li3722165011316">By default, the outbound interface IP address of the device is used as the source IP address for sending RADIUS packets to the RADIUS server. This source IP address must be the same as the device IP address configured on the RADIUS server. You can run the following commands to change the IP address as required:<ul id="EN-US_TASK_0000001513160170__ul445222919371"><li id="EN-US_TASK_0000001513160170__li1545322953719">Run the <strong id="EN-US_TASK_0000001513160170__b870152073114">radius-server authentication </strong><em id="EN-US_TASK_0000001513160170__i117082043116">ip-address</em><em id="EN-US_TASK_0000001513160170__i1770192043116"> port</em> <strong id="EN-US_TASK_0000001513160170__b15706206319">source </strong>{ <em id="EN-US_TASK_0000001513160170__i970142043118">interface-type</em><em id="EN-US_TASK_0000001513160170__i970132012314"> interface-number</em> | <strong id="EN-US_TASK_0000001513160170__b117011205315">ip-address</strong><em id="EN-US_TASK_0000001513160170__i1701120173118"> source-ip-address</em> } command to configure a RADIUS authentication server and specify the source IP address used for sending RADIUS packets to the RADIUS authentication server.</li><li id="EN-US_TASK_0000001513160170__li6217185924111">Run the <strong id="EN-US_TASK_0000001513160170__b1578720343455">radius-server accounting</strong><em id="EN-US_TASK_0000001513160170__i15151729144211"> ip-address</em><em id="EN-US_TASK_0000001513160170__i1915172974215"> port</em> <strong id="EN-US_TASK_0000001513160170__b1269014617424">source</strong><strong id="EN-US_TASK_0000001513160170__b1193533591512"> </strong>{ <em id="EN-US_TASK_0000001513160170__i8935133516151">interface-type</em><em id="EN-US_TASK_0000001513160170__i593593518154"> interface-number</em> | <strong id="EN-US_TASK_0000001513160170__b159351235141519">ip-address</strong><em id="EN-US_TASK_0000001513160170__i119354353159"> source-ip-address</em> } command to configure a RADIUS accounting server and specify the source IP address used for sending RADIUS packets to the RADIUS accounting server.</li></ul>
+</li><li id="EN-US_TASK_0000001513160170__li10149132214463">When the <strong id="EN-US_TASK_0000001513160170__b188261145124619">authentication event authen-server-up action re-authen</strong> command is configured, you also need to run the <strong id="EN-US_TASK_0000001513160170__b4736172014506">radius-server testuser</strong> command to enable automatic detection. If automatic detection is not enabled and the authentication server status changes from down to up, the device cannot re-authenticate users in authentication bypass state.</li><li id="EN-US_TASK_0000001513160170__li8830122603320">To trigger the RADIUS server down event, run the following commands:<pre class="screen" id="EN-US_TASK_0000001513160170__screen1396211633617">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b16298192820365">radius-server dead-interval 7</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b185871932113614">radius-server dead-count 1</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p10261922193711">Run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001513160170__cmdname9240550153712">test-aaa</span></b> command four times. The RADIUS server then goes down.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513160170__1.3.3"></a><a name="1.3.3"></a>
+<div class="p" id="EN-US_TASK_0000001513160170__context1330094935180144"><h4 class="sectiontitle">Configuration Roadmap</h4><ol id="EN-US_TASK_0000001513160170__ol1955620538180144"><li id="EN-US_TASK_0000001513160170__li1281616415262">Configure network connectivity to ensure that there are reachable routes between devices.</li><li id="EN-US_TASK_0000001513160170__li17450154655818">Configure AAA to implement RADIUS authentication, authorization, and accounting for users.</li><li id="EN-US_TASK_0000001513160170__li34077962180144">Configure 802.1X authentication, configure the rights granted to users when the RADIUS servers are faulty, and configure the re-authentication function when the RADIUS servers recover.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513160170__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001513160170__steps1067669612180144"><li id="EN-US_TASK_0000001513160170__vlan-01"><span id="EN-US_TASK_0000001513160170__cmd371742549180144">Configure network connectivity.</span><p><p id="EN-US_TASK_0000001513160170__p84582529382"># Create VLANs, configure the allowed VLANs on interfaces, and configure IP addresses for interfaces.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen301526699180144">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001513160170__b1238732515312">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001513160170__b133851142144816">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b680095247180144">vlan batch 10 20</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b113872250314">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513160170__b1770664616544">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513160170__b16387925173116">port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513160170__b1438802523110">port trunk allow-pass vlan 10</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513160170__b143881725103115">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b5388182513116">interface vlanif 10</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001513160170__b193884253318">ip address 192.168.1.10 24</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001513160170__b1471693815180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b1978555855180144">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513160170__b212613495511">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513160170__b9923412479">port link-type hybrid</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513160170__b16771164314720">port hybrid pvid vlan 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513160170__b135861359174710">port hybrid untagged vlan 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513160170__b3388182533112">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b1638802573118">interface vlanif 20</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001513160170__b13388152519313">ip address 192.168.2.10 24</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001513160170__b1803338608180144">quit</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p17207153716404"># Configure a route destined for RADIUS servers. In this example, the next-hop IP address is 192.168.1.1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen5448123412434">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b0223125019445">ip route-static 10.7.66.0 255.255.255.0 192.168.1.1</strong></pre>
+</p></li><li id="EN-US_TASK_0000001513160170__step288033494180144"><span id="EN-US_TASK_0000001513160170__cmd550793320180144">Configure AAA.</span><p><p id="EN-US_TASK_0000001513160170__p1890976644180144"># Create the RADIUS server template <strong id="EN-US_TASK_0000001513160170__b19198127111620">controller</strong>.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen391158761180144">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b720830739180144">radius-server template controller</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p72292804180144"># Configure IP addresses and port numbers of the active and standby RADIUS authentication and accounting servers, set the algorithm for selecting RADIUS servers to <strong id="EN-US_TASK_0000001513160170__b6305310158">master-backup</strong>, and set the RADIUS authentication key.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen1152828151180144">[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b58894280266">radius-server authentication 10.7.66.66 1812 weight 80</strong>
+[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b1120057080180144">radius-server accounting 10.7.66.66 1813 weight 80</strong>
+[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b548770148180144">radius-server authentication 10.7.66.67 1812 weight 40</strong>
+[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b1555266155180144">radius-server accounting 10.7.66.67 1813 weight 40</strong>
+[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b1803878906180144">radius-server algorithm master-backup</strong>
+[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b806822673180144">radius-server shared-key cipher Huawei@123456789</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p1688830394180144"># Configure automatic detection.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen1236332048180144">[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b1967928752180144">radius-server testuser username test1 password cipher abc@123</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p1528642510180144"># Configure the automatic detection interval and detection packet timeout period for RADIUS servers in down state. (This example uses the default values.)</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen1346510652180144">[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b378235680180144">radius-server detect-server interval 60</strong>
+[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b696457434180144">radius-server detect-server timeout 3</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p1745251561180144"># Configure the number of retransmissions and timeout interval for RADIUS authentication requests. (This example uses the default values.)</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen187578779180144">[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b1577089525180144">radius-server retransmit 3 timeout 5</strong>
+[DeviceA-radius-controller] <strong id="EN-US_TASK_0000001513160170__b828757287180144">quit</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p19592183765318"># Configure the conditions for setting the RADIUS server to the down state. (This example uses the default values.)</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen1625642616539">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b4246132613535">radius-server dead-interval 5</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b1249726205311">radius-server dead-count 2</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b3252162695312">radius-server detect-cycle 2</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b1525519261537">radius-server max-unresponsive-interval 300</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p15256182610534"># Configure the authentication scheme <strong id="EN-US_TASK_0000001513160170__b11838428112010">auth</strong> and set the authentication mode to RADIUS authentication.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen17264142618534">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b1425772615315">aaa</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001513160170__b2259826135319">authentication-scheme auth</strong>
+[DeviceA-aaa-authen-auth] <strong id="EN-US_TASK_0000001513160170__b3261526115319">authentication-mode radius</strong>
+[DeviceA-aaa-authen-auth] <strong id="EN-US_TASK_0000001513160170__b16263102620534">quit</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p13264182612538"># Configure the accounting scheme <strong id="EN-US_TASK_0000001513160170__b7745192017">acc</strong> and set the accounting mode to RADIUS accounting.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen527292655311">[DeviceA-aaa] <strong id="EN-US_TASK_0000001513160170__b1826618269539">accounting-scheme acc</strong>
+[DeviceA-aaa-accounting-acc] <strong id="EN-US_TASK_0000001513160170__b13269626175313">accounting-mode radius</strong>
+[DeviceA-aaa-accounting-acc] <strong id="EN-US_TASK_0000001513160170__b72722026155315">quit</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p11272122612536"># Configure the domain <strong id="EN-US_TASK_0000001513160170__b8398175162119">example</strong>, and apply the authentication scheme <strong id="EN-US_TASK_0000001513160170__b840419512115">auth</strong>, accounting scheme <strong id="EN-US_TASK_0000001513160170__b94041753210">acc</strong>, and RADIUS server template <strong id="EN-US_TASK_0000001513160170__b13405954213">controller</strong> to the domain.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen19291026135312">[DeviceA-aaa] <strong id="EN-US_TASK_0000001513160170__b62751264537">domain example</strong>
+[DeviceA-aaa-domain-example] <strong id="EN-US_TASK_0000001513160170__b132784261538">authentication-scheme auth</strong>
+[DeviceA-aaa-domain-example] <strong id="EN-US_TASK_0000001513160170__b72826263535">accounting-scheme acc</strong>
+[DeviceA-aaa-domain-example] <strong id="EN-US_TASK_0000001513160170__b12851326125310">radius-server controller</strong>
+[DeviceA-aaa-domain-example] <strong id="EN-US_TASK_0000001513160170__b10287152614535">quit</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001513160170__b229152675315">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001513160170__step1508687923180144"><span id="EN-US_TASK_0000001513160170__cmd1178501732180144">Configure 802.1X authentication.</span><p><div class="p" id="EN-US_TASK_0000001513160170__p1214967347180144"># Configure the 802.1X access profile <strong id="EN-US_TASK_0000001513160170__b65957243214">d1</strong> and set the client authentication timeout period to 30 seconds.<pre class="screen" id="EN-US_TASK_0000001513160170__screen1053449704180144">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b1533987517180144">dot1x-access-profile name d1</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000001513160170__b689716596509">dot1x authentication-method</strong><strong id="EN-US_TASK_0000001513160170__b9601131618511"> eap</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000001513160170__b1573614526571">dot1x timer client-timeout 30</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000001513160170__b1410559533180144">quit</strong></pre>
+</div>
+<p id="EN-US_TASK_0000001513160170__p1292376155180144"># Bind the 802.1X access profile <strong id="EN-US_TASK_0000001513160170__b16716940102114">d1</strong> to the authentication profile, and configure the forcible authentication domain <strong id="EN-US_TASK_0000001513160170__b57211440152117">example</strong> for users using the authentication profile.</p>
+<div class="note" id="EN-US_TASK_0000001513160170__note1884781495180144"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513160170__p2138793215180144">After a forcible domain is configured in an authentication profile, users using this authentication profile are authenticated in the domain regardless of whether the user names carry domain names or carry what kind of domain names.</p>
+</div></div>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen1710924719180144">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b172744446180144">authentication-profile name p1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001513160170__b587799873180144">dot1x-access-profile d1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001513160170__b1051051332180144">access-domain example force</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001513160170__b1133915802180144">quit</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p151072551669"># Configure the rights granted to users when RADIUS servers are faulty, and enable the re-authentication function when the RADIUS servers recover. In this example, service scheme-based authorization is used during user authentication bypass. For other authorization modes, see <a href="galaxy_nac_cfg_0057.html">(Optional) Configuring the Bypass Function</a>.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen184038391018">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b198478410713">acl 3001</strong>
+[DeviceA-acl-adv-3001] <strong id="EN-US_TASK_0000001513160170__b519419214714">rule 1 permit ip source 192.168.2.0 0.0.0.255</strong>
+[DeviceA-acl-adv-3001] <strong id="EN-US_TASK_0000001513160170__b284744578">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b594583944180144">aaa</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001513160170__b546560205180144">service-scheme s1</strong>
+[DeviceA-aaa-service-s1] <strong id="EN-US_TASK_0000001513160170__b1067898260180144">acl-id 3001</strong>
+[DeviceA-aaa-service-s1] <strong id="EN-US_TASK_0000001513160170__b1755487165180144">quit</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001513160170__b450050041180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513160170__b341516371020">authentication-profile name p1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001513160170__b341763181015">authentication event authen-server-down action authorize service-scheme s1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001513160170__b925184512267">authentication event authen-server-up action re-authen</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001513160170__b114205316102">quit</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p39478281277"># Disable the pre-connection function.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen555919314913">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b169561839996">undo authentication pre-authen-access enable</strong></pre>
+<p id="EN-US_TASK_0000001513160170__p763478640180144"># Bind the authentication profile <strong id="EN-US_TASK_0000001513160170__b5334154652714">p1</strong> to <span>10GE</span> <span>0/0/2</span> and enable 802.1X authentication on <span>10GE</span> <span>0/0/2</span>. The configurations of other interfaces connected to terminals are similar.</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen2130584234180144">[DeviceA] <strong id="EN-US_TASK_0000001513160170__b2143448839180144">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513160170__b1218115580180144">authentication-profile p1</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513160170__b130654807180144">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001513160170__example12926103720445"><a name="EN-US_TASK_0000001513160170__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol id="EN-US_TASK_0000001513160170__ol15667185017446"><li id="EN-US_TASK_0000001513160170__li18667550144410">A user starts a terminal and initiates 802.1X authentication. After the authentication is successful, the user can access the Internet.</li><li id="EN-US_TASK_0000001513160170__li466714505444">When the active RADIUS server is down, the standby RADIUS server authorizes the user so that the user can access the Internet. When both the active and standby RADIUS servers are down, the user enters the bypass state and can access specified network resources.</li><li id="EN-US_TASK_0000001513160170__li366725084414">After the user goes online, you can run the <strong id="EN-US_TASK_0000001513160170__b1691514432291">display access-user mac-address</strong> command on DeviceA to check online user information.</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001513160170__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><p id="EN-US_TASK_0000001513160170__p2511181132313">DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001513160170__screen1199955094318">#
+sysname DeviceA
+#
+undo authentication pre-authen-access enable 
+authentication-profile name p1
+ dot1x-access-profile d1
+ access-domain example force
+ authentication event authen-server-down action authorize service-scheme s1
+ authentication event authen-server-up action re-authen
+#
+vlan batch 10 20
+#
+acl 3001 
+ rule 1 permit ip source 192.168.2.0 0.0.0.255
+#
+aaa
+ authentication-scheme auth    
+  authentication-mode radius 
+ accounting-scheme acc
+  accounting-mode radius   
+ service-scheme s1 
+  acl-id 3001
+ domain example            
+  authentication-scheme auth
+  accounting-scheme acc
+  radius-server controller        
+# 
+radius-server template controller
+ radius-server shared-key cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!SKvr${[Fs.3t@/5k|BENhEu&gt;W(3\<font style="font-size:8pt" Face="Courier New" >~</font>XG!!D;!!!!!2jp5!!!!!!A!!!!3"pK8qv!}9M#(4$jGWvQF/R[CNe/+:W^jk8HUe&amp;W%+%#
+ radius-server accounting 10.7.66.66 1813 weight 80   
+ radius-server accounting 10.7.66.67 1813 weight 40 
+ radius-server authentication 10.7.66.66 1812 weight 80 
+ radius-server authentication 10.7.66.67 1812 weight 40   
+ radius-server testuser username test1 password cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!SKvr${[Fs.3t@/5k|BENhEu&gt;W(3\<font style="font-size:8pt" Face="Courier New" >~</font>XG!!D;!!!!!2jp5!!!!!!A!!!!3"pK8qv!}9M#(4$jGWvQF/R[CNe/+:W^jk8HUe&amp;W%+%#
+#
+dot1x-access-profile name d1
+ dot1x timer client-timeout 30 
+#
+interface Vlanif10
+ ip address 192.168.1.10 255.255.255.0
+#
+interface Vlanif20
+ ip address 192.168.2.10 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type hybrid
+ port hybrid pvid vlan 20
+ port hybrid untagged vlan 20
+ authentication-profile p1
+#
+ip route-static 10.7.66.0 255.255.255.0 192.168.1.1
+#
+return </pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_cfg_nac_0245.html">Configuration Examples for NAC
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="toctopics/en-us_task_0000002357763617.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="dc/dc_cfg_nac_0106p.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,103 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Configuring Eth-Trunk Auto-negotiation">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0015.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002293182157">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Configuring Eth-Trunk Auto-negotiation</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002293182157"></a><a name="EN-US_TASK_0000002293182157"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Configuring Eth-Trunk Auto-negotiation</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002293182157__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>An Eth-Trunk interface increases the link bandwidth by bundling a group of physical interfaces into a single logical interface, without needing to upgrade hardware. It also significantly improves link reliability through link backup. After Eth-Trunk auto-negotiation is configured in scenarios where multiple physical links exist between member devices, member devices automatically create an Eth-Trunk interface and add their interconnected physical interfaces to it, thereby forming a logical link.</p>
+<p>You can enable Eth-Trunk auto-negotiation using either of the following modes:</p>
+<ul><li>Configure Eth-Trunk auto-negotiation on the master device.</li><li>Configure Eth-Trunk auto-negotiation on each NE. An NE can function as the master device or a member device.</li></ul>
+<p>You can configure both modes simultaneously; however, only the latest configuration takes effect.</p>
+<div class="p">After the configuration is delivered in either mode, the Eth-Trunk interface configuration is automatically generated based on the LLDP neighbor packets exchanged between NEs. The interaction process is as follows:<ol><li>Eth-Trunk auto-negotiation is enabled on NE A and NE B.</li><li>NE A encapsulates information about the auto-negotiation status, whether a physical interface (the interface used by NE A to connect with NE B) is bound to the Eth-Trunk interface, and whether the Eth-Trunk interface is automatically aggregated into an LLDP packet and sends this packet to NE B.</li><li>Based on the information carried in the packet received from NE A and the status of the local interface (the interface used by NE B to connect with NE A), NE B determines whether to generate an Eth-Trunk interface and whether to bind the corresponding physical interface to the Eth-Trunk interface.</li><li>NE B automatically generates the Eth-Trunk interface configuration based on the calculation result.</li><li>Similarly, NE A (the neighbor of NE B) performs the same operations upon receiving an LLDP packet from NE B.</li></ol>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000002293182157__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure Eth-Trunk auto-negotiation on the master device.</span><p><ul><li>Configure Eth-Trunk auto-negotiation on the entire network.<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the net assistant view.<pre class="screen"><b><span class="net-assistant ">net-assistant</span></b></pre>
+<p>By default, the net assistant view is not displayed.</p>
+</li><li>Enter the network view.<pre class="screen"><b><span class="network">network</span></b></pre>
+<p>By default, the network view is not displayed.</p>
+</li><li>Configure auto-negotiation on the entire network.<pre class="screen"><b><span class="auto-link">auto-link eth-trunk-mode</span></b> { <strong><span>close</span></strong> | <strong><span>open</span></strong> | <strong><span>lock</span></strong> }</pre>
+<p>By default, Eth-Trunk auto-negotiation is disabled.</p>
+<p>If the <strong><span>open</span></strong> parameter is specified, Eth-Trunk auto-negotiation is enabled on the entire network. If the <strong><span>lock</span></strong> parameter is specified, Eth-Trunk auto-negotiation is locked on the entire network. In this case, new physical interfaces cannot be added to an Eth-Trunk interface. If the <strong><span>close</span></strong> parameter is specified, Eth-Trunk auto-negotiation is disabled on the entire network. In this case, physical interfaces on all devices cannot be added to Eth-Trunk interfaces.</p>
+</li></ol>
+</li><li>Configure Eth-Trunk auto-negotiation on a single member device.<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the net assistant view.<pre class="screen"><b><span class="net-assistant ">net-assistant</span></b></pre>
+<p>By default, the net assistant view is not displayed.</p>
+</li><li>Enter the device view.<pre class="screen"><b><span class="device">device</span></b></pre>
+<p>By default, the device view is not displayed.</p>
+</li><li>Approve the member device.<pre class="screen"><b><span class="device-granted">device-granted</span></b> <i><span class="varname">mac-addr</span></i> <strong><span>type</span></strong> <i><span class="varname">type-paravalue</span></i></pre>
+<p>By default, no device is approved.</p>
+</li><li>Configure Eth-Trunk auto-negotiation on the member device.<pre class="screen"><b><span class="auto-link">auto-link eth-trunk-mode</span></b> { <strong><span>close</span></strong> | <strong><span>open</span></strong> | <strong><span>lock</span></strong> }</pre>
+<p>By default, the Eth-Trunk auto-negotiation mode of a member device is the same as the network-wide auto-negotiation mode.</p>
+<p>The Eth-Trunk auto-negotiation configuration on a member device takes precedence over the network-wide Eth-Trunk auto-negotiation configuration.</p>
+<ul><li>If the <strong><span>open</span></strong> parameter is specified, Eth-Trunk auto-negotiation is enabled on the member device. If the <strong><span>lock</span></strong> parameter is specified, Eth-Trunk auto-negotiation is locked on the member device. In this case, new physical interfaces cannot be added to an Eth-Trunk interface. If the <strong><span>close</span></strong> parameter is specified, Eth-Trunk auto-negotiation is disabled on the member device. In this case, physical interfaces on the member device cannot be added to an Eth-Trunk interface.</li><li>The <b><span class="auto-link">undo auto-link eth-trunk-mode</span></b> command restores the Eth-Trunk auto-negotiation mode of the member device to the network-wide auto-negotiation mode. For example, if the Eth-Trunk auto-negotiation mode of a single member device is <strong>open</strong> and the network-wide Eth-Trunk auto-negotiation mode is <strong>lock</strong>, the Eth-Trunk auto-negotiation mode of the single member device changes to <strong>lock</strong> after the command is executed.</li></ul>
+</li></ol>
+</li></ul>
+</p></li><li><span>Configure Eth-Trunk auto-negotiation on an NE. In this mode, you need to log in to each NE for configuration. An NE can function as the master device or a member device.</span><p><ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Configure Eth-Trunk auto-negotiation on the device.<pre class="screen"><b><span class="cmdqueryname">auto-link aggregation</span></b>  { <strong><span>open</span></strong> | <strong><span>lock</span></strong> } </pre>
+<p>By default, Eth-Trunk auto-negotiation is disabled.</p>
+<ul><li>If the <strong><span>open</span></strong> parameter is specified, Eth-Trunk auto-negotiation is enabled on a single NE. If the <strong><span>lock</span></strong> parameter is specified, Eth-Trunk auto-negotiation is disabled on the current NE. New physical interfaces cannot be added to an Eth-Trunk interface.</li><li>After the negotiation is successful, the <b><span class="cmdqueryname">auto-link aggregation</span></b> command configuration is automatically generated in the Eth-Trunk interface view, indicating that the Eth-Trunk interface configuration is generated through auto-negotiation rather than manual configuration.</li></ul>
+</li></ol>
+<p></p>
+</p></li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Net_Assistant_cfg_0007.html">Configuring Net Assistant
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Net_Assistant_cfg_0015.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="L2TP Implementation">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001930119765.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001884280598.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001930079449">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>L2TP Implementation</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001930079449"></a><a name="EN-US_CONCEPT_0000001930079449"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">L2TP Implementation</h1>
+<div><div class="section"><h4 class="sectiontitle">Typical Networking</h4><p><a href="#EN-US_CONCEPT_0000001930079449__fig179292015255">Figure 1</a> shows the typical L2TP networking. An enterprise branch establishes an L2TP connection with the HQ through the Internet. The devices involved in the networking include the L2TP access concentrator (LAC) and L2TP network server (LNS).</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001930079449__fig179292015255"><a name="EN-US_CONCEPT_0000001930079449__fig179292015255"></a><a name="fig179292015255"></a><span class="figcap"><b>Figure 1 </b>Typical L2TP networking</span><br><span><img src="../images/en-us_image_0000001895331102.png"></span></div>
+<p><strong>LAC</strong></p>
+<p>An LAC, also known as an L2TP client, is a device that has PPP and L2TP processing capabilities. It establishes an L2TP connection with an LNS based on the user name or domain name in PPP packets to extend PPP negotiation to the LNS. An L2TP client is typically the gateway of an enterprise branch.</p>
+<p>An L2TP client can establish multiple L2TP tunnels to isolate data flows.</p>
+<p><strong>LNS</strong></p>
+<p>An LNS acts as the side that terminates a PPP session. After passing the authentication performed by an LNS and succeeding in PPP session negotiation, an enterprise branch can access resources at the enterprise HQ. For L2TP negotiation, the LNS is the peer device of the L2TP client, and L2TP tunnels can be established between the L2TP client and LNS. For a PPP session, the LNS is the logical termination endpoint of the PPP session, and a point-to-point virtual link can be established between a PPP terminal and the LNS.</p>
+<p>The LNS is located at the border between the HQ private network and the public network, and typically functions as the HQ gateway. If required, the LNS provides the network address translation (NAT) function to translate private IP addresses on the HQ network into public IP addresses.</p>
+<p><strong>Tunnel and session</strong></p>
+<p>There are two types of connections during the L2TP interaction between the L2TP client and LNS.</p>
+<ul><li>Tunnel connection<p>Multiple L2TP tunnels can be established between a pair of L2TP client and LNS. An L2TP tunnel can contain multiple L2TP sessions.</p>
+</li><li>Session connection<p>An L2TP session is carried over an L2TP tunnel after the tunnel is successfully established. Each L2TP session corresponds to a PPP session. Data frames of the PPP session are transmitted through the L2TP tunnel over which the L2TP session is carried.</p>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">L2TP Tunnel Negotiation</h4><p>After L2TP is configured on the L2TP client and LNS, the L2TP client sends a tunnel negotiation request to the LNS. <a href="#EN-US_CONCEPT_0000001930079449__fig_dc_fd_l2tp_000301">Figure 2</a> shows the tunnel negotiation process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001930079449__fig_dc_fd_l2tp_000301"><a name="EN-US_CONCEPT_0000001930079449__fig_dc_fd_l2tp_000301"></a><a name="fig_dc_fd_l2tp_000301"></a><span class="figcap"><b>Figure 2 </b>L2TP tunnel establishment process</span><br><span><img src="../images/en-us_image_0000001936457468.png"></span></div>
+<div class="p"><ol><li><p>The L2TP client establishes an L2TP tunnel with the LNS.</p>
+</li><li><p>The L2TP client establishes an L2TP session with the LNS.</p>
+<p>The L2TP session is used to record and manage the status of a PPP connection, which will be established between the L2TP client with the LNS in step 3. In this context, both ends of the tunnel need to negotiate an L2TP session before establishing a PPP connection.</p>
+</li><li><p>The L2TP client establishes a PPP connection with the LNS.</p>
+<p>The L2TP client obtains a private IP address assigned by the LNS through the PPP connection.</p>
+</li><li><p>An employee in the enterprise branch sends service packets to the server in the enterprise HQ. The packets are encapsulated and decapsulated by the L2TP client and LNS before reaching the peer end.</p>
+</li></ol>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">L2TP Protocol Architecture</h4><p>L2TP involves two types of messages: control messages and data messages. These messages are transmitted between the L2TP client and LNS. L2TP extends PPP applications through the two types of messages.</p>
+<ul><li>Control message<p>Used to establish, maintain, and tear down L2TP tunnels and session connections. During the transmission of control messages, mechanisms such as message retransmission and periodic tunnel connectivity check are used to ensure reliable transmission of control messages, and flow control and congestion control are supported for control messages.</p>
+</li><li>Data message<p>Used to encapsulate PPP data frames and transmitted over tunnels. Data messages are transmitted unreliably because lost data messages are not retransmitted. Flow control and congestion control are not supported for data messages.</p>
+</li></ul>
+<p><a href="#EN-US_CONCEPT_0000001930079449__fig6447101315519">Figure 3</a> illustrates the positions and relationships of PPP frames, control messages, and data messages in the L2TP protocol architecture.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001930079449__fig6447101315519"><a name="EN-US_CONCEPT_0000001930079449__fig6447101315519"></a><a name="fig6447101315519"></a><span class="figcap"><b>Figure 3 </b>L2TP protocol architecture</span><br><span><img src="../images/en-us_image_0000001930331137.png"></span></div>
+<p>Control messages are carried over an L2TP control channel for reliable transmission, encapsulated in L2TP headers, and then transmitted over an IP network.</p>
+<p>Data messages carrying L2TP-encapsulated PPP frames are transmitted over an unreliable data channel and then transmitted over an IP network.</p>
+<p>L2TP uses UDP port 1701, which is used only for initial tunnel establishment. The L2TP tunnel initiator randomly selects an idle port to send packets to port 1701 of the tunnel terminator. After receiving the packets, the tunnel terminator randomly selects an idle port to send packets to the selected port of the L2TP tunnel initiator. Both ends use the selected ports to communicate until the tunnel is torn down.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">L2TP Packet Structure</h4><p><a href="#EN-US_CONCEPT_0000001930079449__fig78806343566">Figure 4</a> shows the format of L2TP-encapsulated PPP frames generated during dial-up of remote users.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001930079449__fig78806343566"><a name="EN-US_CONCEPT_0000001930079449__fig78806343566"></a><a name="fig78806343566"></a><span class="figcap"><b>Figure 4 </b>L2TP packet format</span><br><span><img src="../images/en-us_image_0000001930333289.png"></span></div>
+<p>An L2TP packet is encapsulated multiple times and is 38 bytes longer than the original packet (42 bytes longer than the original packet if the packet needs to carry the sequence number). This may result in the encapsulated packet being longer than the MTU of the transmitting interface. L2TP does not support packet fragmentation, and so the device must support IP packet fragmentation. When the length of an L2TP packet exceeds the MTU of the transmitting interface, the interface fragments the packet. The receiving interface then reassembles the received fragments into an L2TP packet.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">L2TP Packet Encapsulation</h4><p><a href="#EN-US_CONCEPT_0000001930079449__fig_dc_fd_l2tp_000303">Figure 5</a> shows the packet encapsulation and decapsulation process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001930079449__fig_dc_fd_l2tp_000303"><a name="EN-US_CONCEPT_0000001930079449__fig_dc_fd_l2tp_000303"></a><a name="fig_dc_fd_l2tp_000303"></a><span class="figcap"><b>Figure 5 </b>Packet encapsulation process</span><br><span><img src="../images/en-us_image_0000001963525433.png"></span></div>
+<div class="p"><ol><li><p>An employee in the enterprise branch sends a request packet to access an intranet server at the enterprise HQ.</p>
+<p>The PC of the employee forwards the request packet to the L2TP client based on the local route.</p>
+</li><li><p>The L2TP client receives the packet and performs PPP encapsulation and L2TP encapsulation on the packet through a dialer interface.</p>
+<p>The L2TP client sends the encapsulated packet based on the public network route destined for the Internet.</p>
+</li><li>The LNS receives the packet, removes the L2TP header and PPP header from the packet, and forwards the packet to the HQ intranet server based on the route destined for the intranet.</li><li>The HQ intranet server receives the packet and returns a response packet to the PC of the employee.</li></ol>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_concept_0000001930119765.html">Understanding L2TP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_concept_0000001884280598.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

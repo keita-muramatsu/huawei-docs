@@ -1,0 +1,371 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Example for Configuring Roaming on a Network with Both Fat and Fit APs (Fat AP)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001538075105.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001961815748.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000002210368849">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Roaming on a Network with Both Fat and Fit APs (Fat AP)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000002210368849"></a><a name="EN-US_TOPIC_0000002210368849"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Roaming on a Network with Both Fat and Fit APs (Fat AP)</h1>
+<div><div class="section"><h4 class="sectiontitle">Applicable Products and Versions</h4><p>This example applies to AR routers that run V600R024C10 and later versions and contain <strong>W</strong> in the model name (for example, AR5710-S8T1X<strong>W</strong>E).</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Overview</h4><p>This section provides a typical example for configuring roaming on a network with both Fat and Fit APs. It presents a detailed plan of WLAN network deployment on routers at the branch and HQ, provides the configuration example based on the plan, and offers references for networking planning and device configuration.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Networking Requirements</h4><p>A small enterprise needs to provide WLAN services for its employees and requires nonstop service transmission when the employees move within the enterprise. Because only a small area requires WLAN coverage, one Fat AP and one Fit AP can be deployed to cover the office area.</p>
+<div class="p">As shown in <a href="#EN-US_TOPIC_0000002210368849__fig115376256474">Figure 1</a>, the Fat AP functions as an enterprise gateway, and the Fat AP and Fit AP provide WLAN services.<div class="fignone" id="EN-US_TOPIC_0000002210368849__fig115376256474"><a name="EN-US_TOPIC_0000002210368849__fig115376256474"></a><a name="fig115376256474"></a><span class="figcap"><b>Figure 1 </b>Network diagram of hybrid deployment with a Fat AP and a Fit AP</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent MultiGE0/0/0 and GE0/0/1, respectively.</p>
+<p>NAT is configured on interface1, the public IP address is set to 1.1.1.1/24, and the IP address of the peer carrier device is set to 1.1.1.2/24. The Fat AP is connected to the Fit AP through interface2.</p>
+</div></div>
+<br><span><img src="../images/en-us_image_0000002175167242.png" width="NaN" height="NaN"></span></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure an IP address and TCP Maximum Segment Size (TCP-MSS) for the WAN-side interface of the Fat AP, and configure source NAT to translate private addresses into public addresses for Internet access.</li><li>Configure a DHCP server on the LAN side of the Fat AP to assign IP addresses to STAs, and configure a default route to ensure that STAs connected to the Fat AP can communicate with the Internet.</li><li>Configure the Fit AP to go online.<ol type="a"><li>Add the Fat AP and Fit AP to an AP group for unified configuration.</li><li>Import the Fit AP so that it can go online.</li></ol>
+</li><li>Configure basic WLAN functions so that STAs can access the WLAN.</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Data Planning</h4>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Data planning</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="41.46%" id="mcps1.3.5.2.2.3.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="58.540000000000006%" id="mcps1.3.5.2.2.3.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>Management VLAN for APs</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><p>VLAN 4094, which exists on a Fat AP by default and does not need to be configured</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>Service VLAN for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><p>VLAN 100</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>DHCP server</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><p>The Fat AP functions as a DHCP server to assign IP addresses to APs and STAs.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>IP address pool for APs</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><p>169.254.255.2–169.254.255.254/24, which exists on a Fat AP by default and does not need to be configured</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>IP address pool for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><p>VLANIF 100: 192.168.100.2–192.168.100.254/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>CAPWAP source interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><p>VLANIF 4094, which exists on a Fat AP by default and does not need to be configured</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>AP group</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><ul><li>Name: <strong>built_in_ap</strong>, which a Fat AP joins by default</li><li>Referenced profiles: VAP profile <strong>wlan-net</strong> and regulatory domain profile <strong>default</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>Regulatory domain profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><ul><li>Name: <strong>default</strong></li><li>Country code: CN</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>SSID profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><ul><li>Name: <strong>wlan-net</strong></li><li>SSID name: <strong>wlan-net</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>Security profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><ul><li>Name: <strong>wlan-net</strong></li><li>Security policy: WPA-WPA2+PSK+AES</li><li>Password: <span><strong>YsHsjx_202206</strong></span></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="41.46%" headers="mcps1.3.5.2.2.3.1.1 "><p>VAP profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="58.540000000000006%" headers="mcps1.3.5.2.2.3.1.2 "><ul><li>Name: <strong>wlan-net</strong></li><li>Service VLAN: VLAN 100</li><li>Referenced profiles: SSID profile <strong>wlan-net</strong> and security profile <strong>wlan-net</strong></li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Precautions</h4><ul><li>In the factory configuration file, the CAPWAP source interface is VLANIF 4094 for a Fat AP, and the management VLAN for a built-in AP or a Fit AP is VLAN 4094. Configure the interface that directly connects the Fat AP to the Fit AP to allow packets from management VLAN 4094 to pass through. In this case, VLAN 4094 cannot be used as the service VLAN for STAs. Therefore, to use VLAN 4094 as the service VLAN for STAs, you must change the management VLAN to another VLAN.</li><li>By default, a Fat AP is added to the AP group <strong>built_in_ap</strong>. If you create an AP group and add the Fat AP to it, the built-in AP goes offline and then online again.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li>On the Fat AP, configure an IP address and TCP-MSS for the WAN-side interface, and configure source NAT.<div class="p"># Configure an IP address and TCP-MSS for MultiGE0/0/0 on the Fat AP, and enable NAT on the interface.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname FAT AP</strong>
+[FAT AP] <strong>interface MultiGE0/0/0</strong>
+[FAT AP-MultiGE0/0/0] <strong>ip address 1.1.1.1 24</strong>
+[FAT AP-MultiGE0/0/0] <strong>tcp adjust-mss 1200</strong>
+[FAT AP-MultiGE0/0/0] <strong>nat enable</strong>
+[FAT AP-MultiGE0/0/0] <strong>quit</strong></pre>
+</div>
+<div class="p"># Configure a source NAT policy in Easy IP mode on the Fat AP.<pre class="screen">[FAT AP] <strong>nat-policy</strong>
+[FAT AP-policy-nat] <strong>rule name policy_nat1</strong>
+[FAT AP-policy-nat-rule-policy_nat1] <strong>source-address any</strong>
+[FAT AP-policy-nat-rule-policy_nat1] <strong>action source-nat easy-ip</strong>
+[FAT AP-policy-nat-rule-policy_nat1] <strong>quit</strong>
+[FAT AP-policy-nat]<strong> </strong><strong>quit</strong></pre>
+</div>
+</li><li>Configure the DHCP server on the Fat AP.<div class="p"># Add VGE0/0/0 and GE0/0/1 connected to the Fit AP to VLAN 100 in tagged mode, and allow packets from management VLAN 4094 to pass through.<pre class="screen">[FAT AP] <strong>vlan batch 100</strong>
+[FAT AP]<strong> interface VGE 0/0/0</strong>
+[FAT AP-VGE0/0/0] <strong>port hybrid tagged vlan 100</strong>
+[FAT AP-VGE0/0/0] <strong>quit</strong>
+[FAT AP]<strong> interface GE 0/0/1</strong>
+[FAT AP-GE0/0/1] <strong>port hybrid tagged vlan 100</strong>
+[FAT AP-GE0/0/1] <strong>port hybrid pvid vlan 4094</strong>
+[FAT AP-GE0/0/1] <strong>port hybrid untagged vlan 4094</strong>
+[FAT AP-GE0/0/1] <strong>quit</strong></pre>
+</div>
+<div class="p"># On the Fat AP, configure VLANIF 100 to assign IP addresses to STAs and configure a default route with the next hop being the IP address of the carrier device.<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><div class="p">Configure a DNS server address as required. The common methods are as follows:<ul><li>In an interface address pool scenario, run the <b><span class="cmdqueryname">dhcp server dns-list</span></b> <i><span class="varname">ip-address</span></i> &amp;&lt;1-8&gt; command in the VLANIF interface view.</li><li>In a global address pool scenario, run the <b><span class="cmdqueryname">dns-list</span></b> <i><span class="varname">ip-address</span></i> &amp;&lt;1-8&gt; command in the IP address pool view.</li></ul>
+</div>
+</div></div>
+<pre class="screen">[FAT AP] <strong>dhcp enable</strong>
+[FAT AP] <strong>interface vlanif 100</strong>
+[FAT AP-Vlanif100] <strong>ip address 192.168.100.1 24</strong>
+[FAT AP-Vlanif100] <strong>dhcp select interface</strong>
+[FAT AP-Vlanif100] <strong>quit</strong>
+[FAT AP] <strong>ip route-static 0.0.0.0 0.0.0.0 1.1.1.2</strong></pre>
+</div>
+</li><li>Configure the Fit AP to go online.<ol type="a"><li>Create an AP group and add the Fat AP and Fit AP to the group for unified configuration.<pre class="screen">[FAT AP] <strong>wlan</strong>
+[FAT AP-wlan]<strong> ap-group name default</strong>
+[FAT AP-wlan-ap-group-default]<strong> quit</strong>
+[FAT AP-wlan] <strong>quit</strong></pre>
+<div class="p"># Create a regulatory domain profile, configure a country code in the profile, and bind the profile to the AP group.<pre class="screen">[FAT AP]<strong> wlan</strong>
+[FAT AP-wlan] <strong>regulatory-domain-profile name default</strong>
+[FAT AP-<span>wlan-regulate-domain</span>-default] <strong>country-code cn</strong>
+[FAT AP-<span>wlan-regulate-domain</span>-default] <strong>quit</strong>
+[FAT AP-wlan] <strong>ap-group name default</strong>
+[FAT AP-wlan-ap-group-default] <strong>regulatory-domain-profile default</strong>
+Warning: This configuration change will clear the channel and power configurations of radios, and may restart APs. Continue? [Y/N]:<strong>y</strong>
+[FAT AP-wlan-ap-group-default]<strong> quit</strong>
+[FAT AP-wlan] <strong>quit</strong>
+[FAT AP]</pre>
+</div>
+</li><li>Import the Fit AP so that it can go online.<pre class="screen">[FAT AP] <strong>wlan</strong>
+[FAT AP-wlan] <strong>ap auth-mode mac-auth</strong>
+[FAT AP-wlan]<strong> ap-id 1 ap-mac 64c3-9408-c6d0</strong>
+[FAT AP-wlan-ap-1] <strong>ap-name ap2</strong>
+[FAT AP-wlan-ap-1] <strong>ap-group default</strong>
+Warning: This operation may cause AP to go offline and then online. If the country code changes, it will clear channel, power and antenna gain configurations of the radio, Whether to continue? [Y/N]:<strong>y</strong>
+[FAT AP-wlan-ap-1] <strong>quit</strong>
+[FAT AP-wlan]</pre>
+<div class="p"># Add the Fat AP to the same AP group.<pre class="screen">[FAT AP-wlan]<strong> ap-id 0 ap-mac 00fc-2255-3500</strong>
+[FAT AP-wlan-ap-0] <strong>ap-group default</strong>
+Warning: This operation may cause AP to go offline and then online. If the country code changes, it will clear channel, power and antenna gain configurations of the radio, Whether to continue? [Y/N]:<strong>y</strong>
+[FAT AP-wlan-ap-0] <strong>quit</strong>
+[FAT AP-wlan]</pre>
+</div>
+<div class="p"># Power on the Fat AP, and then run the <strong>display ap all</strong> command to check the AP status. If the <strong>State</strong> field in the command output is displayed as <strong>nor</strong>, the AP has gone online.<pre class="screen">[FAT AP-wlan] <strong>display ap all</strong>
+Total AP information:
+nor   : normal          [2]
+ExtraInfo : Extra information
+Total: 2
+-----------------------------------------------------------------------------------------------------------------
+ID    MAC            Name        Group   IP            Type              State  STA  Uptime     ExtraInfo
+-----------------------------------------------------------------------------------------------------------------
+0     00fc-2255-3500 built_in_ap default 169.254.255.78  AR5710-S8T1XWE    nor    0    1M:30S     -
+1     64c3-9408-c6d0 ap2         default 169.254.255.245 AirEngine5773-22P nor    0    9H:58M:51S -
+-----------------------------------------------------------------------------------------------------------------</pre>
+</div>
+</li></ol>
+</li><li>Configure basic WLAN functions so that STAs can access the WLAN.<div class="p"># Create the security profile <span class="parmvalue"><b>wlan-net</b></span> and configure a security policy in the profile.<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, the security policy is set to WPA-WPA2+PSK+AES and the password to <span><strong>YsHsjx_202206</strong></span>. In actual situations, configure the security policy based on service requirements.</p>
+</div></div>
+<pre class="screen">[FAT AP] <strong>wlan</strong>
+[FAT AP-wlan] <strong>security-profile name wlan-net</strong>
+[FAT AP-wlan-sec-prof-wlan-net] <strong>security wpa-wpa2 psk pass-phrase YsHsjx_202206 aes</strong>
+[FAT AP-wlan-sec-prof-wlan-net] <strong>quit</strong></pre>
+</div>
+<div class="p"># Create the SSID profile <span class="parmvalue"><b>wlan-net</b></span> and set the SSID name to <span class="parmvalue"><b>wlan-net</b></span>.<pre class="screen">[FAT AP-wlan] <strong>ssid-profile name wlan-net</strong>
+[FAT AP-wlan-ssid-prof-wlan-net] <strong>ssid wlan-net</strong>
+[FAT AP-wlan-ssid-prof-wlan-net] <strong>quit</strong></pre>
+</div>
+<p># Create the VAP profile <span class="parmvalue"><b>wlan-net</b></span>, set the service data forwarding mode and service VLAN, and bind the security profile and SSID profile to the VAP profile.</p>
+<pre class="screen">[FAT AP-wlan] <strong>vap-profile name wlan-net</strong>
+[FAT AP-wlan-vap-prof-wlan-net] <strong>service-vlan vlan-id 100</strong>
+[FAT AP-wlan-vap-prof-wlan-net] <strong>security-profile wlan-net</strong>
+[FAT AP-wlan-vap-prof-wlan-net] <strong>ssid-profile wlan-net</strong>
+[FAT AP-wlan-vap-prof-wlan-net] <strong>quit</strong></pre>
+<p># Bind the VAP profile <strong>wlan-net</strong> to radios 0 and 1 of APs in the AP group.</p>
+<pre class="screen">[FAT AP-wlan] <strong>ap-group name default</strong>
+[FAT AP-wlan-ap-group-default] <strong>vap-profile wlan-net wlan 1 radio 0</strong>
+[FAT AP-wlan-ap-group-default] <strong>vap-profile wlan-net wlan 1 radio 1</strong>
+[FAT AP-wlan-ap-group-default] <strong>quit</strong>
+[FAT AP-wlan]</pre>
+</li><li>Enable radio calibration to allow APs to automatically select the optimal channels and power.<pre class="screen">[FAT AP-wlan]<strong> ap-group name default</strong>
+[FAT AP-wlan-ap-group-default]<strong> radio 0</strong>
+[FAT AP-wlan-ap-group-default-radio-0] <strong>calibrate auto-channel-select enable</strong>
+[FAT AP-wlan-ap-group-default-radio-0] <strong>calibrate auto-txpower-select enable</strong>
+[FAT AP-wlan-ap-group-default-radio-0] <strong>quit</strong>
+[FAT AP-wlan-ap-group-default] <strong>radio 1</strong>
+[FAT AP-wlan-ap-group-default-radio-1] <strong>calibrate auto-channel-select enable</strong>
+[FAT AP-wlan-ap-group-default-radio-1] <strong>calibrate auto-txpower-select enable</strong>
+[FAT AP-wlan-ap-group-default-radio-1] <strong>quit</strong>
+[FAT AP-wlan-ap-group-default] <strong>quit</strong>
+[FAT AP-wlan]</pre>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Verifying the Configuration</h4><div class="p"># After the configuration is complete, run the <strong>display vap ssid wlan-net</strong> command to check VAP profile information. If the <strong>Status</strong> field in the command output is displayed as <strong>ON</strong>, the VAP profile has been successfully created for the corresponding AP radios.<pre class="screen">[FAT AP]<strong> display vap ssid wlan-net     </strong>                                                                                              
+WID : WLAN ID                                                                                                                       
+Total: 4                                                                                                                            
+-------------------------------------------------------------------------------------------                                         
+AP ID AP name     RfID WID  BSSID          Status  Auth type     STA   SSID      Radio Type                                         
+-------------------------------------------------------------------------------------------                                         
+0     built_in_ap 0    1    00FC-2255-3500 ON      WPA/WPA2-PSK  0     wlan-net  11be                                               
+0     built_in_ap 1    1    00FC-2255-3510 ON      WPA/WPA2-PSK  0     wlan-net  11be                                               
+1     ap2         0    1    64C3-9408-C6D0 ON      WPA/WPA2-PSK  0     wlan-net  11be                                               
+1     ap2         1    1    64C3-9408-C6E0 ON      WPA/WPA2-PSK  1     wlan-net  11be                                               
+-------------------------------------------------------------------------------------------</pre>
+</div>
+<div class="p"># STAs can discover the WLAN with the SSID <strong>wlan-net</strong> in the coverage area of the Fat AP. After the correct password <strong>YsHsjx_202206</strong> is entered on the STAs, they associate with the Fat AP. Then run the <strong>display station ssid wlan-net</strong> command on the Fat AP to check access information about the STAs.<pre class="screen">[FAT AP] <strong>display station ssid wlan-net </strong>
+Rf/WLAN: Radio ID/WLAN ID                                                     
+Rx/Tx: link receive rate/link transmit rate(Mbps)                             
+Total: 9 2.4G: 1 5G: 8 6G: 0
+---------------------------------------------------------------------------------------------
+STA MAC          AP ID Ap name     Rf/WLAN  Band  Type  Rx/Tx      RSSI  VLAN  IP address            
+---------------------------------------------------------------------------------------------
+12e2-350c-730a   0     built_in_ap 0/1      2.4G  11ax  14/58      -87   100   192.168.100.35         
+46b5-06b6-616a   0     built_in_ap 1/1      5G    11ax  6/458      -35   100   192.168.100.96         
+5a23-f7f1-fbe8   1     ap2         1/1      5G    -     -/-        -     100   192.168.100.49         
+b227-daba-1c5b   1     ap2         1/1      5G    11ax  390/325    -61   100   192.168.100.220        
+b27a-eac4-1d39   1     ap2         1/1      5G    -     -/-        -     100   192.168.100.44         
+c611-79e4-e223   1     ap2         1/1      5G    -     -/-        -     100   192.168.100.100        
+e62c-b93e-05e2   1     ap2         1/1      5G    11be  6/412      -50   100   192.168.100.240        
+f287-6a88-8c30   0     built_in_ap 1/1      5G    11be  6/234      -51   100   192.168.100.192        
+f2ad-3185-8140   0     built_in_ap 1/1      5G    11be  6/458      -38   100   192.168.100.101        
+---------------------------------------------------------------------------------------------</pre>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4><div class="p">Fat AP<pre class="screen">#
+sysname FAT AP
+#
+vlan batch 100
+#
+dhcp enable
+#
+interface Vlanif100
+ ip address 192.168.100.1 255.255.255.0
+ dhcp select interface
+#
+interface MultiGE0/0/0                                                                                                              
+ ip address 1.1.1.1 255.255.255.0                                                                                                   
+ nat enable                                                                                                                         
+ tcp adjust-mss 1200 
+#
+interface VGE0/0/0                                                                                                                  
+ portswitch                                                                                                                         
+ description Connected to built_in_ap                                                                                               
+ port hybrid pvid vlan 4094                                                                                                         
+ port hybrid tagged vlan 1 100                                                                                                      
+ port hybrid untagged vlan 4094
+<sup>#</sup>
+interface GE0/0/1
+ portswitch                                                                                                                         
+ port hybrid tagged vlan 100 
+ port hybrid pvid vlan 4094
+ port hybrid untagged vlan 4094
+#
+ip route-static 0.0.0.0 0.0.0.0 1.1.1.2
+#
+nat-policy                                                                                                                          
+ rule name policy_nat1                                                                                                               
+  action source-nat easy-ip                                                                                                         
+#
+capwap source interface vlanif 4094
+#
+wlan                                                                                                                                
+ traffic-profile name default                                                                                                       
+ security-profile name default                                                                                                      
+ security-profile name wlan-net                                                                                                     
+ security wpa-wpa2 psk pass-phrase %+%##!!!!!!!!!"!!!!"!!!!*!!!!7LTnVOK_g:srhRX8&lt;E+A%w7dOASw5$GAz_(!!!!!2jp5!!!!!!:!!!!&amp;]{,'_ev)65z
+{d'*UA-3,-PdA3;Tf6<font style="font-size:8pt" Face="Courier New" >~</font>D9&gt;C!!!!!%+%# aes                                                                                                
+ security-profile name built_in_ap                                                                                                  
+  security wpa2 psk pass-phrase %+%##!!!!!!!!!"!!!!"!!!!*!!!!7LTnVOK_g:fwV#*S<font style="font-size:8pt" Face="Courier New" >~</font>Mk#NEG6HYj_t+2vO[Q!!!!!2jp5!!!!!!9!!!!\1'jQyXC/PGckf6k
+p.66@q%:Gz{x8$!!!!!!!!!!%+%# aes                                                                                                    
+ ssid-profile name default                                                                                                          
+ ssid-profile name wlan-net                                                                                                         
+  ssid wlan-net                                                                                                                     
+ ssid-profile name built_in_ap                                                                                                      
+  ssid PnP_757933                                                                                                                   
+ vap-profile name default                                                                                                           
+ vap-profile name wlan-net                                                                                                          
+  service-vlan vlan-id 100                                                                                                          
+  ssid-profile wlan-net                                                                                                             
+  security-profile wlan-net                                                                                                         
+ vap-profile name built_in_ap                                                                                                       
+  ssid-profile built_in_ap                                                                                                          
+  security-profile built_in_ap                                                                                                      
+ regulatory-domain-profile name default                                                                                             
+ air-scan-profile name default                                                                                                      
+ rrm-profile name default                                                                                                           
+ radio-2g-profile name default                                                                                                      
+ radio-5g-profile name default                                                                                                      
+ ap-system-profile name default                                                                                                     
+ port-link-profile name default                                                                                                     
+ wired-port-profile name default                                                                                                    
+ ap auth-mode no-auth                                                                                                               
+ ap-group name default                                                                                                              
+  radio 0                                                                                                                           
+   vap-profile wlan-net wlan 1                                                                                                      
+  radio 1                                                                                                                           
+   vap-profile wlan-net wlan 1                                                                                                      
+ ap-group name built_in_ap                                                                                                          
+  radio 0                                                                                                                           
+   vap-profile built_in_ap wlan 1                                                                                                   
+  radio 1                                                                                                                           
+   vap-profile built_in_ap wlan 1                                                                                                   
+ ap-id 0 type-id 15 ap-mac 00fc-2255-3500 ap-sn 102428757933                                                                        
+  ap-name built_in_ap                                                                                                               
+ ap-id 1 type-id 219 ap-mac 64c3-9408-c6d0 ap-sn 4E2460117367                                                                       
+  ap-name ap2                                                                                                                       
+ provision-ap                                                                                                                       
+#                                                                                                                                   
+return </pre>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_topic_0000001538075105.html">Comprehensive Scenario Cases
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_topic_0000001961815748.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

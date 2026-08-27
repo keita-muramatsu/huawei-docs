@@ -1,0 +1,103 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="IFIT Packet Format">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ifit_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ifit_cfg_0010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001863895716">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>IFIT Packet Format</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001863895716"></a><a name="EN-US_CONCEPT_0000001863895716"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">IFIT Packet Format</h1>
+<div><p><a href="#EN-US_CONCEPT_0000001863895716__fig12261113820155">Figure 1</a> shows the structure of an IFIT packet header on an SRv6 network. <a href="#EN-US_CONCEPT_0000001863895716__table12744456166">Table 1</a> describes the fields in the IFIT packet header.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001863895716__fig12261113820155"><a name="EN-US_CONCEPT_0000001863895716__fig12261113820155"></a><a name="fig12261113820155"></a><span class="figcap"><b>Figure 1 </b>IFIT packet header structure</span><br><span><img class="imgResize" src="figure/en-us_image_0000001909855765.png" width="523.6875" height="457.66895999999997" title="Click to enlarge"></span></div>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001863895716__table12744456166"></a><a name="table12744456166"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001863895716__table12744456166" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Fields in an IFIT packet header</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="25.69%" id="mcps1.3.3.2.3.1.1" liSelected="liSelected"><p>Field</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="74.31%" id="mcps1.3.3.2.3.1.2" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="25.69%" headers="mcps1.3.3.2.3.1.1 "><p>Guiding label</p>
+</td>
+<td class="cellrowborder" valign="top" width="74.31%" headers="mcps1.3.3.2.3.1.2 "><ul><li>Type: 130, indicating the start of the IFIT packet header.</li><li>Length: indicates the total length of the IFIT packet header.</li><li>Rsv: indicates bits reserved for future extension.</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="25.69%" headers="mcps1.3.3.2.3.1.1 "><p>Basic header</p>
+</td>
+<td class="cellrowborder" valign="top" width="74.31%" headers="mcps1.3.3.2.3.1.2 "><ul><li>Flow ID/Flow ID Ext: uniquely identifies a service flow on the entire network in a measurement domain.</li><li>L: loss flag, indicating packet loss measurement.</li><li>D: delay flag, indicating delay measurement. The default value is 0. If this field is set to 1, timestamp information needs to be reported to the analyzer.</li><li>S/R: If the guiding label is the bottommost label, R is carried and is set to 1. If the guiding label is not the bottommost label, S is carried and is set to 0. The default value is 1. Currently, the value of this field can only be set to 1.</li><li>NextHeader: indicates whether an extension header is carried. Currently, only 0x09 (data-plane protocol extension) is supported.</li><li>E: indicates the measurement mode, including the hop-by-hop mode and E2E mode. The value 1 indicates the E2E mode.<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p>Only the E2E mode is supported in an IFIT tunnel-level quality measurement scenario.</p>
+</div></div>
+</li><li>P: used for IPv4 encapsulation to prevent incorrect matching of Probe Marker. The value 1 indicates incorrect matching. In this case, measurement is not performed. (Currently, this field is not supported.)</li><li>F: indicates the forward flow flag. The value 1 indicates the forward flow.</li><li>Len: indicates the extended length. The 16-bit Trace Type field is reserved in the Len field and consists of 15 metadata fields and one control field. The Len value is expressed in 4 bytes. The Len value is 1 if there is no metadata field.</li><li>R/Rsv: indicates bits reserved for future extension.</li><li>Trace Type (bitmap): metadata indication bit, which is represented by a bitmap. A maximum of 16 types of extension are supported, such as Sequence and control fields.</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="25.69%" headers="mcps1.3.3.2.3.1.1 "><p>Extension header</p>
+</td>
+<td class="cellrowborder" valign="top" width="74.31%" headers="mcps1.3.3.2.3.1.2 "><ul><li>Bit0: It is used to measure the packet-by-packet delay. If it is set to 1, the timestamp is valid and occupies 6 bytes. The first 2 bytes indicate second, and the last 4 bytes indicate nanosecond. (This field is not supported currently.)</li><li>Bit1: control field, which is used to carry control information such as backward flow creation and synchronization period.<ul><li>DIP/SIP Mask: indicates the mask length of an IPv4 or IPv6 address. (This field is not supported currently.)</li><li>Proto/Ports: indicates the protocol number, source port number at the transport layer, and destination port number at the transport layer. The value 1 indicates that the corresponding bit is valid. For example, the value 0b101 indicates that an ACL rule needs to be created for the backward flow that matches the destination port number and protocol number. (This field is not supported currently.)</li><li>V: indicates whether a backward flow needs to be created. The value 1 indicates that a backward flow needs to be created. (This field is not supported currently.)</li><li>DSCP: indicates whether the measurement flow is determined based on DSCP.</li><li>Tunnel: indicates whether IFIT tunnel-level quality measurement is used. </li><li>Period (s): indicates the synchronization report period, in seconds.</li></ul>
+</li><li>Bit2: used for out-of-order detection. The value 1 indicates that the sequence is valid. The length of this field is 4 bytes. (This field is not supported currently.)</li><li>Bit3: used to implement packet modification detection by checking the checksum. The value 1 indicates that the checksum is valid. The length of this field is 4 bytes. (This field is not supported currently.)</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p">The above information describes the packet format of application-level IFIT measurement. In a scenario where native-IP IFIT and application-level IFIT measurement domains are interconnected, you need to configure color bit switching on the device that functions as the border node. <a href="#EN-US_CONCEPT_0000001863895716__fig_dc_vrp_feature_new_ipfpm_000602">Figure 2</a> shows the packet format of native-IP IFIT measurement to better illustrate the switching between native-IP IFIT and application-level IFIT measurement modes. Native-IP IFIT measurement is implemented by coloring IP headers. Bits in the Type of Service (ToS) or Flags field of an IP header can be used as color bits, and are configurable.<div class="fignone" id="EN-US_CONCEPT_0000001863895716__fig_dc_vrp_feature_new_ipfpm_000602"><a name="EN-US_CONCEPT_0000001863895716__fig_dc_vrp_feature_new_ipfpm_000602"></a><a name="fig_dc_vrp_feature_new_ipfpm_000602"></a><span class="figcap"><b>Figure 2 </b>IPv4 header structure</span><br><span><img class="vsd" src="figure/en-us_image_0000001863736068.png" width="NaN" height="NaN"></span><br></div>
+<ul><li>ToS field<p>The ToS field contains eight bits. The leftmost three bits (bits 0 to 2) constitute the Precedence field that identifies the IP packet priority. Bits 3 to 7 are rarely used. If bits 3 to 7 are not used, one of them can be used as the color bit to uniquely identify service packets with a specific characteristic.</p>
+</li><li>Flags field<p>The Flags field determines whether a packet can be fragmented. It contains three bits, bits 0 to 2, of which bit 0 is reserved and can be used as the color bit to uniquely identify service packets with a specific characteristic.</p>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_ifit_cfg_0003.html">Understanding IFIT
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_ifit_cfg_0010.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

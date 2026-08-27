@@ -1,0 +1,540 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring an Inter-AS SRv6 TE Policy">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0330.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0110.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0303.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001141617214">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring an Inter-AS SRv6 TE Policy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001141617214"></a><a name="EN-US_TASK_0000001141617214"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring an Inter-AS SRv6 TE Policy</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001141617214__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><div class="p">On the network shown in <a href="#EN-US_TASK_0000001141617214__fig_dc_vrp_srv6_cfg_all_001101">Figure 1</a>:<ul><li><p>PE1 and ASBR1 belong to AS 100, and PE2 and ASBR2 belong to AS 200. Intra-AS IPv6 connectivity needs to be achieved for AS 100 and AS 200 through IS-IS.</p>
+</li><li><p>PE1 and ASBR1 belong to IS-IS process 1, and PE2 and ASBR2 belong to IS-IS process 10. PE1, ASBR1, PE2, and ASBR2 are all Level-1 devices.</p>
+</li></ul>
+</div>
+<p>A bidirectional inter-AS SRv6 TE Policy needs to be deployed between PE1 and PE2.</p>
+<div class="fignone" id="EN-US_TASK_0000001141617214__fig_dc_vrp_srv6_cfg_all_001101"><a name="EN-US_TASK_0000001141617214__fig_dc_vrp_srv6_cfg_all_001101"></a><a name="fig_dc_vrp_srv6_cfg_all_001101"></a><span class="figcap"><b>Figure 1 </b>Inter-AS SRv6 TE Policy networking</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="imgResize" src="figure/en-us_image_0000001187897193.png" width="522.37828125" height="306.4726710675001" title="Click to enlarge"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001141617214__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Enable IPv6 forwarding and configure an IPv6 address for each interface on PE1, PE2, ASBR1, and ASBR2.</p>
+</li><li><p>Enable IS-IS, configure an IS-IS level, and specify a network entity title (NET) on PE1, PE2, ASBR1, and ASBR2.</p>
+</li><li>Configure the PEs to advertise SRv6 locator routes through IS-IS and allocate intra-AS static End.X SIDs to the PEs.</li><li>Configure BGP EPEv6 on ASBR1 and ASBR2, and allocate inter-AS static End.X SIDs.</li><li><p>Deploy an SRv6 TE Policy between PE1 and PE2.</p>
+</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001141617214__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>Note the following during the configuration:</p>
+<ul><li>When configuring BGP EPEv6, you need to enable the BGP-LS address family peer relationship so that BGP EPEv6 can take effect.</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001141617214__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enable IPv6 forwarding and configure an IPv6 address for each interface.</span><p><p># Configure PE1. The configurations of PE2, ASBR1, and ASBR2 are similar to the configuration of PE1. For detailed configurations, see Configuration Scripts.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname PE1</strong>
+[PE1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitch</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 enable</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 address 2001:DB8:1::1 96</strong>
+[PE1-<span><span>10GE</span><span>0/0/1</span></span>] <strong>quit</strong>
+[PE1] <strong>interface LoopBack 1</strong>
+[PE1-LoopBack1] <strong>ipv6 enable</strong>
+[PE1-LoopBack1] <strong>ipv6 address 2001:DB8:11::1 128</strong>
+[PE1-LoopBack1] <strong>quit</strong></pre>
+</p></li><li><span>Configure IS-IS.</span><p><p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>isis 1</strong>
+[PE1-isis-1] <strong>is-level level-1</strong>
+[PE1-isis-1] <strong>cost-style wide</strong>
+[PE1-isis-1] <strong>network-entity 10.0000.0000.0001.00</strong>
+[PE1-isis-1] <strong>ipv6 enable topology ipv6</strong>
+[PE1-isis-1] <strong>quit</strong>
+[PE1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>isis ipv6 enable 1</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[PE1] <strong>interface loopback1</strong>
+[PE1-LoopBack1] <strong>isis ipv6 enable 1</strong>
+[PE1-LoopBack1] <strong>quit</strong></pre>
+<p># Configure ASBR1.</p>
+<pre class="screen">[ASBR1] <strong>isis 1</strong> 
+[ASBR1-isis-1] <strong>is-level level-1</strong>
+[ASBR1-isis-1] <strong>cost-style wide</strong>
+[ASBR1-isis-1] <strong>network-entity 10.0000.0000.0002.00</strong>
+[ASBR1-isis-1] <strong>ipv6 enable topology ipv6</strong>
+[ASBR1-isis-1] <strong>quit</strong>
+[ASBR1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[ASBR1-<span>10GE</span><span>0/0/1</span>] <strong>isis ipv6 enable 1</strong>
+[ASBR1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[ASBR1] <strong>interface loopback1</strong>
+[ASBR1-LoopBack1] <strong>isis ipv6 enable 1</strong>
+[ASBR1-LoopBack1] <strong>quit</strong></pre>
+<p># Configure ASBR2.</p>
+<pre class="screen">[ASBR2] <strong>isis 10</strong> 
+[ASBR2-isis-10] <strong>is-level level-1</strong>
+[ASBR2-isis-10] <strong>cost-style wide</strong>
+[ASBR2-isis-10] <strong>network-entity 10.0000.0000.0003.00</strong>
+[ASBR2-isis-10] <strong>ipv6 enable topology ipv6</strong>
+[ASBR2-isis-10] <strong>quit</strong>
+[ASBR2] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[ASBR2-<span>10GE</span><span>0/0/1</span>] <strong>isis ipv6 enable 10</strong>
+[ASBR2-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[ASBR2] <strong>interface loopback1</strong>
+[ASBR2-LoopBack1] <strong>isis ipv6 enable 10</strong>
+[ASBR2-LoopBack1] <strong>quit</strong></pre>
+<p># Configure PE2.</p>
+<pre class="screen">[PE2] <strong>isis 10</strong>
+[PE2-isis-10] <strong>is-level level-1</strong>
+[PE2-isis-10] <strong>cost-style wide</strong>
+[PE2-isis-10] <strong>network-entity 10.0000.0000.0004.00</strong>
+[PE2-isis-10] <strong>ipv6 enable topology ipv6</strong>
+[PE2-isis-10] <strong>quit</strong>
+[PE2] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong>isis ipv6 enable 10</strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[PE2] <strong>interface loopback1</strong>
+[PE2-LoopBack1] <strong>isis ipv6 enable 10</strong>
+[PE2-LoopBack1] <strong>quit</strong></pre>
+</p><p><p>After the configuration is complete, perform the following operations to verify the IS-IS configuration.</p>
+<p># Display IS-IS neighbor information. The following example uses the command output on PE1.</p>
+<pre class="screen">[PE1] <strong>display isis peer</strong>
+
+                          Peer information for ISIS(1)
+                         
+  System Id     Interface          Circuit Id        State HoldTime Type     PRI
+--------------------------------------------------------------------------------
+0000.0000.0002* <span>10GE</span><span>0/0/1</span>          0000.0000.0002.01  Up   8s       L1       64 
+
+Total Peer(s): 1</pre>
+</p></li><li><span>Configure the PEs to advertise SRv6 locator routes through IS-IS and allocate intra-AS static End.X SIDs to the PEs.</span><p><p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>segment-routing ipv6</strong>
+[PE1-segment-routing-ipv6] <strong>encapsulation source-address 2001:DB8:11::1</strong>
+[PE1-segment-routing-ipv6] <strong>locator as1 ipv6-prefix <span>2001:DB8:10::</span> 64 static 32</strong>
+[PE1-segment-routing-ipv6-locator] <strong>opcode ::100 end-x interface <span>10ge</span> <span>0/0/1</span> nexthop 2001:DB8:1::2<span> no-flavor</span></strong> 
+[PE1-segment-routing-ipv6-locator] <strong>quit</strong>
+[PE1-segment-routing-ipv6] <strong>quit</strong>
+[PE1] <strong>isis 1</strong>
+[PE1-isis-1] <strong>ipv6 enable topology ipv6</strong> 
+[PE1-isis-1] <strong>segment-routing ipv6 locator as1</strong> <strong>auto-sid-disable</strong>
+[PE1-isis-1] <strong>quit</strong></pre>
+<p># Configure PE2.</p>
+<pre class="screen">[PE2] <strong>segment-routing ipv6</strong>
+[PE2-segment-routing-ipv6] <strong>encapsulation source-address 2001:DB8:14::4</strong>
+[PE2-segment-routing-ipv6] <strong>locator as1 ipv6-prefix <span>2001:DB8:40::</span> 64 static 32</strong>
+[PE2-segment-routing-ipv6-locator] <strong>opcode ::200 end-x interface <span>10ge</span> <span>0/0/1</span> nexthop 2001:DB8:2::1<span> no-flavor</span></strong>
+[PE2-segment-routing-ipv6-locator] <strong>quit</strong>
+[PE2-segment-routing-ipv6] <strong>quit</strong>
+[PE2] <strong>isis 10</strong>
+[PE2-isis-10] <strong>ipv6 enable topology ipv6</strong> 
+[PE2-isis-10] <strong>segment-routing ipv6 locator as1</strong> <strong>auto-sid-disable</strong>
+[PE2-isis-10] <strong>quit</strong></pre>
+<p>Run the <b><span class="cmdqueryname">display segment-routing ipv6 local-sid</span></b> <strong><span>end-x</span></strong> <strong><span>forwarding</span></strong> command to check information about the SRv6 local SID table. The following example uses the command output on PE1.</p>
+<pre class="screen">[PE1] <strong>display segment-routing ipv6 local-sid end-x forwarding</strong>
+
+                            My Local-SID End.X Forwarding Table       
+                            -----------------------------------                 
+
+SID         : 2001:DB8:10::100/128                                             FuncType   : End.X                   
+Flavor      : <span>--</span>                                                               SidCompress: NO 
+LocatorName : as1                                                              LocatorID  : 1  
+ProtocolType: ISIS                   
+UpdateTime  : 2022-12-27 08:06:30.228                                          NextHopCount: 1
+
+NextHop     :                              Interface :                         ExitIndex:                        
+2001:DB8:1::2                             <span>10GE</span><span>0/0/1</span>                           0x0000000e                        
+
+Total SID(s): 1</pre>
+</p></li><li><span>Configure BGP EPEv6 on ASBR1 and ASBR2, and allocate inter-AS static End.X SIDs.</span><p><div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>When configuring BGP EPEv6, you need to enable the BGP-LS address family peer relationship so that BGP EPEv6 can take effect.</p>
+</div></div>
+<p># Configure ASBR1.</p>
+<pre class="screen">[ASBR1] <strong>segment-routing ipv6</strong>
+[ASBR1-segment-routing-ipv6] <strong>encapsulation source-address 2001:DB8:12::2</strong>
+[ASBR1-segment-routing-ipv6] <strong>locator as1 ipv6-prefix 2001:DB8:<span>20::</span> 64 static 32</strong>
+[ASBR1-segment-routing-ipv6-locator] <strong>opcode ::200 end-x interface <span>10ge</span> <span>0/0/1</span> nexthop 2001:DB8:1::1</strong><strong><span> no-flavor</span></strong>
+[ASBR1-segment-routing-ipv6-locator] <strong>quit</strong>
+[ASBR1-segment-routing-ipv6] <strong>quit</strong>
+[ASBR1] <strong>isis 1</strong>
+[ASBR1-isis-1] <strong>segment-routing ipv6 locator as1</strong> <strong>auto-sid-disable</strong>
+[ASBR1-isis-1] <strong>ipv6 import-route bgp level-1</strong>
+[ASBR1-isis-1] <strong>quit</strong>
+[ASBR1] <strong>bgp 100</strong> 
+[ASBR1-bgp] <strong>router-id 2.2.2.2</strong>
+[ASBR1-bgp] <strong>segment-routing ipv6 egress-engineering locator as1</strong> 
+[ASBR1-bgp] <strong>peer 2001:DB8:3::2 as-number 200 </strong>
+[ASBR1-bgp] <strong>peer 2001:DB8:3::2 ebgp-max-hop 255</strong>
+[ASBR1-bgp] <strong>peer 2001:DB8:3::2 egress-engineering srv6 static-sid <span>no-flavor</span> 2001:DB8:20::100</strong>
+[ASBR1-bgp] <strong>ipv6-family unicast</strong>
+[ASBR1-bgp-af-ipv6] <strong>peer 2001:DB8:3::2</strong><strong> enable</strong>
+[ASBR1-bgp-af-ipv6] <strong>network 2001:DB8:11::</strong><strong>1 128</strong> 
+[ASBR1-bgp-af-ipv6] <strong>network 2001:DB8:10::</strong><strong> 64</strong> 
+[ASBR1-bgp-af-ipv6] <strong>import-route direct</strong>
+[ASBR1-bgp-af-ipv6] <strong>quit</strong> 
+[ASBR1-bgp] <strong>link-state-family unicast</strong> 
+[ASBR1-bgp-af-ls] <strong>peer 2001:DB8:3::2</strong><strong> enable</strong> 
+[ASBR1-bgp-af-ls] <strong>quit</strong> 
+[ASBR1-bgp] <strong>quit</strong></pre>
+<p># Configure ASBR2.</p>
+<pre class="screen">[ASBR2] <strong>segment-routing ipv6</strong>
+[ASBR2-segment-routing-ipv6] <strong>encapsulation source-address 2001:DB8:13::3</strong>
+[ASBR2-segment-routing-ipv6] <strong>locator as1 ipv6-prefix <span>2001:DB8:30::</span> 64 static 32</strong>
+[ASBR2-segment-routing-ipv6-locator] <strong>opcode ::100 end-x interface <span>10ge</span> <span>0/0/1</span> nexthop 2001:DB8:2::2<span> no-flavor</span></strong>
+[ASBR2-segment-routing-ipv6-locator] <strong>quit</strong>
+[ASBR2-segment-routing-ipv6] <strong>quit</strong>
+[ASBR2] <strong>isis 10</strong>
+[ASBR2-isis-10] <strong>segment-routing ipv6 locator as1</strong> <strong>auto-sid-disable</strong>
+[ASBR2-isis-10] <strong>ipv6 import-route bgp</strong><strong> level-1</strong>
+[ASBR2-isis-10] <strong>quit</strong>
+[ASBR2] <strong>bgp 200</strong> 
+[ASBR2-bgp] <strong>router-id 3.3.3.3</strong>
+[ASBR2-bgp] <strong>segment-routing ipv6 egress-engineering locator as1</strong> 
+[ASBR2-bgp] <strong>peer 2001:DB8:3::1 as-number 100</strong>
+[ASBR2-bgp] <strong>peer 2001:DB8:3::1 ebgp-max-hop 255</strong>
+[ASBR2-bgp] <strong>peer 2001:DB8:3::1 egress-engineering srv6 static-sid <span>no-flavor</span> 2001:DB8:30::200</strong>  
+[ASBR2-bgp] <strong>ipv6-family unicast</strong>
+[ASBR2-bgp-af-ipv6] <strong>peer 2001:DB8:3::1</strong><strong> enable</strong> 
+[ASBR2-bgp-af-ipv6] <strong>network 2001:DB8:14::4</strong><strong> 128</strong> 
+[ASBR2-bgp-af-ipv6] <strong>network 2001:DB8:40::</strong><strong> 64</strong> 
+[ASBR2-bgp-af-ipv6] <strong>import-route direct</strong>
+[ASBR2-bgp-af-ipv6] <strong>quit</strong> 
+[ASBR2-bgp] <strong>link-state-family unicast</strong> 
+[ASBR2-bgp-af-ls] <strong>peer 2001:DB8:3::1</strong><strong> enable</strong> 
+[ASBR2-bgp-af-ls] <strong>quit</strong> 
+[ASBR2-bgp] <strong>quit</strong></pre>
+<p>After the configuration is complete, run the <strong>display bgp egress-engineering</strong> command to check BGP EPE information. The command output shows SRv6 SID information. The following example uses the command output on ASBR1.</p>
+<pre class="screen">[ASBR1] <strong>display bgp egress-engineering</strong>                  
+
+ Peer Node                : 2001:DB8:3::2                     
+ Peer Adj Num             : 0                           
+ Local ASN                : 100                         
+ Remote ASN               : 200                         
+ Local Router Id          : 2.2.2.2                     
+ Remote Router Id         : 3.3.3.3                     
+ Local Interface Address  : 2001:DB8:3::1                     
+ Remote Interface Address : 2001:DB8:3::2                     
+ <strong>SRv6 SID                 : 2001:DB8:20::100</strong>                     
+ SRv6 SID (PSP)           : 2001:DB8:20::1:0:1E                  
+ Nexthop                  : 2001:DB8:3::2                     
+ Out Interface            : <span>10GE</span><span>0/0/2</span> </pre>
+</p></li><li><span>Configure an SRv6 TE Policy.</span><p><p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>segment-routing ipv6</strong> 
+[PE1-segment-routing-ipv6] <strong>segment-list list1</strong> 
+[PE1-segment-routing-ipv6-segment-list-list1] <strong>index 5 sid ipv6 2001:DB8:10::100</strong>
+[PE1-segment-routing-ipv6-segment-list-list1] <strong>index 10 sid ipv6 2001:DB8:20::100</strong>
+[PE1-segment-routing-ipv6-segment-list-list1] <strong>index 15 sid ipv6 2001:DB8:30::100</strong> 
+[PE1-segment-routing-ipv6-segment-list-list1] <strong>quit</strong>
+[PE1-segment-routing-ipv6] <strong>srv6-te-policy locator as1</strong> 
+[PE1-segment-routing-ipv6] <strong>srv6-te policy policy1 endpoint 2001:DB8:14::4 color 101</strong>
+[PE1-segment-routing-ipv6-policy-policy1] <strong>binding-sid 2001:DB8:10::1000</strong>
+[PE1-segment-routing-ipv6-policy-policy1] <strong>candidate-path preference 100</strong>
+[PE1-segment-routing-ipv6-policy-policy1-path] <strong>segment-list list1</strong> 
+[PE1-segment-routing-ipv6-policy-policy1-path] <strong>quit</strong>
+[PE1-segment-routing-ipv6-policy-policy1] <strong>quit</strong>
+[PE1-segment-routing-ipv6] <strong>quit</strong></pre>
+</p><p><p># Configure PE2.</p>
+<pre class="screen">[PE2] <strong>segment-routing ipv6</strong> 
+[PE2-segment-routing-ipv6] <strong>segment-list list1</strong> 
+[PE2-segment-routing-ipv6-segment-list-list1] <strong>index 5 sid ipv6 2001:DB8:40::200</strong>          
+[PE2-segment-routing-ipv6-segment-list-list1] <strong>index 10 sid ipv6 2001:DB8:30::200</strong>         
+[PE2-segment-routing-ipv6-segment-list-list1] <strong>index 15 sid ipv6 2001:DB8:20::200</strong> 
+[PE2-segment-routing-ipv6-segment-list-list1] <strong>quit</strong>
+[PE2-segment-routing-ipv6] <strong>srv6-te-policy locator as1</strong> 
+[PE2-segment-routing-ipv6] <strong>srv6-te policy policy1 endpoint 2001:DB8:11::1 color 101</strong>
+[PE2-segment-routing-ipv6-policy-policy1] <strong>binding-sid 2001:DB8:40::1000</strong>
+[PE2-segment-routing-ipv6-policy-policy1] <strong>candidate-path preference 100</strong>
+[PE2-segment-routing-ipv6-policy-policy1-path] <strong>segment-list list1</strong> 
+[PE2-segment-routing-ipv6-policy-policy1-path] <strong>quit</strong>
+[PE2-segment-routing-ipv6-policy-policy1] <strong>quit</strong>
+[PE2-segment-routing-ipv6] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001141617214__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After the configuration is complete, run the <b><span class="cmdqueryname">display srv6-te policy</span></b> command to check SRv6 TE Policy information.</p>
+<p>The following example uses the command output on PE1.</p>
+<pre class="screen">[PE1] <strong>display srv6-te policy </strong>
+Policy Name : policy1                                    
+Color                   : 101                            Endpoint             : 2001:DB8:14::4         
+TunnelId                : 1                                   
+TunnelType              : SRv6-TE Policy                 DelayTimerRemain     : -            
+Policy State            : Up                             State Change Time    : 2020-02-17 11:16:30
+Admin State             : Up                             Traffic Statistics   : Disable   
+Backup Hot-Standby      : Disable                        BFD                  : Disable   
+Interface Index         : -                              Interface Name       : - 
+Interface State         : -                              Encapsulation Mode   : Insert
+Candidate-path Count    : 1                                
+
+ Candidate-path Preference : 100                        
+ Path State             : Active                         Path Type            : Primary 
+ Protocol-Origin        : Configuration(30)              Originator           : 0, 0.0.0.0  
+ Discriminator          : 100                            Binding SID          : 2001:DB8:10::1000 
+ GroupId                : 1                              
+ Template ID            : 0                              Path Verification    : Disable
+ DelayTimerRemain       : -                              Network Slice ID     : -  
+ Segment-List Count     : 1
+  Segment-List          : list1                            
+   Segment-List ID      : 1                              XcIndex              : 1            
+   List State           : Up                             DelayTimerRemain     : -   
+   Verification State   : -                              SuppressTimeRemain   : -
+   PMTU                 : 9600                           Active PMTU          : 9600
+   Weight               : 1                              BFD State            : -
+   Network Slice ID     : -
+   Binding SID          : -
+   Reverse Binding ID   : -
+   SID :        
+         2001:DB8:10::100                                        
+         2001:DB8:20::100                                        
+         2001:DB8:30::100</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001141617214__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>PE1</p>
+<pre class="screen">#
+sysname PE1
+#               
+segment-routing ipv6
+ encapsulation source-address 2001:DB8:11::1                      
+ locator as1 ipv6-prefix 2001:DB8:10:: 64 static 32             
+  opcode ::100 end-x interface <span>10GE</span><span>0/0/1</span> nexthop 2001:DB8:1::2<span> no-flavor</span>        
+ srv6-te-policy locator as1                             
+ segment-list list1                                     
+  index 5 sid ipv6 2001:DB8:10::100                              
+  index 10 sid ipv6 2001:DB8:20::100                             
+  index 15 sid ipv6 2001:DB8:30::100                             
+ srv6-te policy policy1 endpoint 2001:DB8:14::4 color 101         
+  binding-sid 2001:DB8:10::1000                                  
+  candidate-path preference 100                         
+   segment-list list1 
+#               
+isis 1          
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0001.00
+ #              
+ ipv6 enable topology ipv6
+ segment-routing ipv6 locator as1 auto-sid-disable
+ #              
+#               
+interface <span>10GE</span><span>0/0/1</span>
+  
+ ipv6 enable    
+ ipv6 address 2001:DB8:1::1/96
+ isis ipv6 enable 1
+#               
+interface LoopBack1
+ ipv6 enable    
+ ipv6 address 2001:DB8:11::1/128
+ isis ipv6 enable 1
+#              
+return</pre>
+</li><li><p>ASBR1</p>
+<pre class="screen">#
+sysname ASBR1        
+#
+segment-routing ipv6 
+ encapsulation source-address 2001:DB8:12::2                                   
+ locator as1 ipv6-prefix 2001:DB8:20:: 64 static 32             
+  opcode ::200 end-x interface <span>10GE</span><span>0/0/1</span> nexthop 2001:DB8:1::1<span> no-flavor</span> 
+#               
+isis 1          
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0002.00
+ #              
+ ipv6 enable topology ipv6
+ segment-routing ipv6 locator as1 auto-sid-disable
+ ipv6 import-route bgp level-1
+ #
+#               
+interface <span>10GE</span><span>0/0/1</span>
+  
+ ipv6 enable    
+ ipv6 address 2001:DB8:1::2/96
+ isis ipv6 enable 1 
+# 
+interface <span>10GE</span><span>0/0/2</span>
+  
+ ipv6 enable    
+ ipv6 address 2001:DB8:3::1/96  
+#               
+interface LoopBack1
+ ipv6 enable    
+ ipv6 address 2001:DB8:12::2/128
+ isis ipv6 enable 1
+#
+bgp 100                                                 
+ router-id 2.2.2.2                                      
+ segment-routing ipv6 egress-engineering locator as1    
+ peer 2001:DB8:3::2 as-number 200                             
+ peer 2001:DB8:3::2 ebgp-max-hop 255                          
+ peer 2001:DB8:3::2 egress-engineering srv6 static-sid <span>no-flavor</span> 2001:DB8:20::100          
+ # 
+ ipv4-family unicast                                    
+  undo synchronization  
+ #         
+ link-state-family unicast                              
+  peer 2001:DB8:3::2 enable
+ #        
+ ipv6-family unicast                                    
+  undo synchronization                                  
+  network 2001:DB8:11::1 128  
+  network 2001:DB8:10:: 64                                      
+  import-route direct                                   
+  peer 2001:DB8:3::2 enable 
+#               
+return </pre>
+</li><li><p>ASBR2</p>
+<pre class="screen">#
+sysname ASBR2 
+#
+segment-routing ipv6  
+ encapsulation source-address 2001:DB8:13::3                                  
+ locator as1 ipv6-prefix 2001:DB8:30:: 64 static 32             
+  opcode ::100 end-x interface <span>10GE</span><span>0/0/1</span> nexthop 2001:DB8:2::2<span> no-flavor</span> 
+#               
+isis 10          
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0003.00
+ #              
+ ipv6 enable topology ipv6
+ segment-routing ipv6 locator as1 auto-sid-disable
+ ipv6 import-route bgp level-1
+ #
+#               
+interface <span>10GE</span><span>0/0/1</span>
+  
+ ipv6 enable    
+ ipv6 address 2001:DB8:2::1/96
+ isis ipv6 enable 10 
+# 
+interface <span>10GE</span><span>0/0/2</span>
+  
+ ipv6 enable    
+ ipv6 address 2001:DB8:3::2/96  
+#               
+interface LoopBack1
+ ipv6 enable    
+ ipv6 address 2001:DB8:13::3/128
+ isis ipv6 enable 10
+#
+bgp 200                                                 
+ router-id 3.3.3.3                                      
+ segment-routing ipv6 egress-engineering locator as1    
+ peer 2001:DB8:3::1 as-number 100                             
+ peer 2001:DB8:3::1 ebgp-max-hop 255                          
+ peer 2001:DB8:3::1 egress-engineering srv6 static-sid <span>no-flavor</span> 2001:DB8:30::200          
+ #
+ ipv4-family unicast                                    
+  undo synchronization  
+ #    
+ link-state-family unicast                              
+  peer 2001:DB8:3::1 enable
+ # 
+ ipv6-family unicast                                    
+  undo synchronization                                  
+  network 2001:DB8:14::4 128   
+  network 2001:DB8:40:: 64                                   
+  import-route direct                                   
+  peer 2001:DB8:3::1 enable 
+#               
+return </pre>
+</li><li><p>PE2</p>
+<pre class="screen">#
+sysname PE2
+#               
+segment-routing ipv6                                    
+ encapsulation source-address 2001:DB8:14::4                      
+ locator as1 ipv6-prefix 2001:DB8:40:: 64 static 32             
+  opcode ::200 end-x interface <span>10GE</span><span>0/0/1</span> nexthop 2001:DB8:2::1<span> no-flavor</span>                 
+ srv6-te-policy locator as1                             
+ segment-list list1                                     
+  index 5 sid ipv6 2001:DB8:40::200                              
+  index 10 sid ipv6 2001:DB8:30::200                             
+  index 15 sid ipv6 2001:DB8:20::200                             
+ srv6-te policy policy1 endpoint 2001:DB8:11::1 color 101         
+  binding-sid 2001:DB8:40::1000                                  
+  candidate-path preference 100                         
+   segment-list list1 
+#               
+isis 10          
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0004.00
+ #              
+ ipv6 enable topology ipv6
+ segment-routing ipv6 locator as1 auto-sid-disable
+ #              
+#               
+interface <span>10GE</span><span>0/0/1</span>
+  
+ ipv6 enable    
+ ipv6 address 2001:DB8:2::2/96
+ isis ipv6 enable 10
+#               
+interface LoopBack1
+ ipv6 enable    
+ ipv6 address 2001:DB8:14::4/128
+ isis ipv6 enable 10
+#               
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0330.html">Configuration Examples for Segment Routing IPv6
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0110.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_srv6_cfg_0303.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

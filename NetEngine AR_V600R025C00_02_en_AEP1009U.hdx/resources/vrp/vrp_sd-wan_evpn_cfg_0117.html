@@ -1,0 +1,68 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="SD-WAN EVPN Data Forwarding">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0006.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001130783016">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>SD-WAN EVPN Data Forwarding</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001130783016"></a><a name="EN-US_CONCEPT_0000001130783016"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">SD-WAN EVPN Data Forwarding</h1>
+<div><p>Data can be exchanged between sites after an SD-WAN EVPN network is deployed. The following describes the encapsulation and forwarding process of IP data from CPE1 to CPE2 during communication between Site 1 and Site 3, as shown in <a href="#EN-US_CONCEPT_0000001130783016__fig17880133711164">Figure 1</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001130783016__fig17880133711164"><a name="EN-US_CONCEPT_0000001130783016__fig17880133711164"></a><a name="fig17880133711164"></a><span class="figcap"><b>Figure 1 </b>SD-WAN EVPN data forwarding and encapsulation process</span><br><span><img class="vsd" src="figure/en-us_image_0000001176662799.png" width="NaN" height="NaN"></span></div>
+<p>The SD-WAN EVPN data forwarding process is as follows:</p>
+<ol><li>CPE1 receives an ordinary unicast packet from user A, searches the routing table of the SD-WAN EVPN instance, and forwards the packet based on the next-hop site of the matching SD-WAN EVPN route. CPE1 adds GRE information to the packet, encapsulates the packet with an IPv4 tunnel header, and forwards the packet to CPE2.</li><li>CPE2 receives the packet, searches the SD-WAN tunnel decapsulation table based on the IPv4 source address (CPE1) and destination address (CPE2) of the packet, decapsulates the packet, removes the IPv4 header, searches the routing table of the SD-WAN EVPN instance based on the GRE Key value and destination address of the inner packet, and then forwards the packet to user B.</li></ol>
+<p>An identifier needs to be added to data packets of different service VPNs to differentiate traffic in the same tunnel. The traffic is GRE encapsulated, so a GRE key extension is used to identify traffic of different service VPNs.</p>
+<p><a href="#EN-US_CONCEPT_0000001130783016__fig_dc_vrp_gre_feature_200303">Figure 2</a> shows the GRE header format.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001130783016__fig_dc_vrp_gre_feature_200303"><a name="EN-US_CONCEPT_0000001130783016__fig_dc_vrp_gre_feature_200303"></a><a name="fig_dc_vrp_gre_feature_200303"></a><span class="figcap"><b>Figure 2 </b>GRE header format</span><br><span><img class="vsd" src="figure/en-us_image_0000001130623258.png" width="NaN" height="NaN"></span></div>
+<p>The <strong>Key</strong> field is used by the receive end to authenticate received packets. This field identifies traffic in a tunnel. Packets of the same traffic flow use the same key. During packet decapsulation, GRE identifies data packets of the same traffic flow based on the key. The authentication is successful only if the <strong>Key</strong> field settings on both endpoints of the tunnel are consistent. Otherwise, the packets are dropped. Both endpoints must either be configured with the same <strong>Key</strong> field or not configured with the <strong>Key</strong> field for successful authentication to take place.</p>
+<p>In an SD-WAN EVPN scenario, the value of the <strong>Key</strong> field is the VN ID. During packet encapsulation, the local end obtains the VN ID based on the VPN, encapsulates the extended GRE header of a packet with the VN ID, and sends the packet to the peer end. The peer end then maps the VN ID to the local VPN for route isolation.</p>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0003.html">Understanding SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0006.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

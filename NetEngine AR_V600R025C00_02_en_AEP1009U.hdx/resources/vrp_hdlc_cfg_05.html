@@ -1,0 +1,108 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="HDLC Fundamentals">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_hdlc_cfg_01.html">
+<meta name="DC.Relation" scheme="URI" content="spec/HDLC_limitation_all.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_hdlc_cfg_10.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="HDLC">
+<meta name="featuretype" content="WAN Access">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="HDLC">
+<meta name="featuretype" content="WAN Access">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001849901205">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>HDLC Fundamentals</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001849901205"></a><a name="EN-US_CONCEPT_0000001849901205"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">HDLC Fundamentals</h1>
+<div><p>HDLC can transparently transmit any type of bit stream, not requiring data to be character sets. This sets HDLC apart from other data link layer protocols.</p>
+<p>Data link control protocols focus on the logical transmission of data that is segmented into physical blocks or packages. These blocks or packages are also called frames, each of which is identified by a start flag and an end flag. HDLC transmits data and control information in a unified frame format. Each frame starts and ends with a special delimiter (01111110) that signals the start and end of the frame, as well as frame synchronization. To prevent confusion, the frame delimiter cannot appear inside the frame.</p>
+<p>To make the frame delimiter unique and keep data in a frame transparent, the zero-bit insertion function can be used. With this function, the transmit end monitors all fields except the frame delimiter. When detecting five consecutive 1s, it adds a 0 and keeps sending subsequent bits. The receive end also monitors all fields except the frame delimiter. When five consecutive 1s are detected and the following bit is 0, the receive end automatically deletes the 0 to restore the former bit stream. However, when five consecutive 1s are detected but the following bit is also 1, the receive end determines that a 0 is incorrectly inserted or an end delimiter is received based on the frame check sequence field. A further action can then be taken accordingly.</p>
+<div class="section"><h4 class="sectiontitle">HDLC Operation Modes</h4><p>On a network using HDLC, nodes are classified as primary, secondary, or combined nodes.</p>
+<p>The primary node organizes data flows and fixes data errors. The secondary node receives information from the primary node and sends back acknowledgment information. Frames transferred by the primary node to a secondary node are called commands, and frames transferred by a secondary node to the primary node are called responses. A combined node provides the functions of both a primary node and a secondary node.</p>
+<p>On a point-to-multipoint (P2MP) link, there is a primary node and several secondary nodes. The primary node polls the secondary nodes to determine whether they have data to transmit, and then chooses one to transmit its data to. On a point-to-point (P2P) link, the nodes at both ends can be primary nodes. If a node is connected to multiple links, the node can be the primary node for some links and a secondary node for other links.</p>
+<p>HDLC can run in the following modes:</p>
+<ul><li><p>NRM</p>
+<p>Normal response mode (NRM): an unbalanced data link operation mode, also called unbalanced normal response mode.</p>
+<p>NRM is generally used on terminal-oriented P2P links and P2MP links.</p>
+<p>In NRM, a primary node initiates a transmission process, and a secondary node will respond only after receiving a command from the primary node.</p>
+<p>The response information consists of one or more frames. If multiple frames are carried, the secondary node must mark the final frame.</p>
+<p>The primary node is responsible for managing the entire link, including polling, choosing a secondary node, sending commands to the secondary node, and controlling timeout, retransmission, and error recovery.</p>
+</li></ul>
+<ul><li><p>ARM</p>
+<p>Asynchronous response mode (ARM): an unbalanced data link operation mode.</p>
+<p>In contrast to NRM, ARM allows a secondary node to independently send frames to the primary node, without needing commands from the primary node.</p>
+<p>In this mode, the secondary node controls timeout and retransmission.</p>
+<p>This mode is essential for multi-node links that utilize polling.</p>
+</li></ul>
+<ul><li><p>ABM</p>
+<p>Asynchronous balanced mode (ABM): an operation mode that allows any node to initiate a transmission process.</p>
+<p>In ABM operation mode, all nodes are combined nodes. All nodes can transmit information, send and receive commands, send responses, and correct errors without requiring permission from other nodes. This enhances the efficiency of link transmission.</p>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">HDLC Frame Format</h4><p>HDLC transmits both data and control information in frames using a standardized format.</p>
+<p>HDLC frames resemble BSC character blocks but are not transmitted as independent entities.</p>
+<p>A complete HDLC frame includes the following fields: Flag, Address, Control, Information, and FCS. <a href="#EN-US_CONCEPT_0000001849901205__fig_dc_vrp_hdlc-iptrunk_feature_000601">Figure 1</a> shows the format of a complete HDLC frame.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001849901205__fig_dc_vrp_hdlc-iptrunk_feature_000601"><a name="EN-US_CONCEPT_0000001849901205__fig_dc_vrp_hdlc-iptrunk_feature_000601"></a><a name="fig_dc_vrp_hdlc-iptrunk_feature_000601"></a><span class="figcap"><b>Figure 1 </b>HDLC frame format</span><br><span><img class="vsd" src="images/fig_feature_image_0003992396.png" width="NaN" height="NaN"></span><br></div>
+</div>
+<div class="section"><h4 class="sectiontitle">HDLC Frame Types</h4><p>The Control field in an HDLC frame determines the type of the frame.</p>
+<p>The HDLC frame types are as follows:</p>
+<ul><li>Information frame (I-frame): used to transmit valid data. An I-frame contains a receive sequence number N(R) and a sequence number of the sent frame N(S) in the Control field.</li><li>Supervisory frame (S-frame): used for flow and error control. An S-frame contains only N(R) in the Control field. S-frames do not have the Information field.</li><li>Unnumbered frames (U-frames): used to set up, tear down, and control links. A U-frame does not contain N(R) or N(S) in the Control field.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">HDLC Flapping Dampening</h4><p>If the physical status of a network's underlying layer is unstable, HDLC interfaces may frequently engage in negotiation, leading to HDLC link flapping. This may further cause repeated flapping of other protocols such as routing protocols and Multiprotocol Label Switching (MPLS). Consequently, the network and devices will be significantly impacted, in some cases crashing completely.</p>
+<p>To prevent the preceding issues, HDLC flapping dampening can be implemented. This feature limits the frequency of HDLC protocol status changes on an interface. By doing so, it reduces the negative effects of flapping on the network and devices.</p>
+<p>HDLC flapping dampening encompasses the following concepts:</p>
+<ul><li>Penalty value: This value is calculated by a suppression algorithm that takes into account the HDLC protocol status of an interface. The penalty value increases linearly and decreases exponentially as the frequency of interface status changes.</li><li>Suppress threshold: When the penalty value exceeds the suppress threshold, HDLC negotiation is suppressed. In this case, the HDLC protocol status is down.</li><li>Reuse threshold: When the penalty value drops below the reuse threshold, the HDLC protocol status of an interface is no longer suppressed, and negotiation starts.</li><li>Ceiling threshold: When the penalty value reaches the ceiling threshold, it stops increasing. This prevents HDLC negotiation failures from occurring due to prolonged suppression. The ceiling threshold can be calculated using the following formula: Ceiling threshold = Reuse threshold x 2<sup>(Maximum suppress time/Half-life period)</sup>.</li><li>Half-life period: the time it takes for the penalty value to decrease by half. A half-life period starts to be calculated when the HDLC protocol status changes to down for the first time. When the half-life period elapses, the penalty value decreases by half, and another half-life period starts.</li><li>Maximum suppress time: the maximum period during which the HDLC protocol status of an interface is suppressed. After the maximum suppress time elapses, the HDLC protocol status of the interface is renegotiated, and the new status is reported.</li></ul>
+<p><a href="#EN-US_CONCEPT_0000001849901205__fig_dc_vrp_hdlc-iptrunk_feature_001501">Figure 2</a> shows the connections between the preceding parameters.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001849901205__fig_dc_vrp_hdlc-iptrunk_feature_001501"><a name="EN-US_CONCEPT_0000001849901205__fig_dc_vrp_hdlc-iptrunk_feature_001501"></a><a name="fig_dc_vrp_hdlc-iptrunk_feature_001501"></a><span class="figcap"><b>Figure 2 </b>HDLC flapping dampening</span><br><span><img class="imgResize" src="images/fig_feature_image_0028885586.png" width="518.7" height="NaN" title="Click to enlarge"></span><br></div>
+<p>At t1, the interface's HDLC protocol status goes down, causing the penalty value to increase by 1000. Afterwards, when the interface goes back up, the penalty value starts to decrease according to the half-life period principle. At t2, the HDLC protocol status goes down once more, resulting in a penalty value increase of 1000. Eventually, the penalty value reaches 1600, surpassing the suppress threshold 1500, causing the interface's HDLC protocol status to be suppressed. As the interface keeps flapping, its penalty value keeps increasing until it reaches the ceiling threshold 10000 at tA. Over time, the penalty value gradually decreases until it reaches the reuse threshold 750 at tB. At this point, the HDLC protocol status is no longer suppressed.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_hdlc_cfg_01.html">HDLC Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="spec/HDLC_limitation_all.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_hdlc_cfg_10.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

@@ -1,0 +1,96 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an IPsec Proposal">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0009.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0012.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564113953">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an IPsec Proposal</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564113953"></a><a name="EN-US_TASK_0000001564113953"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an IPsec Proposal</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564113953__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>An IPsec proposal, as a part of an IPsec policy or IPsec profile, defines security parameters for IPsec SA negotiation, including the security protocol, encryption and authentication algorithms, and data encapsulation mode. Devices on both ends of an IPsec tunnel need to have the same security parameters configured.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564113953__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an IPsec proposal and enter the IPsec proposal view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec proposal</span></b> <i><span class="varname">proposal-name</span></i></pre>
+</p></li><li><span>Configure an IPsec security protocol.</span><p><pre class="screen"><b><span class="cmdqueryname">transform</span></b> { <strong><span>ah</span></strong> | <strong><span>esp</span></strong> | <strong><span>ah-esp</span></strong> }</pre>
+<p>By default, IPsec uses ESP as the security protocol.</p>
+</p></li><li><span>Configure data encryption and authentication algorithms for the IPsec security protocol.</span><p><ul><li>When IPsec uses AH, you can configure only the authentication algorithm used by AH, because AH supports only authentication, not encryption.</li><li>When IPsec uses ESP, you can configure the encryption and authentication algorithms for ESP as required because ESP supports both authentication and encryption.</li><li>If IPsec uses both AH and ESP, you can configure the authentication algorithm used by AH and the encryption and authentication algorithms used by ESP. In this case, devices first encapsulate an ESP header and then an AH header to packets.</li></ul>
+</p><ol type="a"><li class="substepexpand"><span>Configure the data authentication algorithm for AH.</span><p><pre class="screen"><b><span class="cmdqueryname">ah authentication-algorithm</span></b> { <strong><span>md5</span></strong> | <strong><span>sha1</span></strong> | <strong><span>sha2-256</span></strong> | <strong><span>sha2-384</span></strong> | <strong><span>sha2-512</span></strong> | <strong><span>sm3</span></strong> }<sup>*</sup></pre>
+<p>By default, AH uses the SHA2-256 authentication algorithm.</p>
+<p>SM3 can meet the high confidentiality and security requirements, but it takes a comparatively long time for processing. For general security requirements, authentication algorithms SHA2-256, SHA2-384, and SHA2-512 are recommended, and authentication algorithms MD5 and SHA1 are not recommended.</p>
+</p></li><li class="substepexpand"><span>Configure the data encryption algorithm for ESP.</span><p><pre class="screen"><b><span class="cmdqueryname">esp encryption-algorithm</span></b> { <strong><span>des</span></strong> | <strong><span>3des</span></strong> | <strong><span>aes-128</span></strong> | <strong><span>aes-192</span></strong> | <strong><span>aes-256</span></strong> | <strong><span>aes-128-gcm-128</span></strong> | <strong><span>aes-192-gcm-128</span></strong> | <strong><span>aes-256-gcm-128</span></strong> | <strong><span>aes-128-gmac</span></strong> | <strong><span>aes-192-gmac</span></strong> | <strong><span>aes-256-gmac</span></strong> | <strong><span>sm4</span></strong> }<sup>*</sup></pre>
+<p>By default, ESP uses the AES-256-GCM-128 encryption algorithm.</p>
+<p>SM4 can meet high confidentiality and security requirements, but it takes a relatively long processing time. For general security requirements, encryption algorithms AES-256-GCM-128, AES-192-GCM-128, AES-128-GCM-128, AES-256-GMAC, AES-192-GMAC, and AES-128-GMAC are recommended, and encryption algorithms 3DES, DES, and AES in CBC mode are not recommended.</p>
+</p></li><li class="substepexpand"><span>Configure the data authentication algorithm for ESP.</span><p><pre class="screen"><b><span class="cmdqueryname">esp authentication-algorithm</span></b> { <strong><span>md5</span></strong> | <strong><span>sha1</span></strong> | <strong><span>sha2-256</span></strong> | <strong><span>sha2-384</span></strong> | <strong><span>sha2-512</span></strong> | <strong><span>sm3</span></strong> }<sup>*</sup></pre>
+<p>By default, ESP uses the SHA2-256 authentication algorithm.</p>
+<p>SM3 can meet the high confidentiality and security requirements, but it takes a comparatively long time for processing. For general security requirements, authentication algorithms SHA2-256, SHA2-384, and SHA2-512 are recommended, and authentication algorithms MD5 and SHA1 are not recommended.</p>
+</p></li></ol>
+</li><li><span>Configure the data encapsulation mode for the IPsec security protocol.</span><p><pre class="screen"><b><span class="cmdqueryname">encapsulation-mode</span></b> { <strong><span>transport</span></strong> | <strong><span>tunnel</span></strong> | <strong><span>auto</span></strong> }</pre>
+<p>By default, an IPsec security protocol uses the tunnel mode.</p>
+<p><strong><span>auto</span></strong> indicates that the data encapsulation mode is auto-sensing mode. In auto-sensing mode, the device uses the tunnel mode if it serves as the IKE initiator. If it serves as the responder, it can use either the tunnel or transport mode.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>When configuring an IPsec policy on both ends of an IPsec tunnel, ensure that the referenced proposals use the same packet encapsulation mode.</li><li>If route-based IPsec is configured, the encapsulation mode of an IPsec security protocol can only be set to tunnel mode in the IPsec proposal referenced by the tunnel interface whose encapsulation protocol is IPsec.</li><li>When IKEv2 is used, the encapsulation modes in all the IPsec proposals configured on the IKE initiator must be the same; otherwise, IKE negotiation fails.</li><li>The modified encapsulation mode applies only to new tunnels; it does not affect established tunnels because the existing SAs are not reset.</li></ul>
+</div></div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564113953__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display ipsec proposal</span></b> [ <strong><span>brief</span></strong> | <strong><span>name</span></strong> <i><span class="varname">proposal-name</span></i> ] [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] command in the user view to check the IPsec proposal configuration.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001564113953__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>The configured IPsec proposal can be referenced in an IPsec policy or IPsec profile. For details, see <a href="security_ipsec_cfg_0022.html">Configuring an IPsec Policy</a> or <a href="security_ipsec_cfg_0034.html">Configuring an IPsec Profile</a>.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0009.html">Configuring an IPsec Proposal
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0012.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

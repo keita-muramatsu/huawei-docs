@@ -1,0 +1,78 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding SRv6 TI-LFA FRR">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0236.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0238.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Learning More">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001450699208">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding SRv6 TI-LFA FRR</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001450699208"></a><a name="EN-US_CONCEPT_0000001450699208"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding SRv6 TI-LFA FRR</h1>
+<div><p></p>
+<p>Conventional loop-free alternate (LFA) requires that at least one neighbor be a loop-free next hop to the destination, and remote LFA (RLFA) requires that at least one node be connected to the source and destination nodes without traversing the failure point. In contrast, topology-independent loop-free alternate (TI-LFA) FRR uses an explicit path to represent a backup path, achieving higher FRR reliability without imposing topology constraints.</p>
+<p>SRv6 TI-LFA FRR applies to both SRv6 BE and SRv6 TE Policy scenarios. Although SRv6 BE packets typically do not carry SRH information, they do in TI-LFA FRR scenarios to encapsulate repair list information.</p>
+<div class="section"><h4 class="sectiontitle">SRv6 TI-LFA</h4><div class="p">On the network shown in <a href="#EN-US_CONCEPT_0000001450699208__fig_dc_vrp_srv6_all_feature_001701">Figure 1</a>, if the extended P space and Q space do not intersect, RLFA cannot compute a backup path because its requirements are not met. If the link between <span class="keyword">Device</span>B and <span class="keyword">Device</span>E fails, <span class="keyword">Device</span>B forwards data packets to <span class="keyword">Device</span>C. However, <span class="keyword">Device</span>C is not a Q node and has no FRR entry pointing directly to the destination <span class="keyword">Device</span>F. As a result, path recomputation is required. Because the cost of the link between <span class="keyword">Device</span>C and <span class="keyword">Device</span>D is 1000, <span class="keyword">Device</span>C considers that the optimal path to <span class="keyword">Device</span>F passes through <span class="keyword">Device</span>B. Consequently, <span class="keyword">Device</span>C forwards the packets back to <span class="keyword">Device</span>B, resulting in a loop and forwarding failure.<div class="fignone" id="EN-US_CONCEPT_0000001450699208__fig_dc_vrp_srv6_all_feature_001701"><a name="EN-US_CONCEPT_0000001450699208__fig_dc_vrp_srv6_all_feature_001701"></a><a name="fig_dc_vrp_srv6_all_feature_001701"></a><span class="figcap"><b>Figure 1 </b>RLFA implementation</span><br><span><img class="vsd" src="figure/en-us_image_0000001450699212.png" width="NaN" height="NaN"></span></div>
+</div>
+<p>TI-LFA FRR provides link and node protection for SRv6. <a href="#EN-US_CONCEPT_0000001450699208__fig_dc_vrp_srv6_all_feature_001702">Figure 2</a> shows how SRv6 TI-LFA FRR is implemented.</p>
+<div class="p">If the link between <span class="keyword">Device</span>B and <span class="keyword">Device</span>E fails, <span class="keyword">Device</span>B adds new path information (End.X SIDs of <span class="keyword">Device</span>C and <span class="keyword">Device</span>D) to the packets based on TI-LFA FRR backup entries. This ensures that the packets can be forwarded along the backup path.<div class="fignone" id="EN-US_CONCEPT_0000001450699208__fig_dc_vrp_srv6_all_feature_001702"><a name="EN-US_CONCEPT_0000001450699208__fig_dc_vrp_srv6_all_feature_001702"></a><a name="fig_dc_vrp_srv6_all_feature_001702"></a><span class="figcap"><b>Figure 2 </b>TI-LFA implementation</span><br><span><img class="vsd" src="figure/en-us_image_0000001500698933.png" width="NaN" height="NaN"></span></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">TI-LFA Protection Across IS-IS Levels</h4><p>By default, SRv6 TI-LFA computes backup paths only in the same IS-IS level. In the IS-IS Level-1 scenario shown in <a href="#EN-US_CONCEPT_0000001450699208__fig368512541710">Figure 3</a>, <span class="keyword">Device</span>A is a Level-1 device, <span class="keyword">Device</span>C and <span class="keyword">Device</span>E are Level-2 devices, and <span class="keyword">Device</span>B and <span class="keyword">Device</span>D are Level-1-2 devices between which no physical link exists.</p>
+<p>If data traffic is sent from <span class="keyword">Device</span>C to <span class="keyword">Device</span>A and the primary link between <span class="keyword">Device</span>A and <span class="keyword">Device</span>B fails, SRv6 TI-LFA cannot provide protection because no backup path is available in IS-IS Level-1.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001450699208__fig368512541710"><a name="EN-US_CONCEPT_0000001450699208__fig368512541710"></a><a name="fig368512541710"></a><span class="figcap"><b>Figure 3 </b>TI-LFA protection across IS-IS levels (without any ring in Level-1)</span><br><span><img class="vsd" src="figure/en-us_image_0000001450539444.png" width="NaN" height="NaN"></span></div>
+<p>To address the preceding issue, SRv6 TI-LFA supports TI-LFA protection across IS-IS levels, enabling IS-IS to compute SRv6 TI-LFA backup paths across levels. On the network shown in <a href="#EN-US_CONCEPT_0000001450699208__fig368512541710">Figure 3</a>, <span class="keyword">Device</span>B pre-computes an SRv6 TI-LFA backup path (<span class="keyword">Device</span>B -&gt; <span class="keyword">Device</span>E -&gt; <span class="keyword">Device</span>D -&gt; <span class="keyword">Device</span>A) that transits Level-2, so that traffic can be transmitted over the backup path to meet SLA requirements if the link between <span class="keyword">Device</span>A and <span class="keyword">Device</span>B fails.</p>
+<p>In the Level-1 ring networking scenario shown in <a href="#EN-US_CONCEPT_0000001450699208__fig1872792414396">Figure 4</a>, <span class="keyword">Device</span>B and <span class="keyword">Device</span>D are connected using a physical link, meaning that an SRv6 TI-LFA backup path can be provided for the primary link between <span class="keyword">Device</span>A and <span class="keyword">Device</span>B in Level-1. However, the bandwidth of the physical link between <span class="keyword">Device</span>B and <span class="keyword">Device</span>D may be insufficient to carry a large number of services. To address this issue, <span class="keyword">Device</span>B can be configured to preferentially select a protection path that crosses IS-IS levels as the SRv6 TI-LFA backup path (<span class="keyword">Device</span>B -&gt; <span class="keyword">Device</span>E -&gt; <span class="keyword">Device</span>D -&gt; <span class="keyword">Device</span>A).</p>
+<p>If data traffic reaches <span class="keyword">Device</span>D along the SRv6 TI-LFA backup path, a loop may occur in some scenarios. For example:</p>
+<ul><li>If the link between <span class="keyword">Device</span>D and <span class="keyword">Device</span>A also fails, <span class="keyword">Device</span>D may send the traffic back to <span class="keyword">Device</span>B, resulting in a loop.</li><li>If the link between <span class="keyword">Device</span>D and <span class="keyword">Device</span>A is normal but its cost is high, <span class="keyword">Device</span>D may consider <span class="keyword">Device</span>B as the next hop and send traffic to it when the primary link between <span class="keyword">Device</span>A and <span class="keyword">Device</span>B recovers and <span class="keyword">Device</span>D converges first. This also results in a loop.</li></ul>
+<div class="fignone" id="EN-US_CONCEPT_0000001450699208__fig1872792414396"><a name="EN-US_CONCEPT_0000001450699208__fig1872792414396"></a><a name="fig1872792414396"></a><span class="figcap"><b>Figure 4 </b>TI-LFA protection across IS-IS levels (with a ring in Level-1)</span><br><span><img class="vsd" src="figure/en-us_image_0000001450859148.png" width="NaN" height="NaN"></span></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0236.html">Configuring IS-IS SRv6 TI-LFA FRR
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0238.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

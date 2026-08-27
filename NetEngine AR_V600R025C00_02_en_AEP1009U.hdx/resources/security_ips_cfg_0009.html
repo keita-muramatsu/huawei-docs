@@ -1,0 +1,89 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Updating the Intrusion Prevention Signature Database">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ips_cfg_0014.html">
+<meta name="DC.Relation" scheme="URI" content="security_ips_cfg_0010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513153758">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Updating the Intrusion Prevention Signature Database</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513153758"></a><a name="EN-US_TASK_0000001513153758"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Updating the Intrusion Prevention Signature Database</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001513153758__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><ul><li>For details about how to prepare for signature database update, see "Preparation for Signature Database Updates" in <span>CLI Configuration Guide</span> &gt; System Management Configuration &gt; Signature Database Update Configuration.</li><li>Before updating the IPS signature database using the online update function, you need to configure the device to communicate with the Huawei Security Center. For details, see "Configuring the Device to Communicate with the Huawei Security Center" in <span>CLI Configuration Guide</span> &gt; System Management Configuration &gt; Signature Database Update Configuration &gt; Configuring Online Signature Database Update.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513153758__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Huawei security center (<span><a href="https://isecurity.huawei.com" target="_blank" rel="noopener noreferrer">isecurity.huawei.com</a></span>) periodically releases the IPS signature database and updates the IPS signature database to the latest version in a timely manner to effectively defend against network intrusions.</p>
+<p>This section provides only the basic steps for updating a signature database online. For details about offline signature database update and other related update information, see "Signature Database Update Configuration" in <span>CLI Configuration Guide</span> &gt; System Management Configuration.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513153758__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure the DNS server to ensure that the device can correctly parse the domain name of the security center.</span><p><pre class="screen" id="EN-US_TASK_0000001513153758__en-us_task_0000001513170622_screen2757381320"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513153758__en-us_task_0000001513170622_cmdname1979117812319">system-view</span></b>
+<b><span class="cmdqueryname" id="EN-US_TASK_0000001513153758__en-us_task_0000001513170622_cmdname177911488320">dns resolve</span></b>
+<b><span class="cmdqueryname" id="EN-US_TASK_0000001513153758__en-us_task_0000001513170622_cmdname2791208337">dns server</span></b> <em id="EN-US_TASK_0000001513153758__en-us_task_0000001513170622_i1779198133">ip-address</em></pre>
+</p></li><li><span>Manually update the intrusion prevention signature database to the latest version.</span><p><pre class="screen"><b><span class="cmdqueryname">update online</span></b> <strong><span>ips-sdb</span></strong></pre>
+<p>The device periodically updates the intrusion prevention signature database once a week.</p>
+</p></li><li><span>Configure scheduled update of the intrusion prevention signature database.</span><ol type="a"><li class="substepexpand"><span>Enable scheduled update.</span><p><pre class="screen"><b><span class="cmdqueryname">update schedule</span></b> <strong><span>ips-sdb</span></strong> <strong><span>enable</span></strong></pre>
+</p></li><li class="substepexpand"><span>Set the scheduled update time.</span><p><pre class="screen"><b><span class="cmdqueryname">update schedule</span></b> <strong><span>ips-sdb</span></strong> { <strong><span>hourly</span></strong> <i><span class="varname">minute</span></i> | { <strong><span>daily</span></strong> | <strong><span>weekly</span></strong> { <strong><span>mon</span></strong> | <strong><span>tue</span></strong> | <strong><span>wed</span></strong> | <strong><span>thu</span></strong> | <strong><span>fri</span></strong> | <strong><span>sat</span></strong> |<strong><span> sun</span></strong> } } <i><span class="varname">time</span></i> }</pre>
+<p>By default, the scheduled update function of the intrusion prevention signature database is enabled. The device randomly selects a time from 00:00 to 07:59 as the scheduled time for updating the intrusion prevention signature database every day. You can configure the time.</p>
+<p>You are advised to update the IPS signature database once a week.</p>
+</p></li></ol>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ips_cfg_0014.html">Configuring Signature-based IPS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ips_cfg_0010.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

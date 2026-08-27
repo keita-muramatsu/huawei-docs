@@ -1,0 +1,77 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding Intermediate File-based Deployment">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0051.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0053.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_deployment.ditamap">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001905107496">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding Intermediate File-based Deployment</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001905107496"></a><a name="EN-US_CONCEPT_0000001905107496"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding Intermediate File-based Deployment</h1>
+<div><p>During intermediate file-based deployment, the device interacts with the DHCP server, intermediate file server, and deployment file server. <a href="#EN-US_CONCEPT_0000001905107496__fig0927649161011">Figure 1</a> shows the intermediate file-based deployment process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001905107496__fig0927649161011"><a name="EN-US_CONCEPT_0000001905107496__fig0927649161011"></a><a name="fig0927649161011"></a><span class="figcap"><b>Figure 1 </b>Intermediate file-based deployment process</span><br><span><img class="vsd" src="figure/en-us_image_0000001922258618.png" width="NaN" height="NaN"></span></div>
+<ol><li>Preparing deployment files and making an intermediate file<p>An engineer prepares deployment files and makes an intermediate file on a terminal such as a PC in advance. The intermediate file can be an .ini file (<a href="galaxy_ztp01_cfg_0054.html">Intermediate File in the INI Format</a>) or Python script (<a href="galaxy_ztp01_cfg_0154.html">Intermediate File in Python Format</a>).</p>
+</li><li>Deploying the DHCP server, intermediate file server, and deployment file server<p>The engineer configures the DHCP server and file server and saves the intermediate file to the intermediate file server and the deployment files to the deployment file server. The engineer can also configure the DHCP relay agent, DNS server, and Syslog server as required. The functions of each device are as follows:</p>
+<ul><li><strong>DHCP relay agent:</strong> relays DHCP packets between the device and the DHCP server when they are located on different network segments.</li><li><strong>DHCP server</strong>: assigns a temporary management IP address, default gateway address, DNS server address, intermediate file server address, and intermediate file name.</li><li><strong>Intermediate file server</strong>: stores the intermediate file required for ZTP deployment. By parsing the intermediate file, the device can obtain information such as the deployment file server address and deployment file name. An intermediate file server must be an SFTP/HTTP/TFTP/FTP file server.</li></ul>
+<ul><li><p><strong>Deployment file server</strong>: stores the deployment files to be loaded to the device, including the system software, configuration file, and patch file. The deployment file server and intermediate file server can be combined, which must be an SFTP, HTTP, TFTP, or FTP file server.</p>
+</li><li><strong>DNS server</strong>: provides mappings between domain names and IP addresses, and resolves the file server domain name to an IP address for the device. Based on the resolved IP address, the device can connect to the file server to obtain requested files.</li><li><strong>Syslog server</strong>: records important information in user logs during ZTP deployment and uploads the logs to the NMS.</li></ul>
+</li><li><p>Powering on the device</p>
+<p>The deployment person powers on and starts the device. The device starts with a configuration file if one is available. Otherwise, the device automatically starts the ZTP process.</p>
+</li><li><p>Obtaining DHCP information</p>
+<ol type="a"><li id="EN-US_CONCEPT_0000001905107496__li15701184317279">The device sends DHCP request packets through its Layer 3 physical interface.</li><li>The DHCP server sends a DHCP reply packet to the device. The <a href="galaxy_ztp01_cfg_0053.html">Option parameters</a> in the packet specify the information that the device needs to obtain from the DHCP server.</li></ol>
+</li><li><p>Obtaining the intermediate file and deployment files</p>
+<p>The device downloads the intermediate file from the intermediate file server according to the information carried in the DHCP reply packet. It then downloads deployment files from the deployment file server according to the intermediate file.</p>
+</li><li>(Optional) Starting the Syslog server<p>The device obtains the IP address of the Syslog server from the DHCP reply packet and enables the Syslog server function. Information about important phases during device deployment is recorded in user logs, which the Syslog server will upload to the NMS.</p>
+</li><li><p>Automatically completing deployment</p>
+<p>The device determines whether to activate each deployment file online based on activation modes defined in the intermediate file or set a deployment file as a system startup file and restart to complete automatic deployment.</p>
+</li></ol>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_CONCEPT_0000001905107496__en-us_concept_0000001630972845_ul17421158171718"><li id="EN-US_CONCEPT_0000001905107496__en-us_concept_0000001630972845_li139516121818">When deploying an unconfigured device, you are advised not to manually deliver the same configurations as those delivered during ZTP. Doing so will cause the configurations to be deleted if the deployment fails.</li><li id="EN-US_CONCEPT_0000001905107496__en-us_concept_0000001630972845_li5937113715817">ZTP depends on OPS. You can run the <b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001905107496__en-us_concept_0000001630972845_cmdname64678429732956">display ops process current</span></b> command to obtain the task ID, which indicates the ZTP process ID, and then run the <strong id="EN-US_CONCEPT_0000001905107496__en-us_concept_0000001630972845_b29565876832956"><b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001905107496__en-us_concept_0000001630972845_cmdname172923032332956">ops stop process</span></b></strong> <em id="EN-US_CONCEPT_0000001905107496__en-us_concept_0000001630972845_i165707559532956"><i><span class="varname" id="EN-US_CONCEPT_0000001905107496__en-us_concept_0000001630972845_varname76645647132956">process-id</span></i></em> command to stop the ongoing ZTP process. This operation, however, may cause the configurations that have been delivered during ZTP to be retained on the device.</li></ul>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ztp01_cfg_0051.html">Configuring Intermediate File-based Deployment
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ztp01_cfg_0053.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

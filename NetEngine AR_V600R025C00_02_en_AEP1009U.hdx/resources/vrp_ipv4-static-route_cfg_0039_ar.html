@@ -1,0 +1,294 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Association Between LDP and Static Routes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ipv4-static-route_cfg_0054.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ipv4-static-route_cfg_0008.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ipv4-static-route_cfg_0018-1.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 Static Route">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 Static Route">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="IPv4 Static Route">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001670044914">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Association Between LDP and Static Routes</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001670044914"></a><a name="EN-US_TASK_0000001670044914"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Association Between LDP and Static Routes</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001670044914__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_context6580251331"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p1735132312214036">On an MPLS network with primary and secondary LSPs established between devices using static routes, if association between LDP and static routes is not enabled, traffic is interrupted for a short period of time during traffic switchover from the primary LSP to the secondary LSP when the LDP session on the primary link fails (not because of a link fault) or during traffic switchback when the primary link recovers from a fault.</p>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p979721186214036">On the network shown in <a href="#EN-US_TASK_0000001670044914__en-us_task_0000001376013113_fig_dc_vrp_cfg_006201">Figure 1</a>, DeviceA has two static routes to DeviceD, with one passing through DeviceB and the other through DeviceC. LDP sessions are established based on the static routes. LinkA is the primary link, and LinkB is the backup link. It is required that association between LDP and static routes be configured to prevent MPLS traffic from being interrupted if the LDP session on LinkA fails or LinkA recovers from a fault.</p>
+<div class="fignone" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_fig_dc_vrp_cfg_006201"><a name="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_fig_dc_vrp_cfg_006201"></a><a name="en-us_task_0000001376013113_fig_dc_vrp_cfg_006201"></a><span class="figcap"><b>Figure 1 </b>Configuring association between LDP and static routes</span><div class="note" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_note798397918214036"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p2501161181812">In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_image9373133562919" src="figure/en-us_image_0000001427987248.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001670044914__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_section_dc_vrp_cfg_00691502"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p108050545214036">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_ol1496718042214036"><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li1543290398214036"><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p774230720214036"><a name="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li1543290398214036"></a><a name="en-us_task_0000001376013113_li1543290398214036"></a>Configure static routes to other devices on each device to ensure network reachability.</p>
+</li><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li1372011316214036"><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p1862270173214036"><a name="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li1372011316214036"></a><a name="en-us_task_0000001376013113_li1372011316214036"></a>Enable MPLS and MPLS LDP globally and on interfaces of devices.</p>
+</li><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li180099291214036"><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p1124325214214036"><a name="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li180099291214036"></a><a name="en-us_task_0000001376013113_li180099291214036"></a>Configure association between LDP and static routes and check configurations.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001670044914__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_steps10132325172748"><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_step1336441092214036"><span id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_cmd1033969271214036">Assign an IP address to each interface.</span><p><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p1178845444214036">Configure an IP address for each interface based on <a href="#EN-US_TASK_0000001670044914__en-us_task_0000001376013113_fig_dc_vrp_cfg_006201">Figure 1</a>. The configuration details are not mentioned here.</p>
+</p></li><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_step105120589519"><span id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_cmd45135812512">Configure static routes for the devices to ensure network reachability.</span><p><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p15878111012536"># On DeviceA, configure two static routes to DeviceD with different priorities. On DeviceD, configure two static routes to DeviceA with different priorities.</p>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p729155917525"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen1934945640214036">[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b108883889214036">ip route-static 2.2.2.2 32 <span>10ge</span><span> <span>0/0/1</span></span> 10.1.1.2</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1092951902214036">ip route-static 3.3.3.3 32 <span>10ge</span> <span>0/0/2</span> 10.2.1.2</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1137303499214036">ip route-static 10.3.1.1 30 <span>10ge</span><span> <span>0/0/1</span></span></strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b839173456214036">ip route-static 10.4.1.1 30 <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b110052736214036">ip route-static 4.4.4.4 32 <span>10ge</span><span> <span>0/0/1</span></span> 10.1.1.2 preference 40</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1848667289214036">ip route-static 4.4.4.4 32 <span>10ge</span> <span>0/0/2</span> 10.2.1.2 preference 60</strong></pre>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p1982706818214036"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen807658439214036">[DeviceB] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1280838959214036">ip route-static 1.1.1.1 32 <span>10ge</span><span> <span>0/0/1</span></span> 10.1.1.1</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1889005992214036">ip route-static 4.4.4.4 32 <span>10ge</span> <span>0/0/2</span> 10.3.1.2</strong></pre>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p2021265948214036"># Configure DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen105269808214036">[DeviceC] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b701703547214036">ip route-static 1.1.1.1 32 <span>10ge</span><span> <span>0/0/1</span></span> 10.2.1.1</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1720412614214036">ip route-static 4.4.4.4 32 <span>10ge</span> <span>0/0/2</span> 10.4.1.2</strong></pre>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p634937081214036"># Configure DeviceD.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen525743476214036">[DeviceD] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1342806050214036">ip route-static 2.2.2.2 32 <span>10ge</span><span> <span>0/0/1</span></span> 10.3.1.1</strong>
+[DeviceD] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b214809382214036">ip route-static 3.3.3.3 32 <span>10ge</span> <span>0/0/2</span> 10.4.1.1</strong>
+[DeviceD] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b991736600214036">ip route-static 10.1.1.2 30 <span>10ge</span><span> <span>0/0/1</span></span></strong>
+[DeviceD] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1758806778214036">ip route-static 10.2.1.2 30 <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceD] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1712163725214036">ip route-static 1.1.1.1 32 <span>10ge</span><span> <span>0/0/1</span></span> 10.3.1.1 preference 40</strong>
+[DeviceD] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b742303566214036">ip route-static 1.1.1.1 32 <span>10ge</span> <span>0/0/2</span> 10.4.1.1 preference 60</strong></pre>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p725294628214036"># After completing the configurations, run the <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b105764141879">display ip routing-table protocol static</strong> command on each node to check the static route configurations. DeviceA is used as an example.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen1353418908214036">[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b2089507293214036">display ip routing-table protocol static</strong>
+Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route
+------------------------------------------------------------------------------
+_public_ Routing Table : Static
+         Destinations : 5        Routes : 5        Configured Routes : 5         
+
+Static routing table status : 
+         Destinations : 5        Routes : 5         
+
+Destination/Mask    Proto   Pre  Cost      Flags NextHop         Interface
+
+        2.2.2.2/32  Static  60   0           D   10.1.1.1        <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b297555714711"><span>10ge</span><span> <span>0/0/1</span></span></strong>
+        3.3.3.3/32  Static  60   0           D   10.2.1.1        <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b105883437313"><span>10ge</span> <span>0/0/2</span></strong>
+        4.4.4.4/32  Static  40   0           D   10.1.1.1        <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b751719144812"><span>10ge</span><span> <span>0/0/1</span></span></strong>
+       10.3.1.0/30  Static  60   0           D   10.1.1.1        <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b18197224134811"><span>10ge</span><span> <span>0/0/1</span></span></strong>
+       10.4.1.0/30  Static  60   0           D   10.2.1.1        <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1502124715317"><span>10ge</span> <span>0/0/2</span></strong>
+
+Static routing table status : &lt;Inactive&gt;
+         Destinations : 0        Routes : 0
+</pre>
+</p></li><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_step1522024225316"><span id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_cmd522044295319">Enable MPLS LDP on each device to set up LDP LSPs.</span><p><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p153590148214036"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen748401376214036">[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1791196725214036">mpls lsr-id 1.1.1.1</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b986855081214036">mpls</strong>
+[DeviceA-mpls] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1201520737214036">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1996832170214036">mpls ldp</strong>
+[DeviceA-mpls-ldp] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b794528363214036">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1883492635214036">interface <span>10ge</span><span> <span>0/0/1</span></span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b731382962214036">mpls</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b341486592214036">mpls ldp</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1040728872214036">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b2730075214036">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1036664809214036">mpls</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1746321471214036">mpls ldp</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b2118518504214036">quit</strong></pre>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p336144510214036">The configurations of DeviceB, DeviceC, and DeviceD are similar to the configuration of DeviceA. For detailed configurations, see Configuration Scripts.</p>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p734156855214036"># Run the <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b128897582127">display mpls ldp session</strong> command on each node to view information about established LDP sessions (in <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b19889165811121">Operational</strong> state). DeviceA is used as an example.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen1087722995214036">[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b328391845214036">display mpls ldp session</strong>
+ LDP Session(s) in Public Network
+ Codes: LAM(Label Advertisement Mode), SsnAge Unit(DDDD:HH:MM)
+ An asterisk (*) before a session means the session is being deleted.
+ ------------------------------------------------------------------------------
+ PeerID             Status      LAM  SsnRole  SsnAge      KASent/Rcv
+ ------------------------------------------------------------------------------
+ 2.2.2.2:0          <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b382209923214036">Operational</strong> DU   Passive  0000:15:34  3738/3738
+ 3.3.3.3:0          <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b31254135214036">Operational</strong> DU   Passive  0000:00:45  182/182
+ ------------------------------------------------------------------------------
+ TOTAL: 2 Session(s) Found.</pre>
+</p></li><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_step7426629125414"><span id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_cmd4426112935418">Configure association between LDP and static routes on DeviceA and DeviceD.</span><p><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p1508926225214036"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen231321779214036">[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b977356274214036">ip route-static 4.4.4.4 32 Vlanif100 10.1.1.2 preference 40 ldp-sync</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1072672290214036">interface Vlanif100</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b251456032214036">static-route timer ldp-sync hold-down 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1199216763214036">quit</strong></pre>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p1093557947214036"># Configure DeviceD.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen1191341932214036">[DeviceD] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b596435558214036">ip route-static 1.1.1.1 32 <span>10ge</span><span> <span>0/0/1</span></span> 10.3.1.1 preference 40 ldp-sync</strong>
+[DeviceD] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1905230023214036">interface <span>10ge</span><span> <span>0/0/1</span></span></strong>
+[DeviceD-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b228295497214036">static-route timer ldp-sync hold-down 20</strong>
+[DeviceD-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b349260552214036">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_example121226172748"><a name="EN-US_TASK_0000001670044914__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p1447642757214036"># Display outbound interface status of the static routes that are associated with LDP on DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen767247916214036">[DeviceA] <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b357498944214036">display static-route ldp-sync</strong>
+Total number of routes enable Ldp-Sync: 1
+-----------------------------------------------------
+Interface <span>10GE</span><span>0/0/1</span>
+Enable ldp-sync static routes number: 1
+<strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1096515572214036">Static-route ldp-sync holddown timer: 20s</strong>
+<strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b156618462214036">Sync state: Normal</strong>
+Dest = 4.4.4.4, Mask = 32, NextHop = 10.1.1.2.
+-----------------------------------------------------</pre>
+<p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p553938530214036">The command output shows that association between LDP and static routes has been configured (in <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b127161128201915">Normal</strong> state).</p>
+<ul id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_ul696338800214036"><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li1181688545214036"><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p710608359214036"><a name="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li1181688545214036"></a><a name="en-us_task_0000001376013113_li1181688545214036"></a>When the LDP session on the primary link is interrupted, traffic is immediately switched to the backup link (LinkB) to ensure association between the static route and LDP.</p>
+</li><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li121716881214036"><p id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_p1291187023214036"><a name="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li121716881214036"></a><a name="en-us_task_0000001376013113_li121716881214036"></a>When the primary link (LinkA) recovers from a fault, the static route with next hop 10.1.1.2 is not selected immediately. The static route with next hop 10.1.1.2 becomes active and traffic is switched to the primary link only after the hold-down timer (20s) expires and an LDP session is established on the primary link. In this manner, the static route is associated with LDP, ensuring uninterrupted MPLS traffic forwarding.</p>
+</li></ul>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001670044914__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_ul2119083388214036"><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li1607277585214036">DeviceA<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen994263179214036">#
+sysname DeviceA
+#
+mpls lsr-id 1.1.1.1
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10ge</span><span> <span>0/0/1</span></span>
+ ip address 10.1.1.1 255.255.255.252
+ static-route timer ldp-sync hold-down 20
+ mpls
+ mpls ldp
+#
+interface <span>10ge</span> <span>0/0/2</span>
+ ip address 10.2.1.1 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 1.1.1.1 255.255.255.255
+#
+ ip route-static 2.2.2.2 255.255.255.255 <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b9273035514"><span>10ge</span><span> <span>0/0/1</span></span></strong> 10.1.1.2
+ ip route-static 3.3.3.3 255.255.255.255 <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b09460381416"><span>10ge</span> <span>0/0/2</span></strong> 10.2.1.2
+ ip route-static 4.4.4.4 255.255.255.255 <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b654707115120"><span>10ge</span><span> <span>0/0/1</span></span></strong> 10.1.1.2 preference 40 ldp-sync
+ ip route-static 4.4.4.4 255.255.255.255 <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b114121441541"><span>10ge</span> <span>0/0/2</span></strong> 10.2.1.2
+ ip route-static 10.3.1.0 255.255.255.252 <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1921412185118"><span>10ge</span><span> <span>0/0/1</span></span></strong>
+ ip route-static 10.4.1.0 255.255.255.252 <strong id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_b1092394318410"><span>10ge</span> <span>0/0/2</span></strong>
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li2080890124214036">DeviceB<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen601121328214036">#
+sysname DeviceB
+#
+mpls lsr-id 2.2.2.2
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10ge</span><span> <span>0/0/1</span></span>
+ ip address 10.1.1.2 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface <span>10ge</span> <span>0/0/2</span>
+ ip address 10.3.1.1 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 2.2.2.2 255.255.255.255
+#
+ ip route-static 1.1.1.1 255.255.255.255 <span>10ge</span><span> <span>0/0/1</span></span> 10.1.1.1
+ ip route-static 4.4.4.4 255.255.255.255 <span>10ge</span> <span>0/0/2</span> 10.3.1.2
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li1880796412214036">DeviceC<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen2109007635214036">#
+sysname DeviceC
+#
+mpls lsr-id 3.3.3.3
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10ge</span><span> <span>0/0/1</span></span>
+ ip address 10.2.1.2 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface <span>10ge</span> <span>0/0/2</span>
+ ip address 10.4.1.1 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 3.3.3.3 255.255.255.255
+#
+ ip route-static 1.1.1.1 255.255.255.255 <span>10ge</span><span> <span>0/0/1</span></span> 10.2.1.1
+ ip route-static 4.4.4.4 255.255.255.255 <span>10ge</span> <span>0/0/2</span> 10.4.1.2
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_li852598135214036">DeviceD<pre class="screen" id="EN-US_TASK_0000001670044914__en-us_task_0000001376013113_screen1831564431214036">#
+sysname DeviceD
+#
+mpls lsr-id 4.4.4.4
+#
+mpls
+#
+mpls ldp
+#
+interface <span>10ge</span><span> <span>0/0/1</span></span>
+ ip address 10.3.1.2 255.255.255.252
+ static-route timer ldp-sync hold-down 20
+ mpls
+ mpls ldp
+#
+interface <span>10ge</span> <span>0/0/2</span>
+ ip address 10.4.1.2 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 4.4.4.4 255.255.255.255
+#
+ ip route-static 1.1.1.1 255.255.255.255 <span>10ge</span><span> <span>0/0/1</span></span> 10.3.1.1 preference 40 ldp-sync
+ ip route-static 1.1.1.1 255.255.255.255 <span>10ge</span> <span>0/0/2</span> 10.4.1.1
+ ip route-static 2.2.2.2 255.255.255.255 <span>10ge</span><span> <span>0/0/1</span></span> 10.3.1.1
+ ip route-static 3.3.3.3 255.255.255.255 <span>10ge</span> <span>0/0/2</span> 10.4.1.1
+ ip route-static 10.1.1.0 255.255.255.252 <span>10ge</span><span> <span>0/0/1</span></span>
+ ip route-static 10.2.1.0 255.255.255.252 <span>10ge</span> <span>0/0/2</span>
+#
+return</pre>
+</li></ul>
+<h4 class="sectiontitle"></h4></div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ipv4-static-route_cfg_0054.html">Examples for Configuring IPv4 Static Routes
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ipv4-static-route_cfg_0008.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_ipv4-static-route_cfg_0018-1.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

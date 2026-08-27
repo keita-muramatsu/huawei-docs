@@ -1,0 +1,91 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Heartbeat Detection">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0038.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0039.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0041.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512834334">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Heartbeat Detection</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512834334"></a><a name="EN-US_TASK_0000001512834334"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Heartbeat Detection</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001512834334__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><ul><li>Heartbeat detection takes effect only for IKEv1 negotiation.</li><li>Heartbeat detection can be configured only for the following types of IPsec:<ul><li>ACL-based IPsec (involving ISAKMP IPsec policies and template IPsec policies)</li><li>Route-based IPsec (involving IPsec profiles)</li></ul>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001512834334__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The IKE protocol does not provide the peer status detection mechanism. If one IKE peer does not respond to the other IKE peer, the other IKE peer continues to send IPsec traffic until the SA lifetime expires because it cannot detect the change of the peer. An SA between two IKE peers exists until its lifetime expires. If an IKE peer becomes unreachable, an IPsec black hole will occur and data flows will be discarded. IPsec communication can be restored rapidly only when black holes are identified and detected in a timely manner. To solve this issue, the device provides the heartbeat detection mechanism.</p>
+<p>Heartbeat detection enables the local end to periodically send heartbeat packets to the remote end. If the local end does not receive heartbeat packets from the remote end within the timeout interval, the local end considers the remote end as unreachable and deletes the IKE SA or IPsec SA between IKE peers.</p>
+<div class="p">Heartbeat detection has the following limitations:<ul><li>Enabling heartbeat detection will consume CPU resources to process IKE keepalive messages, limiting the number of IPsec sessions to be established.</li><li>There are no uniform technical standards for heartbeat detection, so devices from different vendors may be unable to communicate with each other.</li></ul>
+</div>
+<p>To address these limitations, the device also supports dead peer detection (DPD). For details, see <a href="security_ipsec_cfg_0041.html">Configuring DPD</a>. When both heartbeat detection and DPD are enabled on the device, only DPD takes effect.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512834334__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Configure heartbeat packet parameters.</span><p><pre class="screen"><b><span class="cmdqueryname">ike heartbeat</span></b> { <strong><span>seq-num</span></strong> { <strong><span>new</span></strong> | <strong><span>old</span></strong> } | <strong><span>spi-list</span></strong> }</pre>
+<p>By default, a heartbeat packet uses old type sequence number mechanism and does not carry the SPI list.</p>
+</p></li><li><span>Configure the heartbeat interval in an IKE SA.</span><p><pre class="screen"><b><span class="cmdqueryname">ike heartbeat-timer interval</span></b> <i><span class="varname">interval</span></i></pre>
+<p>By default, the heartbeat interval in an IKE SA is not configured.</p>
+</p></li><li><span>Configure the heartbeat timeout period.</span><p><pre class="screen"><b><span class="cmdqueryname">ike heartbeat-timer timeout</span></b> <i><span class="varname">seconds</span></i></pre>
+<p>By default, the heartbeat timeout period is not configured.</p>
+<p>If the <b><span class="cmdqueryname">ike heartbeat-timer timeout</span></b> command is configured on one end, the <b><span class="cmdqueryname">ike heartbeat-timer interval</span></b> command must be configured on the other end. The heartbeat timeout period is often longer than the interval at which heartbeat packets are sent. Generally, packets will not be lost for more than three consecutive times on the network. Therefore, you can set the value of <i><span class="varname">seconds</span></i> to three times the value of <i><span class="varname">interval</span></i>.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0038.html">IPsec Reliability
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0039.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0041.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

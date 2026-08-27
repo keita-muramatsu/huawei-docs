@@ -1,0 +1,109 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding BGP Best External">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0201.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0203.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002015510560">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding BGP Best External</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002015510560"></a><a name="EN-US_CONCEPT_0000002015510560"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding BGP Best External</h1>
+<div><p></p>
+<p>If multiple routes to the same destination are available, a BGP device selects one optimal route based on BGP route selection rules and advertises the route to its peers. For details about the BGP route selection rules, see <a href="vrp_bgp_cfg_0006.html">BGP Route Selection Rules</a>.</p>
+<p>However, in scenarios with master and backup provider edges (PEs), if routes are selected based on the existing BGP route selection rules, no backup link may be available. As a result, route convergence takes a long time if a link fails. To address this problem, configure BGP Best External.</p>
+<div class="section"><h4 class="sectiontitle">Related Concepts</h4><p>BGP Best External: On a BGP Best External-capable device, if the route preferentially selected by the device is an IBGP route, the device selects a suboptimal route (EBGP or IBGP route) and advertises it to its peers. This implements fast route convergence if the primary link fails.</p>
+<p>Best External route: The suboptimal route selected after BGP Best External is enabled.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Typical Application</h4><p>In the networking shown in <a href="#EN-US_CONCEPT_0000002015510560__fig_dc_vrp_bgp_feature_001901">Figure 1</a>, CE1 is dual-homed to PE1 and PE2. PE1 has a larger Local_Pref value. EBGP peer relationships are established between CE1 and PE1, and between CE1 and PE2. In addition, IBGP peer relationships are established among PE1, PE2, and PE3. PE1 and PE2 receive the same route to 1.1.1.1/32 from CE1, and PE2 also receives the route forwarded by PE1. Of the two routes, PE2 preferentially selects the route from PE1 because PE1 has a larger Local_Pref value than CE1. According to route advertisement rules, PE2 does not advertise the route received from PE1 to PE3. Therefore, PE3 has only one route, which is advertised by PE1. If the primary link fails, traffic can be switched to the backup link only after routes are re-converged.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002015510560__fig_dc_vrp_bgp_feature_001901"><a name="EN-US_CONCEPT_0000002015510560__fig_dc_vrp_bgp_feature_001901"></a><a name="fig_dc_vrp_bgp_feature_001901"></a><span class="figcap"><b>Figure 1 </b>Networking with master and backup PEs</span><br><span><img class="vsd" src="figure/en-us_image_0000002015671584.png"></span></div>
+<p>BGP Best External can be enabled on PE2 to address this problem. With BGP Best External, PE2 selects the EBGP route from CE1 as the suboptimal route and advertises it to PE3. In this case, a backup link is available. <a href="#EN-US_CONCEPT_0000002015510560__table_dc_vrp_bgp_feature_003401">Table 1</a> lists the differences with and without BGP Best External.</p>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000002015510560__table_dc_vrp_bgp_feature_003401"></a><a name="table_dc_vrp_bgp_feature_003401"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000002015510560__table_dc_vrp_bgp_feature_003401" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Route transmission and convergence before and after BGP Best External is configured</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="middle" width="25%" id="mcps1.4.4.5.2.5.1.1" liSelected="liSelected"><p>Time</p>
+</th>
+<th align="left" class="cellrowborder" valign="middle" width="25%" id="mcps1.4.4.5.2.5.1.2" liSelected="liSelected"><p>Route Transmission</p>
+</th>
+<th align="left" class="cellrowborder" valign="middle" width="25%" id="mcps1.4.4.5.2.5.1.3" liSelected="liSelected"><p>Optimal Route</p>
+</th>
+<th align="left" class="cellrowborder" valign="middle" width="25%" id="mcps1.4.4.5.2.5.1.4" liSelected="liSelected"><p>Route Convergence in Case of a Link Fault</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" align="left" valign="middle" width="25%" headers="mcps1.4.4.5.2.5.1.1 "><p>Before BGP Best External is configured</p>
+</td>
+<td class="cellrowborder" valign="middle" width="25%" headers="mcps1.4.4.5.2.5.1.2 "><p>PE3 can receive only one route:</p>
+<p>CE1 -&gt; PE1 -&gt; PE3</p>
+</td>
+<td class="cellrowborder" valign="middle" width="25%" headers="mcps1.4.4.5.2.5.1.3 "><p>CE1 -&gt; PE1 -&gt; PE3</p>
+</td>
+<td class="cellrowborder" valign="middle" width="25%" headers="mcps1.4.4.5.2.5.1.4 "><p>A backup link can be selected only after PE1 and PE2 perform route reselection.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="25%" headers="mcps1.4.4.5.2.5.1.1 "><p>After BGP Best External is configured</p>
+</td>
+<td class="cellrowborder" valign="middle" width="25%" headers="mcps1.4.4.5.2.5.1.2 "><p>PE3 receives two routes:</p>
+<p>CE1 -&gt; PE1 -&gt; PE3</p>
+<p>CE1 -&gt; PE2 -&gt; PE3</p>
+</td>
+<td class="cellrowborder" valign="middle" width="25%" headers="mcps1.4.4.5.2.5.1.3 "><p>CE1 -&gt; PE1 -&gt; PE3</p>
+</td>
+<td class="cellrowborder" valign="middle" width="25%" headers="mcps1.4.4.5.2.5.1.4 "><p>Traffic can be directly switched to the backup link.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Application Scenario</h4><p>Fast route convergence can be implemented in the case of a link fault under the condition that the master and backup provider edges (PEs) advertise suboptimal routes (Best External routes) to peers.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Benefits</h4><p>As networks continue to develop, services, such as voice, online video, and financial services, pose higher requirements for real-time transmission. After BGP Best External is deployed, if the route selected by the device is an IBGP route, the device selects the suboptimal route and advertises it to its peers. This speeds up route convergence in the case of a link fault and minimizes the impact of traffic interruptions on services.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_bgp_cfg_0201.html">Configuring BGP Best External
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bgp_cfg_0203.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

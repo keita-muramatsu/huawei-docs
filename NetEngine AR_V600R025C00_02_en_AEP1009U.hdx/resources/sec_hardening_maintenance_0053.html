@@ -1,0 +1,90 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="RADIUS User Management">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0025.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0083.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0052.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513051826">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>RADIUS User Management</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513051826"></a><a name="EN-US_TASK_0000001513051826"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">RADIUS User Management</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513051826__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>RADIUS is the most commonly used protocol for implementing AAA on remote dial-up users. RADIUS runs atop UDP, and its authentication and accounting port numbers are 1812 and 1813, respectively. RADIUS uses the client/server model for communication between the RADIUS client and server to provide AAA functions.</p>
+<div class="p">RADIUS supports the following security hardening modes:<ul><li>Performs authentication using a shared key. This mode is recommended in scenarios that require a high user access rate.<p>RADIUS uses UDP as a transport protocol. The RADIUS server and client authenticate each other using a shared key, which is not transmitted over the network. In addition, to prevent user passwords from being disclosed on an insecure network, the passwords transmitted between the RADIUS server and client are encrypted using the shared key. The device allows you to configure a shared key for packet encryption to improve transmission security. For security purposes, it is recommended that the shared key contain at least 16 characters and at least two types of the following characters: uppercase letters, lowercase letters, digits, and special characters. You are advised to periodically change the shared key.</p>
+</li><li>Supports the DTLS service. This method is recommended in scenarios that have high security requirements.<p>RADIUS over DTLS supports DTLS certificate authentication.</p>
+</li></ul>
+</div>
+<h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001513051826__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure a shared key for the RADIUS server.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Create a RADIUS server template and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">radius-server template</span></b> <i><span class="varname">template-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the RADIUS server and its shared key.</span><p><pre class="screen"><b><span class="cmdqueryname">radius-server authentication </span></b><i><span class="varname">ip-address</span></i> <i><span class="varname">port</span></i> <strong>shared-key</strong> <strong>cipher</strong> <i><span class="varname">share-key</span></i></pre>
+</p></li></ol>
+</li><li><span>Configure RADIUS over DTLS.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a DTLS policy.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Ensure that the PKI realm <em>realm-name</em> bound to the DTLS policy has a certificate loaded. The certificate can be an initial device certificate or a digital certificate applied by a user. For details about how to load a certificate using PKI, see <a href="security_pki_cfg_0001.html">PKI Configuration</a> under <span>CLI Configuration Guide</span> &gt; Security Configuration.</p>
+</div></div>
+<pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <em>realm-name</em> 
+<strong><b><span class="cmdqueryname">quit</span></b></strong> 
+<strong><b><span class="cmdqueryname">pki import-certificate</span></b> </strong><strong>ca</strong> <strong>realm</strong> <em>realm-name</em> <strong>pem</strong> <strong>filename</strong> <em>file-name</em> 
+<strong><b><span class="cmdqueryname">dtls policy</span></b> </strong><em>policy-name</em>
+<strong><b><span class="cmdqueryname">pki-domain</span></b> </strong><em>realm-name</em> 
+<strong><b><span class="cmdqueryname">quit</span></b></strong></pre>
+</p></li><li class="substepexpand"><span>Create a RADIUS server template and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">radius-server template</span></b> <i><span class="varname">template-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the RADIUS server and the DTLS policy to be used by the RADIUS server.</span><p><pre class="screen"><b><span class="cmdqueryname">radius-server authentication </span></b><i><span class="varname">ip-address</span></i> <i><span class="varname">port</span></i> <strong>dtls-policy</strong><em> dtlspolicyname</em> </pre>
+</p></li></ol>
+</li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001513051826__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Checking the Security Hardening Result</h4><p>Run the <strong><b><span class="cmdqueryname">display radius-server configuration</span></b></strong> command to check the RADIUS server configuration.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0025.html">Management Plane Security (Level-2)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0083.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0052.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

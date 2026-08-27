@@ -1,0 +1,143 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring a VPN Instance">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0035.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0040.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0065.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001335704810">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring a VPN Instance</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001335704810"></a><a name="EN-US_TASK_0000001335704810"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring a VPN Instance</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001335704810__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In hub-spoke networking, the PE connected to a central site (hub site) is called a Hub-PE and the PE connected to a non-central site (spoke site) is called a Spoke-PE. Spoke-PEs and Hub-PEs must have VPN instances configured. If the Hub-CE and Hub-PE are connected over dual links, the Hub-PE must have two VPN instances configured, for example, <strong>vpn_in</strong> and <strong>vpn_out</strong>. If the Hub-PE and Hub-CE are connected over a single link, the Hub-PE needs only one VPN instance, for example, <strong>vpnhub</strong>.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Steps 1 to 8 are used to configure a VPN instance. Configurations of different VPN instances are similar. If different VPN instances are configured on the same device, these VPN instances must have different names, RDs, and descriptions.</p>
+</div></div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001335704810__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure the Spoke-PE.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance view of <strong>vpn_in</strong>.</span><p><pre class="screen"><b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure a description for the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">description</span></b> <i><span class="varname">description-information</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance IPv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an RD for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">route-distinguisher</span></b> <i><span class="varname">route-distinguisher</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure import VPN targets for the VPN instance, so that it can receive VPNv4 routes advertised by the Hub-PE.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn-target</span></b> <i><span class="varname">vpn-target2</span></i> &amp;&lt;1-8&gt; <strong><span>import-extcommunity</span></strong></pre>
+</p><p><p><i><span class="varname">vpn-target2</span></i> must be in the export VPN target list configured on the Hub-PE.</p>
+</p></li><li class="substepexpand"><span>Configure export VPN targets for the VPN instance, so that it adds these VPN targets to routes imported from sites accessed by the Spoke-PE when advertising these routes.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn-target</span></b> <i><span class="varname">vpn-target1</span></i> &amp;&lt;1-8&gt; <strong><span>export-extcommunity</span></strong></pre>
+<p><i><span class="varname">vpn-target1</span></i> must be in the import VPN target list configured on the Hub-PE.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure an import route-policy for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">import route-policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+<p>In addition to using VPN targets to control VPN route import and export, an import route-policy can be configured to better control VPN route import. An import route-policy can be used to filter routes to be imported into the VPN instance IPv4 address family or modify route attributes.</p>
+</p><p></p></li><li class="substepexpand"><span>(Optional) Configure an export route-policy for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">export route-policy</span></b> <i><span class="varname">policy-name</span></i><span> [ <strong><span>add-ert-first</span></strong> ]</span></pre>
+</p><p><p>In addition to using VPN targets to control VPN route import and export, an export route-policy can be configured to better control VPN route export. An export route-policy can be used to filter routes to be advertised to other PEs or modify route attributes.</p>
+<p>By default, export VPN targets are added to VPN routes after these routes are matched against an export route-policy. If the export route-policy contains VPN target-related filtering rules, it cannot apply to VPN routes. To address this issue, configure the <strong><span>add-ert-first</span></strong> parameter. This instructs the device to add export VPN targets to VPN routes before matching these routes against the export route-policy.</p>
+</p><p></p></li><li class="substepexpand"><span>(Optional) Configure MPLS label distribution based on the VPN instance<span> IPv4 address family</span> (known as one-label-per-instance), so that only one label is assigned to all the routes of the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">apply-label per-instance</span></b></pre>
+</p></li></ol>
+</li><li><span>Configure the Hub-PE (which connects to a Hub-CE over dual links).</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance view of <strong>vpn_in</strong>.</span><p><pre class="screen"><b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name1</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure a description for the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">description</span></b> <i><span class="varname">description-information</span></i></pre>
+<p>The description is used to record the purpose of creating the VPN instance and the CEs associated with the VPN instance.</p>
+</p></li><li class="substepexpand"><span>Enter the VPN instance IPv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an RD for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">route-distinguisher</span></b> <i><span class="varname">route-distinguisher</span></i></pre>
+<p>A VPN instance<span> IPv4 address family</span> takes effect only after being configured with an RD. Before configuring an RD, you can configure only the description about the VPN instance. No other parameters can be configured.</p>
+</p></li><li class="substepexpand"><span>Configure import VPN targets for the VPN instance, so that it can receive VPNv4 routes advertised by all Spoke-PEs.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn-target</span></b> <i><span class="varname">vpn-target1</span></i> &amp;&lt;1-8&gt; <strong><span>import-extcommunity</span></strong></pre>
+</p><p><p>The <i><span class="varname">vpn-target1</span></i> list here must contain the export VPN targets configured on all Spoke-PEs.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure an import route-policy for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">import route-policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+<p>In addition to using VPN targets to control VPN route import and export, an import route-policy can be configured to better control VPN route import. An import route-policy can be used to filter routes to be imported into the VPN instance IPv4 address family or modify route attributes.</p>
+</p><p></p></li><li class="substepexpand"><span>(Optional) Configure an export route-policy for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">export route-policy</span></b> <i><span class="varname">policy-name</span></i><span> [ <strong><span>add-ert-first</span></strong> ]</span></pre>
+</p><p><p>In addition to using VPN targets to control VPN route import and export, an export route-policy can be configured to better control VPN route export. An export route-policy can be used to filter routes to be advertised to other PEs or modify route attributes.</p>
+<p>By default, export VPN targets are added to VPN routes after these routes are matched against an export route-policy. If the export route-policy contains VPN target-related filtering rules, it cannot apply to VPN routes. To address this issue, configure the <strong><span>add-ert-first</span></strong> parameter. This instructs the device to add export VPN targets to VPN routes before matching these routes against the export route-policy.</p>
+</p><p></p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance view of <strong>vpn_out</strong>.</span><p><pre class="screen"><b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name2</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure a description for the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">description</span></b> <i><span class="varname">description-information</span></i></pre>
+<p>The description is used to record the purpose of creating the VPN instance and the CEs associated with the VPN instance.</p>
+</p></li><li class="substepexpand"><span>Enter the VPN instance IPv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an RD for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">route-distinguisher</span></b> <i><span class="varname">route-distinguisher</span></i></pre>
+<p>A VPN instance<span> IPv4 address family</span> takes effect only after being configured with an RD. Before configuring an RD, you can configure only the description about the VPN instance. No other parameters can be configured.</p>
+</p></li><li class="substepexpand"><span>Configure export VPN targets for the export of routes from all hub and spoke sites.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn-target</span></b> <i><span class="varname">vpn-target2</span></i> &amp;&lt;1-8&gt; <strong><span>export-extcommunity</span></strong></pre>
+</p><p><p>The <em>vpn-target2</em> list here must contain the import VPN targets configured on all Spoke-PEs.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure an import route-policy for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">import route-policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+<p>In addition to using VPN targets to control VPN route import and export, an import route-policy can be configured to better control VPN route import. An import route-policy can be used to filter routes to be imported into the VPN instance IPv4 address family or modify route attributes.</p>
+</p><p></p></li><li class="substepexpand"><span>(Optional) Configure an export route-policy for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">export route-policy</span></b> <i><span class="varname">policy-name</span></i><span> [ <strong><span>add-ert-first</span></strong> ]</span></pre>
+</p><p><p>In addition to using VPN targets to control VPN route import and export, an export route-policy can be configured to better control VPN route export. An export route-policy can be used to filter routes to be advertised to other PEs or modify route attributes.</p>
+<p>By default, export VPN targets are added to VPN routes after these routes are matched against an export route-policy. If the export route-policy contains VPN target-related filtering rules, it cannot apply to VPN routes. To address this issue, configure the <strong><span>add-ert-first</span></strong> parameter. This instructs the device to add export VPN targets to VPN routes before matching these routes against the export route-policy.</p>
+</p><p></p></li><li class="substepexpand"><span>Configure MPLS label distribution based on the VPN instance<span> IPv4 address family</span> (known as one-label-per-instance), so that only one label is assigned to all the routes of the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">apply-label per-instance</span></b></pre>
+</p></li></ol>
+</li><li><span>Configure the Hub-PE (which connects to a Hub-CE over a single link).</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the VPN instance view of <strong>vpnhub</strong>.</span><p><pre class="screen"><b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name1</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure a description for the VPN instance.</span><p><pre class="screen"><b><span class="cmdqueryname">description</span></b> <i><span class="varname">description-information</span></i></pre>
+<p>The description is used to record the purpose of creating the VPN instance and the CEs associated with the VPN instance.</p>
+</p></li><li class="substepexpand"><span>Enter the VPN instance IPv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure an RD for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">route-distinguisher</span></b> <i><span class="varname">route-distinguisher</span></i></pre>
+<p>A VPN instance<span> IPv4 address family</span> takes effect only after being configured with an RD. Before configuring an RD, you can configure only the description about the VPN instance. No other parameters can be configured.</p>
+</p></li><li class="substepexpand"><span>Configure import VPN targets for the VPN instance, so that it can receive VPNv4 routes advertised by all Spoke-PEs.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn-target</span></b> <i><span class="varname">vpn-target1</span></i> &amp;&lt;1-8&gt; <strong><span>import-extcommunity</span></strong></pre>
+</p><p><p>The <i><span class="varname">vpn-target1</span></i> list here must contain the export VPN targets configured on all Spoke-PEs.</p>
+</p></li><li class="substepexpand"><span>Configure export VPN targets for the VPN instance, so that it adds these VPN targets to hub site routes when advertising these routes to all spoke sites.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn-target</span></b> <i><span class="varname">vpn-target2</span></i> &amp;&lt;1-8&gt; <strong><span>export-extcommunity</span></strong></pre>
+</p><p><p>The <i><span class="varname">vpn-target2</span></i> list here must contain the import VPN targets configured on all Spoke-PEs.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure an import route-policy for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">import route-policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+<p>In addition to using VPN targets to control VPN route import and export, an import route-policy can be configured to better control VPN route import. An import route-policy can be used to filter routes to be imported into the VPN instance IPv4 address family or modify route attributes.</p>
+</p><p></p></li><li class="substepexpand"><span>(Optional) Configure an export route-policy for the VPN instance<span> IPv4 address family</span>.</span><p><pre class="screen"><b><span class="cmdqueryname">export route-policy</span></b> <i><span class="varname">policy-name</span></i><span> [ <strong><span>add-ert-first</span></strong> ]</span></pre>
+<p>Before performing this step, you must create a route-policy that filters default routes and then run the <b><span class="cmdqueryname">export route-policy</span></b> command to enable the Hub-PE to advertise only default routes to Spoke-PEs.</p>
+<p>By default, export VPN targets are added to VPN routes after these routes are matched against an export route-policy. If the export route-policy contains VPN target-related filtering rules, it cannot apply to VPN routes. To address this issue, configure the <strong><span>add-ert-first</span></strong> parameter. This instructs the device to add export VPN targets to VPN routes before matching these routes against the export route-policy.</p>
+</p><p></p></li><li class="substepexpand"><span>Configure the device to assign a unique label to each route sent from the current VPN instance IPv4 address family to its peer PE and forward the data packets received from its peer PE through outbound interfaces found in the local ILM.</span><p><pre class="screen"><b><span class="cmdqueryname">apply-label per-route pop-go</span></b></pre>
+<p>The <b><span class="cmdqueryname">apply-label per-route pop-go</span></b> command allows the local device to record in its ILM table the mapping between the label assigned to a BGP-VPNv4 route and the outbound interface for the route before the Hub-PE sends the route to other Spoke-PEs. After the Hub-PE receives a labeled data packet from a Spoke-PE, the local device directly searches the ILM table for an outbound interface based on the label carried in the packet, instead of searching the IP forwarding table based on the longest-match rule. The device then removes the label and forwards the packet through the found outbound interface. This implementation prevents dat packets from being directly forwarded to other Spoke-PEs without passing through the Hub-CE.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0035.html">Configuring IPv4 L3VPN over MPLS Hub-Spoke
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0040.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_L3VPNv4_cfg_0065.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

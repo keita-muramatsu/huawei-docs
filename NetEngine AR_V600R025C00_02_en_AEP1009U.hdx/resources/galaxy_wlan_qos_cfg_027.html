@@ -1,0 +1,72 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding the Intelligent Multimedia Scheduling Algorithm">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_QoS_cfg_026.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_QoS_cfg_028.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="WLAN QoS">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001564110529">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding the Intelligent Multimedia Scheduling Algorithm</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001564110529"></a><a name="EN-US_CONCEPT_0000001564110529"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding the Intelligent Multimedia Scheduling Algorithm</h1>
+<div id="conbody0000001335542330"><p id="EN-US_CONCEPT_0000001564110529__p26892059133819">In most cases, a rate limiting policy is deployed on the air interface to restrict the rate of greedy services and low-speed STAs on the network.</p>
+<ul id="EN-US_CONCEPT_0000001564110529__ul1668916597389"><li id="EN-US_CONCEPT_0000001564110529__li1868995920381">Greedy services have unlimited bandwidth requirements and last for a long time. Particularly, such services are characterized by group effect and scheduled triggering.</li><li id="EN-US_CONCEPT_0000001564110529__li3689165923813">Low-speed STAs can achieve only low negotiated speeds, such as 802.11a/b STAs and 802.11n single-antenna STAs. For compatibility, the overall network speed is low.</li></ul>
+<p id="EN-US_CONCEPT_0000001564110529__p136891159113816">However, a one-size-fits-all rate limiting policy on the air interface will compromise user service experience. At a low network load, air interface resources cannot be fully utilized; at a high network load, rate limiting cannot distinguish between high-priority and low-priority users or service priorities, and is unable to guarantee user experience of key services.</p>
+<p id="EN-US_CONCEPT_0000001564110529__p96891459163812">The intelligent multimedia scheduling algorithm can address the preceding problems. This algorithm divides time-domain resources into different time slices for proper scheduling to ensure user experience.</p>
+<p id="EN-US_CONCEPT_0000001564110529__p16689195933815">The intelligent multimedia scheduling algorithm applies to large-capacity access scenarios, such as high-density office scenarios in campuses and dormitories in universities. In the case of air interface congestion, this algorithm provides high assurance for high-priority applications such as voice and video, but cannot provide the same assurance for common applications such as file transfer.</p>
+<div class="p" id="EN-US_CONCEPT_0000001564110529__p46898591389">When the intelligent multimedia scheduling algorithm is enabled, the system optimizes the air interface traffic in the following aspects:<ul id="EN-US_CONCEPT_0000001564110529__ul868965911388"><li id="EN-US_CONCEPT_0000001564110529__li26891759183817">Delay guarantee for downlink video and voice services on a single AP</li><li id="EN-US_CONCEPT_0000001564110529__li104717263258">Delay guarantee for uplink services on an AP</li><li id="EN-US_CONCEPT_0000001564110529__li13689195918389">Preferential scheduling for downlink video and voice services on a single AP</li><li id="EN-US_CONCEPT_0000001564110529__li156891159103815">Uplink congestion control for a single AP</li><li id="EN-US_CONCEPT_0000001564110529__li146891593384">WMM EDCA parameter adjustment based on the number of access users</li></ul>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001564110529__section540462343915"><h4 class="sectiontitle">Delay Guarantee for Downlink VI/VO/BE/BK Services on an AP</h4><p id="EN-US_CONCEPT_0000001564110529__p189411758123916">The system periodically calculates the air interface delay of downlink VI/VO/BE/BK services. When detecting that the current delay exceeds the configured guaranteed delay, the system triggers service delay optimization. The guaranteed delay for VI/VO/BE/BK services is configured using the <b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001564110529__cmdname126351047133214">multimedia-air-optimize downlink-delay-guarantee</span></b> command. After delay optimization for services is complete, the system tries its best to ensure that the service delay does not exceed the guaranteed delay. In addition, the system restricts the VI/VO/BE/BK services of low-speed STAs. Low-speed STAs typically have low transmission efficiency and occupy air interface resources for a long time, increasing the overall delay of VI/VO/BE/BK services. Therefore, the transmission opportunity for such STAs needs to be reduced.</p>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001564110529__section610318325453"><h4 class="sectiontitle">Delay Guarantee for Uplink Services on an AP</h4><p id="EN-US_CONCEPT_0000001564110529__p107242039124517">The system periodically calculates the air interface delay of uplink services (mainly voice and video services, with a user priority of 5 or higher). When detecting that the current delay exceeds the guaranteed delay, the system triggers service delay optimization. The delay guarantee function for uplink services on an AP can be enabled by using the <b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001564110529__cmdname898794434191021">undo multimedia-air-optimize uplink-delay-guarantee disable</span></b> command. After delay optimization for services is complete, the system tries its best to ensure that the service delay does not exceed the guaranteed delay. In addition, the system restricts the uplink services of low-speed STAs. Low-speed STAs typically have low transmission efficiency and occupy air interface resources for a long time, increasing the overall delay of uplink services. Therefore, the transmission opportunity for such STAs needs to be reduced.</p>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001564110529__section1833152117403"><h4 class="sectiontitle">Preferential Scheduling for Downlink Video and Voice Services on a Single AP</h4><p id="EN-US_CONCEPT_0000001564110529__p981754354014">During software scheduling, voice and video services are preferentially scheduled. That is, each time the scheduler queries queue information, if the total packet sending time of the current video/voice queue does not exceed the threshold, the services in the video/voice queue are preferentially scheduled. The threshold is calculated based on the slicing ratio for voice and video services configured using the <b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001564110529__cmdname828175633210">multimedia-air-optimize downlink-slice-ratio</span></b> command.</p>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001564110529__section15896125134012"><h4 class="sectiontitle">Uplink Congestion Control for a Single AP</h4><p id="EN-US_CONCEPT_0000001564110529__p14105155124116">When a STA has heavy-traffic services of the AC_BE or AC_BK type in the uplink, packets are frequently sent, and the duration of a single packet transmission is long, the delay of key services in the downlink of the AP is significantly increased. If key downlink services are affected, the system considers performing congestion control on heavy-traffic services of the AC_BE or AC_BK type. The <b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001564110529__cmdname191101314133310">multimedia-air-optimize congestion-control tcp-window-tuning disable</span></b> command is involved for AP uplink congestion control. After the <b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001564110529__cmdname17389114017343">undo multimedia-air-optimize congestion-control tcp-window-tuning disable</span></b> command is executed, the TCP window adjustment function is enabled for voice and video services. If the delay of voice or video services reaches the threshold and the packet transmission duration of heavy-traffic TCP background services in the uplink reaches the threshold within the unit time (1s), the receiver window (RWND) in TCP ACK packets can be dynamically adjusted. This process takes about 5s to 10s. After the adjustment, the uplink data volume sent by STAs is reduced, thereby ensuring user experience of voice and video services.</p>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001564110529__section166731414184115"><h4 class="sectiontitle">WMM EDCA Parameter Adjustment Based on the Number of Access Users</h4><p id="EN-US_CONCEPT_0000001564110529__p17683338412">After the intelligent multimedia scheduling algorithm is enabled, the system dynamically adjusts WMM EDCA parameters based on the number of access users, improving voice and video service experience.</p>
+<p id="EN-US_CONCEPT_0000001564110529__p10681533154119">WMM classifies data packets into the following access categories: AC_VO, AC_VI, AC_BE, and AC_BK. Each access category has a set of EDCA parameters defined, which determine the capabilities of an access category to occupy a channel. You can set EDCA parameters for packets of different access categories to grant differentiated priorities to the packets and different capabilities to contend for channels.</p>
+<p id="EN-US_CONCEPT_0000001564110529__p7559721113911">The number of voice/video users is identified based on the user packet threshold configured using the <b><span class="cmdqueryname" id="EN-US_CONCEPT_0000001564110529__cmdname8190165043416">multimedia-air-optimize threshold</span></b> command. If the number of voice or video packets sent by a user through the internal statistics queue of a radio within the unit time (1 second) exceeds the threshold, the user is considered a voice or video user.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_QoS_cfg_026.html">Configuring the Intelligent Multimedia Scheduling Algorithm
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_wlan_QoS_cfg_028.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

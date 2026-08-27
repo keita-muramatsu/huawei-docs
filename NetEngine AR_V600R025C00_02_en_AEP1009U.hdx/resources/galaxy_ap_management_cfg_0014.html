@@ -1,0 +1,243 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Common APs to Go Online">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0108.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0201.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebNext" content="ys_wlan@web_example/galaxy_ap_management_cfg_0014_web.xml">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513165514">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Common APs to Go Online</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513165514"></a><a name="EN-US_TASK_0000001513165514"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Common APs to Go Online</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513165514__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001513165514__fig15505544184711">Figure 1</a>, the WAC and DeviceB communicate with the AP through DeviceA, and DeviceB functions as a DHCP server to assign IP address to the AP.</p>
+<p>A CAPWAP tunnel needs to be established between the AP and WAC so that the AP can go online on the WAC.</p>
+<div class="fignone" id="EN-US_TASK_0000001513165514__fig15505544184711"><a name="EN-US_TASK_0000001513165514__fig15505544184711"></a><a name="fig15505544184711"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring a common AP to go online</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+<p>In this example, DeviceA and DeviceB use common campus switches, and an <span>AirEngine 5776-26</span> functions as the AP.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001564005861.png"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513165514__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure Layer 2 communication between devices.</span><p><p># Configure the WAC and add <span>10GE</span><span>0/0/1</span> to VLAN 100.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname WAC</strong>
+[WAC] <strong>vlan batch 100</strong>
+[WAC] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[WAC-<span>10GE</span><span>0/0/1</span>] <strong>portswitch</strong>
+[WAC-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[WAC-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 100</strong>
+[WAC-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Add interfaces on DeviceA to VLAN 100.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>vlan batch 100</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port trunk pvid vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port trunk allow-pass vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>port trunk allow-pass vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong></pre>
+<p># Add the interface on DeviceB connected to DeviceA to VLAN 100.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceB</strong>
+[DeviceB] <strong>vlan batch 100</strong>
+[DeviceB] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 100</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure DeviceB as a DHCP server to assign IP addresses to APs.</span><p><p># Configure DeviceB as a DHCP server to assign IP addresses to APs through the IP address pool on VLANIF 100.</p>
+<pre class="screen">[DeviceB] <strong>dhcp enable</strong>
+[DeviceB] <strong>interface vlanif 100</strong>
+[DeviceB-Vlanif100] <strong>ip address 10.23.100.2 24</strong>
+[DeviceB-Vlanif100] <strong>dhcp select interface</strong>
+[DeviceB-Vlanif100] <strong>dhcp server excluded-ip-address </strong><strong>10.23.100.1</strong>
+[DeviceB-Vlanif100] <strong>quit</strong></pre>
+</p></li><li><span>Configure APs to go online on the WAC.</span><p><p># Create an AP group to which APs with the same configuration are to be added.</p>
+<pre class="screen">[WAC] <strong>wlan</strong>
+[WAC-wlan] <strong>ap-group name ap-group1</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>quit</strong></pre>
+<p># Create a regulatory domain profile, configure the WAC country code in the profile, and bind the profile to the AP group.</p>
+<pre class="screen">[WAC-wlan] <strong>regulatory-domain-profile name domain1</strong>
+[WAC-wlan-regulate-domain-domain1] <strong>country-code cn</strong>
+Warning: Modifying the country code will clear the channel and power configurations of radios, and requires the APs to be restarted if they run V200R019C10 or earlier. Continue? [Y/N]:<strong>y</strong>
+[WAC-wlan-regulate-domain-domain1] <strong>quit</strong>
+[WAC-wlan] <strong>ap-group name ap-group1</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>regulatory-domain-profile domain1</strong>
+Warning: This configuration change will clear the channel and power configurations of radios, and may restart APs. Continue?[Y/N]:<strong>y</strong>
+[WAC-wlan-ap-group-ap-group1] <strong>quit</strong>
+[WAC-wlan] <strong>quit</strong></pre>
+<p># Configure the WAC's source interface.</p>
+<pre class="screen">[WAC] <strong>interface vlanif 100</strong>
+[WAC-Vlanif100] <strong>ip address 10.23.100.1 24</strong>
+[WAC-Vlanif100] <strong>quit</strong>
+[WAC] <strong>capwap source interface vlanif 100</strong>
+Set the DTLS PSK(contains 8-32 plain-text characters, or 128 or 148 cipher-text characters that must be a combination of at least tw
+o of the following: lowercase letters a to z, uppercase letters A to Z, digits, and special characters):********
+Confirm PSK:********
+Set the user name for FIT APs(The value is a string of 4 to 31 characters, which can contain letters, underscores, and digits, and m
+ust start with a letter):********
+Set the password for FIT APs(plain-text password of 8-128 characters or cipher-text password of 128-268 characters that must be a co
+mbination of at least three of the following: lowercase letters a to z, uppercase letters A to Z, digits, and special characters):******
+Confirm password:********
+Set the PSK of the global offline management VAP(plain-text password of 8-63 characters or cipher-text password of 128-188 character
+s that must be a combination of at least two of the following: lowercase letters a to z, uppercase letters A to Z, digits, and speci
+al characters):********
+Confirm PSK:********
+</pre>
+<div class="p"># Import an AP on the WAC and add the AP to the AP group <span class="parmvalue"><b>ap-group1</b></span>. Assume that the AP's MAC address is 00e0-fc12-3456 <span>(if the MAC address obtained is in the format of 00e0fc123456, use the format of 00e0-fc12-3456 in the configuration)</span>. Configure the AP name based on the AP's deployment location, so that users can easily know where the AP is deployed based on its name. For example, if the AP with the MAC address 00e0-fc12-3456 is deployed in area 1, name the AP <span class="parmvalue"><b>area_1</b></span>.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The default AP authentication mode is MAC address authentication. If the default settings are retained, you do not need to run the <b><span class="cmdqueryname">ap auth-mode mac-auth</span></b> command.</p>
+<p>You are advised to configure the AP type when importing the AP offline on the WAC. In this example, the type ID of the AP <span>AirEngine 5776-26</span> is <span>216</span>. Adjust the configuration based on the actual type of APs deployed on the network. For the mapping between <em id="EN-US_TASK_0000001513165514__en-us_task_0000001512691658_i1246165410710">type-id</em> and <em id="EN-US_TASK_0000001513165514__en-us_task_0000001512691658_i1746115412716">type</em>, download <a href="https://support.huawei.com/enterprise/en/doc/EDOC1000146039" target="_blank" rel="noopener noreferrer">Quick Reference for WLAN AP Version Mapping and Models</a> and view the AP type IDs on the <strong id="EN-US_TASK_0000001513165514__en-us_task_0000001512691658_b8307154644415">AP Type Name and IDs</strong> sheet.</p>
+</div></div>
+</div>
+<pre class="screen">[WAC] <strong>wlan</strong>
+[WAC-wlan] <strong>ap auth-mode mac-auth</strong>
+[WAC-wlan] <strong>ap-id 1 type-id <span>216</span> ap-mac 00e0-fc12-3456</strong>
+[WAC-wlan-ap-1] <strong>ap-name area_1</strong>
+[WAC-wlan-ap-1] <strong>ap-group ap-group1</strong>
+Warning: This operation may cause AP <span>to go offline and then online</span>. If the country code changes, it will clear channel, power and antenna gain configurations of the radio, Whether to continue? [Y/N]:<strong>y</strong>
+[WAC-wlan-ap-1] <strong>quit</strong>
+[WAC-wlan] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513165514__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># After the AP is powered on, run the <b><span class="display ap">display ap all</span></b> command to check the AP status. If the <span class="parmvalue"><b>State</b></span> field displays <span class="parmvalue"><b>nor</b></span>, the AP has gone online.</p>
+<pre class="screen">[WAC] <strong>display ap all</strong>
+Total AP information: 
+nor  : normal          [1] 
+Extrainfo : Extra information 
+Total: 1
+-----------------------------------------------------------------------------------------------------------------------
+ID    MAC            Name         Group     IP            Type             State  STA  Uptime         ExtraInfo
+-----------------------------------------------------------------------------------------------------------------------
+1     00e0-fc12-3456 area_1       ap-group1 10.23.100.254 <span>AirEngine5776-26</span> <strong>nor</strong>    0    3D:18H:37M:13S -
+-----------------------------------------------------------------------------------------------------------------------</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001513165514__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>WAC</p>
+<pre class="screen">#
+sysname WAC
+#
+vlan batch 100
+#
+interface Vlanif100
+ ip address 10.23.100.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 100
+#
+capwap source interface vlanif 100
+capwap dtls psk %+%##!!!!!!!!!"!!!!"!!!!*!!!!a4O4$.&amp;PxR*P'D0AgkgU%ja,;U$7!E)D}sA!!!!!2jp5!!!!!!;!!!!YI!n.!e`{34:J7Z|W[+ZgW1M%p`fCAOAhSJ!!!!!%+%#
+#
+wlan
+ regulatory-domain-profile name domain1
+ ap-group name ap-group1
+  regulatory-domain-profile domain1
+ ap-id 1 type-id <span>216</span> ap-mac 00e0-fc12-3456 ap-sn 210235554710CB000042
+  ap-name area_1
+  ap-group ap-group1
+#
+return</pre>
+</li><li>DeviceA<pre class="screen">#
+sysname DeviceA
+#
+vlan batch 100
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk pvid vlan 100
+ port trunk allow-pass vlan 100
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 100
+#
+interface <span>10GE</span><span>0/0/3</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 100
+#
+return</pre>
+</li><li>DeviceB<pre class="screen">#
+sysname DeviceB
+#
+vlan batch 100
+#
+dhcp enable
+#
+interface Vlanif100
+ ip address 10.23.100.2 255.255.255.0
+ dhcp select interface
+ dhcp server excluded-ip-address 10.23.100.1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 100
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ap_management_cfg_0108.html">Configuration Examples for AP Management
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ap_management_cfg_0201.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

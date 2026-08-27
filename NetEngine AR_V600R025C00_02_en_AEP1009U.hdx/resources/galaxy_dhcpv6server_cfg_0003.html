@@ -1,0 +1,97 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an IPv6 Address Pool">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_dhcpv6server_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_dhcpv6server_cfg_0002.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_dhcpv6server_cfg_0004.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DHCPv6">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002075650349">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an IPv6 Address Pool</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002075650349"></a><a name="EN-US_TASK_0000002075650349"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an IPv6 Address Pool</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002075650349__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>A DHCPv6 server selects available IPv6 addresses from an address pool and assigns them to DHCPv6 clients. You need to create an IPv6 address pool and configure its attributes, including the address range, interval for updating configuration parameters, IPv6 addresses that cannot be automatically assigned to clients, and statically bound IPv6 addresses. IPv6 addresses can be dynamically assigned or statically bound to clients based on client requirements.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002075650349__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an IPv6 address pool and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">dhcpv6 pool</span></b> <i><span class="varname">pool-name</span></i></pre>
+<p>By default, no IPv6 address pool is created on a device.</p>
+</p></li><li><span>Run the following commands in the IPv6 address pool view to configure network prefixes.</span><p><p>When functioning as a DHCPv6 server, the device can assign network parameters to clients in DHCPv6 stateful or stateless mode. In DHCPv6 stateful mode, the server automatically assigns IPv6 addresses, prefixes, and other network configuration parameters (such as DNS, NIS, and SNTP server addresses). In DHCPv6 stateless mode, the server assigns configuration parameters (such as DNS, NIS, and SNTP server addresses) but does not assign IPv6 addresses. IPv6 addresses of clients are automatically generated through route advertisement.</p>
+<ul><li><p>If the DHCPv6 server needs to automatically assign network parameters in DHCPv6 stateful mode, configure a network prefix and lifetime in the IPv6 address pool view.</p>
+<pre class="screen"><b><span class="cmdqueryname">address prefix</span></b> <i><span class="varname">ipv6-prefix/ipv6-prefix-length</span></i> [ <strong><span>eui-64</span></strong> ] [ <strong><span>life-time</span></strong> { <i><span class="varname">valid-lifetime</span></i> | <strong><span>infinite</span></strong> } { <i><span class="varname">preferred-lifetime</span></i> | <strong><span>infinite</span></strong> } ] [ <strong>lock</strong> ]</pre>
+<p>By default, neither a network prefix nor a lifetime is configured in the IPv6 address pool view.</p>
+</li><li><p>If the DHCPv6 server needs to automatically assign network parameters in DHCPv6 stateless mode, configure a network prefix in the IPv6 address pool view.</p>
+<pre class="screen"><b><span class="cmdqueryname">link-address</span></b> <i><span class="varname">ipv6-prefix/ipv6-prefix-length</span></i></pre>
+<p>By default, no network prefix is configured in the IPv6 address pool view.</p>
+<p>A DHCPv6 server determines the network segment where clients need to be assigned network parameters from an address pool based on a configured network prefix.</p>
+</li></ul>
+</p></li><li><span>(Optional) Lock the IPv6 address pool.</span><p><pre class="screen"><b><span class="cmdqueryname">lock</span></b></pre>
+<p>By default, no IPv6 address pool is locked on a device.</p>
+</p></li><li><span>(Optional) Bind an IPv6 address to a client DUID statically.</span><p><pre class="screen"><b><span class="cmdqueryname">static-bind address</span></b><em> ipv6-address</em><strong> duid</strong><em> client-duid</em> [ <strong><span>iaid</span></strong> <i><span class="varname">iaid</span></i> ] [ <strong><span>life-time</span></strong> { <i><span class="varname">valid-lifetime</span></i> | <strong><span>infinite</span></strong> } { <i><span class="varname">preferred-lifetime</span></i> | <strong><span>infinite</span></strong> } ]</pre>
+<p>By default, no IPv6 address is statically bound to a client DUID in an address pool.</p>
+<p>To statically assign fixed IPv6 addresses to some specific clients, perform this step to specify the mapping between IPv6 addresses and client DUIDs. When such a client requests an IPv6 address from the DHCPv6 server, the device functioning as the DHCPv6 server assigns the specified IPv6 address to the client.</p>
+<p>The IPv6 address specified in this step can be assigned only to the client with a specified DUID.</p>
+</p></li><li><span>(Optional) Configure the range of IPv6 addresses that cannot be automatically assigned to clients from the IPv6 address pool.</span><p><pre class="screen"><b><span class="cmdqueryname">excluded-address</span></b> <i><span class="varname">start-ipv6-address</span></i> [ <strong><span>to</span></strong> <i><span class="varname">end-ipv6-address</span></i> ]</pre>
+<p>By default, all IPv6 addresses in an address pool can be automatically assigned to clients. If only one IPv6 address cannot be automatically assigned, specify only the <i><span class="varname">start-ipv6-address</span></i> parameter.</p>
+<p>If the interface address of the DHCPv6 server is in the range of the IPv6 address pool, you are advised to perform this step to prevent the DHCPv6 server from assigning the interface address.</p>
+</p></li><li><span>(Optional) Configure an interval for updating configuration parameters assigned to clients through stateless DHCPv6 address autoconfiguration.</span><p><pre class="screen"><b><span class="cmdqueryname">information-refresh</span></b> <i><span class="varname">time</span></i></pre>
+<p>By default, the interval for updating configuration parameters in an IPv6 address pool is 86400s (24 hours).</p>
+</p></li><li><span>(Optional) Configure an IPv6 address for the AC.</span><p><pre class="screen"><b><span class="cmdqueryname">capwap-ac</span></b> <i><span class="varname">ipv6-address</span></i></pre>
+<p>By default, no IPv6 address is configured for the AC in the IPv6 address pool view.</p>
+<p>In the AC+Fit AP scenario, the AC needs to establish connections with APs. The device functioning as a DHCPv6 server can specify the AC's IPv6 address for an AP, which then can connect to the specified AC. If the AC and AP are located on the same network segment, this step is optional because the AP sends a broadcast packet to automatically discover the AC. If the AC and AP are located on different network segments, this step is mandatory.</p>
+</p></li><li><span>(Optional) Configure the percentage of the lease renewal time in the preferred lifetime of an IPv6 address pool and the percentage of the rebinding time in the preferred lifetime.</span><p><pre class="screen"><b><span class="cmdqueryname">renew-time-percent</span></b> <i><span class="varname">renew-time-percent</span></i> <strong>rebind-time-percent</strong> <i><span class="varname">rebind-time-percent</span></i></pre>
+<p>By default, the percentage of the lease renewal time in the preferred lifetime of an IPv6 address pool is 50%, and the percentage of the rebinding time in the preferred lifetime is 80%.</p>
+</p></li><li><span>(Optional) Configure an aging time for conflicting addresses in the IPv6 address pool.</span><p><pre class="screen"><b><span class="cmdqueryname">conflict-address expire-time</span></b> <i><span class="varname">expire-time</span></i></pre>
+<p>By default, the aging time of conflicting addresses is 172800s (two days).</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_dhcpv6server_cfg_0001.html">Configuring a DHCPv6 Server
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_dhcpv6server_cfg_0002.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_dhcpv6server_cfg_0004.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring RIPng Between the PE and CE">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv6_cfg_0005.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv6_cfg_0064.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv6_cfg_1108.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featurename" content="IPv6 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featurename" content="IPv6 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featurename" content="IPv6 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001396397593">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring RIPng Between the PE and CE</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001396397593"></a><a name="EN-US_TASK_0000001396397593"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring RIPng Between the PE and CE</h1>
+<div class="taskbody"><div class="steps-unordered"><a name="EN-US_TASK_0000001396397593__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Perform the following steps on the PE:</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Create a RIPng instance running between the PE and CE and enter the RIPng view.</span><p><pre class="screen"><b><span class="cmdqueryname">ripng</span></b> [ <i><span class="varname">process-id</span></i> ] <span><strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i></span></pre>
+<p>A RIPng multi-instance process can be bound to only one VPN instance. If a RIPng process is not bound to any VPN instance before it is started, this process becomes a public network process.</p>
+<p>If only one RIPng process, either a public network process or multi-instance process, runs on the <span class="keyword">device</span>, you do not need to specify <i><span class="varname">process-id</span></i> in the command. The value of <i><span class="varname">process-id</span></i> is 1 by default.</p>
+</p></li><li class="substepexpand"><span>Import BGP routes.</span><p><pre class="screen"><b><span class="cmdqueryname">import-route</span></b> <strong><span>bgp</span></strong> [ <span><strong><span>cost</span></strong> <i><span class="varname">cost</span></i></span> | <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ] <sup>*</sup></pre>
+<p>After the <b><span class="cmdqueryname">import-route</span></b> <strong><span>bgp</span></strong> command is run in the RIPng view, the PE can import the VPN-IPv6 routes learned from the remote PE into the RIPng routing table and advertise them to the attached CE.</p>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the view of the interface connected to the CE.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Enable RIPng on the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">ripng</span></b> <i><span class="varname">process-id</span></i> <strong><span>enable</span></strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Before running this command, ensure that IPv6 has been enabled in the interface view.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP-VPN instance IPv6 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6-family</span></b> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Import RIPng routes into the routing table of the BGP-VPN instance IPv6 address family.</span><p><pre class="screen"><b><span class="cmdqueryname">import-route</span></b> <strong><span>ripng</span></strong> <i><span class="varname">process-id</span></i> [ <strong><span>med</span></strong> <i><span class="varname">med</span></i> | <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ] <sup>*</sup></pre>
+<p>After the <b><span class="cmdqueryname">import-route</span></b> <strong><span>ripng</span></strong> command is run in the BGP-IPv6 VPN instance IPv6 address family view, the PE imports the IPv6 routes learned from the attached CE into the BGP routing table and advertises VPN-IPv6 routes to the remote PE.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If a RIPng multi-instance process is deleted, RIPng will be disabled on all the interfaces in the process.</p>
+<p>Deleting a VPN instance or disabling a VPN instance IPv6 address family will delete all the RIPng processes bound to the VPN instance or VPN instance IPv6 address family.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>(Optional) Run either of the following commands to configure the device to advertise specific routes in a BGP-VPN routing table to a BGP-VPNv6 routing table:</span><p><ul><li>Configure the device to advertise only valid routes in a BGP-VPN routing table to a BGP-VPNv6 routing table.<pre class="screen"><b><span class="cmdqueryname">advertise valid-routes</span></b></pre>
+<p>By default, the device advertises all routes in the BGP-VPN routing table to the BGP-VPNv6 routing table. The <b><span class="cmdqueryname">advertise valid-routes</span></b> command allows the device to advertise only valid routes to the BGP-VPNv6 routing table.</p>
+</li></ul>
+</p></li></ol>
+</li><li><span>Configure RIPng on the CE. The configuration details are not provided here.</span></li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv6_cfg_0005.html">Configuring Basic IPv6 L3VPN over MPLS Functions
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv6_cfg_0064.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_L3VPNv6_cfg_1108.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

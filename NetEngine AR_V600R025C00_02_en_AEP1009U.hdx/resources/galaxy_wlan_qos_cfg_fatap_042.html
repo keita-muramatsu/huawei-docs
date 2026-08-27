@@ -1,0 +1,200 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Traffic Policing (Fat AP)">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_QoS_cfg_fatap_043.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002193135058">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Traffic Policing (Fat AP)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002193135058"></a><a name="EN-US_TASK_0000002193135058"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Traffic Policing (Fat AP)</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000002193135058__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000002193135058__fig2458123218171">Figure 1</a>, an enterprise wants to enable users to access the network through WLANs, meeting the basic mobile office requirements. To prevent STAs from maliciously occupying network resources and reduce network congestion, the administrator wants to limit the uplink rate of each STA on a VAP to 2 Mbit/s and the total uplink rate of all STAs on a VAP to 30 Mbit/s.</p>
+<div class="fignone" id="EN-US_TASK_0000002193135058__fig2458123218171"><a name="EN-US_TASK_0000002193135058__fig2458123218171"></a><a name="fig2458123218171"></a><span class="figcap"><b>Figure 1 </b>Network diagram of traffic policing</span><br><span><img src="figure/en-us_image_0000002228734925.png" width="NaN" height="NaN"></span></div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 represents MultiGE0/0/0.</p>
+</div></div>
+<p><a href="#EN-US_TASK_0000002193135058__table332665030190921">Table 1</a> provides an example of data planning.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000002193135058__table332665030190921"></a><a name="table332665030190921"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000002193135058__table332665030190921" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Data planning</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="18.89%" id="mcps1.4.1.6.2.3.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="81.11%" id="mcps1.4.1.6.2.3.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.4.1.6.2.3.1.1 "><p>Service VLAN for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.4.1.6.2.3.1.2 "><p>VLAN 100</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.4.1.6.2.3.1.1 "><p>DHCP server</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.4.1.6.2.3.1.2 "><p>The Fat AP functions as a DHCP server to assign IP addresses to STAs.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.4.1.6.2.3.1.1 "><p>IP address pool for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.4.1.6.2.3.1.2 "><p>VLANIF 100: 192.168.100.2–192.168.100.254/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.4.1.6.2.3.1.1 "><p>AP management information</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.4.1.6.2.3.1.2 "><ul><li>AP ID: 0, which is fixed at 0 for a Fat AP</li><li>Referenced profiles: VAP profile <strong>wlan-vap</strong> and regulatory domain profile <strong>default</strong></li><li>AP group: <strong>built_in_ap</strong>, which a Fat AP joins by default</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.4.1.6.2.3.1.1 "><p>Regulatory domain profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.4.1.6.2.3.1.2 "><ul><li>Name: <strong>default</strong></li><li>Country code: CN</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.4.1.6.2.3.1.1 "><p>SSID profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.4.1.6.2.3.1.2 "><ul><li>Name: <strong>wlan-ssid</strong></li><li>SSID name: <strong>wlan-net</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.4.1.6.2.3.1.1 "><p>Security profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.4.1.6.2.3.1.2 "><ul><li>Name: <strong>wlan-security</strong></li><li>Security policy: WPA-WPA2+PSK+AES</li><li>Password: <span><strong>YsHsjx_202206</strong></span></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.4.1.6.2.3.1.1 "><p>Traffic profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.4.1.6.2.3.1.2 "><ul><li>Name: <strong>wlan-traffic</strong></li><li>STA uplink rate limit: 2 Mbit/s</li><li>VAP uplink rate limit: 30 Mbit/s</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="18.89%" headers="mcps1.4.1.6.2.3.1.1 "><p>VAP profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.11%" headers="mcps1.4.1.6.2.3.1.2 "><ul><li>Name: <strong>wlan-vap</strong></li><li>Service VLAN: VLAN 100</li><li>Referenced profiles: SSID profile <strong>wlan-ssid</strong>, security profile <strong>wlan-security</strong>, and traffic profile <strong>wlan-traffic</strong></li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002193135058__1.4.2"></a><a name="1.4.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure STA access services so that STAs can access the WLAN properly.</li><li>Configure the uplink rate limits for a single STA and all STAs associated with a VAP in a traffic profile to implement traffic policing.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002193135058__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Check basic WLAN configurations.</span><p>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="14.940000000000001%" id="mcps1.4.3.1.2.1.1.4.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="42.53%" id="mcps1.4.3.1.2.1.1.4.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="42.53%" id="mcps1.4.3.1.2.1.1.4.1.3" liSelected="liSelected"><p>Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="14.940000000000001%" headers="mcps1.4.3.1.2.1.1.4.1.1 "><p>AP group to which an AP belongs</p>
+</td>
+<td class="cellrowborder" valign="top" width="42.53%" headers="mcps1.4.3.1.2.1.1.4.1.2 "><p><b><span class="cmdqueryname">display ap all</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="42.53%" headers="mcps1.4.3.1.2.1.1.4.1.3 "><p>AP group: <strong>built_in_ap</strong></p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="14.940000000000001%" headers="mcps1.4.3.1.2.1.1.4.1.1 "><p>All profiles bound to an AP</p>
+</td>
+<td class="cellrowborder" valign="top" width="42.53%" headers="mcps1.4.3.1.2.1.1.4.1.2 "><p><b><span class="cmdqueryname">display ap config-info ap-id 0</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="42.53%" headers="mcps1.4.3.1.2.1.1.4.1.3 "><p>VAP profile: <strong>wlan-vap</strong></p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000002193135058__en-us_task_0176912540_ul1759806077191210"><li id="EN-US_TASK_0000002193135058__en-us_task_0176912540_li1996048467191210">If an AP has different configurations from that in the AP group, the configuration on the AP takes precedence.</li><li id="EN-US_TASK_0000002193135058__en-us_task_0176912540_li52478376191210">A new profile takes effect only after being bound to an AP or an AP group.</li></ul>
+</div></div>
+</p></li><li><span>Configure traffic policing.</span><p><div class="p"># Create the traffic profile <span class="parmvalue"><b>wlan-traffic</b></span> and set the uplink rate limit for each STA to 2 Mbit/s and the total uplink rate limit for all STAs on the VAP to 30 Mbit/s.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname FAT AP</strong>
+[FAT AP] <strong>wlan</strong>
+[FAT AP-wlan] <strong>traffic-profile name wlan-traffic</strong>
+[FAT AP-wlan-traffic-prof-wlan-traffic] <strong>rate-limit client up 2048</strong>
+[FAT AP-wlan-traffic-prof-wlan-traffic] <strong>rate-limit vap up 30720</strong>
+[FAT AP-wlan-traffic-prof-wlan-traffic] <strong>quit</strong></pre>
+</div>
+<div class="p"># Bind the traffic profile <span class="parmvalue"><b>wlan-traffic</b></span> to the VAP profile <span class="parmvalue"><b>wlan-vap</b></span>.<pre class="screen">[FAT AP-wlan] <strong>vap-profile name wlan-vap</strong>
+[FAT AP-wlan-vap-prof-wlan-vap] <strong>traffic-profile wlan-traffic</strong>
+<span>Warning: This action may cause service interruption. Continue?[Y/N]<strong>y</strong> </span>
+[FAT AP-wlan-vap-prof-wlan-vap] <strong>quit</strong></pre>
+</div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002193135058__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display traffic-profile name wlan-traffic</span></b> command on the Fat AP to check the rate limit configuration in a specified traffic profile. The command output shows that the uplink rate limit of a single STA is 2048 kbit/s (2 Mbit/s) and the total uplink rate limit of all STAs on a VAP is 30720 kbit/s (30 Mbit/s).</p>
+<pre class="screen">[FAT AP-wlan] <strong>display traffic-profile name wlan-traffic</strong>
+----------------------------------------------------                            
+Profile ID                    : 1
+Priority map downstream trust : DSCP                                            
+User isolate mode             : disable                                         
+<strong>Rate limit client up(Kbps)    : 2048</strong>                                      
+Rate limit client down(Kbps)  : 4294967295                                      
+<strong>Rate limit VAP up(Kbps)       : 30720</strong>                                      
+Rate limit VAP down(Kbps)     : 4294967295  
+...
+</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002193135058__1.4.5"></a><a name="1.4.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>FAT AP</p>
+<pre class="screen">#
+ sysname FAT AP
+#
+wlan
+ traffic-profile name wlan-traffic
+  rate-limit client up 2048
+  rate-limit vap up 30720 
+ vap-profile name wlan-vap
+  traffic-profile wlan-traffic
+ ap-id 0 type-id 15 ap-mac 00fc-2255-4400 ap-sn 102428757953
+  ap-name built_in_ap
+  ap-group built_in_ap
+  radio 0 
+   vap-profile wlan-vap wlan 1
+  radio 1
+   vap-profile wlan-vap wlan 1
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_QoS_cfg_fatap_043.html">Configuration Examples for WLAN QoS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

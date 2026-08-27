@@ -1,0 +1,198 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Access Control Based on Source MAC Addresses">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_254.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_256.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001629018557">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Access Control Based on Source MAC Addresses</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001629018557"></a><a name="EN-US_TASK_0000001629018557"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Access Control Based on Source MAC Addresses</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001629018557__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_context719436454175329"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p18823196114815">In <a href="#EN-US_TASK_0000001629018557__en-us_task_0000001577611025_fig_dc_ar_cfg_qos_04490501">Figure 1</a>, users of an enterprise access the Internet through DeviceA. The enterprise does not allow some hosts on the LAN to access the Internet. However, users can still access the Internet from these hosts by changing host IP addresses, and firewalls cannot prevent such unauthorized access based on IP addresses. Access control based on source MAC addresses can be configured to solve this problem. In this example, some hosts can be prevented from accessing the Internet but can access DeviceA.</p>
+<div class="fignone" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_fig_dc_ar_cfg_qos_04490501"><a name="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_fig_dc_ar_cfg_qos_04490501"></a><a name="en-us_task_0000001577611025_fig_dc_ar_cfg_qos_04490501"></a><span class="figcap"><b>Figure 1 </b>Network diagram</span><div class="note" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_note163690483552"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p113691482557">In this example, interface 1 represents <span>10GE</span> <span>0/0/1</span>.</p>
+</div></div>
+<br><span><img id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_image1942501669183407" src="images/fig_dc_ar_cfg_qos_04490501.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001629018557__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_steps1932151160175329"><li id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_step1254643081617"><span id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_cmd754663091618">Create a VLAN and configure interfaces.</span><p><div class="p" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p133105616164"># On <span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1494612418429">Device</span>A, create VLAN 10, configure VLANIF 10, and add <span>10GE</span> <span>0/0/1</span> to the VLAN.<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen39461232101713">&lt;<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1082454411172">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b17824114471715">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword982474431711">HUAWEI</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b88241644141719">sysname DeviceA</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1312814517177">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1951204711193">vlan 10</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword19299448277">DeviceA-vlan10</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b734281102813">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword24511069205">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b343503193017">interface </strong><strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b64355316306"><span>10ge</span> <span>0/0/1</span></strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1362517282215">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b144352333018">portswitch</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword5924447226">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b8435183103019">port link-type trunk</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword81921373220">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1643623113014">port trunk allow-pass vlan 10</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1214910220">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b14361239307">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword11795141823117">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b57951918133114">interface </strong><strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1645742733117">vlanif 10</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword42543363112">DeviceA-Vlanif10</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1394268328">ip address 10.1.1.1 255.255.255.0</strong></pre>
+</div>
+</p></li><li id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_step298777522175329"><span id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_cmd737045568175329">Configure an ACL rule.</span><p><p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p2140597982175329"># On <span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1838257137175329">DeviceA</span>, create ACL 3001 to match the traffic with the destination IP address 10.1.1.1/24.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen1802531894175329">[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1143950538175329">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1103173181175329">acl 3001</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword131423175329">DeviceA</span>-acl4-advance-3001] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b194843638175329">rule 1 permit ip destination </strong><strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1362520005614">10.1.1.0 0.0.0.255</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword586573984175329">DeviceA</span>-acl4-advance-3001] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b939921348175329">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_step1543453250175329"><span id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_cmd1363800637175329">Configure traffic classifiers.</span><p><p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p166073872175329"># On <span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword7981102019817">DeviceA</span>, create a traffic classifier <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b75608481563">c1</strong> and reference ACL 3001 in the traffic classifier.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen648192235175329">[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1227273361175329">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b757996408175329">traffic classifier c1</strong><strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b12928142618811"> type and</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1131081120175329">DeviceA</span>-classifier-c1] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1579034404175329">if-match acl 3001</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1516692793175329">DeviceA</span>-classifier-c1] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b609672952175329">quit</strong></pre>
+<p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p1671310517913"># On <span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword752158085">DeviceA</span>, create traffic classifiers <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b77281846989">c2</strong> to <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b20325449481">c4</strong> to match MAC addresses of user hosts.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen1482251210101">[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword28225126101">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b208221612191017">traffic classifier c2</strong><strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1682211251019"> type and</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword5822151212108">DeviceA</span>-classifier-c2] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b393995871212">if-match source-mac 00e0-fc0d-0001</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1382221213105">DeviceA</span>-classifier-c2] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1682210125108">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword4220111081315">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b922051011311">traffic classifier c3</strong><strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1022001091314"> type and</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword9220131016130">DeviceA</span>-classifier-c3] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b3220110181314">if-match source-mac 00e0-fc0d-0002</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword322021041316">DeviceA</span>-classifier-c3] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b622012105135">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword3644312191315">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1644111210134">traffic classifier c4</strong><strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1364411231311"> type and</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword7644101216132">DeviceA</span>-classifier-c4] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1964416125139">if-match source-mac 00e0-fc0d-0003</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword664418124136">DeviceA</span>-classifier-c4] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b46444123134">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_step175391849175329"><span id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_cmd1463242459175329">Configure traffic behaviors.</span><p><p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p1838981160175329"># On <span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword479649282175329">DeviceA</span>, create a traffic behavior <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1671785311101">b1</strong> and configure the permit action in the traffic behavior.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen1371678983175329">[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1928162226175329">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b835894756175329">traffic behavior b1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword243781168175329">DeviceA</span>-behavior-b1] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b17322192181411">permit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword402420174175329">DeviceA</span>-behavior-b1] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1271628353175329">quit</strong></pre>
+</p><p><p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p916518372148"># On <span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword316513711146">DeviceA</span>, create a traffic behavior <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1626119569119">b2</strong> and configure the deny action in the traffic behavior.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen13165163741419">[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword11165163741417">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b2016563781410">traffic behavior b2</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword9165153741419">DeviceA</span>-behavior-b2] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b19541848181413">deny</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword17165183711415">DeviceA</span>-behavior-b2] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b916553710146">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_step1773896688175329"><span id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_cmd366163915175329">Configure a traffic policy and apply it to <span>the inbound direction</span> of an interface.</span><p><p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p873086888175329"># On <span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword224026166175329">DeviceA</span>, create a traffic policy <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b01810501912">p1</strong> and bind traffic classifiers to traffic behaviors in the traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen777032152175329">[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1219470133175329">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b3162729175329">traffic policy p1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword156955540175329">DeviceA</span>-trafficpolicy-p1] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1220664612175329">classifier c1 behavior b1</strong> <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b17417174171">precedence 5</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword172524911615">DeviceA</span>-trafficpolicy-p1] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1272584941620">classifier c2 behavior b2</strong> <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b17501022191711">precedence 10</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword452665019166">DeviceA</span>-trafficpolicy-p1] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b2052617504161">classifier c3 behavior b2 precedence 15</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword17180175120167">DeviceA</span>-trafficpolicy-p1] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1518018512167">classifier c4 behavior b2 precedence 20</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword704559401175329">DeviceA</span>-trafficpolicy-p1] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b478919154175329">quit</strong></pre>
+<p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p1896281407175329"># Apply the traffic policy <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b16265102502112">p1</strong> to <span>the inbound direction</span> of an interface.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen493693493175329">[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1812167779175329">DeviceA</span>] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b846052944175329">interface vlanif 10</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword448234360175329">DeviceA</span>-Vlanif10] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b744366924175329">traffic-policy p1 inbound</strong>
+[<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword18432856175329">DeviceA</span>-Vlanif10] <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b1795566791175329">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_example218284721175329"><a name="EN-US_TASK_0000001629018557__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p955012376175329"># Check the ACL rule configuration.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen1263557519175329">&lt;<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword517386264175329">DeviceA</span>&gt; <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b513206846175329">display acl 3001</strong>
+Advanced ACL 3001, 1 rule                                                                                                           
+ACL's step is 5                                                                                                                     
+ rule 1 permit ip destination 10.1.1.0 0.0.0.255<strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b729022032117"> </strong>(0 times matched)                                 </pre>
+<p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p1335557279175329"># Check the traffic classifier configuration.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen898003721175329">&lt;<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword439531848175329">DeviceA</span>&gt; <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b149803004175329">display traffic classifier c1</strong>
+  Traffic Classifier Information:
+    Classifier: c1
+      Type: AND
+      Rule(s):
+        if-match acl 3001</pre>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen18631105055011">&lt;<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword180005435011">DeviceA</span>&gt; <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b19800195405017">display traffic classifier c2</strong>
+  Traffic Classifier Information:
+    Classifier: c2
+      Type: AND
+      Rule(s):
+        if-match source-mac 00e0-fc0d-0001 ffff-ffff-ffff</pre>
+<p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p1282314316175329"># Check the traffic policy configuration.</p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen1784466848175329">&lt;<span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword431059318175329">DeviceA</span>&gt; <strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b145024033175329">display traffic policy p1</strong>
+  Traffic Policy Information:
+    Policy: p1
+      Classifier: c1
+        Type: AND
+      Behavior: b1
+
+      Classifier: c2
+        Type: AND
+      Behavior: b2
+        Deny
+
+      Classifier: c3
+        Type: AND
+      Behavior: b2
+        Deny
+
+      Classifier: c4
+        Type: AND
+      Behavior: b2
+        Deny</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001629018557__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><p id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_p471239549175329"><span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword203409907175329">DeviceA</span></p>
+<pre class="screen" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_screen543715260175329">#
+sysname <span class="keyword" id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_keyword1460474746175329">DeviceA</span>
+#
+vlan batch 10
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+#
+acl 3001
+ rule 1 permit ip destination 10.1.1.0 0.0.0.255
+# 
+traffic classifier c1 type and
+ if-match acl 3001
+#
+traffic classifier c2 type and
+ if-match source-mac 00e0-fc0d-0001 ffff-ffff-ffff     
+#
+traffic classifier c3 type and
+ if-match source-mac 00e0-fc0d-0002 ffff-ffff-ffff     
+#
+traffic classifier c4 type and
+ if-match source-mac 00e0-fc0d-0003 ffff-ffff-ffff     
+#
+traffic behavior b1
+#
+traffic behavior b2
+ deny
+#
+traffic policy p1
+<strong id="EN-US_TASK_0000001629018557__en-us_task_0000001577611025_b8388134320117"> </strong>classifier c1 behavior b1 precedence 5
+ classifier c2 behavior b2 precedence 10
+ classifier c3 behavior b2 precedence 15
+ classifier c4 behavior b2 precedence 20
+#
+interface Vlanif10
+ ip address 10.1.1.1 255.255.255.0
+ traffic-policy p1 inbound
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_254.html">Packet Filtering
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_256.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

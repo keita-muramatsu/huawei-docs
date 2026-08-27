@@ -1,0 +1,192 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring 802.1X Authentication (AAA Using RADIUS)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_cfg_nac_0245.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_nac_cfg_0034.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_nac_cfg_2034.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="MAC Address Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564120297">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring 802.1X Authentication (AAA Using RADIUS)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564120297"></a><a name="EN-US_TASK_0000001564120297"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring 802.1X Authentication (AAA Using RADIUS)</h1>
+<div class="taskbody" id="taskbody0000001137845057"><div class="context"><a name="EN-US_TASK_0000001564120297__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001564120297__context1973634501180155"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001564120297__p50119322180155">In <a href="#EN-US_TASK_0000001564120297__fig_01">Figure 1</a>, terminals in a company's office area are connected to the company's intranet through DeviceA. The downlink interfaces (for example, <span>10GE</span> <span>0/0/2</span>) of DeviceA are directly connected to terminals in the office area, and the uplink interface <span>10GE</span> <span>0/0/1</span> of DeviceA is connected to the RADIUS server through the intranet.</p>
+<p id="EN-US_TASK_0000001564120297__p987894276180155">To meet the company's high security requirements, 802.1X authentication needs to be configured to authenticate terminals in the office area through the RADIUS server. Additionally, authentication points need to be deployed on DeviceA's interfaces (for example, <span>10GE</span> <span>0/0/2</span>) that are directly connected to the terminals.</p>
+<div class="fignone" id="EN-US_TASK_0000001564120297__fig_01"><a name="EN-US_TASK_0000001564120297__fig_01"></a><a name="fig_01"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring 802.1X authentication</span><div class="note" id="EN-US_TASK_0000001564120297__note4431204417521"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001564120297__p74311544145216">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img id="EN-US_TASK_0000001564120297__image74705241286" src="figure/en-us_image_0000002209819389.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564120297__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001564120297__context14295364357"><h4 class="sectiontitle">Precautions</h4><p id="EN-US_TASK_0000001564120297__p78335101362">In the 802.1X authentication scenario, if there is a Layer 2 switch between the 802.1X-enabled device and users, Layer 2 transparent transmission must be enabled for 802.1X authentication packets on the Layer 2 switch; otherwise, users cannot be successfully authenticated. This function needs to be configured on all interfaces through which 802.1X authentication packets pass.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564120297__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001564120297__steps1024671040180155"><li id="EN-US_TASK_0000001564120297__vlan-01"><span id="EN-US_TASK_0000001564120297__cmd371742549180144">Configure network connectivity.</span><p><p id="EN-US_TASK_0000001564120297__p84582529382"># Create VLANs, configure the allowed VLANs on interfaces, and configure IP addresses for interfaces.</p>
+<pre class="screen" id="EN-US_TASK_0000001564120297__screen301526699180144">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001564120297__b928229808180144">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001564120297__b133851142144816">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001564120297__b680095247180144">vlan batch 10 20</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001564120297__b7792145114597">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564120297__b0875121118534">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564120297__b1207589107180144">port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564120297__b1134790390180144">port trunk allow-pass vlan 10</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564120297__b1964778305180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001564120297__b1465044327180144">interface vlanif 10</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001564120297__b1679677264180144">ip address 192.168.1.10 24</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001564120297__b1471693815180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001564120297__b1978555855180144">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564120297__b914318281535">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564120297__b75631228180144">port link-type access</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564120297__b1122878415180144">port default vlan 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564120297__b1086189616180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001564120297__b47469953180144">interface vlanif 20</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001564120297__b1545963845180144">ip address 192.168.2.10 24</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001564120297__b1803338608180144">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001564120297__nac-aaa"><span id="EN-US_TASK_0000001564120297__cmd693894443180155">Configure AAA.</span><p><p id="EN-US_TASK_0000001564120297__p1767160775180155"># Create and configure the RADIUS server template <strong id="EN-US_TASK_0000001564120297__b1298819207537">rd1</strong>.</p>
+<pre class="screen" id="EN-US_TASK_0000001564120297__screen1367653882180155">[DeviceA] <strong id="EN-US_TASK_0000001564120297__b1253475216180155">radius-server template rd1</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001564120297__b964582800180155">radius-server authentication 192.168.1.30 1812</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001564120297__b1292288258180155">radius-server accounting 192.168.1.30 1813</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001564120297__b811292041180155">radius-server shared-key cipher Huawei@123456789</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001564120297__b73167145180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001564120297__p897756237180155"># Create the AAA authentication scheme <strong id="EN-US_TASK_0000001564120297__b1119825165310">abc</strong> and set the authentication mode to RADIUS authentication.</p>
+<pre class="screen" id="EN-US_TASK_0000001564120297__screen1517652770180155">[DeviceA] <strong id="EN-US_TASK_0000001564120297__b1149224594180155">aaa</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001564120297__b1339656669180155">authentication-scheme abc</strong>
+[DeviceA-aaa-authen-abc] <strong id="EN-US_TASK_0000001564120297__b22484114180155">authentication-mode radius</strong>
+[DeviceA-aaa-authen-abc] <strong id="EN-US_TASK_0000001564120297__b436454270180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001564120297__p2043209574180155"># Create the accounting scheme <strong id="EN-US_TASK_0000001564120297__b1512103012394">scheme2</strong> and set the accounting mode to RADIUS accounting.</p>
+<pre class="screen" id="EN-US_TASK_0000001564120297__screen165143530180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001564120297__b1422395712180155">accounting-scheme scheme2</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000001564120297__b546735786180155">accounting-mode radius</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000001564120297__b1580729935180155">accounting realtime 15</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000001564120297__b1801757958180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001564120297__p647338067180155"># Create the authentication domain <strong id="EN-US_TASK_0000001564120297__b171371415393">example.com</strong>, and bind the authentication scheme <strong id="EN-US_TASK_0000001564120297__b151371241193914">abc</strong>, accounting scheme <strong id="EN-US_TASK_0000001564120297__b20137174117392">scheme2</strong>, and RADIUS server template <strong id="EN-US_TASK_0000001564120297__b613734111398">rd1</strong> to the domain.</p>
+<pre class="screen" id="EN-US_TASK_0000001564120297__screen1103919884180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001564120297__b1779449303180155">domain example.com</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001564120297__b1982218258180155">authentication-scheme abc</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001564120297__b080613416577">accounting-scheme scheme2</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001564120297__b1067229579180155">radius-server rd1</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001564120297__b1924928464180155">quit</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001564120297__b522075648180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001564120297__p2107390627180155"># Check whether a user can pass RADIUS authentication. (The test user <strong id="EN-US_TASK_0000001564120297__b1367715456539">test</strong> and password <strong id="EN-US_TASK_0000001564120297__b1468513453536">Example2012</strong> have been configured on the RADIUS server.)</p>
+<pre class="screen" id="EN-US_TASK_0000001564120297__screen1780736976180155">[DeviceA] <strong id="EN-US_TASK_0000001564120297__b188528683180155">test-aaa test Example2012 radius-template rd1</strong>
+Info: Account test succeeded.</pre>
+</p></li><li id="EN-US_TASK_0000001564120297__step1320411655180155"><span id="EN-US_TASK_0000001564120297__cmd62677487180155">Configure 802.1X authentication.</span><p><div class="p" id="EN-US_TASK_0000001564120297__p1281891293180155"># Configure the 802.1X access profile <strong id="EN-US_TASK_0000001564120297__b1722313571535">d1</strong>.<pre class="screen" id="EN-US_TASK_0000001564120297__screen689779142180155">[DeviceA] <strong id="EN-US_TASK_0000001564120297__b1387212124180155">dot1x-access-profile name d1</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000001564120297__b20309194464018">dot1x authentication-method eap</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000001564120297__b4569183211402">dot1x timer client-timeout 30</strong>
+[DeviceA-dot1x-access-profile-d1] <strong id="EN-US_TASK_0000001564120297__b1949649691180155">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001564120297__note17496683180155"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001564120297__p2008975189180155">By default, an 802.1X access profile uses EAP authentication. Ensure that the RADIUS server supports the EAP protocol. Otherwise, the RADIUS server cannot process 802.1X authentication requests.</p>
+</div></div>
+</div>
+<p id="EN-US_TASK_0000001564120297__p1708450717180155"># Configure the authentication profile <strong id="EN-US_TASK_0000001564120297__b18324671613">p1</strong>, bind the 802.1X access profile <strong id="EN-US_TASK_0000001564120297__b33286191612">d1</strong> to the authentication profile, and configure the forcible authentication domain <strong id="EN-US_TASK_0000001564120297__b19321616161">example.com</strong> for users using the authentication profile.</p>
+<pre class="screen" id="EN-US_TASK_0000001564120297__screen1000268817180155">[DeviceA] <strong id="EN-US_TASK_0000001564120297__b1582183324180155">authentication-profile name p1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001564120297__b649890072180155">dot1x-access-profile d1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001564120297__b525947397180155">access-domain example.com force</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001564120297__b789896137180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001564120297__p4385142141316"># Bind the authentication profile <strong id="EN-US_TASK_0000001564120297__b92731279551">p1</strong> to a downlink interface and enable 802.1X authentication on the interface. The following uses <span>10GE</span> <span>0/0/2</span> as an example. Other interfaces have similar configurations.</p>
+<pre class="screen" id="EN-US_TASK_0000001564120297__screen851762053180155">[DeviceA] <strong id="EN-US_TASK_0000001564120297__b1021992485180155">interface </strong><strong id="EN-US_TASK_0000001564120297__b480419811414"><span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564120297__b47806287180155">authentication-profile p1</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564120297__b1049648339180155">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001564120297__example3544204217438"><a name="EN-US_TASK_0000001564120297__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol id="EN-US_TASK_0000001564120297__ol159849584419"><li id="EN-US_TASK_0000001564120297__li1998411511449">A user starts the 802.1X client on a terminal, and enters the user name and password for authentication.</li><li id="EN-US_TASK_0000001564120297__li17984205114417">If the user name and password are correct, an authentication success message is displayed on the client page. The user then can access the network.</li><li id="EN-US_TASK_0000001564120297__li5984355445">After the user goes online, you can run the <strong id="EN-US_TASK_0000001564120297__b5984456449">display access-user access-type dot1x</strong> command on the device to check online 802.1X user information.</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001564120297__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p id="EN-US_TASK_0000001564120297__p2511181132313">DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001564120297__screen1199955094318">#
+sysname DeviceA
+#
+authentication-profile name p1
+ dot1x-access-profile d1
+ access-domain example.com force
+#
+vlan batch 10 20
+#
+aaa
+ authentication-scheme abc    
+  authentication-mode radius    
+ accounting-scheme scheme2
+  accounting-mode radius
+  accounting realtime 15
+ domain example.com            
+  authentication-scheme abc     
+  accounting-scheme scheme2
+  radius-server rd1      
+#  
+radius-server template rd1
+ radius-server shared-key cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!SKvr${[Fs.3t@/5k|BENhEu&gt;W(3\<font style="font-size:8pt" Face="Courier New" >~</font>XG!!D;!!!!!2jp5!!!!!!A!!!!3"pK8qv!}9M#(4$jGWvQF/R[CNe/+:W^jk8HUe&amp;W%+%#
+ radius-server authentication 192.168.1.30 1812 weight 80
+ radius-server accounting 192.168.1.30 1813 weight 80
+#
+dot1x-access-profile name d1
+ dot1x timer client-timeout 30
+#
+interface Vlanif10
+ ip address 192.168.1.10 255.255.255.0
+#
+interface Vlanif20
+ ip address 192.168.2.10 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+<strong id="EN-US_TASK_0000001564120297__b591521031417"> </strong>port link-type access
+ port default vlan 20
+ authentication-profile p1
+#
+return </pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_cfg_nac_0245.html">Configuration Examples for NAC
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_nac_cfg_0034.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_nac_cfg_2034.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

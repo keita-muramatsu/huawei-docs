@@ -1,0 +1,290 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring a BGP SD-WAN Peer">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0122.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0009.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001130623222">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring a BGP SD-WAN Peer</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001130623222"></a><a name="EN-US_TASK_0000001130623222"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring a BGP SD-WAN Peer</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001130623222__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring a BGP SD-WAN peer, ensure that a CPE at a site and the RR on the TN are reachable to each other through public network routes. To improve security, an SD-WAN tunnel needs to be established to forward BGP packets used to establish a BGP SD-WAN peer relationship between the CPE and RR. Therefore, you need to configure a static route on the CPE and RR and specify the color attribute of the peer end for the route so that the CPE and RR are reachable to each other through public network routes and trigger the establishment of an SD-WAN tunnel between the CPE and RR.</p>
+<pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">ip route-static</span></b><strong> </strong><i><span class="varname">ip-address</span></i> { <i><span class="varname">mask</span></i> | <i><span class="varname">mask-length</span></i> } <strong><span>color</span></strong><em> </em><i><span class="varname">color-value</span></i> [ <strong><span>preference</span></strong><em> </em><i><span class="varname">preference</span></i> | <strong><span>tag</span></strong> <i><span class="varname">tag</span></i> ] <sup>*</sup> [ <strong><span>description</span></strong> <i><span class="varname">text</span></i> ]</pre>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001130623222__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In the SD-WAN EVPN Solution, CPEs at different sites need to advertise local TNP information to each other so that an SD-WAN tunnel can be established. Local TNP information includes the site ID, TN ID, WAN-side public IP address, WAN-side private IP address, and tunnel encapsulation type. That is, a CPE sends local TNP information to an RR, which then reflects the information to other CPEs. TNP information transmission depends on the BGP SD-WAN control channel established between the CPE and RR, as shown in <a href="#EN-US_TASK_0000001130623222__fig34701620151718">Figure 1</a>. To establish the control channel between the CPE and RR, configure a BGP SD-WAN peer relationship between the CPE and RR as follows.</p>
+<div class="fignone" id="EN-US_TASK_0000001130623222__fig34701620151718"><a name="EN-US_TASK_0000001130623222__fig34701620151718"></a><a name="fig34701620151718"></a><span class="figcap"><b>Figure 1 </b>BGP SD-WAN control channel</span><br><span><img class="vsd" src="figure/en-us_image_0000001176742697.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001130623222__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enable BGP (with a specified local AS number) and enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li><span>(Optional) Configure a BGP router ID.</span><p><pre class="screen"><b><span class="cmdqueryname">router-id</span></b> <i><span class="varname">ipv4-address</span></i></pre>
+<p>By default, BGP automatically selects a router ID configured in the system view as its router ID. If the IP address of a physical interface is used as the BGP router ID, route flapping occurs when this IP address changes. To enhance network stability, configure the IP address of a loopback interface as the BGP router ID.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Configuring a new BGP router ID or changing the existing one will reset the BGP peer relationship between devices.</p>
+</div></div>
+</p></li><li><span>Specify the IP address of a peer and the number of the AS where the peer resides.</span><p><pre class="screen"><b><span class="peer as-number">peer</span></b><strong> </strong><i><span class="varname">ipv4-address</span></i> <strong><span>as-number</span></strong> <i><span class="varname">as-number</span></i></pre>
+<p>By default, no peer is specified.</p>
+<p>The peer IP address can be one of the following:</p>
+<ul><li><p>IP address of the peer's interface that is directly connected to the local device</p>
+</li><li><p>IP address of a sub-interface on the peer's interface that is directly connected to the local device</p>
+</li><li><p>IP address of a reachable loopback interface on the peer</p>
+</li></ul>
+<p>You need to specify the CPE and RR as each other's BGP peer.</p>
+</p></li><li><span>(Optional) Specify the source interface and source IP address for TCP connection establishment.</span><p><pre class="screen"><b><span class="peer connect-interface">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>connect-interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> [ <i><span class="varname">ipv4-source-address</span></i> ]</pre>
+<p>By default, a BGP device uses the physical interface directly connected to the peer as the local interface of a TCP connection.</p>
+<p>If the IP address of a loopback interface or sub-interface is used to establish a BGP connection, you are advised to run the <b><span class="cmdqueryname">peer connect-interface</span></b> command at both ends of the connection to ensure that the connection has been correctly established. If this command is run on only one end, the BGP connection may not be established.</p>
+</p></li><li><span>(Optional) Set the maximum number of hops allowed for an EBGP connection.</span><p><pre class="screen"><b><span class="peer ebgp-max-hop">peer</span></b><strong> </strong><i><span class="varname">ipv4-address</span></i> <strong><span>ebgp-max-hop</span></strong> [ <i><span class="varname">hop-count</span></i> ]</pre>
+<p>By default, the value of <em>hop-count</em> is 255.</p>
+<p>In most cases, there should be a direct physical link between EBGP peers. If this requirement is not met, run the <b><span class="peer ebgp-max-hop">peer ebgp-max-hop</span></b> command to allow EBGP connections to be established over multiple hops.</p>
+</p></li><li><span>Enable the BGP IPv4 SD-WAN address family and enter the BGP IPv4 SD-WAN address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family sd-wan</span></b></pre>
+<p>By default, the BGP IPv4 SD-WAN address family is not enabled.</p>
+</p></li><li><span>Enable the capability of exchanging routing information with a specified peer in the BGP IPv4 SD-WAN address family view.</span><p><pre class="screen"><b><span class="peer enable">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>enable</span></strong></pre>
+<p>By default, no peer is enabled in the BGP IPv4 SD-WAN address family view.</p>
+<p>You need to enable the capability of exchanging BGP SD-WAN routes with the peer end in the BGP IPv4 SD-WAN address family view of the CPE and RR.</p>
+</p></li><li><span>Configure the local device as an RR and specify the CPE as the RR client.</span><p><pre class="screen"><b><span class="peer reflect-client">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>reflect-client</span></strong></pre>
+<p>By default, no RR and its client are configured.</p>
+<p>Perform this step on the RR. This step is not required on the CPE.</p>
+</p></li><li><span>Configure optional functions in the BGP IPv4 SD-WAN address family view as required.</span><p>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Optional functions supported by the BGP IPv4 SD-WAN address family view</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.3.10.2.1.2.4.1.1" liSelected="liSelected"><p>Function</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.3033303330333%" id="mcps1.3.3.10.2.1.2.4.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.36333633363336%" id="mcps1.3.3.10.2.1.2.4.1.3" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Add a specified BGP SD-WAN peer to a peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer group">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>group</span></strong> <i><span class="varname">peerGroupName</span></i></p>
+<p><b><span class="peer enable">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>enable</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>To improve configuration efficiency, you can add multiple BGP SD-WAN peers to which the same policy is applied to a peer group. Then, you only need to configure BGP SD-WAN peers based on the peer group.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Configure a specified BGP SD-WAN peer group as an RR client.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer reflect-client">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>reflect-client</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>This function is applicable only to RRs.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Apply a specified route-policy to the routes to be advertised to a BGP SD-WAN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer route-policy export">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">policy-name</span></i> <strong><span>export</span></strong></p>
+<p><b><span class="peer route-policy export">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">policy-name</span></i> <strong><span>export</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>Before configuring this function, you need to create a route-policy using <i><span class="varname">policy-name</span></i> and modify route attributes in the route-policy.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Apply a specified route-policy to the routes received from a BGP SD-WAN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer route-policy import">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">policy-name</span></i> <strong><span>import</span></strong></p>
+<p><b><span class="peer route-policy import">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">policy-name</span></i> <strong><span>import</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>Before configuring this function, you need to create a route-policy using <i><span class="varname">policy-name</span></i> and modify route attributes in the route-policy.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Allow advertising community attributes to a BGP SD-WAN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer advertise-community">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>advertise-community</span></strong></p>
+<p><b><span class="peer advertise-community">peer</span></b> <i><span class="varname">group-name</span></i> <strong><span>advertise-community</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>Before configuring this function, you need to create a route-policy, set the community attributes of routes, and apply the route-policy when configuring route advertisement.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Allow advertising extended community attributes to a BGP SD-WAN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer advertise-ext-community">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>advertise-ext-community</span></strong></p>
+<p><b><span class="peer advertise-ext-community">peer</span></b> <i><span class="varname">group-name</span></i> <strong><span>advertise-ext-community</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>Before configuring this function, you need to create a route-policy, set the extended community attributes of routes, and apply the route-policy when configuring route advertisement.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Enable the RR to modify the path attributes of routes using an export policy.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="reflect change-path-attribute">reflect change-path-attribute</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>This function is applicable only to RRs.</p>
+<p>Before configuring this function, you need to create a route-policy, set the next hop attributes of routes, and apply the route-policy when configuring route advertisement.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set a cluster ID for the RR.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="reflector cluster-id">reflector cluster-id</span></b> { <i><span class="varname">cluster-id-value</span></i> | <i><span class="varname">cluster-id-ipv4</span></i> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>This function is applicable only to RRs.</p>
+<p>When multiple RRs are configured in a cluster, you need to set the same cluster ID for all of the RRs to identify the cluster and prevent routing loops.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Configure BGP SD-WAN not to compare the AS_Path attributes contained in routes during optimal route selection.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="cmdqueryname">bestroute as-path-ignore</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Configure BGP SD-WAN not to compare the router IDs contained in routes during optimal route selection.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="cmdqueryname">bestroute router-id-ignore</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>When creating a route-policy, configure BGP SD-WAN not to compare the router IDs contained in routes during optimal route selection, which reduces unnecessary route switching.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Allow the local AS number to be contained in the AS_Path attribute of the route sent by a BGP SD-WAN peer or peer group. You can also set the number of times that the local AS number can be repeated in the AS_Path attribute.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer allow-as-loop">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>allow-as-loop</span></strong> [ <i><span class="varname">num</span></i> ]</p>
+<p><b><span class="peer allow-as-loop">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>allow-as-loop</span></strong> [ <i><span class="varname">num</span></i> ]</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Configure an AS_Path-based route filtering policy for the routes to be advertised to a BGP SD-WAN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer as-path-filter export">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>as-path-filter</span></strong> { <i><span class="varname">number</span></i> | <i><span class="varname">name</span></i> } <strong><span>export</span></strong></p>
+<p><b><span class="peer as-path-filter export">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>as-path-filter</span></strong> { <i><span class="varname">number</span></i> | <i><span class="varname">name</span></i> } <strong><span>export</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>Before configuring this function, you need to create an AS_Path filter.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Configure an AS_Path-based route filtering policy for the routes received from a BGP SD-WAN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer as-path-filter import">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>as-path-filter</span></strong> { <i><span class="varname">number</span></i> | <i><span class="varname">name</span></i> } <strong><span>import</span></strong></p>
+<p><b><span class="peer as-path-filter import">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>as-path-filter</span></strong> { <i><span class="varname">number</span></i> | <i><span class="varname">name</span></i> } <strong><span>import</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>Before configuring this function, you need to create an AS_Path filter.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Configure the function of discarding the extended community attributes in the routing information of a specific BGP SD-WAN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer discard-ext-community">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>discard-ext-community</span></strong></p>
+<p><b><span class="peer discard-ext-community">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>discard-ext-community</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the maximum hold-off time for the local device to wait for GR recovery on the peer end.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer graceful-restart static-timer">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>graceful-restart static-timer</span></strong> <i><span class="varname">restart-time</span></i></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><div class="p">Two methods are available to set the maximum hold-off time for the local device to wait for GR recovery on the peer end:<ul><li><p>To set the maximum hold-off time for re-establishing all BGP peer relationships, run the <b><span class="cmdqueryname">graceful-restart timer restart</span></b> command in the BGP view. The maximum hold-off time supported by this command is 3600s.</p>
+</li><li><p>To set the maximum hold-off time for re-establishing a specified BGP SD-WAN peer relationship, run the <b><span class="peer graceful-restart static-timer">peer graceful-restart static-timer</span></b> command in the BGP IPv4 SD-WAN address family view. This command allows you to set a hold-off time greater than 3600s.</p>
+</li></ul>
+</div>
+<p>If both methods are used, the latter takes precedence.</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p>This function can be configured only after GR has been enabled in the BGP view.</p>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Configure the device to preferentially select a route received from a peer not in GR state as the optimal route.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="cmdqueryname">bestroute non-gr-prior</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>By default, the function of preferentially selecting a route received from a peer not in GR state as the optimal route is not configured. When GR is enabled on the local device and the peer from which the optimal route is received restarts, the peer enters the GR state and the local device continues to prefer the route received from this peer. As a result, traffic is not switched to other paths, leading to packet loss. To solve this problem, you can run the <b><span class="cmdqueryname">bestroute non-gr-prior</span></b> command on the local device to preferentially select a route received from a peer not in GR state as the optimal route.</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p>This function takes effect only when GR is enabled on the local device and the peer is in the GR state. For details about how to enable GR, see <a href="../vrp_bgp_cfg_0119.html">Enabling GR for BGP Peers</a>.</p>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the maximum number of routes that can be accepted from a BGP SD-WAN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer route-limit">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>route-limit</span></strong> <em>limit</em> [ <em>percentage</em> ] [ <strong>alert-only</strong> | <strong>idle-forever</strong> | <strong>idle-timeout</strong><em> times</em> ]</p>
+<p><b><span class="peer route-limit">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>route-limit</span></strong> <em>limit</em> [ <em>percentage</em> ] [ <strong>alert-only</strong> | <strong>idle-forever</strong> | <strong>idle-timeout</strong><em> times</em> ]</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the interval for sending Update packets with the same route prefix to a BGP SD-WAN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer route-update-interval">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>route-update-interval</span></strong> <i><span class="varname">interval</span></i></p>
+<p><b><span class="peer route-update-interval">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>route-update-interval</span></strong> <i><span class="varname">interval</span></i></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Disable BGP SD-WAN slow peer detection.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="slow-peer absolute-detection threshold">slow-peer absolute-detection disable</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>By default, BGP SD-WAN slow peer detection is enabled.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the BGP SD-WAN slow peer detection threshold.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="slow-peer absolute-detection threshold">slow-peer absolute-detection threshold</span></b> <i><span class="varname">absolute-threshold-value</span></i></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>By default, the BGP SD-WAN slow peer detection threshold is 60s.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Disable SAFI compatibility with non-standard BGP peer groups.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer capability-advertise safi non-standard-compatible">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>capability-advertise safi non-standard-compatible disable</span></strong></p>
+<p><b><span class="peer capability-advertise safi non-standard-compatible">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>capability-advertise safi non-standard-compatible disable</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>By default, SAFI compatibility with non-standard BGP peers is enabled.</p>
+<p>Enabling or disabling SAFI compatibility for a peer causes the BGP peer relationship to be disconnected and re-established. If two devices are configured with different compatibility modes, one device will not perform negotiation with the other device and the other device will enter the established state. Given this, the two devices must be configured with the same compatibility mode. Otherwise, they may fail to establish a peer relationship.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0007.html">Configuring SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0122.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0009.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

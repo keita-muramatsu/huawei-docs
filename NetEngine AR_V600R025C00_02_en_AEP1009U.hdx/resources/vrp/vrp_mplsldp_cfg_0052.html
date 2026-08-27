@@ -1,0 +1,98 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding LDP-IGP Synchronization">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0051.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0053.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001388555165">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Understanding LDP-IGP Synchronization</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001388555165"></a><a name="EN-US_CONCEPT_0000001388555165"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding LDP-IGP Synchronization</h1>
+<div><div class="section"><h4 class="sectiontitle">Context</h4><p>LDP-IGP synchronization is used to synchronize the states of LDP and an IGP so as to minimize the traffic loss time if a fault occurs on the network.</p>
+<p>On a network with primary and backup links, if the primary link fails, both IGP and LSP traffic is switched to the backup link. After the primary link recovers, IGP routes are switched back to the primary link before LDP convergence is complete. Before being established, the LSP along the primary link takes time to make preparations, such as adjacency restoration, which leads to traffic drop. If an LDP session or adjacency on the primary link fails, the LSP along the primary link is deleted. However, the IGP still uses the primary link. As a result, LSP traffic cannot be switched to the backup link, and is continuously dropped.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>LDP-IGP synchronization supports only OSPFv2 and IS-IS in IPv4.</p>
+</div></div>
+<p>LDP-IGP synchronization allows you to set an IGP cost to delay a route switchback until LDP convergence is complete. Specifically, before the LSP on the primary link is established, the LSP on the backup link is retained to continue forwarding traffic. The LSP on the backup link is torn down only after the LSP on the primary link is established successfully.</p>
+<p>LDP-IGP synchronization timers are as follows:</p>
+<ul><li>Hold-down timer</li><li><p>Hold-max-cost timer</p>
+</li><li><p>Delay timer</p>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Implementation</h4><div class="fignone" id="EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000801"><a name="EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000801"></a><a name="fig_dc_vrp_ldp-p2p_feature_000801"></a><span class="figcap"><b>Figure 1 </b>Switchback with LDP-IGP synchronization enabled</span><br><span><img class="vsd" src="figure/en-us_image_0000001345135830.png"></span></div>
+<ul><li><div class="p">The network shown in <a href="#EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000801">Figure 1</a> has primary and backup links. When the primary link recovers from a fault, traffic is switched from the backup link back to the primary link. During the traffic switchback, the backup LSP cannot be used once IGP route convergence is complete. As a result, before a new LSP is set up over the primary link, traffic is dropped. To prevent this issue, LDP-IGP synchronization can be configured to delay IGP route switchback until LDP convergence is complete. Before convergence of the primary LSP completes, the backup LSP is retained to continue to forward traffic. The backup LSP is torn down after the primary LSP is successfully established. The detailed process is as follows:<ol><li><p>The link fault is rectified.</p>
+</li><li><p>The IGP advertises the maximum cost of the primary link, delaying the IGP route switchback.</p>
+</li><li><p>Traffic is still forwarded over the backup LSP.</p>
+</li><li><p>After the LDP session and adjacency are established, Label Mapping messages are exchanged to instruct the IGP to start synchronization.</p>
+</li><li><p>The IGP advertises the normal cost of the primary link, and its routes converge to the original forwarding path. The LSP is reestablished and entries are delivered to the forwarding table (within milliseconds).</p>
+</li></ol>
+</div>
+</li><li><div class="p">If an LDP session or adjacency on the primary link fails, the LSP along the primary link is deleted. However, the IGP still uses the primary link. As a result, LSP traffic cannot be switched to the backup link, and is continuously dropped. To prevent this issue, LDP-IGP synchronization can be configured. If an LDP session or adjacency fails, LDP informs the IGP that the LDP session or adjacency is faulty. In this case, IGP advertises the maximum cost of the faulty link. In this way, both the route and LSP are switched to the backup link. The process is as follows:<ol><li><p>The LDP session or adjacency between nodes on the primary link is faulty.</p>
+</li><li><p>LDP informs the IGP that the LDP session or adjacency along the primary link is faulty. IGP advertises the maximum cost of the primary link.</p>
+</li><li><p>The IGP route switches to the backup link.</p>
+</li><li><p>An LSP is set up over the backup link, and then forwarding entries are delivered.</p>
+</li></ol>
+To prevent a continuous failure to reestablish the LDP session or adjacency, you can configure the Hold-max-cost timer to permanently advertise the maximum cost so that traffic is always transmitted over the backup link until the LDP session and LDP adjacency are reestablished on the primary link.</div>
+</li></ul>
+<ul><li><p>LDP-IGP synchronization state transition mechanism</p>
+<div class="p">After LDP-IGP synchronization is enabled on an interface, the IGP queries the state of the interface, LDP session, and LDP adjacency according to the process shown in <a href="#EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000802">Figure 2</a>, enters the corresponding state according to the query result, and then transitions the state according to <a href="#EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000802">Figure 2</a>.<div class="fignone" id="EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000802"><a name="EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000802"></a><a name="fig_dc_vrp_ldp-p2p_feature_000802"></a><span class="figcap"><b>Figure 2 </b>LDP-IGP synchronization query process and state transition</span><br><span><img class="vsd" src="figure/en-us_image_0000001395935553.png"></span></div>
+</div>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><div class="p">Note the differences when different IGP protocols are used:<ul><li>When OSPF is used, the state transits based on the flowchart shown in <a href="#EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000802">Figure 2</a>.</li><li>When IS-IS is used, the Hold-normal-cost state does not exist. After the Hold-max-cost timer expires, IS-IS advertises the normal link cost, but the Hold-max-cost state is displayed even though this state does not exist.</li></ul>
+</div>
+</div></div>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Application Scenario</h4><p>LDP-IGP synchronization applies to the following scenarios:</p>
+<div class="p">On the network shown in <a href="#EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000804">Figure 3</a>, primary and backup links are connected. Both LDP-IGP synchronization and LDP FRR can be deployed.<div class="fignone" id="EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000804"><a name="EN-US_CONCEPT_0000001388555165__fig_dc_vrp_ldp-p2p_feature_000804"></a><a name="fig_dc_vrp_ldp-p2p_feature_000804"></a><span class="figcap"><b>Figure 3 </b>LDP-IGP synchronization deployment</span><br><span><img class="vsd" src="figure/en-us_image_0000001344976170.png"></span></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Benefits</h4><p>This feature reduces the packet loss rate during a primary/backup link switchover and improves the reliability of the entire network.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0051.html">Configuring LDP-IGP Synchronization
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0053.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

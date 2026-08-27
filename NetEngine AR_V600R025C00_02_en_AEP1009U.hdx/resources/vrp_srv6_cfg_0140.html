@@ -1,0 +1,107 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding SRv6 Microloop Avoidance">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0139.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0141.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Learning More">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001141617224">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding SRv6 Microloop Avoidance</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001141617224"></a><a name="EN-US_CONCEPT_0000001141617224"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding SRv6 Microloop Avoidance</h1>
+<div><p></p>
+<p>Due to the distributed nature of IGP link state databases (LSDBs), devices may converge at different times after a failure occurs, presenting the risk of microloops. This may in turn result in microloops, a kind of transient loop that disappears after all the nodes on the forwarding path have converged. Microloops may result in a series of issues, including packet loss, jitter, and out-of-order packets, and as such must be avoided.</p>
+<p>SR provides a method to help avoid potential loops while minimizing impacts on the network. Specifically, if a network topology change may cause a loop, SR first allows network nodes to insert a loop-free SRv6 segment list to steer traffic to the destination address. Then normal traffic forwarding is restored only after all the involved network nodes converge. This can effectively avoid loops on the network.</p>
+<div class="section"><h4 class="sectiontitle">SRv6 Local Microloop Avoidance in a Traffic Switchover Scenario</h4><p>In a traffic switchover scenario, a local microloop is formed when a node adjacent to the faulty node converges earlier than the other nodes on the network. On the network shown in <a href="#EN-US_CONCEPT_0000001141617224__fig8273164622318">Figure 1</a>, SRv6 TI-LFA is deployed on all nodes. If node B is faulty, node A undergoes the following process to perform convergence for the route to node C:</p>
+<ol><li>Node A detects the fault and enters the TI-LFA FRR process, during which node A inserts the SRv6 repair list &lt;2001:db8:5::1&gt; into the packet to direct the packet to the TI-LFA-computed PQ node, that is, node E. To direct the packet to node E, node A needs to forward the packet to the next-hop node D first. The SIDs encapsulated into the segment list of the packet are &lt;2001:db8:5::1, 2001:db8:3::1&gt;.</li><li>After performing route convergence, node A searches for the route to node C and forwards the packet to the next-hop node D through the route. In this case, the packet does not carry any SRv6 repair list and is directly forwarded based on the destination address 2001:db8:3::1.</li><li>If node D has not completed convergence when receiving the packet, its routing table has node A as the next hop of the route to node C. As a result, node D forwards the packet back to node A, which in turn causes a microloop between the two nodes.</li></ol>
+<div class="fignone" id="EN-US_CONCEPT_0000001141617224__fig8273164622318"><a name="EN-US_CONCEPT_0000001141617224__fig8273164622318"></a><a name="fig8273164622318"></a><span class="figcap"><b>Figure 1 </b>SRv6 local microloop in a traffic switchover scenario</span><br><span><img class="vsd" src="figure/en-us_image_0000001293399422.png"></span></div>
+<p>According to the preceding convergence process, node A completes convergence, exits the TI-LFA FRR process, and implements normal forwarding before other nodes on the network complete convergence, resulting in a microloop. The issue is that node A converges earlier than the other nodes, so by postponing its convergence, the microloop can be avoided. As TI-LFA backup paths are loop-free, the packet can be forwarded along a TI-LFA backup path for a period of time. Node A can then wait for the other nodes to complete convergence before exiting the TI-LFA FRR process and performing convergence, thereby avoiding the microloop.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001141617224__fig17760124242"><a name="EN-US_CONCEPT_0000001141617224__fig17760124242"></a><a name="fig17760124242"></a><span class="figcap"><b>Figure 2 </b>SRv6 local microloop avoidance in a traffic switchover scenario</span><br><span><img class="vsd" src="figure/en-us_image_0000001346118785.png" width="NaN" height="NaN"></span></div>
+<p>After microloop avoidance is deployed on the network shown in <a href="#EN-US_CONCEPT_0000001141617224__fig17760124242">Figure 2</a>, the convergence process is as follows:</p>
+<ol><li>After node A detects the fault, it enters the TI-LFA FRR process, encapsulating the SRv6 repair list &lt;2001:db8:5::1&gt; into the packet and forwarding the packet along the TI-LFA backup path, with node D as the next hop.</li><li>Node A starts the timer T1. During T1, node A does not respond to topology changes, the forwarding table remains unchanged, and the TI-LFA backup path continues to be used for packet forwarding. Other nodes on the network converge properly.</li><li>When T1 expires, other nodes on the network have completed convergence. Node A can now perform convergence and exit the TI-LFA FRR process to forward the packet along a post-convergence path.</li></ol>
+<p>The preceding solution can protect only a point of local repair (PLR) against microloops in a traffic switchover scenario. This is because only a PLR can enter the TI-LFA FRR process and forward packets along a TI-LFA backup path. In addition, this solution applies only to single point of failure. In a multiple-point fault scenario, the TI-LFA backup path may also be adversely affected and therefore cannot be used for packet forwarding.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">SRv6 Local Microloop Avoidance in a Traffic Switchback Scenario</h4><p>In addition to traffic switchover scenarios, microloops may also occur in traffic switchback scenarios. The following uses the network shown in <a href="#EN-US_CONCEPT_0000001141617224__fig201332712262">Figure 3</a> as an example to describe how a microloop occurs in a traffic switchback scenario. The process is as follows:</p>
+<ol><li>Node A sends a packet to destination node F along the path A-&gt;B-&gt;C-&gt;E-&gt;F. If the B-C link fails, node A sends the packet to destination node F along the post-convergence path A-&gt;B-&gt;D-&gt;E-&gt;F.</li><li>After the B-C link recovers, a node (for example, node D) first completes convergence.</li><li>When receiving the packet sent from node A, node B has not completed convergence and therefore continues to forward the packet to node D along the pre-recovery path, as shown in <a href="#EN-US_CONCEPT_0000001141617224__fig201332712262">Figure 3</a>.</li><li>Because node D has completed convergence, it forwards the packet to node B along the post-recovery path, resulting in a microloop between the two nodes.</li></ol>
+<p>Traffic switchback does not involve the TI-LFA FRR process. Therefore, delayed convergence cannot be used for microloop avoidance in such scenarios.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001141617224__fig201332712262"><a name="EN-US_CONCEPT_0000001141617224__fig201332712262"></a><a name="fig201332712262"></a><span class="figcap"><b>Figure 3 </b>SRv6 local microloop in a traffic switchback scenario</span><br><span><img class="vsd" src="figure/en-us_image_0000001293079638.png"></span></div>
+<p>According to the preceding process, a transient loop occurs when node D converges earlier than node B during fault recovery. Node D is unable to predict link up events on the network and so is unable to pre-compute any loop-free path for such events. To avoid loops that may occur during traffic switchback, node D needs to be able to converge to a loop-free path.</p>
+<p>On the network shown in <a href="#EN-US_CONCEPT_0000001141617224__fig720113384286">Figure 4</a>, after node D detects that the B-C link goes up, it re-converges to the D-&gt;B-&gt;C-&gt;E-&gt;F path.</p>
+<p>In addition, the B-C link up event does not affect the path from node D to node B, proving that the path is loop-free.</p>
+<div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>Topology changes triggered by a link up event affect only the post-convergence forwarding path that passes through the link. As such, if the post-convergence forwarding path from node D to node B does not pass through the B-C link, it is not affected by the B-C link up event. Similarly, topology changes triggered by a link down event affect only the pre-convergence forwarding path that passes through the link.</p>
+</div></div>
+<p>A loop-free path from node D to node F can be constructed without specifying the path from node D to node B. Because the path from node C to node F is not affected by the B-C link up event, it is definitely loop-free. In this scenario, only the path from node B to node C is affected. Given this, to compute a loop-free path from node D to node F, you only need to specify a path from node B to node C. According to the preceding analysis, a loop-free path from node D to node F can be formed by inserting only an End.X SID that instructs packet forwarding from node B to node C into the post-convergence path of node D.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001141617224__fig720113384286"><a name="EN-US_CONCEPT_0000001141617224__fig720113384286"></a><a name="fig720113384286"></a><span class="figcap"><b>Figure 4 </b>SRv6 local microloop avoidance in a traffic switchback scenario</span><br><span><img class="vsd" src="figure/en-us_image_0000001346118761.png"></span></div>
+<p>After microloop avoidance is deployed, the convergence process is as follows:</p>
+<ol><li>After the B-C link recovers, a node (for example, node D) first completes convergence.</li><li>Node D starts the timer T1. Before T1 expires, node D computes a microloop avoidance segment list &lt;2001:db8:2::3, 2001:db8:3::5, 2001:db8:5::6&gt; for the packet destined for node F.</li><li>When receiving the packet sent from node A, node B has not completed convergence and therefore continues to forward the packet to node D along the pre-recovery path.</li><li>Node D inserts the microloop avoidance segment list &lt;2001:db8:2::3, 2001:db8:3::5, 2001:db8:5::6&gt; into the packet and forwards the packet to node B.<div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>Although the packet is sent from node B to node D and then back to node B, no loop occurs because node D has changed the destination address of the packet to the End.X SID 2001:db8:2::3.</p>
+</div></div>
+</li><li>According to the instruction bound to the End.X SID 2001:db8:2::3, node B forwards the packet to node C through the outbound interface specified by the End.X SID and decrements the SL value by 1.</li><li>Node C and node E forward the packet to the destination node F according to the SID stack.</li></ol>
+<p>As previously described, node D inserts the microloop avoidance segment list &lt;2001:db8:2::3, 2001:db8:3::5, 2001:db8:5::6&gt; into the packet, avoiding loops.</p>
+<p>When T1 of node D expires, other nodes on the network have completed convergence, allowing node A to forward the packet along the post-convergence path A-&gt;B-&gt;C-&gt;E-&gt;F.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">SRv6 Remote Microloop Avoidance in a Traffic Switchover Scenario</h4><p>In a traffic switchover scenario, a remote microloop may also occur between two nodes on a packet forwarding path if the node close to the point of failure converges earlier than one farther from the point. The following uses the network shown in <a href="#EN-US_CONCEPT_0000001141617224__fig0862319193317">Figure 5</a> as an example to describe how a remote microloop occurs in a traffic switchover scenario. The process is as follows:</p>
+<ol><li>After detecting a C-E link fault, a node (for example, node G) first completes convergence, whereas node B has not converged.</li><li>Nodes A and B forward the packet to node G along the path used before the fault occurs.</li><li>Because node G has completed convergence, it forwards the packet to node B according to the next hop of the corresponding route, resulting in a microloop between the two nodes.</li></ol>
+<div class="fignone" id="EN-US_CONCEPT_0000001141617224__fig0862319193317"><a name="EN-US_CONCEPT_0000001141617224__fig0862319193317"></a><a name="fig0862319193317"></a><span class="figcap"><b>Figure 5 </b>SRv6 remote microloop in a traffic switchover scenario</span><br><span><img class="vsd" src="figure/en-us_image_0000001346239153.png"></span></div>
+<p>To minimize computation workload, generally, a network node can pre-compute a loop-free path only when a directly connected link or node fails. That is, no loop-free path can be pre-computed against any other potential fault on the network. Given this, the microloop can be avoided only by installing a loop-free path after node G converges.</p>
+<p>As mentioned above, topology changes triggered by a link down event affect only the pre-convergence forwarding path that passes through the link. If the path from a node to the destination node does not pass through the faulty link before convergence, the path is not affected by the link fault. In the topology shown in <a href="#EN-US_CONCEPT_0000001141617224__fig0862319193317">Figure 5</a>, the path from node G to node D is not affected by the C-E link fault, and therefore does not need to be specified for computing a loop-free path from node G to node F. Similarly, the path from node E to node F is not affected by the C-E link fault, and therefore does not need to be specified, either. Because only the path from node D to node E is affected by the C-E link fault, you only need to specify the End.X SID 2001:db8:4::5 identifying the path from node D to node E to determine the loop-free path, as shown in <a href="#EN-US_CONCEPT_0000001141617224__fig8742033143211">Figure 6</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001141617224__fig8742033143211"><a name="EN-US_CONCEPT_0000001141617224__fig8742033143211"></a><a name="fig8742033143211"></a><span class="figcap"><b>Figure 6 </b>SRv6 remote microloop avoidance in a traffic switchover scenario</span><br><span><img class="vsd" src="figure/en-us_image_0000001293079546.png"></span></div>
+<p>After microloop avoidance is deployed, the convergence process is as follows:</p>
+<ol><li>After detecting a C-E link fault, a node (for example, node G) first completes convergence.</li><li>Node G starts the timer T1. Before T1 expires, node G computes a microloop avoidance segment list &lt;2001:db8:4::5&gt; for the packet destined for node F.</li><li>When receiving the packet sent from node A, node B has not completed convergence and therefore continues to forward the packet to node G along the path used before the fault occurs.</li><li>Node G inserts the microloop avoidance segment list &lt;2001:db8:4::5&gt; into the packet and forwards the packet to node B.<div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>Although the packet is sent from node B to node G and then back to node B, no loop occurs because node G has changed the destination address of the packet to End.X SID 2001:db8:4::5.</p>
+</div></div>
+</li><li>Node B searches the routing table for the route to destination address 2001:db8:4::5 and forwards the packet to node D through the route.</li><li>According to the instruction bound to the End.X SID 2001:db8:4::5, node D forwards the packet to node E through the outbound interface specified by the End.X SID, decrements the SL value by 1, and updates the destination address in the IPv6 packet header to 2001:db8:6::.</li><li>Node E forwards the packet to destination node F along the shortest path.</li></ol>
+<p>As previously described, node G inserts the microloop avoidance segment list &lt;2001:db8:4::5&gt; into the packet, avoiding loops.</p>
+<p>When T1 of node G expires, other nodes on the network have completed convergence, allowing node A to forward the packet along the post-convergence path A-&gt;B-&gt;D-&gt;E-&gt;F.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">SRv6 Remote Microloop Avoidance in a Traffic Switchback Scenario</h4><p>The following uses the network shown in <a href="#EN-US_CONCEPT_0000001141617224__fig0862319193317">Figure 5</a> as an example to describe how a remote microloop occurs in a traffic switchback scenario. The process is as follows:</p>
+<ol><li>After the C-E link recovers, a node (for example, node B) first completes convergence, whereas node G has not converged.</li><li>Node B forwards the packet to node G.</li><li>Because node G has not completed convergence, it continues to forward the packet to node B along the pre-recovery path, resulting in a microloop between the two nodes.</li></ol>
+<p>To avoid the microloop, start the timer T1 on node B. Then, before T1 expires, node B inserts an End.X SID identifying the path between nodes G and C into the packet destined for node F to ensure that the packet can be forwarded to node C. In this way, node C can forward the packet to destination node F according to the destination IPv6 address 2001:db8:6:: along the shortest path.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0139.html">Configuring IS-IS SRv6 Microloop Avoidance
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0141.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

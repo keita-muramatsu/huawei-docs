@@ -1,0 +1,105 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Managing Files Using FTP">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0066.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0068.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512692646">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Managing Files Using FTP</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512692646"></a><a name="EN-US_TASK_0000001512692646"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Managing Files Using FTP</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512692646__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Overview</h4><p>Data is transmitted in cleartext when FTP is used to manage files, leaving the device vulnerable to DoS, brute force password cracking, and other attacks. As a result, device information may be disclosed, posing great security risks. To mitigate these risks, take the following measures:</p>
+<ul><li><p>Perform authentication.</p>
+<p>Configure the FTP server to perform AAA authentication, so that only authenticated users can access the corresponding device and manage files.</p>
+</li><li><p>Disable the FTP server service.</p>
+<p>When the FTP server service is enabled, the socket service is also enabled, exposing the corresponding device to scanning by attackers. As such, ensure that the FTP server function is disabled when not required.</p>
+<p>The FTP server function is disabled by default.</p>
+</li><li><p>Change the FTP server port number.</p>
+<p>FTP server port 21 is a well-known port number subject to scanning and attacks. You can change the FTP server port number to a private one to lower the possibility of being scanned and attacked.</p>
+</li><li><p>Configure FTP server ACL rules.</p>
+<p>You can configure FTP server ACL rules in the system view to limit the client IP addresses that can access the corresponding device.</p>
+</li><li><p>Configure source interfaces.</p>
+<p>After you configure source interfaces supported by the FTP server, users must access the corresponding device using the IP addresses of the configured source interfaces. This limits the access range and enhances device security.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001512692646__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001512692646__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure AAA authentication.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">aaa</span></b>
+<b><span class="cmdqueryname">local-user</span></b> <i><span class="varname">user-name</span></i> <strong><span>password</span></strong> <strong><span>irreversible-cipher</span></strong> <i><span class="varname">password</span></i>
+<b><span class="local-user service-type">local-user</span></b> <i><span class="varname">user-name</span></i> <strong><span>service-type</span></strong> <strong><span>ftp</span></strong>
+<b><span class="local-user privilege">local-user</span></b> <i><span class="varname">user-name</span></i> <strong><span>privilege level</span></strong> <i><span class="varname">level</span></i>
+<b><span class="cmdqueryname">local-user</span></b> <i><span class="varname">user-name</span></i> <strong><span>ftp-directory</span></strong> <i><span class="varname">directory</span></i>
+<b><span class="cmdqueryname">quit</span></b></pre>
+<p>Configure the local username and password, set the access type to FTP, and configure the user level and accessible directories. The user level must be set to the management level.</p>
+</p></li><li><span>Disable the FTP server service.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">undo ftp</span></b> [ <strong><span>ipv6</span></strong> ] <strong><span>server enable</span></strong></pre>
+</p></li><li><span>Change the FTP server port number.</span><p><pre class="screen"><b><span class="cmdqueryname">ftp</span></b> [ <strong><span>ipv6</span></strong> ] <strong><span>server port</span></strong> <i><span class="varname">port-number</span></i></pre>
+</p></li><li><span>Configure an ACL for the FTP server.</span><ol><li class="substepexpand"><span>In the ACL view, configure an ACL rule to specify clients that can log in to the device.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">acl</span></b> <span>{ </span>[ <strong><span>number</span></strong> ] <i><span class="varname">basic-acl-number</span></i><span> | <strong><span>name</span></strong> <i><span class="varname">basic-acl-name</span></i> }</span>
+<span><b><span class="cmdqueryname">rule</span></b><span> [ <i><span class="varname">rule-id</span></i> ] [ <strong><span>name</span></strong> <i><span class="varname">rule-name</span></i> ] { <span><span><strong><span>permit</span></strong> </span></span> | <strong><span>deny</span></strong> } [ <strong><span>fragment-type</span></strong> <strong><span>fragment</span></strong> | <strong><span>source</span></strong> { <i><span class="varname">source-ip-address</span></i> <span>{ </span><i><span class="varname">source-wildcard</span></i> | <strong><span>0</span></strong><span> | <i><span class="varname">src-netmask</span></i> }</span> | <strong><span>any</span></strong> } | <strong><span>time-range</span></strong> <i><span class="varname">time-name</span></i> | <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i><span> | <strong><span>logging</span></strong></span> ] <sup>*</sup></span></span>
+<b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a basic ACL for the FTP server.</span><p><pre class="screen"><b><span class="cmdqueryname">ftp</span></b> <span>[ <strong><span>ipv6</span></strong> ] </span><b><span class="cmdqueryname">server </span></b><strong><span>acl</span></strong> <span>{ </span><i><span class="varname">acl-number</span></i><span> | <i><span class="varname">name</span></i> }</span></pre>
+</p></li></ol>
+</li><li><span>Configure source interfaces.</span><p><ul><li>Use IPv4 addresses as source interface addresses.<pre class="screen"><b><span class="cmdqueryname">ftp server source</span></b> { <strong><span>-a</span></strong> <i><span class="varname">ip-address</span></i> | <strong><span>-i</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> }</pre>
+</li><li>Use IPv6 addresses as source interface addresses.<pre class="screen"><b><span class="cmdqueryname">ftp ipv6 server source</span></b> <strong><span>-a</span></strong> <i><span class="varname">ipv6-address</span></i> [ <strong><span>-vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ]</pre>
+</li><li>Specify all interfaces with IP addresses on the device as source interfaces.<pre class="screen"><b><span class="cmdqueryname">ftp</span></b> [ <strong><span>ipv6</span></strong> ] <strong><span>server source</span></strong> <strong><span>all-interface</span></strong></pre>
+</li></ul>
+</p></li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001512692646__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><ul><li><p>Run the <b><span class="cmdqueryname">display ftp server</span></b> command to check the configuration and status of the FTP server.</p>
+</li><li><p>Run the <b><span class="cmdqueryname">display ftp server users</span></b> command to check FTP user information.</p>
+</li><li><p>Run the <b><span class="cmdqueryname">display ftp server ip auth-fail information</span></b> command to check IP address details about the clients that fail to be authenticated, including the time when the first authentication fails and the number of authentication failures.</p>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0066.html">File System Management Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0068.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

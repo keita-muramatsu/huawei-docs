@@ -1,0 +1,103 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Enabling the Net Assistant Function">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002098031110">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Enabling the Net Assistant Function</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002098031110"></a><a name="EN-US_TASK_0000002098031110"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Enabling the Net Assistant Function</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002098031110__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>If you want to centrally manage and maintain devices on the network through one device, you can do so after enabling the net assistant function and then logging in to WebMaster.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002098031110__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure the DHCPv4 server function. Perform this step on the device that provides the DHCP server function, which is usually the master device.</span><p><ol type="a"><li>Enable DHCPv4.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">dhcp enable</span></b> [ <strong><span>ipv4</span></strong> | <strong><span>ipv6</span></strong> ]</pre>
+</li><li>Configure the DHCPv4 server function.<pre class="screen"><b><span class="cmdqueryname">interface</span></b> <strong><span>Vlanif1</span></strong> //It must be configured on VLANIF1.
+<b><span class="cmdqueryname">ip address</span></b> <i><span class="varname">ip-address</span></i> { <i><span class="varname">mask</span></i> | <i><span class="varname">mask-length</span></i> }
+<strong><b><span class="cmdqueryname">dhcp select interface</span></b></strong>
+<strong><b><span class="cmdqueryname">dhcp server gateway-list</span></b> </strong><em><i><span class="varname">ip-address</span></i></em> &amp;&lt;1-8&gt;</pre>
+</li><li>(Optional) Bind an IP address in the interface address pool to the MAC address of a DHCP client.<pre class="screen"><strong><b><span class="cmdqueryname">dhcp server static-bind</span></b> ip-address </strong><em><i><span class="varname">ip-address</span></i></em><strong> mac-address </strong><em><i><span class="varname">mac-address</span></i></em> [ <strong>description</strong><em> <i><span class="varname">description</span></i></em> ] </pre>
+<p>If the master device does not function as the DHCP server, you need to bind IP addresses in the address pool to the MAC addresses of hosts when approving existing devices or configuring approved devices as WACs.</p>
+<p>By default, no IP address in the interface address pool is bound to the MAC address of a DHCP client.</p>
+</li><li>Exit the interface view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li></ol>
+</p></li><li><span>Configure the master device. Perform this step on the master device.</span><p><ol type="a"><li>Create a local AAA account for logging in to WebMaster.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="aaa">aaa</span></b>
+<b><span class="local-user password">local-user</span></b> <i><span class="varname">user-name</span></i> <strong><span>password</span></strong> <strong><span>irreversible-cipher</span></strong> <i><span class="varname">irreversible-cipher-password</span></i>
+<b><span class="local-user service-type">local-user</span></b> <i><span class="varname">user-name</span></i> <strong><span>service-type</span></strong> <strong><span>http</span></strong>
+<b><span class="local-user privilege level">local-user</span></b> <i><span class="varname">user-name</span></i> <strong><span>privilege</span></strong> <strong><span>level 3</span></strong> 
+<b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>(Optional) Enable the DHCP client function on an interface.<p>If the master device also functions as the DHCPv4 server or the device is started with the default configuration, skip this step.</p>
+<pre class="screen"><b><span class="cmdqueryname">interface</span></b> <strong><span>Vlanif1</span></strong> //It must be configured on VLANIF1.
+<strong><b><span class="cmdqueryname">ip address dhcp-alloc</span></b> </strong>[ <strong>unicast</strong> ]
+<b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Configure the specified NE as the master device.<pre class="screen"><b><span class="ual role controller">ual role controller</span></b></pre>
+<p>By default, no master role is configured, and the device functions as a member device.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>After the command is run:</p>
+<ul><li>The master device automatically delivers the <strong>net-assistant enable</strong> command to enable the net assistant function.</li><li>The master device automatically generates a default SSL policy (named <strong>netasstpolicy</strong>) and binds it to the PKI realm named <strong>default</strong> (no PKI certificate is automatically loaded to this realm).</li><li>The master device automatically configures the SSL policy for the net assistant function and automatically enables the SSL peer verification function.</li><li>The master device automatically generates a virtual IP address 10.231.10.253.</li><li>The master device automatically runs the <strong>undo web-manager captcha enable</strong> command to disable the verification code-based authentication function on the authentication page of the web server.</li><li>The master device automatically runs the <strong>web-manager server-source -i Vlanif1</strong> command to specify Vlanif1 as the source interface of the web server.</li></ul>
+</div></div>
+</li></ol>
+</p></li><li><span>(Optional) Enable the DHCP client function on an interface. Perform this step on the member device.</span><p><p>If the device is started with the default configuration, skip this step.</p>
+</p><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">interface</span></b> <strong><span>Vlanif1</span></strong> //It must be configured on VLANIF1.
+<strong><b><span class="cmdqueryname">ip address dhcp-alloc</span></b> </strong>[ <strong>unicast</strong> ]
+<b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Log in to WebMaster through a virtual IP address.</span><p><ol type="a"><li>Connect the network interface of the administrator PC to any interface of any device on the network.</li><li>Set the IP address of the PC to be on the same network segment as the virtual IP address (10.231.10.253).</li><li>Enter https://10.231.10.253:port in the address box of the browser. <em>port</em> indicates the port number for web login. The default value is 443. For details, see <span><a href="toctopics/en-us_task_0000002130470673.html">Specifying the Master Device and Logging In to WebMaster</a></span>.</li></ol>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Net_Assistant_cfg_0007.html">Configuring Net Assistant
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Net_Assistant_cfg_0010.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

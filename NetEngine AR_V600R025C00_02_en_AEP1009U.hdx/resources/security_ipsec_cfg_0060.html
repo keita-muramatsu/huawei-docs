@@ -1,0 +1,103 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring IPsec Anti-Replay">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0058.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0059.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0061.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512834354">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring IPsec Anti-Replay</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512834354"></a><a name="EN-US_TASK_0000001512834354"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring IPsec Anti-Replay</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001512834354__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>IPsec anti-replay takes effect only for the following IPsec types:</p>
+<ul><li>ACL-based IPsec (involving ISAKMP IPsec policies, template IPsec policies, and manual IPsec policies)</li><li>Route-based IPsec (involving IPsec profiles)</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001512834354__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Replayed packets are packets that have been processed. IPsec uses the sliding window (anti-replay window) mechanism to check replayed packets. Headers of the AH and ESP protocol packets carry 32-bit serial numbers. In the same SA, the serial numbers of the packets increase in ascending order. If the device receives an authenticated packet and the serial number of the packet is the same as that of the decapsulated packet, or the serial number of the packet is small and out of the sliding window, the packet is considered as a replayed packet.</p>
+<p>Decapsulation of replayed packets has no actual significance and may consume a great number of resources of the device, deteriorating service availability. In this case, replayed packets actually result in Denial of Service (DoS) attacks. After the IPsec anti-replay function is enabled, the system discards replayed packets and does not decapsulate them, saving system resources.</p>
+<div class="p">The IPsec anti-replay function can be configured globally or in an IPsec policy, IPsec policy template, or IPsec profile.<ul><li>Global configuration<p>The global IPsec anti-replay function is valid for all created IPsec policies, IPsec policy templates, and IPsec profiles. If a large number of the same anti-replay window parameters need to be configured, you do not need to configure the parameters in each IPsec policy, IPsec policy template, or IPsec profile. Instead, you only need to configure global parameters, improving configuration efficiency.</p>
+</li><li>Configuration in an IPsec policy, IPsec policy template, or IPsec profile<p>You can configure the IPsec anti-replay function for a specific IPsec policy, IPsec policy template, or IPsec profile separately. In this case, the anti-replay function of the IPsec policy, IPsec policy template, or IPsec profile will not be affected by the global configuration.</p>
+</li></ul>
+</div>
+<p>To ensure normal service forwarding, the configured IPsec anti-replay window is valid only for new or renegotiated IPsec SAs but not for existing IPsec SAs. </p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001512834354__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure the IPsec anti-replay function globally.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable the IPsec anti-replay function globally.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec anti-replay enable</span></b></pre>
+<p>By default, the IPsec anti-replay function is enabled globally.</p>
+</p></li><li class="substepexpand"><span>Set the global IPsec anti-replay window size.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec anti-replay window</span></b> <i><span class="varname">window-size</span></i></pre>
+<p>By default, the global IPsec anti-replay window size is 1024 bits.</p>
+</p></li></ol>
+</li><li><span>Configure the IPsec anti-replay function in a specific IPsec policy or IPsec profile.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IPsec policy view or IPsec profile view.</span><p><p># Enter the ISAKMP IPsec policy view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec policy</span></b> <i><span class="varname">policy-name</span></i> <i><span class="varname">seq-number</span></i> [ <strong><span>isakmp</span></strong> ]</pre>
+<p># Enter the template IPsec policy view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec policy-template</span></b> <i><span class="varname">template-name</span></i> <i><span class="varname">seq-number</span></i></pre>
+<p># Enter the IPsec profile view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Enable the IPsec anti-replay function in the IPsec policy.</span><p><pre class="screen"><b><span class="cmdqueryname">anti-replay enable</span></b></pre>
+<p>By default, the IPsec anti-replay function is disabled in an IPsec policy, and a newly created IPsec policy uses the global IPsec anti-replay configuration.</p>
+</p></li><li class="substepexpand"><span>Set the IPsec anti-replay window size in the IPsec policy.</span><p><pre class="screen"><b><span class="cmdqueryname">anti-replay window</span></b> <i><span class="varname">window-size</span></i></pre>
+<p>By default, the IPsec anti-replay window size is not configured in an IPsec policy, and a newly created IPsec policy uses the global IPsec anti-replay window size.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0058.html">IPsec Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0059.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0061.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

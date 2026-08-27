@@ -1,0 +1,381 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Writing Code">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_telemetry_cfg_0158.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_telemetry_cfg_0161.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="Telemetry">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000002506142058">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Writing Code</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000002506142058"></a><a name="EN-US_TOPIC_0000002506142058"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Writing Code</h1>
+<div><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This section only provides the code that you need to pay attention to. The code is for reference only.</p>
+<p>You need to develop all the code except for the auto-generated code by yourself.</p>
+</div></div>
+<p>After adding the auto-generated Python code to a Python project, use the <strong>config.json</strong> file to read the collector configuration and initiate a subscription to the device. After receiving the subscription request, the device pushes the subscribed data to the collector. The telemetry header is parsed first, and then sampled data is parsed according to the sampled data structure defined in the .proto file matching the <strong>sensor_path</strong> field.</p>
+<ol><li>Write Python code for obtaining the collector configuration in <strong>config.json</strong>:<pre class="screen">import json
+import os
+import sys
+sys.path.append('..')
+ 
+ 
+def read_config_json():
+    filepath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + '/conf/config.json'
+    json_dict = None
+    if os.path.exists(filepath):
+        with open(filepath, 'r') as f:
+            try:
+                json_dict = json.load(f)
+            except Exception as e:
+                print(e)
+    else:
+        print("config.json not found!")
+ 
+    return json_dict
+ 
+ 
+class ConfigJson(object):
+ 
+    def __init__(self):
+        self.request_id = None
+        self.encoding = None[p1] 
+        self.paths = None
+        self.sample_interval = None
+        self.username = None
+        self.password = None
+        self.ip = None
+        self.port = None
+ 
+    def parse_config(self):
+        config_dict = read_config_json()
+        self.request_id = config_dict['request_id']
+        self.encoding = config_dict['encoding']
+        self.ip = config_dict['ip']
+        self.port = config_dict['port']
+        self.username = config_dict['username']
+        self.password = config_dict['password']
+        self.paths = config_dict['paths']
+        self.sample_interval = config_dict['sample_interval']</pre>
+</li><li>Construct subscription information and send a subscription request to the device.<p>Encapsulate the configuration information into a gRPC request and sends the request to the device.</p>
+<pre class="screen">service gRPCConfigOper {             //The service name is <strong>gRPCConfigOper</strong>.
+    rpc Subscribe(SubsArgs) returns(stream SubsReply) {};  //The method is <strong>Subscribe</strong>. It uses the server streaming mode and is used for dynamic subscription. The input parameter <strong>SubsArgs</strong> includes the parameters to be subscribed.
+    rpc Cancel(CancelArgs) returns(CancelReply) {};  //The method is <strong>Cancel</strong>. It uses the query and response mode and is used to cancel dynamic subscription. The input parameter <strong>CancelArgs</strong> contains the parameters to be unsubscribed from.
+}
+message Path {                //Indicates the path message structure.
+    string path = 1;          //Indicates the subscribed sampling path.
+    uint32 depth = 2;         //Indicates the sampling depth of the subscribed sampling path. The value 1 indicates the current level, and the value 2 indicates the current level and its sub-level, and so on.
+}
+message SubsArgs {            //Subscription request parameter.
+    uint64 request_id = 1;    //Request ID, which is transferred by the invoker.
+    uint32 encoding = 2;      //Encoding type. The value 0 indicates GPB encoding, and the value 1 indicates JSON encoding.
+    repeated Path path = 5;   //Subscribed path structure.
+    uint64 sample_interval = 6; //Sampling interval.
+    uint64 heartbeat_interval = 7; //Redundancy suppression interval. This parameter is valid only when <strong>suppress_redundant</strong> is set to 1.
+    oneof Suppress {
+        bool suppress_redundant = 8;  //Redundancy suppression. With this function enabled, the sampled data is not reported if the data content remains unchanged. The value 0 indicates that this function is disabled, and the value 1 indicates that this function is enabled.
+        uint64 delay_time = 9;        //Delay in reporting sampled data, which ranges from 100 ms to 60000 ms. After a data change occurs, the system waits for the specified delay before reporting it. All data changes during the delay window are merged. This prevents excessive data updates caused by service flapping.
+    }
+}</pre>
+<p>Encapsulate the configuration information into a SubsArgs message and send it to the device.</p>
+<pre class="screen">def create_subsargs(self, config):
+        subsargs = huawei_grpc_dialin_pb2.SubsArgs()
+        subsargs.request_id = config.request_id
+        subsargs.encoding = config.encoding
+        for pat in config.paths:
+            subsargs.path.append(huawei_grpc_dialin_pb2.Path(path = pat))
+        subsargs.sample_interval = config.sample_interval
+ 
+        return subsargs</pre>
+<p>When the collector (serving as a client) sends a subscription request to the device, it must include a user name and password. In gRPC, this information can be passed through headers configured using metadata. Sample code is as follows:</p>
+<pre class="screen">class DialinClient:
+    def __init__(self):
+        self.config = config_parser.ConfigJson()
+        self.config.parse_config()
+    def create_subsargs(self):
+        subsargs = huawei_grpc_dialin_pb2.SubsArgs()
+        subsargs.request_id = self.config.request_id
+        subsargs.encoding = self.config.encoding
+        for p in self.config.paths:
+            subsargs.path.append(huawei_grpc_dialin_pb2.Path(path = p))
+        subsargs.sample_interval = self.config.sample_interval
+        return subsargs
+    def subscribe(self):
+        subsargs = self.create_subsargs()
+        ip = self.config.ip
+        port = self.config.port
+        # Configure headers.
+        metadata_dict = dict()
+        metadata_dict["username"] = self.config.username
+        metadata_dict["password"] = self.config.password
+        channel = grpc.insecure_channel(ip + ':' + port) #Server information.
+        client = huawei_grpc_dialin_pb2_grpc.gRPCConfigOperStub(channel) #The client sets up a connection with the server.
+        response = client.Subscribe.__call__(request=subsargs,
+                                            metadata=list(metadata_dict.items()))
+        for subs_reply in response:
+            if subs_reply.response_code != "200":
+                tel = telemetry_parser.TelemetryParser()
+                sample_datas = tel.parse_dialin(subs_reply)</pre>
+</li><li>Write code for data parsing.<p>After sending a subscription request, the collector receives sampled data from the device. According to the format defined in <strong>huawei-grpc-dialin.proto</strong>, the sampled data is carried in SubsReply of the gRPCConfigOper method. SubsReply is triple-layered, carrying RPC parameters, a telemetry header, and sampled data, all of which must be parsed sequentially.</p>
+<ol type="a"><li>The RPC parameters are defined in the <strong>huawei-grpc-dialin.proto</strong> file as follows:<pre class="screen">service gRPCConfigOper {             //The service name is <strong>gRPCConfigOper</strong>.
+    rpc Subscribe(SubsArgs) returns(stream SubsReply) {};  //The method is <strong>Subscribe</strong>. It uses the server streaming mode and is used for dynamic subscription. The input parameter <strong>SubsArgs</strong> includes the parameters to be subscribed.
+    rpc Cancel(CancelArgs) returns(CancelReply) {};  //The method is <strong>Cancel</strong>. It uses the query and response mode and is used to cancel dynamic subscription. The input parameter <strong>CancelArgs</strong> contains the parameters to be unsubscribed from.
+}
+message SubsReply {               //Subscription response parameter.
+    uint32 subscription_id = 1; //If the subscription is successful, the corresponding subscription ID is returned. If the subscription fails, the value 0 is returned.
+    uint64 request_id = 2;        //ID of a subscription request.
+    string response_code = 3; //Return code. The value 200 indicates a success.
+    oneof MessageData {
+        bytes message = 4;        //If an error occurs, an error description is returned. If no error occurs, the data is encoded in GPB and then reported.
+        string message_json = 5;  //If no error occurs, the data is encoded in JSON and then reported.
+    }
+}</pre>
+<p>In this example, according to the sampled data format defined in <strong>huawei-cpu-memory.proto</strong>:</p>
+<p>Since the sampled data in this example is encoded in GPB, it is stored in the <strong>data</strong> field in binary form. If the sampled data is encoded in JSON, it is stored in the <strong>data_json</strong> field. The following sample code retrieves the GPB-encoded telemetry data from the <strong>data</strong> field and deserializes it using the ParseFromString method of the telemetry structure.</p>
+<pre class="screen"># Retrieve sampled data from the <strong>data</strong> field.
+tel_data = serArgs.data
+ 
+# Deserialize the data.
+telemetry = huawei_telemetry_pb2.Telemetry()
+telemetry.ParseFromString(tel_data)</pre>
+</li><li>The telemetry message structure is defined in the <strong>huawei-telemetry.proto</strong> file:<pre class="screen">message Telemetry {        //Defines the telemetry message structure.
+   string node_id_str = 1;    //Indicates the device name.
+   string subscription_id_str = 2;   //Indicates the name of a static subscription.
+   string sensor_path = 3;           //Indicates the sampling path.
+   string proto_path = 13;          //Indicates the message path that maps the sampling path in the .proto file.
+   uint64 collection_id = 4;         //Indicates the sampling round.
+   uint64 collection_start_time = 5;//Indicates the start time of a sampling round.
+   uint64 msg_timestamp = 6;        //Indicates the timestamp when the message is generated.
+   TelemetryGPBTable data_gpb = 7; //Indicates that the carried data is defined by TelemetryGPBTable.
+   uint64 collection_end_time = 8;  //Indicates the end time of a sampling round.
+   uint32 current_period = 9;       //Indicates sampling precision, in milliseconds.
+   string except_desc = 10;        //Indicates an exception description, which is reported when a sampling exception occurs.
+   string product_name = 11;       //Indicates the product name.
+   enum Encoding {
+    Encoding_GPB = 0;        //Indicates GPB encoding.
+    Encoding_JSON = 1;       //Indicates JSON encoding.
+  };
+   Encoding encoding = 12;          //If GPB encoding is used, the <strong>data_gpb</strong> field is valid. If another encoding format is used, the <strong>data_str</strong> field is valid.
+   string data_str = 14;            //This field is valid only when the data is not GPB encoded, and is empty if GPB encoding is used.
+  string ne_id = 15;               //Indicates the unique ID of the NE to which data belongs in the gateway scenario.
+  string software_version = 16;    //Indicates the software version number.
+}
+message TelemetryGPBTable {           //Defines the TelemetryGPBTable message structure.
+   repeated TelemetryRowGPB row = 1;  //Array indicating that the data consists of multiple TelemetryRowGPB structures.
+  repeated DataPath delete = 2;      //Deletes a data path.
+  Generator generator = 3;           //Indicates the data source description, which applies to the OnChange+ service that requires high reliability.
+}
+message TelemetryRowGPB {
+   uint64 timestamp = 1;            //Timestamp of the current sampling instance.
+   bytes content = 11;              //Indicates the sampled data. The <strong>sensor_path</strong> field must be used to determine which .proto file is used for data encoding.
+}</pre>
+<p>The telemetry message includes both the sampling information and the actual sampled data. The sampled data encoded in GPB is stored in the <strong>data_gpb</strong> field and needs to be retrieved and then deserialized using the ParseFromString method. The <strong>data_gpb</strong> field contains a list of TelemetryRowGPB structures, each of which carries sampled data in the <strong>content</strong> field.</p>
+<pre class="screen">tele_gpb_table = telemetry.data_gpb #Carries sampled data.
+tele_gpb_row = tele_gpb_table.row #Indicates the list of TelemetryRowGPB structures.
+ 
+for row_gpb in tele_gpb_row:
+    byte_content = row_gpb.content
+    sample_data = data_parser.SampleDataGPBParser()</pre>
+</li><li>The type of sampled data is determined by the <strong>sensor_path</strong> field in the telemetry header. An appropriate Python class must be selected based on <strong>sensor_path</strong> to deserialize the sampled data carried in <strong>content</strong>.<p>In this example, <strong>sensor_path</strong> is <strong>huawei-cpu-memory:cpu-memory/board-cpu-infos/board-cpu-info</strong>, so the sampled data must be deserialized using the Python class generated from <strong>huawei-cpu-memory.proto</strong>. If <strong>sensor_path</strong> is <strong>huawei-mac:mac/mac-statistics/mac-statistic</strong>, the Python class generated from <strong>huawei-mac.proto</strong> should be used instead.</p>
+<p>Since all .proto files corresponding to sampling paths have been compiled and added to the Python project, the appropriate Python class can be selected based on <strong>sensor_path</strong> when the telemetry header is parsed. For easy implementation, the following sample code identifies the required Python files based on <strong>proto_path</strong> and dynamically imports them to the Python project.</p>
+<pre class="screen">def parse_sample_data_gpb(self, byte_content, proto_path):
+    
+    # Identify the required.proto files based on <strong>proto_path</strong>, along with message names in those files.
+    str_proto = re.split("\.", proto_path)
+    proto_file = str_proto[0]
+    proto_obj = str_proto[1]
+ 
+    import_file = 'protos.proto_py.' + proto_file + '_pb2'
+    pb2 = importlib.import_module(import_file)
+    sample_data = eval('pb2.' + proto_obj)()
+ 
+    sample_data.ParseFromString(byte_content)
+    return sample_data</pre>
+<p><strong>sample_data_gpb</strong> carries the deserialized sampled data. In this example, <strong>proto_path</strong> is <strong>huawei_cpu_memory.CpuMemory</strong> and corresponds to the <strong>huawei-cpu-memory.proto</strong> file which carries sampled data in the <strong>CpuMemory</strong> message. The data must be deserialized based on the format defined in <strong>CpuMemory</strong>. Then you can obtain the actual sampled data from <strong>sample_data</strong>.</p>
+<pre class="screen">message CpuMemory {
+   message BoardCpuInfos {
+      message BoardCpuInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 overload_threshold = 3 [json_name = "overload-threshold"];
+         uint32 unoverload_threshold = 4 [json_name = "unoverload-threshold"];
+         uint32 interval = 5 [json_name = "interval"];
+         uint32 system_cpu_usage = 6 [json_name = "system-cpu-usage"];
+         uint32 monitor_cycle = 7 [json_name = "monitor-cycle"];
+         string overload_state_change_time = 8 [json_name = "overload-state-change-time"];
+         enum CurrentOverloadState {
+            CurrentOverloadState_UNOVERLOAD = 0;
+            CurrentOverloadState_OVERLOAD = 1;
+         };
+         CurrentOverloadState current_overload_state = 9 [json_name = "current-overload-state"];
+         bool forward_is_deployed = 10 [json_name = "forward-is-deployed"];
+         uint32 forward_cpu_usage = 11 [json_name = "forward-cpu-usage"];
+         uint32 cpu_cores = 12 [json_name = "cpu-cores"];
+         uint32 dataplane_cpu_usage = 13 [json_name = "dataplane-cpu-usage"];
+      }
+      repeated BoardCpuInfo board_cpu_info = 1 [json_name = "board-cpu-info"];
+   }
+   BoardCpuInfos board_cpu_infos = 1 [json_name = "board-cpu-infos"];
+   message BoardCpuCoreInfos {
+      message BoardCpuCoreInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 core_id = 3 [json_name = "core-id"];
+         uint32 cpu_core_usage = 4 [json_name = "cpu-core-usage"];
+      }
+      repeated BoardCpuCoreInfo board_cpu_core_info = 1 [json_name = "board-cpu-core-info"];
+   }
+   BoardCpuCoreInfos board_cpu_core_infos = 2 [json_name = "board-cpu-core-infos"];
+   message BoardCpuServiceInfos {
+      message BoardCpuServiceInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         string service_name = 3 [json_name = "service-name"];
+         uint32 service_cpu_usage = 4 [json_name = "service-cpu-usage"];
+      }
+      repeated BoardCpuServiceInfo board_cpu_service_info = 1 [json_name = "board-cpu-service-info"];
+   }
+   BoardCpuServiceInfos board_cpu_service_infos = 3 [json_name = "board-cpu-service-infos"];
+   message BoardMemoryInfos {
+      message BoardMemoryInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 overload_threshold = 3 [json_name = "overload-threshold"];
+         uint32 unoverload_threshold = 4 [json_name = "unoverload-threshold"];
+         uint32 os_memory_total = 5 [json_name = "os-memory-total"];
+         uint32 os_memory_use = 6 [json_name = "os-memory-use"];
+         uint32 os_memory_free = 7 [json_name = "os-memory-free"];
+         uint32 os_memory_usage = 8 [json_name = "os-memory-usage"];
+         string overload_state_change_time = 9 [json_name = "overload-state-change-time"];
+         enum CurrentOverloadState {
+            CurrentOverloadState_UNOVERLOAD = 0;
+            CurrentOverloadState_OVERLOAD = 1;
+         };
+         CurrentOverloadState current_overload_state = 10 [json_name = "current-overload-state"];
+         uint32 hugepages_total = 11 [json_name = "hugepages-total"];
+         uint32 hugepages_free = 12 [json_name = "hugepages-free"];
+      }
+      repeated BoardMemoryInfo board_memory_info = 1 [json_name = "board-memory-info"];
+   }
+   BoardMemoryInfos board_memory_infos = 4 [json_name = "board-memory-infos"];
+   message BoardProcessMemoryInfos {
+      message BoardProcessMemoryInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 process_id = 3 [json_name = "process-id"];
+         string process_name = 4 [json_name = "process-name"];
+         uint32 vm_size = 5 [json_name = "vm-size"];
+         uint32 vm_rss_size = 6 [json_name = "vm-rss-size"];
+         uint32 vm_data_size = 7 [json_name = "vm-data-size"];
+         uint32 vm_stk_size = 8 [json_name = "vm-stk-size"];
+         uint32 vm_exe_size = 9 [json_name = "vm-exe-size"];
+         uint32 vm_lib_size = 10 [json_name = "vm-lib-size"];
+      }
+      repeated BoardProcessMemoryInfo board_process_memory_info = 1 [json_name = "board-process-memory-info"];
+   }
+   BoardProcessMemoryInfos board_process_memory_infos = 5 [json_name = "board-process-memory-infos"];
+   message BoardStoragePartitionInfos {
+      message BoardStoragePartitionInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         string partition_name = 3 [json_name = "partition-name"];
+         uint64 partition_size_all = 4 [json_name = "partition-size-all"];
+         uint64 partition_size_use = 5 [json_name = "partition-size-use"];
+         uint64 partition_memory_free = 6 [json_name = "partition-memory-free"];
+         uint32 partition_memory_usage = 7 [json_name = "partition-memory-usage"];
+         string partition_mounted_info = 8 [json_name = "partition-mounted-info"];
+      }
+      repeated BoardStoragePartitionInfo board_storage_partition_info = 1 [json_name = "board-storage-partition-info"];
+   }
+   BoardStoragePartitionInfos board_storage_partition_infos = 6 [json_name = "board-storage-partition-infos"];
+   message BoardStorageFlashEraseInfos {
+      message BoardStorageFlashEraseInfo {
+         uint32 flash_id = 1 [json_name = "flash-id"];
+         uint64 erase_number = 2 [json_name = "erase-number"];
+         string slot_id = 3 [json_name = "slot-id"];
+         string cpu_id = 4 [json_name = "cpu-id"];
+      }
+      repeated BoardStorageFlashEraseInfo board_storage_flash_erase_info = 1 [json_name = "board-storage-flash-erase-info"];
+   }
+   BoardStorageFlashEraseInfos board_storage_flash_erase_infos = 7 [json_name = "board-storage-flash-erase-infos"];
+   message BoardStorageFlashBadBlockInfos {
+      message BoardStorageFlashBadBlockInfo {
+         string partition_name = 1 [json_name = "partition-name"];
+         uint64 bad_number = 2 [json_name = "bad-number"];
+         string slot_id = 3 [json_name = "slot-id"];
+         string cpu_id = 4 [json_name = "cpu-id"];
+      }
+      repeated BoardStorageFlashBadBlockInfo board_storage_flash_bad_block_info = 1 [json_name = "board-storage-flash-bad-block-info"];
+   }
+   BoardStorageFlashBadBlockInfos board_storage_flash_bad_block_infos = 8 [json_name = "board-storage-flash-bad-block-infos"];
+   message BoardCpuProcessInfos {
+      message BoardCpuProcessInfo {
+         string slot_id = 1 [json_name = "slot-id"];
+         string cpu_id = 2 [json_name = "cpu-id"];
+         uint32 process_id = 3 [json_name = "process-id"];
+         string process_name = 4 [json_name = "process-name"];
+         uint32 process_cpu_usage = 5 [json_name = "process-cpu-usage"];
+      }
+      repeated BoardCpuProcessInfo board_cpu_process_info = 1 [json_name = "board-cpu-process-info"];
+   }
+   BoardCpuProcessInfos board_cpu_process_infos = 9 [json_name = "board-cpu-process-infos"];
+}</pre>
+</li></ol>
+</li></ol>
+<p>After the preceding operations are complete, the collector is interconnected. Process other service-specific .proto files in the same way.</p>
+<p>The overall development roadmap is the same if the collector software is developed using Java or C++.</p>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_telemetry_cfg_0158.html">Developing the Dynamic Telemetry Subscription Function
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_telemetry_cfg_0161.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

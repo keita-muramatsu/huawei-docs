@@ -1,0 +1,214 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring LDP Session Protection">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_example_1001.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0046.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0066.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001337880418">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring LDP Session Protection</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001337880418"></a><a name="EN-US_TASK_0000001337880418"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring LDP Session Protection</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001337880418__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001337880418__fig_dc_vrp_ldp-p2p_cfg_008001">Figure 1</a>, an LDP session is established between PE1 and PE2. If the direct link between PE1 and PE2 fails, the LDP session and the peer relationship are expected to remain connected. To achieve this, if a redundancy link between PE1 and PE2 is available, configure LDP session protection for the LDP session between PE1 and PE2. If the direct link between PE1 and PE2 fails, LDP session protection prevents the LDP session from being disconnected and the LDP peer relationship from being torn down.</p>
+<div class="fignone" id="EN-US_TASK_0000001337880418__fig_dc_vrp_ldp-p2p_cfg_008001"><a name="EN-US_TASK_0000001337880418__fig_dc_vrp_ldp-p2p_cfg_008001"></a><a name="fig_dc_vrp_ldp-p2p_cfg_008001"></a><span class="figcap"><b>Figure 1 </b>Configuring LDP session protection</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Interfaces 1 and 2 in this example represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001397951361.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001337880418__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Assign an IP address to each interface and configure IGP routes.</p>
+</li><li><p>Configure a local LDP session.</p>
+</li><li><p>Configure LDP session protection.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001337880418__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IP address to each interface and configure IGP routes. For configuration details, see <a href="#EN-US_TASK_0000001337880418__example_01">Configuration Scripts</a> in this section.</span></li><li><span>Configure a local LDP session.</span><p><p># Configure PE1.</p>
+<pre class="screen">&lt;PE1&gt; <strong>system-view</strong>
+[PE1]<strong> mpls lsr-id 1.1.1.1</strong>
+[PE1] <strong>mpls</strong>
+[PE1-mpls] <strong>quit</strong>
+[PE1]<strong> mpls ldp</strong>
+[PE1-mpls-ldp]<strong> quit</strong>
+[PE1]<strong> interface <span>10GE</span><span>0/0/2</span></strong>
+[PE1-<span>10GE</span><span>0/0/2</span>]<strong> mpls</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong>mpls ldp</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Repeat this step for PE2. For configuration details, see <a href="#EN-US_TASK_0000001337880418__example_01">Configuration Scripts</a> in this section.</p>
+</p></li><li><span>Configure LDP session protection.</span><p><p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>mpls ldp</strong>
+[PE1-mpls-ldp] <strong>session protection duration infinite</strong>
+[PE1-mpls-ldp] <strong>quit</strong></pre>
+<p># Configure PE2.</p>
+<pre class="screen">[PE2] <strong>mpls ldp</strong>
+[PE2-mpls-ldp] <strong>session protection duration infinite</strong>
+[PE2-mpls-ldp] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p># Shut down <span>10GE</span><span>0/0/2</span> on PE1 to simulate a link fault. Run the <b><span class="cmdqueryname">display mpls ldp remote-peer</span></b> command. The command output shows that LDP session protection has taken effect.</p>
+<div class="p"><pre class="screen">[PE1] <strong>display mpls ldp remote-peer </strong>
+                         LDP Remote Entity Information 
+  ------------------------------------------------------------------------------ 
+  Remote Peer Name  : pe2 
+  Description       : ---- 
+  Remote Peer IP    : 3.3.3.3              LDP ID        : 1.1.1.1:0 
+  Transport Address : 1.1.1.1              Entity Status : Active 
+  
+  Configured Keepalive Hold Timer : 45 Sec 
+  Configured Keepalive Send Timer : ---- 
+  Configured Hello Hold Timer     : 45 Sec 
+  Negotiated Hello Hold Timer     : 45 Sec 
+  Configured Hello Send Timer     : ---- 
+  Configured Delay Timer          : 10 Sec 
+  Hello Packet sent/received      : 91/86 
+  Label Advertisement Mode        : Downstream Unsolicited 
+  Auto-config                     : Session-Protect
+  Manual-config                   : effective  
+  Session-Protect effect          : <strong>YES</strong> 
+  Session-Protect Duration        : infinite 
+  Session-Protect Remain          : ---- 
+  ------------------------------------------------------------------------------ 
+  TOTAL: 1 Remote-Peer(s) Found.</pre>
+</div>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001337880418__example_01"><a name="EN-US_TASK_0000001337880418__example_01"></a><a name="example_01"></a><a name="EN-US_TASK_0000001337880418__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>PE1</p>
+<pre class="screen">#
+sysname PE1
+#
+mpls lsr-id 1.1.1.1
+#
+mpls
+#
+mpls ldp
+ session protection duration infinite
+ #
+ ipv4-family
+#
+isis 1
+ is-level level-2
+ network-entity 10.0000.0000.0001.00
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.252
+ isis enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.1 255.255.255.252
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 1.1.1.1 255.255.255.255
+ isis enable 1
+#
+return</pre>
+</li><li><p>PE3</p>
+<pre class="screen">#
+sysname PE3
+#
+isis 1
+ is-level level-2
+ network-entity 10.0000.0000.0003.00
+#               
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.2 255.255.255.252
+ isis enable 1
+#
+interface <span>10GE</span><span>0/0/2</span><span></span>
+ ip address 10.1.3.1 255.255.255.252
+ isis enable 1
+#
+interface LoopBack0
+ ip address 2.2.2.2 255.255.255.255
+ isis enable 1
+#
+return</pre>
+</li><li><p>PE2</p>
+<pre class="screen">#
+sysname PE2
+#
+mpls lsr-id 3.3.3.3
+#
+mpls
+#
+mpls ldp
+ session protection duration infinite
+ #
+ ipv4-family
+#
+isis 1
+ is-level level-2
+ network-entity 10.0000.0000.0002.00
+#
+interface <span>10GE</span><span>0/0/1</span><span></span>
+ ip address 10.1.3.2 255.255.255.252
+ isis enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.2 255.255.255.252
+ isis enable 1
+ mpls
+ mpls ldp
+#
+interface LoopBack0
+ ip address 3.3.3.3 255.255.255.255
+ isis enable 1
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_example_1001.html">Configuration Examples for MPLS LDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0046.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0066.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring the CBQ Mode">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0025.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0021.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0011.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564000797">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring the CBQ Mode</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564000797"></a><a name="EN-US_TASK_0000001564000797"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring the CBQ Mode</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564000797__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The CBQ mode provides user-defined scheduling for a type of queue. Compared with the parent and child traffic policy mode, the CBQ mode is easier and faster to configure and occupies less system resources when user-defined scheduling does not need to be performed for both SQs and FQs. For details about the CBQ mode, see <a href="galaxy_hqos_cfg_0018.html">CBQ Configuration Model</a>.</p>
+<p>In SD-WAN scenarios, AR8000 series and AR6700-H series devices support the configuration of site connection-based QoS policies in CBQ mode. However, only FQ profiles, but not SQ profiles, can be referenced in traffic behaviors in CBQ mode. For details, see <a href="galaxy_hqos_cfg_0034.html">Example for Configuring Queue Scheduling HQoS (Configuring a Connection-based QoS Policy in CBQ Mode)</a>.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564000797__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Configure a traffic classifier to differentiate services.</span><ol type="a"><li class="substepexpand"><span>Create a traffic classifier and enter the traffic classifier view.</span><p><pre class="screen"><b><span class="cmdqueryname">traffic classifier</span></b> <i><span class="varname">classifier-name</span></i> [ <strong><span>type</span></strong> { <strong><span>and</span></strong> | <strong><span>or</span></strong> } ]</pre>
+</p></li><li class="substepexpand"><span>Select proper traffic classification rules as required. For details, see "<a href="galaxy_mqc_cfg_0005.html">Configuring a Traffic Classifier</a>" in MQC Configuration.</span></li><li class="substepexpand"><span>Exit the traffic classifier view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">quit</span></b></strong></pre>
+</p></li></ol>
+</li><li><span>Configure a traffic behavior.</span><p><ol type="a"><li>Create a traffic behavior and enter the traffic behavior view.<pre class="screen"><b><span class="cmdqueryname">traffic behavior</span></b> <i><span class="varname">behavior-name</span></i></pre>
+</li><li>Reference an FQ or SQ profile in the traffic behavior and configure traffic scheduling as required. In the same traffic policy, traffic behaviors can reference only one type of queue profiles.<ul><li>Reference an FQ profile.<pre class="screen"><b><span class="cmdqueryname">flow-queue</span></b> <i><span class="varname">flow-queue-name</span></i> <strong><span>queue</span></strong> <i><span class="varname">queue-name</span></i>   </pre>
+<p>When configuring this command, set <i><span class="varname">flow-queue-name</span></i> to the name of the FQ profile configured in <a href="galaxy_hqos_cfg_0019.html">Configuring an FQ or SQ Profile</a>.</p>
+</li><li>Reference an SQ profile.<pre class="screen"><b><span class="cmdqueryname">qos-user-profile</span></b> <i><span class="varname">profile-name</span></i> <strong><span>user-queue</span></strong> <i><span class="varname">user-name</span></i></pre>
+<p>When configuring this command, set <i><span class="varname">profile-name</span></i> to the name of the SQ profile configured in <a href="galaxy_hqos_cfg_0019.html">Configuring an FQ or SQ Profile</a>.</p>
+</li></ul>
+</li><li>(Optional) Configure the CAR action.<div class="p">The CIR and PIR of the CAR action can be set to absolute values or values in percentage, but only one value format can be configured. Use either of the following methods to perform the configuration:<ul><li>Set the absolute values of the CIR and PIR.<pre class="screen"><b><span class="cmdqueryname">car</span></b> { <strong><span>cir</span></strong> <i><span class="varname">cir-value</span></i> [ <strong><span>kbps</span></strong> | <strong><span>mbps</span></strong> | <strong><span>gbps</span></strong> ] [ <strong><span>pir</span></strong> <i><span class="varname">pir-value</span></i> [ <strong><span>kbps</span></strong> | <strong><span>mbps</span></strong> | <strong><span>gbps</span></strong> ] ] } [ <strong><span>cbs</span></strong> <i><span class="varname">cbs-value</span></i> [ <strong><span>bytes</span></strong> | <strong><span>kbytes</span></strong> | <strong><span>mbytes</span></strong> ] <strong><span>pbs</span></strong> <i><span class="varname">pbs-value</span></i> [ <strong><span>bytes</span></strong> | <strong><span>kbytes</span></strong> | <strong><span>mbytes</span></strong> ] ] [ <strong><span>share</span></strong> ] [ <strong><span>mode</span></strong> <strong><span>color-blind</span></strong> ] [ <strong><span>green pass</span></strong> [ <strong><span>remark-8021p</span></strong> <i><span class="varname">8021p-value</span></i> | <strong><span>remark-dscp</span></strong> <i><span class="varname">dscp-value</span></i> ] | <strong><span>yellow</span></strong> { <strong><span>discard</span></strong> | <strong><span>pass</span></strong> [ <strong><span>remark-8021p</span></strong> <i><span class="varname">8021p-value</span></i> | <strong><span>remark-dscp</span></strong> <i><span class="varname">dscp-value</span></i> ] } | <strong><span>red</span></strong> { <strong><span>discard</span></strong> | <strong><span>pass</span></strong> [ <strong><span>remark-8021p</span></strong> <i><span class="varname">8021p-value</span></i> | <strong><span>remark-dscp</span></strong> <i><span class="varname">dscp-value</span></i> ] } ]<sup>*</sup></pre>
+</li><li>Set the values of the CIR and PIR in percentage.<pre class="screen"><strong><b><span class="cmdqueryname">car cir pct</span></b> </strong><em>cir-percentage</em> [ <strong>pir</strong><strong> pct</strong><em> <i><span class="varname">pir-percentage</span></i></em> ] <strong>hierarchical-bandwidth</strong> [ <strong>cbs</strong><em> <i><span class="varname">cbs-value</span></i></em><strong> <strong><span>pbs</span></strong></strong><em> <i><span class="varname">pbs-value</span></i></em> | <strong>share</strong> | <strong>mode</strong> <strong>color-blind</strong> ]<sup>*</sup></pre>
+<p><em>cir-percentage</em> and <em>pir-percentage</em> specify the CIR bandwidth percentage and PIR bandwidth percentage, respectively. Their base value is the traffic shaping bandwidth value (configured using the <b><span class="cmdqueryname">qos lr</span></b> command) defined on an interface. If this bandwidth value is not configured, the base value is the interface bandwidth value.</p>
+</li></ul>
+</div>
+</li><li>Exit the traffic behavior view.<pre class="screen"><strong><b><span class="cmdqueryname">quit</span></b></strong></pre>
+</li></ol>
+</p></li><li><span>Configure a traffic policy in CBQ mode.</span><ol type="a"><li class="substepexpand"><span>Create a traffic policy and enter the traffic policy view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">traffic policy</span></b> </strong><i><span class="varname">policy-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Bind a traffic classifier to a traffic behavior in the traffic policy.</span><p><pre class="screen"><b><span class="cmdqueryname">classifier</span></b> <i><span class="varname">classifier-name</span></i> <strong><span>behavior</span></strong> <i><span class="varname">behavior-name</span></i><span> [ <strong>precedence</strong> <em>precedence-value</em> ]</span></pre>
+</p></li></ol>
+</li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564000797__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Example</h4><p># Configure HQoS in CBQ mode and set user-defined scheduling parameters for an FQ.</p>
+<ol><li>Create traffic classifiers <strong>data</strong> and <strong>voice</strong> to classify services based on DSCP values (DSCP values 15 and 46 for data and voice services, respectively).<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>traffic classifier data</strong>
+[HUAWEI-classifier-data] <strong>if-match</strong><strong> dscp 15</strong>
+[HUAWEI-classifier-data] <strong>quit</strong>
+[HUAWEI] <strong>traffic classifier voice</strong>
+[HUAWEI-classifier-voice]<strong> if-match</strong> <strong>dscp 46</strong>
+[HUAWEI-classifier-voice] <strong>quit</strong></pre>
+</li><li>Create traffic behaviors <strong>data</strong> and <strong>voice</strong> and reference the FQ profile <strong>fq1</strong> in the traffic behaviors.<pre class="screen">[HUAWEI] <strong>traffic behavior</strong> <strong>data</strong>
+[HUAWEI-behavior-data] <strong>flow-queue </strong><strong>fq1</strong><strong> queue </strong><strong>data</strong>
+[HUAWEI-behavior-data] <strong>quit</strong>
+[HUAWEI] <strong>traffic behavior</strong> <strong>voice</strong>
+[HUAWEI-behavior-voice] <strong>flow-queue </strong><strong>fq1</strong><strong> queue </strong><strong>voice</strong>
+[HUAWEI-behavior-voice] <strong>quit</strong></pre>
+</li><li>Create a CBQ traffic policy named <strong>policy</strong><strong>-cbq</strong> and bind traffic classifiers to traffic behaviors in the traffic policy.<pre class="screen">[HUAWEI] <strong>traffic policy</strong> <strong>policy</strong><strong>-cbq</strong>
+[HUAWEI-trafficpolicy-policy-cbq] <strong>classifier data behavior data</strong>
+[HUAWEI-trafficpolicy-policy-cbq] <strong>classifier voice behavior voice</strong></pre>
+</li></ol>
+<p># Configure HQoS in CBQ mode and set user-defined scheduling parameters for an SQ.</p>
+<ol><li>Create traffic classifiers <strong>user1</strong> and <strong>user2</strong> to classify traffic by VLAN.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>traffic classifier user1</strong>
+[HUAWEI-classifier-user1] <strong>if-match</strong><strong> vlan 10</strong>
+[HUAWEI-classifier-user1] <strong>quit</strong>
+[HUAWEI] <strong>traffic classifier user2</strong>
+[HUAWEI-classifier-user2]<strong> if-match</strong> <strong>vlan 20</strong>
+[HUAWEI-classifier-user2] <strong>quit</strong></pre>
+</li><li>Create traffic behaviors <strong>user1</strong> and <strong>user2</strong> and reference the SQ <strong>uq1</strong> in the traffic behaviors.<pre class="screen">[HUAWEI] <strong>traffic behavior</strong> <strong>user1</strong>
+[HUAWEI-behavior-user1] <strong>qos-user-profile</strong> <strong>uq1</strong><strong> </strong><strong>user-queue</strong> <strong>user1</strong>
+[HUAWEI-behavior-user1] <strong>quit</strong>
+[HUAWEI] <strong>traffic behavior</strong> <strong>user2</strong>
+[HUAWEI-behavior-user2] <strong>qos-user-profile</strong> <strong>uq1</strong><strong> </strong><strong>user-queue</strong> <strong>user2</strong>
+[HUAWEI-behavior-user2] <strong>quit</strong></pre>
+</li><li>Create a CBQ traffic policy named <strong>policy</strong><strong>-cbq</strong> and bind traffic classifiers to traffic behaviors in the traffic policy.<pre class="screen">[HUAWEI] <strong>traffic policy</strong> <strong>policy</strong><strong>-cbq</strong>
+[HUAWEI-trafficpolicy-policy-cbq] <strong>classifier user1 behavior </strong><strong>user1</strong>
+[HUAWEI-trafficpolicy-policy-cbq] <strong>classifier user2 behavior user2</strong></pre>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_hqos_cfg_0025.html">Configuring Queue Scheduling HQoS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_hqos_cfg_0021.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_hqos_cfg_0011.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

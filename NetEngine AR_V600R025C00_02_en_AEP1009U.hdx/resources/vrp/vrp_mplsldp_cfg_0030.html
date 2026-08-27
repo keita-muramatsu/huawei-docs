@@ -1,0 +1,235 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a Remote LDP Session">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_example_1001.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0029.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0031.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001387913589">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a Remote LDP Session</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001387913589"></a><a name="EN-US_TASK_0000001387913589"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a Remote LDP Session</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001387913589__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001387913589__fig_dc_vrp_ldp-p2p_cfg_003901">Figure 1</a>, LSRA and LSRC function as edge devices on the backbone network. Configure a remote LDP session between LSRA and LSRC to establish an LSP for the VPN service.</p>
+<div class="fignone" id="EN-US_TASK_0000001387913589__fig_dc_vrp_ldp-p2p_cfg_003901"><a name="EN-US_TASK_0000001387913589__fig_dc_vrp_ldp-p2p_cfg_003901"></a><a name="fig_dc_vrp_ldp-p2p_cfg_003901"></a><span class="figcap"><b>Figure 1 </b>Configuring a remote LDP session</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001406094114.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001387913589__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>During the configuration, note the following:</p>
+<ul><li><p>LSR IDs must be set before other MPLS commands are run.</p>
+</li><li><p>LSR IDs can only be manually configured, and do not have default values.</p>
+</li><li><p>Using the IP address of a reachable loopback interface on an LSR as the LSR ID is recommended.</p>
+</li><li><p>The IP address of a remote peer must be its LSR ID. When an LDP LSR ID is different from an MPLS LSR ID, the LDP LSR ID must be used.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001387913589__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Assign an IP address to each interface and configure OSPF to advertise the route to the network segment to which each interface is connected and the host route to each LSR ID.</p>
+</li><li><p>Enable MPLS and MPLS LDP globally on the LSRs of a remote LDP session.</p>
+</li><li><p>Specify the name and remote peer IP address on the LSRs of a remote LDP session.</p>
+</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001387913589__1.3.4"></a><a name="1.3.4"></a>
+<div class="p"><h4 class="sectiontitle">Data Preparation</h4><p>To complete the configuration, prepare the following data:</p>
+<ul><li><p>IP address of each interface on each node (as shown in <a href="#EN-US_TASK_0000001387913589__fig_dc_vrp_ldp-p2p_cfg_003901">Figure 1</a>), OSPF process ID, and area ID</p>
+</li><li><p>LSR ID of each node</p>
+</li><li><p>Name and IP address of each remote peer of a remote LDP session</p>
+</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001387913589__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IP address to each interface.</span><p><p>Assign an IP address to each interface (as shown in <a href="#EN-US_TASK_0000001387913589__fig_dc_vrp_ldp-p2p_cfg_003901">Figure 1</a>), including the loopback interfaces. Configure OSPF to advertise the route to the network segment to which each interface is connected and the host route to each LSR ID.</p>
+</p></li><li><span>Enable MPLS and MPLS LDP globally on each LSR.</span><p><p># Configure LSRA.</p>
+<pre class="screen">&lt;LSRA&gt; <strong>system-view </strong>
+[LSRA]<strong> mpls lsr-id 1.1.1.9</strong>
+[LSRA]<strong> mpls</strong>
+[LSRA-mpls]<strong> quit</strong>
+[LSRA] <strong>mpls ldp</strong>
+[LSRA-mpls-ldp] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">&lt;LSRC&gt; <strong>system-view </strong>
+[LSRC] <strong>mpls lsr-id 3.3.3.9</strong>
+[LSRC] <strong>mpls</strong>
+[LSRC-mpls] <strong>quit</strong>
+[LSRC] <strong>mpls ldp</strong>
+[LSRC-mpls-ldp] <strong>quit</strong></pre>
+</p></li><li><span>Specify the name and remote peer IP address on the LSRs of a remote LDP session.</span><p><p># Configure LSRA.</p>
+<pre class="screen">[LSRA] <strong>mpls ldp remote-peer LSRC</strong>
+[LSRA-mpls-ldp-remote-LSRC] <strong>remote-ip 3.3.3.9</strong>
+[LSRA-mpls-ldp-remote-LSRC] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">[LSRC] <strong>mpls ldp remote-peer LSRA</strong>
+[LSRC-mpls-ldp-remote-LSRA] <strong>remote-ip 1.1.1.9</strong>
+[LSRC-mpls-ldp-remote-LSRA] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p># After completing the configuration, check whether the status of the remote LDP session between LSRA and LSRC is <strong>Operational</strong>.</p>
+<p>The following example uses the command output on LSRA.</p>
+<pre class="screen">&lt;LSRA&gt; <strong>display mpls ldp session</strong>
+ LDP Session(s) in Public Network 
+  Codes: LAM(Label Advertisement Mode), SsnAge Unit(DDDD:HH:MM) 
+  An asterisk (*) before a session means the session is being deleted. 
+ -------------------------------------------------------------------------- 
+  PeerID             Status      LAM  SsnRole  SsnAge       KASent/Rcv 
+ -------------------------------------------------------------------------- 
+ 3.3.3.9:0          <strong>Operational</strong> DU   Passive  0000:00:01  6/6 
+ -------------------------------------------------------------------------- 
+ TOTAL: 1 Session(s) Found. </pre>
+<p># Run the <b><span class="cmdqueryname">display mpls ldp remote-peer</span></b> command on the LSRs of the remote LDP session to check information about the remote peer.</p>
+<p>The following example uses the command output on LSRA.</p>
+<pre class="screen">&lt;LSRA&gt; <strong>display mpls ldp remote-peer</strong>
+                         LDP Remote Entity Information 
+  ------------------------------------------------------------------------------ 
+  Remote Peer Name   : LSRC 
+  Description        : ---- 
+  Remote Peer IP     : 3.3.3.9              LDP ID        : 1.1.1.9:0 
+  Transport Address  : 1.1.1.9              Entity Status : Active 
+  
+  Configured Keepalive Hold Timer : 45 Sec 
+  Configured Keepalive Send Timer : ---- 
+  Configured Hello Hold Timer     : 45 Sec 
+  Negotiated Hello Hold Timer     : 45 Sec 
+  Configured Hello Send Timer     : ---- 
+  Configured Delay Timer          : 10 Sec 
+  Hello Packet sent/received      : 6347/6307 
+  Label Advertisement Mode        : Downstream Unsolicited 
+  Auto-config                     : ---- 
+  Manual-config                   : effective
+  Session-Protect effect          : NO 
+  Session-Protect Duration        : ---- 
+  Session-Protect Remain          : ---- 
+  ------------------------------------------------------------------------------ 
+  TOTAL: 1 Remote-Peer(s) Found. </pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001387913589__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>LSRA</p>
+<pre class="screen">#
+sysname LSRA
+#
+mpls lsr-id 1.1.1.9
+#
+mpls
+#
+mpls ldp
+ # 
+ ipv4-family
+#
+mpls ldp remote-peer LSRC
+ remote-ip 3.3.3.9
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.252
+#
+interface LoopBack1
+ ip address 1.1.1.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 1.1.1.9 0.0.0.0
+  network 10.1.1.0 0.0.0.3
+#
+return</pre>
+</li><li><p>LSRB</p>
+<pre class="screen">#
+sysname LSRB
+#
+interface <span>10GE</span><span>0/0/1</span>
+ undo portswitch
+ 
+ ip address 10.1.1.2 255.255.255.252
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.2.1.1 255.255.255.252
+#
+interface LoopBack1
+ ip address 2.2.2.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 2.2.2.9 0.0.0.0
+  network 10.1.1.0 0.0.0.3
+  network 10.2.1.0 0.0.0.3
+#
+return</pre>
+</li><li><p>LSRC</p>
+<pre class="screen">#
+sysname LSRC
+#
+mpls lsr-id 3.3.3.9
+#
+mpls
+#
+mpls ldp
+ # 
+ ipv4-family
+#
+mpls ldp remote-peer LSRA
+ remote-ip 1.1.1.9
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.2.1.2 255.255.255.252
+#
+interface LoopBack1
+ ip address 3.3.3.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 3.3.3.9 0.0.0.0
+  network 10.2.1.0 0.0.0.3
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_example_1001.html">Configuration Examples for MPLS LDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0029.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0031.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

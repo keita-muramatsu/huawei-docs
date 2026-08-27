@@ -1,0 +1,85 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Applying an IPsec Policy Group">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0020.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0022.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513033850">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Applying an IPsec Policy Group</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513033850"></a><a name="EN-US_TASK_0000001513033850"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Applying an IPsec Policy Group</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001513033850__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><ul><li>IPsec policies have been configured.</li><li>Before applying an IPsec policy group to an interface, you have completed the following tasks according to your requirements:<ul><li>If you need to apply the IPsec policy group to a Layer 3 interface, you need to configure an IP address on the Layer 3 interface.</li><li>If you need to apply the IPsec policy group to a sub-interface, you need to configure dot1q encapsulation on the sub-interface.</li><li>If you need to apply the IPsec policy group to a tunnel interface, you need to set the encapsulation mode of the interface to IPsec, multipoint Generic Routing Encapsulation (mGRE), or GRE and configure an IP address for the interface or configure the interface to borrow an IP address from another interface.</li></ul>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513033850__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Applying an IPsec policy group to an interface is equivalent to applying all the IPsec policies in the IPsec policy group to the interface. Therefore, different IPsec SAs can be used to protect different data flows.</p>
+<p>Only one IPsec policy group can be applied to an interface, and an IPsec policy group can be applied to only one interface. When data is being sent from an interface, the interface searches for each IPsec policy in the IPsec policy group in ascending order of the sequence number. If the data flow matches an ACL referenced in a specific IPsec policy, the interface processes the data flow according to this IPsec policy. If no match is found in an IPsec policy, the interface matches the data flow against another IPsec policy. If the data flow does not match any ACL in all IPsec policies, the interface sends the data flow directly without performing IPsec protection.</p>
+<p>After an IPsec policy group is applied to an interface, if you need to add or delete an IPsec policy, modify parameters in an IPsec proposal, you need to cancel applying the IPsec policy group to the interface and then apply the IPsec policy group to the interface again for the modification to take effect. In IKE negotiation mode, if you modify IKE negotiation parameters, the modification takes effect in the next IKE negotiation and does not take effect on the IPsec tunnel that has been successfully negotiated.</p>
+<p>The interface to which an IPsec policy group is applied must be the interface on which an IPsec tunnel is established, and the interface must be the outbound interface of the private route from the local end to the remote end. </p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513033850__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type interface-number</span></i></pre>
+</p></li><li><span><span>Apply an IPsec policy group to the interface.</span></span><p><pre class="screen"><b><span class="cmdqueryname">ipsec policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+<p>After a manual IPsec policy is applied to an interface, an SA is generated immediately.</p>
+<p>After an IKE-negotiated IPsec policy is applied to an interface, IPsec tunnel negotiation is triggered in the mode configured using the <b><span class="cmdqueryname">sa trigger-mode</span></b> { <strong><span>auto</span></strong> | <strong><span>traffic-based</span></strong> } command.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513033850__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display ipsec interface brief</span></b> command to check information about the IPsec policy referenced by an interface.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0020.html">Configuring IPsec Using an IPsec Policy
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0022.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

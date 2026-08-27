@@ -1,0 +1,90 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring IPv6 Application Identification on an Interface">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_sa_cfg_0008.html">
+<meta name="DC.Relation" scheme="URI" content="security_sa_cfg_0015.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Application Identification">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Application Identification">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featurename" content="Application Identification">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002256258158">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring IPv6 Application Identification on an Interface</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002256258158"></a><a name="EN-US_TASK_0000002256258158"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring IPv6 Application Identification on an Interface</h1>
+<div class="taskbody"><div class="steps"><a name="EN-US_TASK_0000002256258158__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Disable the bypass function for IPv6 traffic on the SA module.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">undo sa ipv6 bypass</span></b></strong></pre>
+<p>By default, the bypass function is disabled for IPv6 traffic on the SA module.</p>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">interface</span></b> </strong>{ <i><span class="varname">interface-name</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> } 
+<b><span class="cmdqueryname">undo portswitch</span></b></pre>
+</p></li><li><span>Enable IPv6 application identification on the interface.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">sa ipv6 enable</span></b></strong></pre>
+<p>To perform application identification for incoming IPv6 traffic on an interface, you must enable IPv6 application identification on the interface. Otherwise, the application identification configuration does not take effect, and the device cannot identify applications in IPv6 traffic.</p>
+</p></li><li><span>(Optional) Enable application traffic statistics collection on the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">sa application-statistic enable</span></b></pre>
+<p>To collect statistics on traffic entering an interface, you must enable application identification and application traffic statistics collection on the interface. Otherwise, the device cannot identify applications or collect statistics on application traffic.</p>
+</p></li><li><span>(Optional) Enable connection-based application traffic aggregation on the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">sa aggregation-conn enable</span></b></pre>
+<p>In SD-WAN scenarios, perform the following operations to aggregate connection-based application traffic on a tunnel interface so that traffic data can be reported through telemetry (if these operations are not performed, the device cannot identify applications based on connections or collect statistics on application traffic):</p>
+<ul><li>Run the <strong><b><span class="cmdqueryname">sa ipv6 enable</span></b></strong> command on the interface to enable application identification.</li><li>Run the <b><span class="cmdqueryname">tunnel-protocol sd-wan</span></b> command to configure the SD-WAN tunnel encapsulation protocol.</li><li>Enable connection-based application traffic aggregation on the interface.</li></ul>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000002256258158__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><ul><li>After enabling application identification on an interface, you need to reference applications in specific features so that service traffic can enter the application identification process. For details about how to reference applications in a specific feature, see the configuration guide of the feature.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The Huawei Security Center (<a href="https://isecurity.huawei.com/" target="_blank" rel="noopener noreferrer">isecurity.huawei.com</a>) provides the <em>Application Identification</em> file. With this file, you can check information about the predefined applications supported by a device, including the categories and descriptions. This information enables you to accurately reference applications in features.</p>
+<p>Run the <b><span class="cmdqueryname">display application</span></b> [ <strong><span>pre-defined</span></strong> | <strong><span>name</span></strong> <i><span class="varname">name</span></i> ] command to check the name of the application to be referenced.</p>
+</div></div>
+</li><li>Run the <b><span class="cmdqueryname">display sa application-statistic</span></b> { <strong><span>application</span></strong> <i><span class="varname">application-name</span></i> | <strong><span>top-n</span></strong> <i><span class="varname">top-number</span></i> | <strong><span>all</span></strong> } <strong><span>interface</span></strong> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <i><span class="varname">interface-name</span></i> } [ <strong><span>inbound</span></strong> | <strong><span>outbound</span></strong> ] command to check application identification statistics on an interface.</li><li>Run the <b><span class="cmdqueryname">reset sa application-statistic</span></b> { <strong><span>application</span></strong> <i><span class="varname">application-name</span></i> | <strong><span>all</span></strong> } <strong><span>interface</span></strong> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <i><span class="varname">interface-name</span></i> } command to clear application identification statistics on an interface.</li><li>Run the <b><span class="cmdqueryname">display sa aggregation-conn statistics</span></b> [ { { <strong><span>site</span></strong> <i><span class="varname">site-id</span></i> | <strong><span>connection</span></strong> <i><span class="varname">connection-id</span></i> } | <strong><span>application</span></strong> <i><span class="varname">application-name</span></i> } <sup>*</sup> ] command to check statistics about connection-based application traffic aggregation on an interface.</li><li>Run the <strong><b><span class="cmdqueryname">display sa aggregation-conn session</span></b> </strong>[ <strong><strong><span>ipv6</span></strong></strong> ] { <strong><strong><span>all</span></strong></strong> | { <strong><strong><span>connection</span></strong></strong><em> <i><span class="varname">connection-id</span></i></em> | <strong><strong><span>application</span></strong></strong><em> <i><span class="varname">application-name</span></i></em> } <sup>*</sup> } command to check session information about connection-based application traffic on an interface.</li></ul>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_sa_cfg_0008.html">Configuring Application Identification
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_sa_cfg_0015.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

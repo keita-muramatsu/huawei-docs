@@ -1,0 +1,98 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Static LSPs">
+<meta name="abstract" content="To configure a static LSP, perform manual configurations on the ingress, transit nodes, and egress of the static LSP.">
+<meta name="description" content="To configure a static LSP, perform manual configurations on the ingress, transit nodes, and egress of the static LSP.">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0090.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0092.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001846565297">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring Static LSPs</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001846565297"></a><a name="EN-US_TASK_0000001846565297"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Static LSPs</h1>
+<div class="taskbody"><p>To configure a static LSP, perform manual configurations on the ingress, transit nodes, and egress of the static LSP.</p>
+<div class="context"><a name="EN-US_TASK_0000001846565297__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The establishment of static LSPs does not require a label distribution protocol or exchange of control packets. As such, static LSPs consume fewer resources and are applicable to small networks with a simple and stable topology. Static LSPs cannot dynamically adapt to network topology changes. Once the network topology changes, an administrator must modify configurations on each LSR of each involved LSP so that the LSPs can work properly.</p>
+<p>Static LSPs and static CR-LSPs share the same label space (16–1023). When configuring a static LSP, ensure that the outgoing label on the previous node is the same as the incoming label on the next hop.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001846565297__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Perform the following configurations on the ingress.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure the local node as the ingress of the LSP.</span><p><pre class="screen"><b><span class="cmdqueryname">static-lsp ingress</span></b> <i><span class="varname">lsp-name</span></i> <strong><span>destination</span></strong> <i><span class="varname">ip-address</span></i> { <i><span class="varname">mask-length</span></i> | <i><span class="varname">mask</span></i> } { <strong><span>nexthop</span></strong> <i><span class="varname">next-hop-address</span></i> | <strong><span>outgoing-interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> } <strong><span>out-label</span></strong> <i><span class="varname">out-label</span></i></pre>
+</p><p><p>To modify the <strong><span>destination</span></strong> <i><span class="varname">destination-address</span></i>, <strong><span>nexthop</span></strong> <i><span class="varname">next-hop-address</span></i>, <strong><span>outgoing-interface</span></strong> <i><span class="varname">interface-type interface-number</span></i>, and <strong><span>out-label</span></strong> <i><span class="varname">out-label</span></i> parameter settings, run the <b><span class="cmdqueryname">static-lsp ingress</span></b> command to set new values directly, not requiring you to clear previous settings using the <b><span class="cmdqueryname">undo static-lsp ingress</span></b> command.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You are advised to specify a next hop for a static LSP. Ensure that the local routing table contains a routing entry that exactly matches the specified destination IP address and next-hop IP address.</p>
+<p>If an Ethernet interface is used as an outbound interface of an LSP, you must specify the <strong><span>nexthop</span></strong> <i><span class="varname">next-hop-address</span></i> parameter to ensure normal traffic forwarding on the LSP.</p>
+</div></div>
+</p></li></ol>
+</li><li><span>Perform the following configurations on each transit node.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure the local node as the transit node of the LSP.</span><p><pre class="screen"><b><span class="cmdqueryname">static-lsp transit</span></b> <i><span class="varname">lsp-name</span></i> [ <strong><span>incoming-interface</span></strong> <i><span class="varname">in-interface-type</span></i> <i><span class="varname">in-interface-number</span></i> ] <strong><span>in-label</span></strong> <i><span class="varname">in-label</span></i> { <strong><span>nexthop</span></strong> <i><span class="varname">next-hop-address</span></i> | <strong><span>outgoing-interface</span></strong> <i><span class="varname">out-interface-type</span></i> <i><span class="varname">out-interface-number</span></i> } <strong><span>out-label</span></strong> <i><span class="varname">out-label</span></i></pre>
+<p>To modify the <strong><span>incoming-interface</span></strong> <i><span class="varname">in-interface-type</span></i> <i><span class="varname">in-interface-number</span></i>, <strong><span>in-label</span></strong> <i><span class="varname">in-label</span></i>, <strong><span>nexthop</span></strong> <i><span class="varname">next-hop-address</span></i>, <strong><span>outgoing-interface</span></strong> <i><span class="varname">out-interface-type</span></i> <i><span class="varname">outinterface-number</span></i>, and <strong><span>out-label</span></strong> <i><span class="varname">out-label</span></i> parameter settings, run the <b><span class="cmdqueryname">static-lsp transit</span></b> command to set new values directly, not requiring you to clear previous settings using the <b><span class="cmdqueryname">undo static-lsp transit</span></b> command.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You are advised to specify a next hop for a static LSP. Ensure that the local routing table contains a routing entry that exactly matches the specified next-hop IP address.</p>
+<p>If an Ethernet interface is used as an outbound interface of an LSP, you must specify the <strong><span>nexthop</span></strong> <i><span class="varname">next-hop-address</span></i> parameter to ensure normal traffic forwarding on the LSP.</p>
+</div></div>
+</p></li></ol>
+</li><li><span>Perform the following configurations on the egress.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure the local node as the egress of the LSP.</span><p><pre class="screen"><b><span class="cmdqueryname">static-lsp egress</span></b> <i><span class="varname">lsp-name</span></i> [ <strong><span>incoming-interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> ] <strong><span>in-label</span></strong> <i><span class="varname">in-label</span></i></pre>
+<p>To modify the <strong><span>incoming-interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> and <strong><span>in-label</span></strong> <i><span class="varname">in-label</span></i> parameter settings, run the <b><span class="cmdqueryname">static-lsp egress</span></b> command to set new values directly, not requiring you to clear previous settings using the <b><span class="cmdqueryname">undo static-lsp egress</span></b> command.</p>
+</p></li></ol>
+</li></ul></div>
+<div class="result"><a name="EN-US_TASK_0000001846565297__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Result</h4>
+<div class="p"><ul><li>Run the <span><b><span class="cmdqueryname">display mpls static-lsp</span></b> [ <i><span class="varname">lsp-name</span></i> ] [ { <strong><span>include</span></strong> | <strong><span>exclude</span></strong> } <i><span class="varname">ip-address</span></i> <i><span class="varname">mask-length</span></i> ] [ <strong><span>verbose</span></strong> ]</span> command to check information about local static LSPs.</li><li>Run the <b><span class="cmdqueryname">display mpls lsp protocol static</span></b> [{ <strong><span>include</span></strong> | <strong><span>exclude</span></strong> } <i><span class="varname">destaddr</span></i> <i><span class="varname">masklen</span></i> ] [ <strong><span>incoming-interface</span></strong> <i><span class="varname">in-port-type</span></i> <i><span class="varname">in-port-num</span></i> ] [ <strong><span>outgoing-interface</span></strong> <i><span class="varname">out-port-type</span></i> <i><span class="varname">out-port-num</span></i> ] [ <strong><span>in-label</span></strong> <i><span class="varname">in-label-value</span></i> ] [ <strong><span>out-label</span></strong> <i><span class="varname">out-label-value</span></i> ] [ <strong><span>nexthop</span></strong> <i><span class="varname">nexthopaddr</span></i> ] [ <strong><span>lsr-role</span></strong> { <strong><span>ingress</span></strong> | <strong><span>transit</span></strong> | <strong><span>egress</span></strong> }] [ <strong><span>verbose</span></strong> ] command to check information about static LSPs.</li></ul>
+<p></p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_0090.html">Configuring Static LSPs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0092.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

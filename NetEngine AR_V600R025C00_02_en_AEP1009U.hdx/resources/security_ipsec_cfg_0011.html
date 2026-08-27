@@ -1,0 +1,115 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding IPsec Encapsulation Modes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0009.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0010.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0012.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563754241">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding IPsec Encapsulation Modes</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563754241"></a><a name="EN-US_CONCEPT_0000001563754241"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding IPsec Encapsulation Modes</h1>
+<div><p>IPsec encapsulation is a process of adding AH or ESP fields to original IP packets for packet authentication and encryption. This process is implemented in either transport or tunnel mode.</p>
+<div class="section"><h4 class="sectiontitle">Transport Mode</h4><p>IPsec transport mode works by inserting an AH or ESP header between an IP header and a transport-layer protocol header to protect the payload. As no additional IP header is added, IP addresses in the original packets are visible in the IP header of the post-encrypted packet. <a href="#EN-US_CONCEPT_0000001563754241__fig145177247446">Figure 1</a> shows an example of TCP packet encapsulation in transport mode.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563754241__fig145177247446"><a name="EN-US_CONCEPT_0000001563754241__fig145177247446"></a><a name="fig145177247446"></a><span class="figcap"><b>Figure 1 </b>Packet encapsulation in transport mode</span><br><span><img src="figure/en-us_image_0000001999446077.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Tunnel Mode</h4><p>IPsec tunnel mode works by encrypting and authenticating an entire IP packet, including the IP header and payload. In this mode, an AH or ESP header is added before the raw IP header, and a new IP header is added before the AH or ESP header. <a href="#EN-US_CONCEPT_0000001563754241__fig1248843944916">Figure 2</a> shows an example of TCP packet encapsulation in tunnel mode.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The encapsulated new IP header inherits the Type of Service (TOS) field from the original IP header. This means that the new IP header preserves the priority of the original packet.</p>
+</div></div>
+<div class="fignone" id="EN-US_CONCEPT_0000001563754241__fig1248843944916"><a name="EN-US_CONCEPT_0000001563754241__fig1248843944916"></a><a name="fig1248843944916"></a><span class="figcap"><b>Figure 2 </b>Packet encapsulation in tunnel mode</span><br><span><img src="figure/en-us_image_0000001962925894.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Comparisons Between Transport Mode and Tunnel Mode</h4><div class="p">The following describes the major differences between transport mode and tunnel mode:<ul><li><p>Security</p>
+<p>The tunnel mode is more secure because original IP packets are completely authenticated and encrypted. This mode hides the IP address, protocol type, and port number in an original IP packet.</p>
+</li><li><p>Usage scenarios</p>
+<ul><li>The transport mode is mainly used for communication between two hosts or between a host and a gateway.</li><li>The tunnel mode is mainly used for communication between two gateways or between a host and a gateway.</li></ul>
+</li><li><p>Impact on performance</p>
+<p>The tunnel mode generates an additional IP header, occupying more bandwidth than the transport mode.</p>
+</li><li>Payload type identified by the Next Header field in the AH or ESP header<ul><li>In transport mode, the Next Header field in the AH header identifies the protected upper-layer protocol number or ESP protocol number, and the Next Header field in the ESP header identifies the protected upper-layer protocol number.</li><li>In tunnel mode, the Next Header field in the AH header identifies the IP protocol number or ESP protocol number, and the Next Header field in the ESP header identifies the IP protocol number.</li><li>When both AH and ESP are used to protect traffic, they must use the same encapsulation mode, and the Next Header field in the AH header is the ESP header.</li></ul>
+</li></ul>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Automatic TCP MSS Adjustment</h4><p>A SYN or SYN-ACK packet transmitted during TCP connection setup may contain a maximum segment size (MSS) option field to specify the MSS value on the local device to avoid truncation. After two devices exchange their MSS values, they compare the MSS values and forward packets based on the smaller MSS value to prevent packets from being fragmented on the network. Provided that packets remain unfragmented, a larger MSS value allows a greater amount of data to be sent per segment, which increasing network efficiency.</p>
+<p>Devices support dynamic MSS adjustment of SYN or SYN-ACK packets during TCP connection setup. MSS adjustment can reduce the possibility of packet fragmentation and promote more reliable transmission of large data packets, improving end-to-end TCP transmission efficiency.</p>
+<p><a href="#EN-US_CONCEPT_0000001563754241__table93359109810">Table 1</a> shows the implementation of automatic TCP MSS adjustment.</p>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001563754241__table93359109810"></a><a name="table93359109810"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001563754241__table93359109810" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Implementation of automatic TCP MSS adjustment</caption><thead align="left"><tr><th align="left" class="cellrowborder" colspan="2" valign="top" id="mcps1.3.5.5.2.4.1.1" liSelected="liSelected"><p>Criteria</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.5.5.2.4.1.2" liSelected="liSelected"><p>MSS Value</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.5.5.2.4.1.1 "><p>A SYN or SYN-ACK packet does not contain the MSS option field.</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.5.2.4.1.2 "><p>An MSS value <strong>MTU-40–APPENDLEN</strong> is automatically added to the packet.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="2" valign="top" width="30%" headers="mcps1.3.5.5.2.4.1.1 "><p>A SYN or SYN-ACK packet contains the MSS option field.</p>
+</td>
+<td class="cellrowborder" valign="top" width="30%" headers="mcps1.3.5.5.2.4.1.1 "><p>The value of <strong>MTU-40-APPENDLEN</strong> is greater than or equal to that of <strong>MSS-APPENDLEN</strong>.</p>
+</td>
+<td class="cellrowborder" valign="top" width="40%" headers="mcps1.3.5.5.2.4.1.2 "><p>The original MSS value is retained.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.5.2.4.1.1 "><p>The value of <strong>MTU-40-APPENDLEN</strong> is less than that of <strong>MSS-APPENDLEN</strong>.</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.5.2.4.1.1 "><p>The value of <strong>MTU-40-APPENDLEN</strong> is used as the new MSS value.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" colspan="3" valign="top" headers="mcps1.3.5.5.2.4.1.1 mcps1.3.5.5.2.4.1.2 "><p>In the preceding information:</p>
+<ul><li><strong>MSS</strong> indicates the MSS value automatically added to a SYN or SYN-ACK packet.</li><li><strong>MTU</strong> indicates the maximum transmission unit (MTU) of an interface.</li><li><strong>APPENDLEN</strong> indicates the packet length to be added during virtual private network (VPN) encryption and encapsulation.</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Only pure IPsec supports this function, whereas GRE over IPsec does not support this function. The TCP MSS value is automatically adjusted only when the MTU values of the interfaces through which VPN encrypted traffic passes are the same and in a range from 256 to 9600 bytes.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0009.html">Configuring an IPsec Proposal
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0010.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0012.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

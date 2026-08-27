@@ -1,0 +1,83 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring a Manual IPv6 over IPv4 Tunnel">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_6o4tnl_cfg_0005.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_6o4tnl_cfg_0006.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv6 over IPv4 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv6 over IPv4 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featurename" content="IPv6 over IPv4 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001130623046">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring a Manual IPv6 over IPv4 Tunnel</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001130623046"></a><a name="EN-US_TASK_0000001130623046"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring a Manual IPv6 over IPv4 Tunnel</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001130623046__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>A manual IPv6 over IPv4 tunnel is established between tunnel interfaces on two devices, and as a result, you need to configure tunnel interfaces on both devices. Before configuring a manual IPv6 over IPv4 tunnel, ensure that devices on both ends of the tunnel support IPv4/IPv6 dual stack.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001130623046__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create a tunnel interface.</span><p><pre class="screen"><b><span class="cmdqueryname">interface tunnel</span></b> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Set the tunnel mode to manual IPv6 over IPv4.</span><p><pre class="screen"><b><span class="cmdqueryname">tunnel-protocol</span></b> <strong><strong><span>ipv6-ipv4</span></strong></strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Changing or deleting the tunnel mode of a tunnel interface will delete all tunnel-related configurations on the interface, such as the MTU. Exercise caution when performing this operation.</p>
+</div></div>
+</p></li><li><span>Configure a source address or source interface for the tunnel.</span><p><pre class="screen"><b><span class="cmdqueryname">source</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> }</pre>
+<p>In device implementation, you can specify a Layer 3 interface or a loopback interface as the source interface of a tunnel. Similarly, you can specify a Layer 3 interface address or a loopback interface address as the source address of a tunnel.</p>
+</p></li><li><span>Configure a destination address for the tunnel.</span><p><pre class="screen"><b><span class="cmdqueryname">destination</span></b> <i><span class="varname">ip-address</span></i></pre>
+<p>The destination address of the tunnel is the IP address of the destination interface, which can be a Layer 3 interface address or a loopback interface address.</p>
+</p></li><li><span>Enable IPv6 on the tunnel interface.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 enable</span></b></pre>
+</p></li><li><span>Configure an IPv6 address for the tunnel interface.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6 address</span></b> { <i><span class="varname">ipv6-address</span></i> <i><span class="varname">prefix-length</span></i> | <i><span class="varname">ipv6-address</span></i>/<i><span class="varname">prefix-length</span></i> }</pre>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001130623046__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display tunnel-interface</span></b> [ <i><span class="varname">interface-number</span></i> ] command to check the working status of a tunnel interface.</li><li>Run the <b><span class="cmdqueryname">ping</span></b> { <strong><span>-a</span></strong> <i><span class="varname">source-ip-address</span></i> | <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> } command to check connectivity between physical interfaces on both ends of the tunnel.</li><li>Run the <b><span class="cmdqueryname">ping ipv6</span></b> { <strong><span>-a</span></strong> <i><span class="varname">source-ipv6-address</span></i> <i><span class="varname">destination-ipv6-address</span></i> | <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> } command to check connectivity between tunnel interfaces on both ends of the tunnel.</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_6o4tnl_cfg_0005.html">Configuring an IPv6 over IPv4 Tunnel
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_6o4tnl_cfg_0006.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

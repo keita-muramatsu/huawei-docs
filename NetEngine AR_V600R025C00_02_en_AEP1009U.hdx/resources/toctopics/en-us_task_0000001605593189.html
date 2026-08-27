@@ -1,0 +1,152 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring FEC">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001554914034.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001555073298.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000002448239813.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001605593189">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring FEC</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001605593189"></a><a name="EN-US_TASK_0000001605593189"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring FEC</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001605593189__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>For applications that are sensitive to packet loss and latency, such as video applications, you can configure FEC to mitigate packet loss for specific application traffic. This prevents frame freezing and ensures smooth application experience. When configuring FEC, you need to configure both the transmit and receive ends.</p>
+<p><a href="#EN-US_TASK_0000001605593189__table528131254415">Table 1</a> describes the FEC policy parameters that you can modify based on your network conditions to achieve optimal user experience.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000001605593189__table528131254415"></a><a name="table528131254415"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001605593189__table528131254415" frame="border" border="1" rules="all"><caption><b>Table 1 </b>FEC policy parameters</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="17.18171817181718%" id="mcps1.3.1.3.2.4.1.1" liSelected="liSelected"><p>Parameter</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="39.13391339133913%" id="mcps1.3.1.3.2.4.1.2" liSelected="liSelected"><p>Description</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="43.684368436843684%" id="mcps1.3.1.3.2.4.1.3" liSelected="liSelected"><p>Recommended Configuration</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="17.18171817181718%" headers="mcps1.3.1.3.2.4.1.1 "><p>FEC-correctable packet loss rate (<em>packet-loss-ratio-value</em>)</p>
+</td>
+<td class="cellrowborder" rowspan="2" valign="top" width="39.13391339133913%" headers="mcps1.3.1.3.2.4.1.2 "><ul><li>D-FEC: These parameters together determine the number of redundant packets generated during an FEC encoding. If the number of redundant packets calculated based on <em>packet-loss-ratio-value</em> is less than the value of <em>burst-packet-loss-value</em>, the number of generated redundant packets is the value of <em>burst-packet-loss-value</em>.</li><li>A-FEC: The two parameters do not take effect on A-FEC.</li></ul>
+</td>
+<td class="cellrowborder" valign="top" width="43.684368436843684%" headers="mcps1.3.1.3.2.4.1.3 "><p>Set this parameter based on the packet loss situation on the network. The configured correctable packet loss rate must be greater than the actual packet loss rate.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.1.3.2.4.1.1 "><p>Number of recoverable lost packets in a burst (<em>burst-packet-loss-value</em>)</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.3.2.4.1.2 "><p>Multiple packets may be lost in a burst. Set this parameter based on the packet loss rate on the network. The value must be greater than the number of lost packets in a burst.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="17.18171817181718%" headers="mcps1.3.1.3.2.4.1.1 "><p>Size of an FEC encoding block (<em>block-size-value</em>)</p>
+</td>
+<td class="cellrowborder" rowspan="2" valign="top" width="39.13391339133913%" headers="mcps1.3.1.3.2.4.1.2 "><p>These parameters together determine the number of original packets in an FEC encoding. From the time when the first original packet is received in an encoding block:</p>
+<ul><li>When the number of original packets in an encoding block reaches the value of <em>block-size-value</em> within the timeout duration specified by <em>timeout-value</em>, the device starts generating redundant packets.</li><li>If the number of original packets in an encoding block does not reach the value of <em>block-size-value</em> within the timeout duration specified by <em>timeout-value</em>, the device starts generating redundant packets based on the accumulated original packets when the timeout duration expires.</li></ul>
+</td>
+<td class="cellrowborder" valign="top" width="43.684368436843684%" headers="mcps1.3.1.3.2.4.1.3 "><p>Set this parameter based on the rate of network packets.</p>
+<ul><li>If this parameter is set to a small value, the traffic rate will be stable. If packet loss occurs on the network, the decoding end will quickly recover lost packets, but the packet loss correction effect is poor.</li><li>If this parameter is set to a large value, the decoding end will take a long time to recover lost packets.</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.1.3.2.4.1.1 "><p>Timeout duration for generating FEC redundant packets (<em>timeout-value</em>)</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.3.2.4.1.2 "><p>Set this parameter based on the rate of network packets.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="17.18171817181718%" headers="mcps1.3.1.3.2.4.1.1 "><p>Maximum transmission unit (MTU) before FEC encoding (<em>mtu-value</em>)</p>
+</td>
+<td class="cellrowborder" valign="top" width="39.13391339133913%" headers="mcps1.3.1.3.2.4.1.2 "><p>If an FEC-encoded packet is fragmented because its size exceeds the MTU of the outbound interface, FEC will be unable to correct for lost packets. As such, the packet size before FEC encoding needs to be limited.</p>
+</td>
+<td class="cellrowborder" valign="top" width="43.684368436843684%" headers="mcps1.3.1.3.2.4.1.3 "><ul><li>If the MTU before FEC encoding is too small, unnecessary fragments are generated, degrading the device processing performance.</li><li>If the MTU before FEC encoding is too large, the packet loss correction effect is poor.</li></ul>
+<p>You are advised to set this parameter to half of the network MTU and ensure that the difference between the network MTU and the MTU before FEC encoding is greater than the maximum length of an FEC header (84 bytes).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001605593189__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the FEC configuration view.</span><p><pre class="screen"><b><span class="cmdqueryname">forward-error-correction</span></b></pre>
+</p></li><li><span>Configure an FEC service profile.</span><ol type="a"><li class="substepexpand"><span>Create an FEC service profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">service-map</span></b> <i><span class="varname">name</span></i></pre>
+</p></li><li class="substepexpand"><span>Bind an ACL, application, or application group to the service profile.</span><p><pre class="screen"><b><span class="cmdqueryname">match acl</span></b> { <i><span class="varname">acl-number</span></i> | <i><span class="varname">acl-name</span></i> } <strong><span>application</span></strong> <i><span class="varname">application-name</span></i>
+<b><span class="cmdqueryname">match acl</span></b> { <i><span class="varname">acl-number</span></i> | <i><span class="varname">acl-name</span></i> }
+<b><span class="cmdqueryname">match application-group</span></b> <i><span class="varname">application-group-name</span></i>
+<b><span class="cmdqueryname">match acl</span></b> { <i><span class="varname">acl-number</span></i> | <i><span class="varname">acl-name</span></i> } <strong><span>application-group</span></strong> <i><span class="varname">application-group-name</span></i>
+<b><span class="cmdqueryname">match application</span></b> <i><span class="varname">application-name</span></i></pre>
+<p>By default, no ACL, application, or application group is bound to a service profile. You can run commands to bind ACLs, applications, or application groups based on your service requirements.</p>
+</p></li><li class="substepexpand"><span>Return to the FEC configuration view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Configure an FEC parameter profile.</span><ol type="a"><li class="substepexpand"><span>Create an FEC parameter profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">fec profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the FEC type.</span><p><pre class="screen"><b><span class="cmdqueryname">type </span></b>{ <strong><span>determined-fec</span></strong> | <strong><span>adaptive-fec</span></strong> }</pre>
+<p>The default FEC type is <strong>determined-fec</strong>.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure the FEC-correctable packet loss rate.</span><p><pre class="screen"><b><span class="cmdqueryname">packet-loss-ratio </span></b><i><span class="varname">packet-loss-ratio-value</span></i></pre>
+<p>By default, the FEC-correctable packet loss rate is 20%.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure the number of recoverable lost packets in a burst.</span><p><pre class="screen"><b><span class="cmdqueryname">burst-packet-loss </span></b><i><span class="varname">burst-packet-lossvalue</span></i></pre>
+<p>By default, the number of recoverable lost packets in a burst is 3.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure the size of an FEC encoding block. The device starts generating redundant packets when the number of original packets in an FEC encoding block reaches this value.</span><p><pre class="screen"><b><span class="cmdqueryname">block-size </span></b><i><span class="varname">block-size-value</span></i></pre>
+<p>By default, the size of an FEC encoding block is 12.</p>
+</p></li><li class="substepexpand"><span>(Optional) Set the timeout duration for generating FEC redundant packets.</span><p><pre class="screen"><b><span class="cmdqueryname">timeout </span></b><i><span class="varname">timeout-value</span></i></pre>
+<p>By default, the timeout duration for generating FEC redundant packets is 35 ms.</p>
+</p></li><li class="substepexpand"><span>(Optional) Set the MTU before FEC encoding.</span><p><pre class="screen"><b><span class="cmdqueryname">mtu </span></b><i><span class="varname">mtu-value</span></i></pre>
+<p>By default, the MTU before FEC encoding is 1300 bytes.</p>
+</p></li><li class="substepexpand"><span>Return to the FEC configuration view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Configure an FEC policy.</span><ol type="a"><li class="substepexpand"><span>Create an FEC policy and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">fec policy </span></b><i><span class="varname">policy-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Bind the FEC service profile and FEC parameter profile.</span><p><pre class="screen"><b><span class="cmdqueryname">binding service-map </span></b><i><span class="varname">name</span></i> <strong><span>fec-profile</span></strong> <i><span class="varname">profile-name</span></i> <strong><span>precedence</span></strong> <i><span class="varname">precedence-value</span></i></pre>
+</p></li><li class="substepexpand"><span>Return to the FEC configuration view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>(Optional) Enable the function of ignoring VPN instances in an FEC instance.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">fec-instance ignore-vpn enable</span></b></strong></pre>
+<p>By default, the function of ignoring VPN instances in an FEC instance is disabled. This function is supported only in SD-WAN scenarios.</p>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Apply the FEC policy to a tunnel interface.</span><ol type="a"><li class="substepexpand"><span>Create a tunnel interface and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface tunnel</span></b> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Set the encapsulation mode of the tunnel interface to GRE or SD-WAN.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">tunnel-protocol</span></b> </strong>{ <strong>gre</strong> | <strong><span>sd-wan</span></strong> }</pre>
+<p>By default, no encapsulation mode is configured for a tunnel interface.</p>
+</p></li><li class="substepexpand"><span>Apply the FEC policy to the tunnel interface.</span><p><pre class="screen"><b><span class="cmdqueryname">fec-policy </span></b><i><span class="varname">name</span></i></pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When an FEC policy is applied to a tunnel interface, the system checks whether the tunnel type is SD-WAN or GRE. After the FEC policy is applied to a tunnel interface, the tunnel type cannot be changed.</p>
+</div></div>
+</p></li></ol>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_concept_0000001554914034.html">FEC Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_concept_0000001555073298.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_task_0000002448239813.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

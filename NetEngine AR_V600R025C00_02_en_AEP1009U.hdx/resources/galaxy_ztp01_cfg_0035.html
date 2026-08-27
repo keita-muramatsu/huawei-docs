@@ -1,0 +1,94 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Configuring Deployment File Security Verification">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0030.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0034.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0036.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_deployment.ditamap">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001630892797">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Configuring Deployment File Security Verification</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001630892797"></a><a name="EN-US_TASK_0000001630892797"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Configuring Deployment File Security Verification</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001630892797__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>To ensure security of USB-based deployment files for deployment of a device with a configuration file, you can set the <strong>COMPRESS_ENCRYTION</strong> field in the intermediate file to enable file compression with a password, and set a verification code in the <strong>HMAC</strong> field. Then you can perform encrypted compression and HMAC key-based integrity check on the deployment files.</p>
+<ul><li>When the function of compressing deployment files with a password is enabled in the intermediate file and the file needs to use HMAC to verify the integrity of the deployment files, the device decompresses the deployment files and then performs HMAC verification. The device continues the deployment only after the deployment files are decompressed and verified successfully.</li></ul>
+<ul><li>When the function of compressing deployment files with a password is enabled in the intermediate file but the file does not need to use HMAC to verify the integrity of the deployment files, the device only decompresses the deployment files. The device continues the deployment only after the deployment files are decompressed successfully.</li><li>When the function of compressing the deployment files with a password is not enabled in the intermediate file and the file needs to use HMAC to verify the integrity of the deployment files, the device only performs HMAC verification on the deployment files. The device continues the deployment only after the deployment files are verified successfully.</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Before compressing deployment files and configuring HMAC key-based verification, you must calculate the hash value for the files and compress the deployment files with a password.</p>
+</div></div>
+<p><strong>Password for decompressing deployment files</strong></p>
+<ol><li>Before copying deployment files to the USB flash drive, you need to compress the deployment files into a .zip package using the specified password. The password must be the same as the password for decompressing the deployment file package.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>Deployment files can only be encrypted and compressed on Huawei devices.</li><li>The .zip package name must be in the <em>name_nametype</em><strong>.zip</strong> format, where <em>name</em> is the name of the file extracted from the package, and <em>nametype</em> is the type of the extracted file.</li><li>Each deployment file is compressed into a separate .zip package, and one .zip package can contain only one deployment file.</li></ul>
+</div></div>
+</li><li>During USB-based deployment, the device downloads the deployment files and uses the preset password to decompress them.</li></ol>
+<p><strong>HMAC key for verifying the integrity of deployment files</strong></p>
+<ol><li>Before copying deployment files to the USB flash drive, you can use the openssl dgst tool to run the <strong>openssl dgst -hmac</strong> <em>key</em> <strong>-sha256</strong> <em>filename</em> command to calculate a hash value based on the configured HMAC key for the deployment files and write it to the <strong>HMAC</strong> field in the intermediate file.</li><li>During USB-based deployment, the device downloads the deployment files and uses the configured HMAC key to calculate the hash value of the deployment files.</li><li>The device compares the calculated hash value with that of the <strong>HMAC</strong> field in the intermediate file. If the two values are the same, HMAC-based integrity verification succeeds.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001630892797__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Set a password for decompressing a deployment file.</span><p><pre class="screen"><b><span class="cmdqueryname">ztp usb-deployment file-compress password</span></b> [ <i><span class="varname">filepasswordval</span></i> ]</pre>
+<p>By default, no password is configured for decompressing a deployment file. The password must be the same as that used to compress the deployment file.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the weak password dictionary maintenance function is enabled, the passwords defined in the weak password dictionary cannot be used. To view these passwords, run the <b><span class="cmdqueryname">display security weak-password-dictionary</span></b> command.</p>
+</div></div>
+</p></li><li><span>Configure an HMAC key for deployment file integrity verification.</span><p><pre class="screen"><b><span class="cmdqueryname">ztp usb-deployment file-integrity password</span></b> [ <i><span class="varname">hmacpasswordval</span></i> ]</pre>
+<p>By default, no HMAC key is configured for deployment file integrity verification. The key must be the same as the HMAC key used to calculate the hash value of the deployment file.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the weak password dictionary maintenance function is enabled, the passwords defined in the weak password dictionary cannot be used. To view these passwords, run the <b><span class="cmdqueryname">display security weak-password-dictionary</span></b> command.</p>
+</div></div>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ztp01_cfg_0030.html">Configuring USB-based Deployment
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ztp01_cfg_0034.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ztp01_cfg_0036.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

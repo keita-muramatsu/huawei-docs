@@ -1,0 +1,82 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Storm Suppression Security">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0042.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0076.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0043_22go.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512852222">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Storm Suppression Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512852222"></a><a name="EN-US_TASK_0000001512852222"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Storm Suppression Security</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512852222__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>When a Layer 2 Ethernet interface on a device receives broadcast, unknown multicast, or unknown unicast packets, the device forwards these packets to other Layer 2 Ethernet interfaces in the same VLAN if the outbound interfaces cannot be determined based on the destination MAC addresses of these packets. As a result, a broadcast storm may be generated, degrading forwarding performance of the device.</p>
+<p>Storm suppression is a security technology used to control broadcast, unknown multicast, and unknown unicast packets and prevent broadcast storms caused by these packets.</p>
+<div class="p">Storm suppression includes traffic suppression and storm control.<ul><li>Traffic suppression limits the rate of broadcast, unknown multicast, and unknown unicast packets through threshold setting. When traffic exceeds the set threshold, the system discards excessive traffic, limiting the traffic rate to a reasonable range. Note that traffic suppression can also block outgoing traffic on interfaces.</li><li>Storm control interrupts broadcast, unknown multicast, and unknown unicast packets by blocking these packets or disabling related interfaces. Storm control can also control the average rate of packets by suppressing them. When traffic exceeds the specified threshold, the system performs a predefined storm control action.</li></ul>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Currently, the device supports only traffic suppression.</p>
+</div></div>
+<h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512852222__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Change the interface working mode from Layer 3 to Layer 2.</span><p><pre class="screen"><b><span class="cmdqueryname">portswitch</span></b></pre>
+<p>Determine whether to perform this step based on the actual interface working mode.</p>
+</p></li><li><span>Configure traffic suppression on an interface in the inbound direction.</span><p><pre class="screen"><b><span class="cmdqueryname">storm suppression</span></b> { <strong><span>broadcast</span></strong> | <strong><span>multicast</span></strong> | <strong><span>unknown-unicast</span></strong> } { <i><span class="varname">percent-value</span></i> | <strong><span>cir</span></strong> <i><span class="varname">cir-value</span></i> [ <strong><span>gbps</span></strong> | <strong><span>kbps</span></strong> | <strong><span>mbps</span></strong> ] [ <strong><span>cbs</span></strong> <i><span class="varname">cbs-value</span></i> [ <strong><span>bytes</span></strong> | <strong><span>kbytes</span></strong> | <strong><span>mbytes</span></strong> ] ] | <strong>packets</strong> <em>packets-per-second</em> }</pre>
+<p>If traffic suppression is configured for packets of the same type on an interface in the inbound direction for multiple times (with <i><span class="varname">percent-value</span></i> and <strong><span>cir</span></strong> <i><span class="varname">cir-value</span></i> specified), only the latest configuration takes effect.</p>
+</p></li><li><span>Configure traffic suppression on an interface in the outbound direction.</span><p><pre class="screen"><b><span class="cmdqueryname">storm suppression</span></b> { <strong><span>broadcast</span></strong> | <strong><span>multicast</span></strong> | <strong><span>unknown-unicast</span></strong> } <strong><span>block</span></strong> <strong><span>outbound</span></strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001512852222__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <b><span class="cmdqueryname">display storm suppression</span></b> { <strong>broadcast</strong> | <strong>multicast</strong> | <strong>unknown-unicast</strong> } [ <strong><span>interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> ] command to check the configured and actual traffic suppression thresholds on an interface in the inbound direction.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0042.html">Forwarding Plane Security (Level-2)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0076.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0043_22go.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

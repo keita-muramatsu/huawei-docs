@@ -1,0 +1,199 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Deploying an Intelligent Simplified Campus Network (Terminals Connected to the Same VLAN)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0038.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0037.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0022.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001568395188">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Deploying an Intelligent Simplified Campus Network (Terminals Connected to the Same VLAN)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001568395188"></a><a name="EN-US_TASK_0000001568395188"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Deploying an Intelligent Simplified Campus Network (Terminals Connected to the Same VLAN)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001568395188__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>An enterprise builds an office building to meet service development requirements. Each office in the building needs to be equipped with one to four PCs.</p>
+<p>Device deployment solution: To simplify the network architecture, deploy an intelligent simplified campus network. As shown in <a href="#EN-US_TASK_0000001568395188__fig25219817491">Figure 1</a>, deploy a central device (DeviceA) in the ELV room of the office building, and deploy an RU (RU<em>n</em>, where <em>n</em> indicates a room number) in the ELV box of each office. The RUs are connected to the central device through a single link and managed by the central device. In addition, add the PCs in the building to VLAN 1300 for communication based on network planning.</p>
+<div class="fignone" id="EN-US_TASK_0000001568395188__fig25219817491"><a name="EN-US_TASK_0000001568395188__fig25219817491"></a><a name="fig25219817491"></a><span class="figcap"><b>Figure 1 </b>Networking for RU deployment in the office building</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, interface3, interface4, and interface5 on DeviceB represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, <span>10GE</span><span>0/0/3</span>, <span>10GE</span><span>0/0/4</span>, and <span>10GE</span><span>0/0/5</span>, respectively.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000001619153849.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001568395188__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>This example only provides the configurations for RUs connected to DeviceA. Other configurations are not provided. DeviceB (RU101) is used as an example. The configuration roadmap is as follows:</p>
+<ol><li>The RU obtains power locally. Connect the RU to the central device, and onboard the RU in plug-and-play mode.</li><li>Bind an interconnection interface for each RU on the central device and configure interface isolation for the RU.</li><li>On the central device, configure the interfaces for connecting to the RU and add the interfaces to VLAN 1300.</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001568395188__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Procedure</h4><ol><li>Connect the uplink port of each RU to the central device and check whether the RUs are successfully online.<p># Check the RU status. <strong>Normal</strong> indicates that the RU is running properly.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view </strong>
+[HUAWEI] <strong>sysname DeviceA</strong> 
+[DeviceA] <strong>display remote-unit</strong> 
+------------------------------------------------------------------------------------------------------------------------
+ESN                     ID        Type               ConnectInterface     Status    VersionMatch   Name 
+------------------------------------------------------------------------------------------------------------------------
+219801176801XXXXXXXX    -         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/1</span>           <strong>Normal</strong>      YES            - 
+219801176802XXXXXXXX    -         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/2</span>           <strong>Normal</strong>      YES            - 
+219801176803XXXXXXXX    -         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/3</span>           <strong>Normal</strong>      YES            - 
+219801176804XXXXXXXX    -         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/4</span>           <strong>Normal</strong>      YES            - 
+------------------------------------------------------------------------------------------------------------------------
+Total: 4, printed: 4</pre>
+</li><li>Configure the interconnection interfaces and interface isolation for the RUs.<p># Bind the interconnection interfaces for the RUs on the central device.</p>
+<pre class="screen">[DeviceA] <strong>remote-unit 0</strong>
+[DeviceA-remote-unit-0] <strong>name RU101</strong>
+[DeviceA-remote-unit-0] <strong>description RU101</strong>_<strong><span>10ge</span></strong><strong><span>0/0/1</span></strong>
+[DeviceA-remote-unit-0] <strong>bind interface </strong><strong><span>10GE</span><span>0/0/1</span></strong>
+[DeviceA-remote-unit-0] <strong>quit</strong>
+[DeviceA] <strong>remote-unit 1</strong>
+[DeviceA-remote-unit-1] <strong>name RU102</strong>
+[DeviceA-remote-unit-1] <strong>description RU102</strong>_<strong><span>10ge</span></strong><strong><span>0/0/2</span></strong>
+[DeviceA-remote-unit-1] <strong>bind interface </strong><strong><span>10GE</span><span>0/0/2</span></strong>
+[DeviceA-remote-unit-1] <strong>quit</strong>
+[DeviceA] <strong>remote-unit 2</strong>
+[DeviceA-remote-unit-2] <strong>name RU103</strong>
+[DeviceA-remote-unit-2] <strong>description RU103</strong>_<strong><span>10ge</span></strong><strong><span>0/0/3</span></strong>
+[DeviceA-remote-unit-2] <strong>bind interface </strong><strong><span>10GE</span><span>0/0/3</span></strong>
+[DeviceA-remote-unit-2] <strong>quit</strong>
+[DeviceA] <strong>remote-unit 3</strong>
+[DeviceA-remote-unit-3] <strong>name RU104</strong>
+[DeviceA-remote-unit-3] <strong>description RU104</strong>_<strong><span>10ge</span></strong><strong><span>0/0/4</span></strong>
+[DeviceA-remote-unit-3] <strong>bind interface </strong><strong><span>10GE</span><span>0/0/4</span></strong>
+[DeviceA-remote-unit-3] <strong>quit</strong></pre>
+<p># Configure interface isolation in the global RU view and deliver the configuration to the RUs.</p>
+<pre class="screen">[DeviceA] <strong>remote-unit</strong>
+[DeviceA-remote-unit] <strong>isolate enable</strong>
+[DeviceA-remote-unit] <strong>commit all</strong>
+[DeviceA-remote-unit] <strong>quit</strong></pre>
+</li><li>Create a VLAN and configure the allowed VLAN for the interfaces. For example, add the interconnection interface <span>10GE</span><span>0/0/1</span> to VLAN 1300. The configurations for other interconnection interfaces are similar.<pre class="screen">[DeviceA] <strong>vlan 1300</strong>
+[DeviceA] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>description to_RU101</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>]<strong> portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port link-type hybrid</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port hybrid</strong> <strong>pvid vlan 1300</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port hybrid untagged vlan 1300</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</li><li>Configure the allowed VLAN for the uplink port of the central device.<pre class="screen">[DeviceA] <strong>interface <span>10GE</span><span>0/0/5</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/5</span>]<strong> portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/5</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/5</span>] <strong>port trunk allow-pass vlan 1300</strong>
+[DeviceA-<span>10GE</span><span>0/0/5</span>] <strong>quit</strong></pre>
+</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001568395188__1.3.4"></a><a name="1.3.4"></a>
+<div class="p"><h4 class="sectiontitle">Verifying the Configuration</h4><p># Check the RU status. The configured RU IDs and aliases are displayed.</p>
+<pre class="screen">[DeviceA] <strong>display remote-unit</strong> 
+------------------------------------------------------------------------------------------------------------------------
+ESN                     <strong>ID</strong>        Type               ConnectInterface     Status    VersionMatch    <strong>Name</strong>
+------------------------------------------------------------------------------------------------------------------------
+219801176801XXXXXXXX    <strong>0</strong>         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/1</span>           Normal      NO            <strong>RU101</strong> 
+219801176802XXXXXXXX    <strong>1</strong>         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/2</span>           Normal      NO            <strong>RU102</strong> 
+219801176803XXXXXXXX    <strong>2</strong>         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/3</span>           Normal      NO            <strong>RU103 </strong>
+219801176804XXXXXXXX    <strong>3</strong>         S5731-L4T2ST-RUA    <span>10GE</span><span>0/0/4</span>           Normal      NO           <strong> RU104</strong> 
+------------------------------------------------------------------------------------------------------------------------
+Total: 4, printed: 4</pre>
+</div></div>
+<div class="example"><a name="EN-US_TASK_0000001568395188__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+vlan batch 1300 
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ description to_RU101
+ port link-type hybrid
+ port hybrid pvid vlan 1300
+ port hybrid untagged vlan 1300
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ description to_RU102
+ port link-type hybrid
+ port hybrid pvid vlan 1300
+ port hybrid untagged vlan 1300
+#
+interface <span>10GE</span><span>0/0/3</span>
+ portswitch
+ description to_RU103
+ port link-type hybrid
+ port hybrid pvid vlan 1300
+ port hybrid untagged vlan 1300
+#
+interface <span>10GE</span><span>0/0/4</span>
+ portswitch
+ description to_RU104
+ port link-type hybrid
+ port hybrid pvid vlan 1300
+ port hybrid untagged vlan 1300
+#
+interface <span>10GE</span><span>0/0/5</span>
+ portswitch
+ port link-type trunk 
+ port trunk allow-pass vlan 1300 
+#
+remote-unit 
+ isolate enable 
+#
+remote-unit 0
+ description RU101_<span>10ge</span><span>0/0/1</span>
+ name RU101
+ bind interface <span>10GE</span><span>0/0/1</span>
+remote-unit 1
+ description RU102_<span>10ge</span><span>0/0/2</span>
+ name RU102
+ bind interface <span>10GE</span><span>0/0/2</span>
+remote-unit 2
+ description RU103_<span>10ge</span><span>0/0/3</span>
+ name RU103
+ bind interface <span>10GE</span><span>0/0/3</span>
+remote-unit 3
+ description RU104_<span>10ge</span><span>0/0/4</span>
+ name RU104
+ bind interface <span>10GE</span><span>0/0/4</span>
+#</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0038.html">Configuration Examples for Intelligent Simplified Campus Networks
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0037.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0022.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

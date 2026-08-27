@@ -1,0 +1,111 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="SPR Service Process">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_spr_cfg_0002.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_spr_cfg_0004.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Smart Policy Routing">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Smart Policy Routing">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="Smart Policy Routing">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001513035474">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>SPR Service Process</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001513035474"></a><a name="EN-US_CONCEPT_0000001513035474"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">SPR Service Process</h1>
+<div><div class="section"><h4 class="sectiontitle">Link Quality Detection</h4><p>In <a href="#EN-US_CONCEPT_0000001513035474__fig43151630135014">Figure 1</a>, the transport network port (TNP) on each CPE learns information about the TNP on the remote CPE to establish an SD-WAN EVPN connection. Due to its smaller site ID, CPE1 functions as the initiator, automatically sending keepalive packets carrying the number of service packets received and sent by the local end within a certain period as well as the timestamp. The TNP on CPE2 calculates the delay, jitter, packet loss rate, and Composite Measure Indicator (CMI) of the connection based on the numbers of sent and received packets and timestamp on CPE1, as well as those on CPE2.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001513035474__fig43151630135014"><a name="EN-US_CONCEPT_0000001513035474__fig43151630135014"></a><a name="fig43151630135014"></a><span class="figcap"><b>Figure 1 </b>SD-WAN EVPN link quality detection</span><br><span><img class="vsd" src="figure/en-us_image_0000001563755809.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Link Quality Calculation Formula</h4><p>Keepalive packets sent from CPE1 to CPE2 carry the following information:</p>
+<ul><li>SndA: number of service packets (including keepalive packets) sent by CPE1 within the period T.</li><li>RcvA: number of service packets (including keepalive ACK packets) received by CPE1 within the period T.</li><li>TsA: timestamp of keepalive packets sent by CPE1.</li><li>TrA: timestamp of keepalive ACK packets received by CPE1.</li></ul>
+<p>Keepalive ACK packets sent from CPE2 to CPE1 carry the following information:</p>
+<ul><li>SndB: number of service packets (including keepalive ACK packets) sent by CPE2 within the period T.</li><li>RcvB: number of service packets (including keepalive packets) received by CPE2 within the period T.</li><li>TsB: timestamp of keepalive ACK packets sent by CPE2.</li><li>TrB: timestamp of keepalive packets received by CPE2.</li></ul>
+<p>The packet loss rate, delay, jitter, and CMI of a link can be calculated based on the preceding data carried in packets. <a href="#EN-US_CONCEPT_0000001513035474__table1449111317209">Table 1</a> lists the calculation formulas. Smaller values of the preceding indicators indicate better link quality.</p>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001513035474__table1449111317209"></a><a name="table1449111317209"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001513035474__table1449111317209" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Link quality calculation formula</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="35.06%" id="mcps1.3.2.7.2.3.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="64.94%" id="mcps1.3.2.7.2.3.1.2" liSelected="liSelected"><p>Calculation Formula</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="35.06%" headers="mcps1.3.2.7.2.3.1.1 "><p>Packet loss rate</p>
+</td>
+<td class="cellrowborder" valign="top" width="64.94%" headers="mcps1.3.2.7.2.3.1.2 "><p>Formula for calculating the packet loss rate in a single period T (1 second by default):</p>
+<p>LossA = (SndA – RcvB)/SndA x 1000‰</p>
+<p>LossB = (SndB – RcvA)/SndB x 1000‰</p>
+<p>Traffic is steered based on the average packet loss rate for 10 periods.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="35.06%" headers="mcps1.3.2.7.2.3.1.1 "><p>Two-way delay</p>
+</td>
+<td class="cellrowborder" valign="top" width="64.94%" headers="mcps1.3.2.7.2.3.1.2 "><p>Formula for calculating the two-way delay (assume that the clock difference between the two ends is M):</p>
+<p>Delay = TrB – (TsA + M) + (TrA + M) – TsB = (TrB – TsA) + (TrA – TsB)</p>
+<p>Traffic is steered based on the average two-way delay for 10 periods.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="35.06%" headers="mcps1.3.2.7.2.3.1.1 "><p>Jitter</p>
+</td>
+<td class="cellrowborder" valign="top" width="64.94%" headers="mcps1.3.2.7.2.3.1.2 "><p>Formula for calculating the jitter (assume that the absolute difference between two delays is D<sub>n</sub>):</p>
+<p>Jitter = (D<sub>1</sub> + D<sub>2</sub> + ... + D<sub>9</sub>)/9</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="35.06%" headers="mcps1.3.2.7.2.3.1.1 "><p>CMI</p>
+</td>
+<td class="cellrowborder" valign="top" width="64.94%" headers="mcps1.3.2.7.2.3.1.2 "><p>CMI = Packet loss rate + Delay + Jitter</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Link and Link Group</h4><p>In SPR, a link refers to an SD-WAN EVPN transport network (TN). Each TN consists of multiple connections, with one or more TNs forming a link group. Link groups are classified into primary and backup link groups.</p>
+<p>A TN can be configured as a primary or backup link according to service requirements. In <a href="#EN-US_CONCEPT_0000001513035474__fig13892105131714">Figure 2</a>, the MPLS link is the primary link of service A and the backup link of service B.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001513035474__fig13892105131714"><a name="EN-US_CONCEPT_0000001513035474__fig13892105131714"></a><a name="fig13892105131714"></a><span class="figcap"><b>Figure 2 </b>Network diagram of SPR</span><br><span><img class="vsd" src="figure/en-us_image_0000001513155458.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Traffic Steering</h4><p>Using the link quality detection function, a device monitors the delay, jitter, packet loss rate, and CMI of service links in real time. Different services have different requirements on these indicators, and you only need to set thresholds for those that the service has high requirements on. If any of the set indicators reaches its threshold, the conditions for triggering link switchover are met. <a href="#EN-US_CONCEPT_0000001513035474__fig5630105771718">Figure 3</a> shows the traffic steering process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001513035474__fig5630105771718"><a name="EN-US_CONCEPT_0000001513035474__fig5630105771718"></a><a name="fig5630105771718"></a><span class="figcap"><b>Figure 3 </b>Traffic steering process</span><br><span><img class="vsd" src="figure/en-us_image_0000001563875453.png"></span></div>
+<p>If there is no available connection in a TN, the device uses a common route to forward traffic.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_qos_spr_cfg_0002.html">Understanding SPR
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_qos_spr_cfg_0004.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

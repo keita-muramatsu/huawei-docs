@@ -1,0 +1,177 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Using an Advanced ACL to Prevent User Hosts on Different Network Segments from Communicating">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0028.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0032.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_XTASK_0000001601711901">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Using an Advanced ACL to Prevent User Hosts on Different Network Segments from Communicating</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_XTASK_0000001601711901"></a><a name="EN-US_XTASK_0000001601711901"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Using an Advanced ACL to Prevent User Hosts on Different Network Segments from Communicating</h1>
+<div><div class="section"><h4 class="sectiontitle">Networking Requirements</h4>
+<div class="p"><p>As shown in <a href="#EN-US_XTASK_0000001601711901__fig10769521109">Figure 1</a>, different departments of an enterprise are connected through the switch. To facilitate network management, the administrator plans IP addresses of different network segments for the R&amp;D and marketing departments, which belong to different VLANs. To ensure information security, the enterprise requires that the switch prevent the user hosts on different network segments from communicating with each other.</p>
+<div class="fignone" id="EN-US_XTASK_0000001601711901__fig10769521109"><a name="EN-US_XTASK_0000001601711901__fig10769521109"></a><a name="fig10769521109"></a><span class="figcap"><b>Figure 1 </b>Network diagram of using an advanced ACL to prevent user hosts on different network segments from communicating</span><br><span><img src="figure/en-us_image_0000002264514582.png"></span></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4>
+<div class="p"><p>The configuration roadmap is as follows:</p>
+<ol><li>Configure an advanced ACL and ACL-based traffic classifier to filter the packets exchanged between the R&amp;D and marketing departments.</li><li>Configure a traffic behavior to deny the packets matching the ACL.</li><li>Configure and apply a traffic policy for the ACL and traffic behavior to take effect.</li></ol>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li><span>Configure VLANs to which interfaces belong and assign IP addresses to the corresponding VLANIF interfaces.</span><p><p># Create VLAN 10 and VLAN 20.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span class="keyword">Switch</span></strong>
+[Switch]<strong> </strong><strong>vlan batch 10 20</strong></pre>
+<p># Configure <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span> on the switch as trunk interfaces and add them to VLAN 10 and VLAN 20 respectively.</p>
+<pre class="screen">[Switch] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[Switch-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[Switch-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 10</strong>
+[Switch-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[Switch] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[Switch-<span>10GE</span><span>0/0/2</span>] <strong>port link-type trunk</strong>
+[Switch-<span>10GE</span><span>0/0/2</span>] <strong>port trunk allow-pass vlan 20</strong>
+[Switch-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Create VLANIF 10 and VLANIF 20 and configure IP addresses for them.</p>
+<pre class="screen">[Switch] <strong>interface vlanif 10</strong>
+[Switch-Vlanif10] <strong>ip address 10.1.1.1 24</strong>
+[Switch-Vlanif10]<strong> quit</strong>
+[Switch] <strong>interface vlanif 20</strong>
+[Switch-Vlanif20] <strong>ip address 10.1.2.1 24</strong>
+[Switch-Vlanif20] <strong>quit</strong> </pre>
+</p></li><li><span>Configure an advanced ACL.</span><p><p># Create advanced ACL 3001 and configure a rule to deny the packets from any department to another department. In this example, the packets from the R&amp;D department to the marketing department are denied.</p>
+<pre class="screen">[Switch] <strong>acl 3001</strong>
+[Switch-acl-adv-3001] <strong>rule deny ip source 10.1.1.0 0.0.0.255 destination 10.1.2.0 0.0.0.255</strong> 
+[Switch-acl-adv-3001] <strong>quit</strong></pre>
+</p></li><li><span>Configure an advanced ACL-based traffic classifier.</span><p><p># Configure a traffic classifier named <strong>tc1</strong> to classify packets that match ACL 3001.</p>
+<pre class="screen">[Switch] <strong>traffic classifier tc1</strong>
+[Switch-classifier-tcl] <strong>if-match acl 3001</strong>
+[Switch-classifier-tcl] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic behavior.</span><p><p># Configure a traffic behavior named <strong>tb1</strong> to deny packets.</p>
+<pre class="screen">[Switch] <strong>traffic behavior tb1</strong>
+[Switch-behavior-tb1] <strong>deny</strong>
+[Switch-behavior-tb1] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic policy.</span><p><p># Define a traffic policy, and associate the traffic classifier and traffic behavior with the traffic policy.</p>
+<pre class="screen">[Switch] <strong>traffic policy tp1</strong>
+[Switch-trafficpolicy-tp1]<strong> classifier tc1 behavior tb1</strong>
+[Switch-trafficpolicy-tp1] <strong>quit</strong></pre>
+</p></li><li><span>Apply the traffic policy to an interface.</span><p><p># Apply the traffic policy to the inbound direction of <span>10GE</span><span>0/0/1</span> (because traffic from the R&amp;D department to the marketing department enters the switch through <span>10GE</span><span>0/0/1</span>).</p>
+<pre class="screen">[Switch] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[Switch-<span>10GE</span><span>0/0/1</span>] <strong>traffic-policy tp1 inbound </strong>
+[Switch-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p># Check the ACL rule configuration.</p>
+<pre class="screen">[Switch] <strong>display acl 3001</strong>
+Advanced ACL 3001, 1 rule                                                        
+Acl's step is 5                                                                   
+rule 5 deny ip source 10.1.1.0 0.0.0.255 destination 10.1.2.0 0.0.0.255 (0 times matched)  </pre>
+<p># Check the traffic classifier configuration.</p>
+<pre class="screen">[Switch] <strong>display </strong><strong>traffic classifier</strong>
+  Traffic Classifier Information:    
+    Classifier: tc1     
+      Type: OR     
+      Rule(s) :
+         if-match acl 3001                                                    
+
+Total classifier number is 1   </pre>
+<p># Check the traffic policy configuration.</p>
+<pre class="screen">[Switch] <strong>display traffic policy tp1   </strong>
+  Traffic Policy Information:                                         
+   Policy: tp1                                                                       
+    Classifier: tc1                                                                   
+      Type: OR                                                                      
+    Behavior: tb1    
+      Deny         </pre>
+<p># Check that the network segments to which the R&amp;D and marketing departments belong cannot communicate with each other, but can communicate with other network segments.</p>
+</p></li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4>
+<div class="p"><p>Switch</p>
+<pre class="screen"># 
+sysname Switch 
+# 
+vlan batch 10 20  
+# 
+acl number 3001                                                                   
+ rule 5 deny ip source 10.1.1.0 0.0.0.255 destination 10.1.2.0 0.0.0.255         
+# 
+traffic classifier tc1 type or    
+ if-match acl 3001                                                                  
+# 
+traffic behavior tb1  
+ deny 
+# 
+traffic policy tp1   
+ classifier tc1 behavior tb1 precedence 5 
+# 
+interface Vlanif10  
+ ip address 10.1.1.1 255.255.255.0 
+# 
+interface Vlanif20  
+ ip address 10.1.2.1 255.255.255.0 
+# 
+interface <span>10GE</span>1/0/1  
+ port link-type trunk                                                             
+ port trunk allow-pass vlan 10   
+ traffic-policy tp1 inbound 
+# 
+interface <span>10GE</span>1/0/2  
+ port link-type trunk                                                             
+ port trunk allow-pass vlan 20  
+# 
+return </pre>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_acl_cfg_0016.html">Configuration Examples for ACLs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_acl_cfg_0028.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_acl_cfg_0032.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

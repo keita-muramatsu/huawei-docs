@@ -1,0 +1,426 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring MSTP Multi-Process">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_stp_cfg_1132.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_stp_cfg_1186.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_stp_cfg_1187.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MSTP">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MSTP">
+<meta name="featurename" content="RSTP">
+<meta name="featurename" content="STP">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001366159869">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring MSTP Multi-Process</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001366159869"></a><a name="EN-US_TASK_0000001366159869"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring MSTP Multi-Process</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001366159869__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_context1677625172748"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p28397519416">In <a href="#EN-US_TASK_0000001366159869__en-us_task_0000001130783108_fig17195027193012">Figure 1</a>, DeviceA and DeviceB that function as PE devices are connected to DeviceC to DeviceH that function as CE devices, forming multiple access rings. DeviceA, DeviceC, and DeviceD are in a ring; DeviceB, DeviceG, and DeviceH are in another ring; DeviceA, DeviceB, DeviceE, and DeviceF are in the third ring.</p>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p16113144385919">In this case, MSTP multi-process can be deployed to allow each access ring to calculate a spanning tree independently.</p>
+<div class="fignone" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_fig17195027193012"><a name="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_fig17195027193012"></a><a name="en-us_task_0000001130783108_fig17195027193012"></a><span class="figcap"><b>Figure 1 </b>Network diagram of MSTP multi-process</span><div class="note" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_note164145990214028"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1432651182214028">In this example, interface 1, interface 2, interface 3, interface 4, and interface 5 represent <span>10GE</span> <span>0/0/1</span>, <span>10GE</span> <span>0/0/2</span>, <span>10GE</span> <span>0/0/3</span>, <span>10GE</span> <span>0/0/4</span>, and <span>10GE</span> <span>0/0/5</span>, respectively.</p>
+</div></div>
+<br><span><img id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_image1969719279138" src="figure/en-us_image_0000002348091120.png"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001366159869__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_steps2116476269183240"><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_step175580252183240"><span id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_cmd334764386183240">Configure basic MSTP functions, add devices to an MST region, and create instances.</span><p><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p455052410183240"># Add DeviceA to an MST region and create instances.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1075067301183240">&lt;<span class="keyword" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_keyword1072229196175351">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2117262085183240">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_keyword1024693813367">HUAWEI</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1939133513183240">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1867347955183240">stp region-configuration</strong>
+[DeviceA-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b403751424183240">region-name RG1</strong>
+[DeviceA-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1757121524183240">instance 1 vlan 2 to 100</strong>
+[DeviceA-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b596673627183240">instance 2 vlan 101 to 200</strong>
+[DeviceA-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b374980875183240">instance 3 vlan 201 to 300</strong>
+[DeviceA-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b598278971183240">quit</strong></pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1155151855183240"># Add DeviceB to the MST region and create instances.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen2096320902183240">&lt;<span class="keyword" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_keyword19149154173710">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1477311395183240">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_keyword10350344193719">HUAWEI</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1528295180183240">sysname DeviceB</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1917737903183240">stp region-configuration</strong>
+[DeviceB-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b175969917183240">region-name RG1</strong>
+[DeviceB-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1785457106183240">instance 1 vlan 2 to 100</strong>
+[DeviceB-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1813639261183240">instance 2 vlan 101 to 200</strong>
+[DeviceB-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b329567787183240">instance 3 vlan 201 to 300</strong>
+[DeviceB-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1033947646183240">quit</strong></pre>
+<div class="p" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p18742164219594"># Add DeviceC to DeviceH to the MST region and create instances. The following uses DeviceC as an example. The configurations of DeviceD to DeviceH are similar to the configuration of DeviceC.<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen769471020120">&lt;<span class="keyword" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_keyword027712211317">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b17277221118">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_keyword19277721416">HUAWEI</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b627712118113">sysname DeviceC</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b727717211814">stp region-configuration</strong>
+[DeviceC-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b192783211711">region-name RG1</strong>
+[DeviceC-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b17278421618">instance 1 vlan 2 to 100</strong>
+[DeviceC-mst-region] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b527872115119">quit</strong></pre>
+</div>
+</p></li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_step839416316322"><span id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_cmd1939418314321">Enable MSTP on DeviceA and DeviceB.</span><p><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p175619241337">By default, a spanning tree protocol is enabled on the device, and no operation is required. You can run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_en-us_task_0000001176742791_cmdname5620175815255">stp enable</span></b> command in the system view to enable STP/RSTP/MSTP.</p>
+</p><p><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p117451818217"># Enable MSTP on DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen115772033318">[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1054289221183240">stp enable</strong></pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p15908741846"># Enable MSTP on DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen14271615535">[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2114490189183240">stp enable</strong></pre>
+<div class="p" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p222246101217"># Enable MSTP on DeviceC. The following uses DeviceC as an example. The configurations of DeviceD to DeviceH are similar to the configuration of DeviceC.<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen084211378127">[DeviceC] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b10529194120127">stp enable</strong></pre>
+</div>
+</p></li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_step1135300658183240"><span id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_cmd605955411183240">Create multiple MSTP processes on the devices and add ports to the processes.</span><p><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1695539549183240"># On DeviceA, create process 1 and process 2, and add <span>10GE</span> <span>0/0/3</span> and <span>10GE</span> <span>0/0/4</span> to process 1 and <span>10GE</span> <span>0/0/2</span> to process 2.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen2114673614183240">[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1783003503183240">stp process 1</strong>
+[DeviceA-mst-process-1] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b771350127183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b508985404183240">stp process 2</strong>
+[DeviceA-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b390818732183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b355160463183240">interface <span>10ge</span> <span>0/0/4</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b12287040124716">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b163320807183240">stp binding process 1</strong>
+[DeviceA-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2135431621183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b23981127183240">interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b415398522183240">stp binding process 1</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b118435008183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b813920650183240">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1627124210472">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2114070672183240">stp binding process 2</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b557552059183240">quit</strong></pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1228783411183240"># On DeviceB, create process 2 and process 3, and add <span>10GE</span> <span>0/0/3</span> and <span>10GE</span> <span>0/0/4</span> to process 3 and <span>10GE</span> <span>0/0/2</span> to process 2.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen2125912542183240">[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1203656007183240">stp process 2</strong>
+[DeviceB-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2107158563183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1957728171183240">stp process 3</strong>
+[DeviceB-mst-process-3] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b899254708183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b374073233183240">interface <span>10ge</span> <span>0/0/4</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1910324584712">portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1600954934183240">stp binding process 3</strong>
+[DeviceB-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1556492186183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1495897565183240">interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b128336454474">portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1229629078183240">stp binding process 3</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1422861769183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b868098662183240">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b131671647164720">portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b424315383183240">stp binding process 2</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1468930192183240">quit</strong></pre>
+<div class="p" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p583951115146"># Create processes on DeviceC to DeviceH. The following uses DeviceC as an example. On DeviceC, create process 1 and add <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span> to process 1. The configurations of DeviceD to DeviceH are similar to the configuration of DeviceC.<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen354585741318">[DeviceC] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b84199595134">stp process 1</strong>
+[DeviceC-mst-process-1] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b16419175921316">quit</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b341918594138">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b16419959181317">stp binding process 1</strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1341935931316">quit</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b4419125912134">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b64191259171318">portswitch</strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b9419185981318">stp binding process 1</strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b44201959121319">quit</strong></pre>
+</div>
+</p></li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_step14842751192418"><span id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_cmd784217512242">Configure a shared link.</span><p><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1316591151183240"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1914278510183240">[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b204861223183240">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1351074924710">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b880862469183240">stp binding process 2 link-share</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1499496494183240">quit</strong></pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p320388562183240"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1700484244183240">[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b489764164183240">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b7251251184717">portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2016059996183240">stp binding process 2 link-share</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1808390394183240">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_step145874872417"><span id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_cmd8581748132412">Enable MSTP for processes.</span><p><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p502027385183240"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1739886428183240">[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b771879208183240">stp process 1</strong>
+[DeviceA-mst-process-1] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1409795245183240">stp enable</strong>
+[DeviceA-mst-process-1] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b702765755183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1577135147183240">stp process 2</strong>
+[DeviceA-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1919949361183240">stp enable</strong>
+[DeviceA-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1109289468183240">quit</strong></pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p67065031183240"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1802797224183240">[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b677746303183240">stp process 3</strong>
+[DeviceB-mst-process-3] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1384713808183240">stp enable</strong>
+[DeviceB-mst-process-3] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b89660403183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1496692000183240">stp process 2</strong>
+[DeviceB-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1904235320183240">stp enable</strong>
+[DeviceB-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1081821086183240">quit</strong></pre>
+<div class="p" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1364693418216"># Configure DeviceC. The configurations of DeviceD to DeviceH are similar to the configuration of DeviceC.<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen3609194272216">[DeviceC] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b042512465228">stp process 1</strong>
+[DeviceC-mst-process-1] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b9425154610223">stp enable</strong>
+[DeviceC-mst-process-1] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b14256461224">quit</strong></pre>
+</div>
+</p></li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_step778361323183240"><span id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_cmd1595861784183240">Configure other functions.</span><p><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p178679054183240"># On DeviceA, configure priorities and root protection.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1182562037183240">[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1479738895183240">stp process 1</strong>
+[DeviceA-mst-process-1] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1118833487183240">stp instance 0 root primary</strong>
+[DeviceA-mst-process-1] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b917464112183240">stp instance 1 root primary</strong>
+[DeviceA-mst-process-1] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2040410221183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b963670299183240">stp process 2</strong>
+[DeviceA-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1644283145183240">stp instance 0 root primary</strong>
+[DeviceA-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1197410120183240">stp instance 2 root primary</strong>
+[DeviceA-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1121401787183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1237425225183240">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b11719610114816">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1778946430183240">stp root-protection</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b875860060183240">quit</strong></pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p32944275183240"># On DeviceB, configure priorities and root protection.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen140617676183240">[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b160787238183240">stp process 3</strong>
+[DeviceB-mst-process-3] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1661807650183240">stp instance 0 root primary</strong>
+[DeviceB-mst-process-3] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1727480962183240">stp instance 3 root primary</strong>
+[DeviceB-mst-process-3] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1885052450183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1796985889183240">stp process 2</strong>
+[DeviceB-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1369607550183240">stp instance 0 root secondary</strong>
+[DeviceB-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b211527312183240">stp instance 2 root secondary</strong>
+[DeviceB-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1582285962183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b261323208183240">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b0791420194817">portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1670483902183240">stp root-protection</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2131004524183240">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_note1310052689183240"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_ul2053194979183240"><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li352863049183240"><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1366915176183240"><a name="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li352863049183240"></a><a name="en-us_task_0000001130783108_li352863049183240"></a>In each ring, the CE devices have lower MSTP process priorities than the PE device. By default, the priority of a device in a specified spanning tree is 32768. The priority of a CE device does not need to be configured.</p>
+</li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li2093282341183240"><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1719200033183240"><a name="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li2093282341183240"></a><a name="en-us_task_0000001130783108_li2093282341183240"></a>For DeviceA and DeviceB in the dual-access ring, you are recommended to configure them as the primary or a secondary root bridge in different instances.</p>
+</li></ul>
+</div></div>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1607213017183240"># On DeviceA, enable shared link protection for the MSTP process.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen710999718183240">[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b592995272183240">stp process 2</strong>
+[DeviceA-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1201928055183240">stp link-share-protection</strong>
+[DeviceA-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b544439970183240">quit</strong></pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p924559967183240"># On DeviceB, enable shared link protection for the MSTP process.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen139369052183240">[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1794630436183240">stp process 2</strong>
+[DeviceB-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1749754552183240">stp link-share-protection</strong>
+[DeviceB-mst-process-2] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b56234052183240">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_step1143604340183240"><span id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_cmd579501730183240">Create VLANs and add ports to the VLANs.</span><p><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1963588372183240"># On DeviceA, create VLANs 2 to 200, and add <span>10GE</span> <span>0/0/3</span> and <span>10GE</span> <span>0/0/4</span> to VLANs 2 to 100 and <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span> to VLANs 101 to 200.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen593823691183240">[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1849307721183240">vlan batch 2 to 200</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b781614501183240">interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b3141162145711">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1847727401183240">port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b346166547183240">port trunk allow-pass vlan 2 to 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b599313536183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b998847569183240">interface <span>10ge</span> <span>0/0/4</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1134192514571">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b425138804183240">port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2091715818183240">port trunk allow-pass vlan 2 to 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1289214926183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1157227225183240">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b971162735715">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b427326075183240">port link-type trunk </strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1251368643183240">port trunk allow-pass vlan 101 to 200</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1457661457183240">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1863514523183240">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b6553112913571">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1216632502183240">port link-type trunk </strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1431640175183240">port trunk allow-pass vlan 101 to 200</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1499434830183240">quit</strong></pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p6495043183240"># On DeviceB, create VLANs 101 to 300, and add <span>10GE</span> <span>0/0/3</span> and <span>10GE</span> <span>0/0/4</span> to VLANs 201 to 300 and <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span> to VLANs 101 to 200.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1267261786183240">[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b706089350183240">vlan batch 101 to 300</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1729221660183240">interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b13928113312571">portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1183113597183240">port link-type trunk</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1405548871183240">port trunk allow-pass vlan 201 to 300</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1144222654183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b297482373183240">interface <span>10ge</span> <span>0/0/4</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b279910352574">portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b639967421183240">port link-type trunk</strong>
+[DeviceB-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b728060250183240">port trunk allow-pass vlan 201 to 300</strong>
+[DeviceB-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1672130497183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2013966087183240">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b35016388571">portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b123491733183240">port link-type trunk</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1507293039183240">port trunk allow-pass vlan 101 to 200</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b807294473183240">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b810534529183240">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b352993911573">portswitch</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2008422276183240">port link-type trunk</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2063005828183240">port trunk allow-pass vlan 101 to 200</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b764872043183240">quit</strong></pre>
+<div class="p" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p920720494245"># Configure DeviceC. On DeviceC, create VLANs 2 to 100, and add <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span> to VLANs 2 to 100. The configurations of DeviceD to DeviceH are similar to the configuration of DeviceC.<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1994920572814">[DeviceC] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b17550183411287">vlan batch 2 to 100</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b89491455283">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1733121112912">portswitch</strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1147732615296">port link-type trunk</strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b3746164512918">port trunk allow-pass vlan 2 to 100</strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b12949155282">quit</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b69491512816">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b69491457286">portswitch</strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1042841213307">port link-type trunk</strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b44291112153018">port trunk allow-pass vlan 2 to 100</strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b169496517286">quit</strong></pre>
+</div>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_example121226172748"><a name="EN-US_TASK_0000001366159869__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_ul1577985326183240"><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li1083218921183240"><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1441529628183240"><a name="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li1083218921183240"></a><a name="en-us_task_0000001130783108_li1083218921183240"></a>Run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_cmdname1739378526183240">display stp interface brief</span></b> command on DeviceA.</p>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1196904261183240"># <span>10GE</span> <span>0/0/4</span> is a designated port in the CIST of MSTP process 1 and in instance 1.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen238523056183240">[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b445363579183240">display stp process 1 interface <span>10ge</span> <span>0/0/4</span> brief</strong>
+ MSTID      Port                    Role  STP State       Protection
+   0        <span>10GE</span><span>0/0/4</span>              DESI  FORWARDING      NONE
+   1        <span>10GE</span><span>0/0/4</span>              DESI  FORWARDING      NONE</pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p563176574183240"># <span>10GE</span> <span>0/0/2</span> is a designated port in the CIST of MSTP process 2 and in instance 2.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1885503926183240">[DeviceA] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b2064367869183240">display stp process 2 interface <span>10ge</span> <span>0/0/2</span> brief</strong>
+ MSTID      Port                    Role  STP State       Protection
+   0        <span>10GE</span><span>0/0/2</span>              DESI  FORWARDING      ROOT
+   2        <span>10GE</span><span>0/0/2</span>              DESI  FORWARDING      ROOT</pre>
+</li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li1223156968183240"><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1885692092183240"><a name="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li1223156968183240"></a><a name="en-us_task_0000001130783108_li1223156968183240"></a>Run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_cmdname1934324306183240">display stp interface brief</span></b> command on DeviceB.</p>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p998180558183240"># <span>10GE</span> <span>0/0/4</span> is a designated port in the CIST of MSTP process 3 and in instance 3.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1646758028183240">[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b1310227496183240">display stp process 3 interface <span>10ge</span> <span>0/0/4</span> brief</strong>
+ MSTID      Port                    Role  STP State       Protection
+   0        <span>10GE</span><span>0/0/4</span>              DESI  FORWARDING      NONE
+   3        <span>10GE</span><span>0/0/4</span>              DESI  FORWARDING      NONE</pre>
+<p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1911540957183240"># <span>10GE</span> <span>0/0/2</span> is a designated port in the CIST of MSTP process 2 and in instance 2.</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen920951050183240">[DeviceB] <strong id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_b225757442183240">display stp process 2 interface <span>10ge</span> <span>0/0/2</span> brief</strong>
+ MSTID      Port                    Role  STP State       Protection
+   0        <span>10GE</span><span>0/0/2</span>              DESI  FORWARDING      ROOT
+   2        <span>10GE</span><span>0/0/2</span>              DESI  FORWARDING      ROOT</pre>
+</li></ul>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001366159869__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_ul1994952794183240"><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li2089049687183240"><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p1447944606183240"><a name="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li2089049687183240"></a><a name="en-us_task_0000001130783108_li2089049687183240"></a>DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen1776115684183240">#
+sysname DeviceA
+#
+vlan batch 2 to 200
+#
+stp enable
+#
+stp region-configuration
+ region-name RG1
+ instance 1 vlan 2 to 100
+ instance 2 vlan 101 to 200
+ instance 3 vlan 201 to 300
+#
+stp process 1
+ stp instance 0 root primary
+ stp instance 1 root primary
+ stp enable
+stp process 2
+ stp instance 0 root primary
+ stp instance 2 root primary
+ stp link-share-protection
+ stp enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 101 to 200
+ stp binding process 2 link-share
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 101 to 200
+ stp binding process 2
+ stp root-protection
+#
+interface <span>10GE</span><span>0/0/3</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 100
+ stp binding process 1
+#
+interface <span>10GE</span><span>0/0/4</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 100
+ stp binding process 1
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li1829328968183240"><p id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_p8591077183240"><a name="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li1829328968183240"></a><a name="en-us_task_0000001130783108_li1829328968183240"></a>DeviceB</p>
+<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen571977176183240">#
+sysname DeviceB
+#
+vlan batch 101 to 300
+#
+stp enable
+#
+stp region-configuration
+ region-name RG1
+ instance 1 vlan 2 to 100
+ instance 2 vlan 101 to 200
+ instance 3 vlan 201 to 300
+#
+stp process 2
+ stp instance 0 root secondary
+ stp instance 2 root secondary
+ stp link-share-protection
+ stp enable
+stp process 3
+ stp instance 0 root primary
+ stp instance 3 root primary
+ stp enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 101 to 200
+ stp binding process 2 link-share
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 101 to 200
+ stp binding process 2
+ stp root-protection
+#
+interface <span>10GE</span><span>0/0/3</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 201 to 300
+ stp binding process 3
+#
+interface <span>10GE</span><span>0/0/4</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 201 to 300
+ stp binding process 3
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_li1081253475">DeviceC (The configurations of DeviceD to DeviceH are similar to the configuration of DeviceC.)<pre class="screen" id="EN-US_TASK_0000001366159869__en-us_task_0000001130783108_screen512734012919">#
+sysname DeviceC
+#
+vlan batch 2 to 100
+#
+stp enable
+#
+stp region-configuration
+ region-name RG1
+ instance 1 vlan 2 to 100
+#
+stp process 1
+ stp enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 100
+ stp binding process 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 2 to 100
+ stp binding process 1
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_stp_cfg_1132.html">Configuration Examples for STP/RSTP/MSTP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_stp_cfg_1186.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_stp_cfg_1187.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

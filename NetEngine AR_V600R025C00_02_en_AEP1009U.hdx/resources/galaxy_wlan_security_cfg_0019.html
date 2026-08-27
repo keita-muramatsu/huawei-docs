@@ -1,0 +1,99 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring WPA/WPA2-802.1X Authentication">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_security_cfg_0010.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_security_cfg_0012.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_security_cfg_0029.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="WLAN Security">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="WLAN Security">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="WLAN Security">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="WLAN Security">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512677190">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring WPA/WPA2-802.1X Authentication</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512677190"></a><a name="EN-US_TASK_0000001512677190"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring WPA/WPA2-802.1X Authentication</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512677190__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Both WPA and WPA2 support 802.1X authentication and the TKIP and AES encryption algorithms. They offer almost the same security level, mainly differing in the protocol packet format. </p>
+<p>WPA/WPA2-802.1X authentication applies to networks that require high security, such as enterprise networks. An independent authentication server is required. If STAs support only WEP encryption, 802.1X+TKIP can be implemented without a hardware upgrade, whereas 802.1X+AES may be implemented only after a hardware upgrade.</p>
+<p>STAs typically support different authentication and encryption modes. To enable various types of STAs to access the network and facilitate management by network administrators, you can configure both WPA and WPA2. If the security policy is set to WPA-WPA2 authentication, STAs supporting WPA or WPA2 can be authenticated. If the encryption mode is set to TKIP-AES, any STAs supporting TKIP or AES can encrypt service packets.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512677190__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the WLAN view.</span><p><pre class="screen"><b><span class="cmdqueryname">wlan</span></b></pre>
+</p></li><li><span>Create a security profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">security-profile</span></b> <strong><span>name</span></strong> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, the security profile <strong>default</strong> exists in the system.</p>
+</p></li><li><span>Configure a security policy.</span><p><ul><li>Configure WPA-802.1X or WPA2-802.1X authentication in a security policy.<pre class="screen"><b><span class="cmdqueryname">security</span></b> { <strong><span>wpa</span></strong> | <strong><span>wpa2</span></strong> } <b><span class="cmdqueryname">dot1x</span></b> { <strong><span>aes</span></strong> | <strong><span>tkip</span></strong> | <strong><span>aes-tkip</span></strong> }</pre>
+<p>By default, no security policy is configured.</p>
+</li><li>Configure WPA-WPA2-802.1X authentication in a security policy.<pre class="screen"><b><span class="cmdqueryname">security</span></b> <strong><span>wpa-wpa2</span></strong> <b><span class="cmdqueryname">dot1x</span></b> { <strong><span>tkip</span></strong> [ <strong><span>aes</span></strong> ] | <strong><span>aes</span></strong> | <strong><span>aes-tkip</span></strong> }</pre>
+<p>By default, no security policy is configured.</p>
+</li></ul>
+</p></li><li><span>(Optional) Enable the periodic PTK update function.</span><p><pre class="screen"><b><span class="cmdqueryname">wpa ptk-update enable</span></b></pre>
+<p>By default, the periodic PTK update function is disabled.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When periodic PTK update is implemented, some STAs may encounter service interruptions or go offline due to individual problems.</p>
+</div></div>
+</p></li><li><span>(Optional) Configure the periodic PTK update interval.</span><p><pre class="screen"><b><span class="cmdqueryname">wpa ptk-update ptk-update-interval</span></b> <i><span class="varname">ptk-update-interval-value</span></i></pre>
+<p>By default, the interval for updating PTKs is 43200 seconds.</p>
+</p></li><li><span>(Optional) Configure the PMF function.</span><p><pre class="screen"><b><span class="cmdqueryname">pmf</span></b> { <strong><span>optional</span></strong>| <strong><span>mandatory</span></strong> }</pre>
+<p>By default, the PMF function is disabled for a VAP.</p>
+<p>This function requires WPA2 authentication and AES encryption.</p>
+</p></li><li><span>(Optional) Disable key negotiation for multicast traffic.</span><p><pre class="screen" id="EN-US_TASK_0000001512677190__en-us_task_0000001513036354_screen1479305391712"><strong id="EN-US_TASK_0000001512677190__en-us_task_0000001513036354_b133165418181"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512677190__en-us_task_0000001513036354_cmdname205597815185">wpa group-key-negotiation disable</span></b></strong></pre>
+<p id="EN-US_TASK_0000001512677190__en-us_task_0000001513036354_p8793125310177">By default, key negotiation for multicast traffic is enabled.</p>
+</p></li><li><span>(Optional) Enable the function of disconnecting STAs when the device does not receive the last packet from the STAs during unicast key negotiation.</span><p><pre class="screen" id="EN-US_TASK_0000001512677190__en-us_task_0000001513036354_screen184553810345"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512677190__en-us_task_0000001513036354_cmdname10696182083814">wpa unicast-key-negotiation time-out kick-sta enable</span></b></pre>
+<p id="EN-US_TASK_0000001512677190__en-us_task_0000001513036354_p42646596405">By default, the device does not disconnect STAs when it does not receive the last packet from the STAs during unicast key negotiation.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_security_cfg_0010.html">Configuring the Security Policy Function
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_wlan_security_cfg_0012.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_wlan_security_cfg_0029.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring PnP VLAN Auto-Negotiation">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0103.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0104.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_system_setup_0009.xml">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563881925">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring PnP VLAN Auto-Negotiation</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563881925"></a><a name="EN-US_TASK_0000001563881925"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring PnP VLAN Auto-Negotiation</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563881925__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_context1677625172748"><p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p14231635183116">The PnP VLAN auto-negotiation function needs to be configured on the device in the following scenarios:</p>
+<div class="note" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_note1382117248275"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p482132462715">When configuring the PnP VLAN on the downlink interface of the upstream device, ensure that <em id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_i22791325163812">vlan-id</em> is within the range configured using <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b5219111012384">port trunk allow-pass vlan </strong>{ { { <em id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_i1121961019386">vlan-id1</em> [ <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b18220210203811">to</strong><em id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_i172203106388">vlan-id2</em> ] } &amp;&lt;1-40&gt; } | <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b192201210203818">all</strong> } on the uplink interface of the downstream device to facilitate cloud migration.</p>
+</div></div>
+<ul id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_ul6802111111494"><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li1803411184917">The DHCP server does not use the default configuration VLAN1, and a new device needs to be connected.<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p1476944545314"><a name="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li1803411184917"></a><a name="en-us_task_0000001512842386_li1803411184917"></a>As shown in <a href="#EN-US_TASK_0000001563881925__en-us_task_0000001512842386_fig139689744620">Figure 1</a>, if the VLAN used by the DHCP server is not the default one (VLAN 1), DeviceB uses management VLAN 1 to send a request packet to the DHCP server to obtain the NETCONF enabling status, IP address, and iMaster NCE-Campus information after connecting to the network. However, DeviceB fails to obtain the information because the VLAN used by the DHCP server is not VLAN 1. To solve this problem, configure PnP VLAN auto-negotiation on the upstream device (DeviceA). If all devices can be managed by iMaster NCE-Campus, you can configure PnP VLAN auto-negotiation for DeviceA through the controller. If DeviceA cannot be managed by iMaster NCE-Campus, you can manually configure DeviceA. After DeviceA starts, it transmits the PnP VLAN to DeviceB through PnP VLAN negotiation so that DeviceB can use the PnP VLAN to obtain related information from the DHCP server.</p>
+<div class="fignone" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_fig139689744620"><a name="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_fig139689744620"></a><a name="en-us_task_0000001512842386_fig139689744620"></a><span class="figcap"><b>Figure 1 </b>Campus network diagram</span><br><span><img id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_en-us_cliref_0194894753_image1732754220183318" src="figure/en-us_image_0000001513042098.png" width="NaN" height="NaN"></span></div>
+<div class="p" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p165127291575">When all devices can be managed by iMaster NCE-Campus, the upstream device DeviceA can transmit the PnP VLAN to the downstream device DeviceB only when the following conditions are met:<ul id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_ul1051272945719"><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li651222965719">DeviceA has registered with iMaster NCE-Campus.</li><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li165121429195718">iMaster NCE-Campus has delivered the PnP VLAN ID to DeviceA. The configuration file contains the <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b45121229165711"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname150872912396">pnp startup-vlan</span></b></strong> <em id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_i651214293573"><i><span class="varname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_varname193391141183917">vlan-id</span></i></em> command or DeviceA has obtained the PnP VLAN ID through negotiation with its upstream device.</li><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li25127299574">iMaster NCE-Campus has delivered the configuration of enabling the function of transmitting the PnP VLAN to downstream devices to DeviceA, and the configuration file contains the <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b205121729185712"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname191671025143910">pnp startup-vlan send enable</span></b></strong> command.</li><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li10512192945716">The interface of DeviceA has been enabled to send PnP VLAN information to downstream devices. After DeviceA is enabled through iMaster NCE-Campus to transmit PnP VLAN information to downstream devices, interfaces on DeviceA are enabled to transmit PnP VLAN information to downstream devices by default. If the <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b96299516122"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname181342156381">pnp startup-vlan send disable</span></b></strong> or <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b7644121217124"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname13510119133816">pnp disable</span></b></strong> command exists in the interface configuration file, the function of transmitting PnP VLAN information to downstream devices is disabled on the interface. In this case, you can enable the function through iMaster NCE-Campus.</li></ul>
+</div>
+</li><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li16946756114913">If the default management VLAN is changed on iMaster NCE-Campus, iMaster NCE-Campus needs to notify the downstream device of the new VLAN.<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p1514716125815"><a name="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li16946756114913"></a><a name="en-us_task_0000001512842386_li16946756114913"></a>On a campus network shown in <a href="#EN-US_TASK_0000001563881925__en-us_task_0000001512842386_fig1996520044718">Figure 2</a>, when the management VLAN of iMaster NCE-Campus is changed from the default VLAN 1 to another VLAN, the core device needs to notify the downstream device of the new VLAN. In this case, you need to configure the PnP VLAN auto-negotiation function on the core device. If the core device is managed by iMaster NCE-Campus, you can configure it through the controller. If core devices are not managed by iMaster NCE-Campus, access devices and aggregation devices can be managed by iMaster NCE-Campus. In this case, you need to manually configure the core device.</p>
+<div class="fignone" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_fig1996520044718"><a name="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_fig1996520044718"></a><a name="en-us_task_0000001512842386_fig1996520044718"></a><span class="figcap"><b>Figure 2 </b>Campus network diagram</span><br><span><img id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_en-us_cliref_0194894753_image387218862183318" src="figure/en-us_image_0000001564002325.png" width="NaN" height="NaN"></span></div>
+</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563881925__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_steps10132325172748"><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_step5253145172748"><span id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmd7907968172748">Enter the system view.</span><p><pre class="screen" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_screen3293324392"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname243019436559">system-view</span></b></pre>
+</p></li><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_step5534353183215"><span id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmd12533165312329">Configure a wired PnP VLAN ID.</span><p><pre class="screen" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_screen25801333193911"><b><span class="icssearchname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname13360947105520">pnp startup-vlan</span></b> <i><span class="varname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_varname717105918558">vlan-id</span></i></pre>
+<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p1240145095619">By default, no wired PnP VLAN ID is configured on a device.</p>
+</p></li><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_step7451231143313"><span id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmd645193113319">(Optional) Configure the wireless PnP VLAN ID.</span><p><pre class="screen" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_screen492593415397"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname118301521145618">pnp wireless startup-vlan</span></b> <i><span class="varname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_varname118221433184316">vlan-id</span></i></pre>
+<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p979818256590">By default, no wireless PnP VLAN ID is configured on a device.</p>
+</p></li><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_step1078594319346"><span id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmd67855432347">Enable the device to transmit the PnP VLAN to a downstream device.</span><p><pre class="screen" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_screen15213133813911"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname118381259165820">pnp startup-vlan send enable</span></b></pre>
+<div class="note" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_note1857917381815"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_ul1480825419113"><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li480812543115">By default, a device is disabled from transmitting the PnP VLAN to its downstream device. After this function is enabled in the system view, each interface is enabled to transmit PnP VLAN information to downstream devices by default.</li><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_li492719256212">By default, a downstream device is enabled to receive the PnP VLAN negotiation packets sent by an upstream device.</li></ul>
+</div></div>
+</p></li><li id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_step123001654112116"><span id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmd20300125412116">(Optional) If devices are connected through Eth-Trunk interfaces, enable the Eth-Trunk links to transmit PnP VLAN information to downstream devices.</span><ol type="a" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_substeps1521532222317"><li class="substepexpand" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_substep721592210232"><span id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmd121562210238">Enter the Eth-Trunk view.</span><p><pre class="screen" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_screen3212134291020"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname95821423171">interface eth-trunk</span></b> <i><span class="varname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_varname385151511819">trunk-id</span></i></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_substep493812517237"><span id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmd149381051112319">Enable the Eth-Trunk link to transmit the PnP VLAN to downstream devices.</span><p><pre class="screen" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_screen835844115193"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname1642493314205">pnp startup-link-aggregation send enable</span></b></pre>
+<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p42161237181120">By default, a downstream device is enabled to receive the PnP VLAN negotiation packets sent by an upstream device.</p>
+<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p187717460227">After PNP link aggregation is enabled, uplink interfaces of downstream devices automatically create Eth-Trunk 0 through the PNP mechanism and aggregate links into Eth-Trunk 0. Eth-Trunk 0 is not automatically deleted after being automatically created. The working mode of Eth-Trunk 0 is also automatically negotiated by the upstream device and cannot be manually changed. To manually change the working mode of Eth-Trunk 0, you need to first run the <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b1424312554101"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname16494154391417">undo pnp startup-link-aggregation receive enable</span></b></strong> command to disable the PnP VLAN auto-negotiation function on the downstream device.</p>
+<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p19383240171115">If the downstream device starts to access the network with a non-empty configuration, you need to configure the management VLAN as the PnP VLAN in the system-view so that the device can go online.</p>
+<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p1491844313358">The device can only function as an upstream device and does not support the <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b11457193512112">pnp startup-link-aggregation receive enable</strong> or <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b7457133513117">undo pnp startup-link-aggregation receive enable</strong> command.</p>
+</p></li></ol>
+</li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001563881925__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_postreq24192593172748"><p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p1195115122716">You can run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname18531324165111">pnp startup-vlan send disable</span></b> command in the interface view to disable an interface from transmitting the PnP VLAN to a downstream device.</p>
+<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p137401756173220">You can run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname1472834185111">pnp disable</span></b> command in the interface view to disable PnP VLAN auto-negotiation.</p>
+<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p16441457114316">You can run the <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b112001923154417"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname7154184304614">display pnp trace</span></b></strong> command in the diagnostic view to check PnP VLAN auto-negotiation trace records.</p>
+<p id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_p152801635194617">You can run the <strong id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_b1227623534617"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563881925__en-us_task_0000001512842386_cmdname15272155814617">reset pnp trace</span></b></strong> command in the user view to clear PnP VLAN auto-negotiation trace records.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_netconf_cfg1_0103.html">(Optional) Configuring the PnP VLAN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_netconf_cfg1_0104.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

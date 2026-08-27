@@ -1,0 +1,198 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Using an Advanced ACL to Prevent External Hosts from Accessing an Internal Server">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0030.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0033.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_XTASK_0000001607911753">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Using an Advanced ACL to Prevent External Hosts from Accessing an Internal Server</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_XTASK_0000001607911753"></a><a name="EN-US_XTASK_0000001607911753"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Using an Advanced ACL to Prevent External Hosts from Accessing an Internal Server</h1>
+<div><div class="section"><h4 class="sectiontitle">Networking Requirements</h4>
+<div class="p"><p>As shown in <a href="#EN-US_XTASK_0000001607911753__fig397595815151">Figure 1</a>, different departments of an enterprise are connected through the switch. The enterprise allows only internal hosts to access the financial server, but prevents external hosts from accessing this server.</p>
+<div class="fignone" id="EN-US_XTASK_0000001607911753__fig397595815151"><a name="EN-US_XTASK_0000001607911753__fig397595815151"></a><a name="fig397595815151"></a><span class="figcap"><b>Figure 1 </b>Network diagram of using an advanced ACL to prevent external hosts from accessing an internal server</span><br><span><img src="figure/en-us_image_0000002299158597.png"></span></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4>
+<div class="p"><p>The configuration roadmap is as follows:</p>
+<ol><li>Configure an advanced ACL and ACL-based traffic classifier to filter the packets from external hosts to the financial server, thereby preventing external hosts from accessing this server.</li><li>Configure a traffic behavior to permit the packets that match the ACL's permit rules.</li><li>Configure and apply a traffic policy for the ACL and traffic behavior to take effect.</li></ol>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li><span>Add interfaces to VLANs and assign IP addresses to the corresponding VLANIF interfaces.</span><p><p># Add <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span> to VLAN 10, VLAN 20, and VLAN 30, respectively. Then add <span>10GE</span><span>0/0/4</span> to VLAN 100, and assign IP addresses to the corresponding VLANIF interfaces. The following uses <span>10GE</span><span>0/0/1</span> and VLANIF 10 as an example. The configurations of <span>10GE</span><span>0/0/2</span>, <span>10GE</span><span>0/0/3</span>, and <span>10GE</span><span>0/0/4</span> are similar to the configuration of <span>10GE</span><span>0/0/1</span>, and the configurations of VLANIF 20, VLANIF 30, and VLANIF 100 are similar to the configuration of VLANIF 10.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span class="keyword">Switch</span></strong>
+[Switch]<strong> </strong><strong>vlan batch 10 20 30</strong> <strong>100</strong>
+[Switch] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[Switch-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[Switch-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 10</strong>
+[Switch-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[Switch] <strong>interface vlanif 10</strong>
+[Switch-Vlanif10] <strong>ip address 10.164.1.1 255.255.255.0</strong>
+[Switch-Vlanif10] <strong>quit</strong></pre>
+</p></li><li><span>Configure an advanced ACL.</span><p><p># Create advanced ACL 3002 and configure rules to permit the packets from the president office, R&amp;D department, and marketing department to the financial server and deny those from external hosts to this server.</p>
+<pre class="screen">[Switch] <strong>acl 3002</strong>
+[Switch-acl-adv-3002] <strong>rule permit ip source 10.164.1.0 0.0.0.255 destination 10.164.4.4 0.0.0.0</strong>
+[Switch-acl-adv-3002] <strong>rule permit ip source 10.164.2.0 0.0.0.255 destination 10.164.4.4 0.0.0.0</strong>
+[Switch-acl-adv-3002] <strong>rule permit ip source 10.164.3.0 0.0.0.255 destination 10.164.4.4 0.0.0.0</strong>
+[Switch-acl-adv-3002] <strong>rule deny ip destination 10.164.4.4 0.0.0.0</strong>
+[Switch-acl-adv-3002] <strong>quit</strong></pre>
+</p></li><li><span>Configure an advanced ACL-based traffic classifier.</span><p><p># Configure a traffic classifier named <strong>c_network</strong> to classify packets that match ACL 3002.</p>
+<pre class="screen">[Switch] <strong>traffic classifier c_network</strong> 
+[Switch-classifier-c_network] <strong>if-match acl 3002</strong>
+[Switch-classifier-c_network] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic behavior.</span><p><p># Configure a traffic behavior named <strong>b_network</strong> and set the action to permit (default value).</p>
+<pre class="screen">[Switch] <strong>traffic behavior b_network</strong>
+[Switch-behavior-b_network] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic policy.</span><p><p># Configure a traffic policy named <strong>p_network</strong> and associate <strong>c_network</strong> and <strong>b_network</strong> with the traffic policy.</p>
+<pre class="screen">[Switch] <strong>traffic policy p_network</strong>
+[Switch-trafficpolicy-p_network]<strong> classifier c_network behavior b_network</strong>
+[Switch-trafficpolicy-p_network] <strong>quit</strong></pre>
+</p></li><li><span>Apply the traffic policy.</span><p><p># Apply the traffic policy <strong>p_network</strong> to the outbound direction of <span>10GE</span><span>0/0/4</span> (because all traffic from internal and external hosts is sent from <span>10GE</span><span>0/0/4</span> to the server).</p>
+<pre class="screen">[Switch] <strong>interface <span>10GE</span> <span>0/0/4</span></strong>
+[Switch-<span>10GE</span><span>0/0/4</span>] <strong>traffic-policy p_network outbound </strong>
+[Switch-<span>10GE</span><span>0/0/4</span>] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p># Check the ACL rule configuration.</p>
+<pre class="screen">[Switch] <strong>display acl 3002</strong>
+Advanced ACL 3002, 4 rules                                                       
+Acl's step is 5                                                                   
+ rule 5 permit ip source 10.164.1.0 0.0.0.255 destination 10.164.4.4 0 (0 times matched)           
+ rule 10 permit ip source 10.164.2.0 0.0.0.255 destination 10.164.4.4 0 (0 times matched)         
+ rule 15 permit ip source 10.164.3.0 0.0.0.255 destination 10.164.4.4 0 (0 times matched)       
+ rule 20 deny ip destination 10.164.4.4 0 (0 times matched)  </pre>
+<p># Check the traffic classifier configuration.</p>
+<pre class="screen">[Switch] <strong>display </strong><strong>traffic classifier</strong>
+  Traffic Classifier Information:    
+    Classifier: c_network
+      Type: OR     
+      Rule(s) : 
+         if-match acl 3002                                                    
+
+Total classifier number is 1   </pre>
+<p># Check the traffic policy configuration.</p>
+<pre class="screen">[Switch] <strong>display traffic policy p_network </strong>
+ Traffic Policy Information:                                      
+ Policy: p_network                                                                    
+  Classifier: c_network                                                               
+    Type: OR                                                                      
+   Behavior: b_network                                                                     
+     Permit  </pre>
+<p># Check the traffic policy application records.</p>
+<pre class="screen">[Switch] <strong>display traffic-policy applied-record</strong> 
+Total record : 1                                                                                                                                    
+-------------------------------------------------------------                                                                                     
+ Policy Type/Name:    Apply Parameter      Slot       State
+--------------------------------------------------------------
+   p_network           <span>10GE</span>1/0/4(OUT)       1        success      
+--------------------------------------------------------------                                                                     </pre>
+<p># Check that the president office, marketing department, and R&amp;D department can access the financial server, but external hosts cannot.</p>
+</p></li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4>
+<div class="p"><p>Switch</p>
+<pre class="screen"># 
+sysname Switch 
+# 
+vlan batch 10 20 30 100  
+# 
+acl number 3002                                                                   
+ rule 5 permit ip source 10.164.1.0 0.0.0.255 destination 10.164.4.4 0            
+ rule 10 permit ip source 10.164.2.0 0.0.0.255 destination 10.164.4.4 0           
+ rule 15 permit ip source 10.164.3.0 0.0.0.255 destination 10.164.4.4 0           
+ rule 20 deny ip destination 10.164.4.4 0   
+# 
+traffic classifier c_network type or 
+ if-match acl 3002 
+# 
+traffic behavior b_network 
+ permit 
+# 
+traffic policy p_network 
+ classifier c_network behavior b_network precedence 5 
+# 
+interface Vlanif10  
+ ip address 10.164.1.1 255.255.255.0 
+# 
+interface Vlanif20  
+ ip address 10.164.2.1 255.255.255.0 
+# 
+interface Vlanif30  
+ ip address 10.164.3.1 255.255.255.0 
+# 
+interface Vlanif100  
+ ip address 10.164.4.1 255.255.255.0   
+# 
+interface <span>10GE</span>1/0/1  
+ port link-type trunk                                                             
+ port trunk allow-pass vlan 10  
+# 
+interface <span>10GE</span>1/0/2  
+ port link-type trunk                                                             
+ port trunk allow-pass vlan 20  
+# 
+interface <span>10GE</span>1/0/3  
+ port link-type trunk                                                             
+ port trunk allow-pass vlan 30  
+# 
+interface <span>10GE</span>1/0/4  
+ port link-type trunk                                                             
+ port trunk allow-pass vlan 100   
+ traffic-policy p_network outbound 
+# 
+return </pre>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_acl_cfg_0016.html">Configuration Examples for ACLs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_acl_cfg_0030.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_acl_cfg_0033.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Implementation of Spectrum Analysis">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_radio_cfg_0035.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_radio_cfg_0036.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_radio_cfg_0043.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="RRM">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="RRM">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="RRM">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002038721157">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Implementation of Spectrum Analysis</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002038721157"></a><a name="EN-US_CONCEPT_0000002038721157"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Implementation of Spectrum Analysis</h1>
+<div><p></p>
+<div class="section"><h4 class="sectiontitle">Network Architecture</h4><div class="p">As shown in <a href="#EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000401">Figure 1</a>, the network architecture of spectrum analysis contains the spectrum sampling engine, spectrum analyzer, and interference visualization module.<ul><li>Spectrum sampling engine: collects and sends spectrum information collected on a WLAN to a spectrum analyzer.</li><li>Spectrum analyzer: analyzes spectrum data, identifies interference source types, and sends the report about interference devices to the interference visualization module.</li><li>Interference visualization module: displays interference source information in graphs, including real-time spectrum graphs.</li></ul>
+<div class="fignone" id="EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000401"><a name="EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000401"></a><a name="fig_dc_fd_wlan-spectrum_000401"></a><span class="figcap"><b>Figure 1 </b>Spectrum analysis network architecture</span><br><span><img src="images/fig_dc_fd_wlan-spectrum_000401.png" width="464.3362831668751" title="Click to enlarge" class="imgResize"></span></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Fundamentals</h4><p>Spectrum analysis is implemented as follows:</p>
+<ol><li><p>Each AP functions as a spectrum sampling engine to scan and sample the spectrum.</p>
+<ol type="a"><li><p>The APs periodically scan the radio environment.</p>
+</li><li><p>The APs obtain original spectrum sample data from channel scanning. Each piece of spectrum sample data contains a group of subcarriers, which can be used for interference identification.</p>
+</li></ol>
+</li><li><p>The spectrum analysis module of each AP serving as a spectrum analyzer computes the sample data based on an algorithm to identify non-Wi-Fi devices.</p>
+<p>A common algorithm involves the following processing steps: pulse signal extraction, pulse signal combining, pulse clustering, extraction of time signatures, extraction of frequency characteristics, period calculation, and duty cycle calculation.</p>
+<p>After the computation is complete, the AP can compare one or more characteristics with those in the interference source signature database to identify non-Wi-Fi devices.</p>
+<p>Currently, APs can identify the following types of non-Wi-Fi devices: Bluetooth devices, microwave ovens, 2.4 GHz cordless phone sets and bases, Zigbee devices, game controllers, 2.4 GHz/5 GHz wireless video and audio devices, baby monitors, and fixed-band devices. Due to spectrum differences, some non-Wi-Fi devices may not be identified.</p>
+<p>The AP adds the identified device to the non-Wi-Fi device list. You can query the non-Wi-Fi device list using the CLI or web system. If the type of an identified device is not in the non-Wi-Fi device list, the AP reports an alarm but it will not report alarms of the same type within 10 minutes. If the type of the identified device is already in the list, the AP does not report an alarm.</p>
+</li><li><p>The AP reports the data to the interference visualization module.</p>
+<p>The AP can report data to the interference visualization module directly or through the WAC. <span>iMaster NeoSight or iMaster NCE-CampusInsight</span> can be used as an interference visualization module. <span>You can view the spectrum graph on the web system of the WAC.</span></p>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Spectrum Graphs of Non-Wi-Fi Devices</h4><p>The AP reports the spectrum data to the spectrum drawing server which then displays the data in graphs. Through the spectrum graphs, users can learn channels, interference strength, and types of interference sources in the wireless environments.</p>
+<p>You can determine the frequency of an interference source based on the spectrum density on the spectrum graph, where the signal strength is distinguished by different colors. How is the interference source type determined? The following describes several typical spectrum graphs of non-Wi-Fi devices. When analyzing a spectrum graph, you can identify the interference source type based on the spectrum characteristics.</p>
+<p>Typical non-Wi-Fi devices are classified as frequency-hopping devices or fixed-frequency devices.</p>
+<div class="p"><ul><li><p><strong>Frequency-hopping devices</strong></p>
+<p>The frequency of a frequency-hopping device changes with time. For example, most of cordless phones, Bluetooth devices, and game controllers are frequency-hopping devices. <a href="#EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000403">Figure 2</a> shows the spectrum of a Bluetooth device (horizontal axis: time; vertical axis: frequency). The red squares indicate the signal of the Bluetooth device. The signal appears at the 2465 MHz frequency in the time scale [6,9] and hops over to the 2475 MHz frequency at the next time scale [9,12].</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000403"><a name="EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000403"></a><a name="fig_dc_fd_wlan-spectrum_000403"></a><span class="figcap"><b>Figure 2 </b>Spectrum of a frequency-hopping device</span><br><span><img src="images/fig_dc_fd_wlan-spectrum_000403.png" width="465.5" title="Click to enlarge" class="imgResize"></span></div>
+</li><li><p><strong>Fixed-frequency devices</strong></p>
+<div class="p">The frequency of a fixed-frequency device remains unchanged. Typical fixed-frequency devices include microwave ovens, wireless cameras, and wireless video and audio transmitters. In terms of bandwidth occupation, fixed-frequency devices are classified as broadband or narrowband devices.<ul><li>Broadband devices: occupy large bandwidth, such as microwave ovens that operate on several channels such as 11, 12, and 13. <a href="#EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000404">Figure 3</a> shows the real-time spectrum of a microwave oven (horizontal axis: time; vertical axis: frequency). In addition to broadband characteristics, the microwave oven also has obvious frequency scanning features, that is, the center frequency drifts up and down.<div class="fignone" id="EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000404"><a name="EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000404"></a><a name="fig_dc_fd_wlan-spectrum_000404"></a><span class="figcap"><b>Figure 3 </b>Spectrum of a broadband device</span><br><span><img src="images/fig_dc_fd_wlan-spectrum_000404.png" width="465.5" title="Click to enlarge" class="imgResize"></span></div>
+</li><li>Narrowband devices: occupy small bandwidth, such as wireless cameras, wireless video and audio transmitters, and baby monitors. <a href="#EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000405">Figure 4</a> shows the realtime spectrum of a baby monitor (horizontal axis: time; vertical axis: frequency).<div class="fignone" id="EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000405"><a name="EN-US_CONCEPT_0000002038721157__fig_dc_fd_wlan-spectrum_000405"></a><a name="fig_dc_fd_wlan-spectrum_000405"></a><span class="figcap"><b>Figure 4 </b>Spectrum of a narrowband device</span><br><span><img src="images/fig_dc_fd_wlan-spectrum_000405.png" width="465.5" title="Click to enlarge" class="imgResize"></span></div>
+</li></ul>
+</div>
+</li></ul>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_radio_cfg_0035.html">Configuring Spectrum Analysis
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_wlan_radio_cfg_0036.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_wlan_radio_cfg_0043.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

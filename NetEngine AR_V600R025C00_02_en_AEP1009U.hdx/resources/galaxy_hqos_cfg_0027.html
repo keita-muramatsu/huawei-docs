@@ -1,0 +1,138 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Parent and Child Traffic Policies">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0026.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0040.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563880525">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Parent and Child Traffic Policies</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563880525"></a><a name="EN-US_TASK_0000001563880525"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Parent and Child Traffic Policies</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563880525__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Hierarchical CAR HQoS is configured in parent and child traffic policy mode. Parent and child traffic policies are configured through MQC. The parent traffic policy is used to differentiate users, and the child traffic policy is used to differentiate services of users. You can specify CAR actions for users and services in the traffic behaviors of parent and child traffic policies, respectively, and bind the child traffic policy to a traffic behavior of the parent traffic policy to implement hierarchical CAR.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When configuring CAR actions for parent and child traffic policies, you need to configure the <i><span class="varname">cir-percentage</span></i> and <i><span class="varname">pir-percentage</span></i> parameters. The two parameters specify bandwidth percentage values.</p>
+<ul><li>In the parent traffic policy, their base values are both the CIR value of the CAR action defined on an interface. (The CIR value is configured in <a href="galaxy_hqos_cfg_0031.html">Applying Hierarchical CAR HQoS on an Inbound Interface</a>.)</li><li>In the child traffic policy, their base values are both the CIR value of the CAR action defined in the parent traffic policy. (The CIR value is configured in the CAR action of the parent traffic policy.)</li></ul>
+<p>Given this, before configuring parent and child traffic policies, you need to plan the bandwidth allocation at each level in hierarchical CAR.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563880525__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Configure a child traffic policy.</span><ol type="a"><li class="substepexpand" id="EN-US_TASK_0000001563880525__substep32811501916"><span id="EN-US_TASK_0000001563880525__cmd1828120501993">Create a traffic classifier and enter the traffic classifier view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__screen499820516595"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__cmdname999815518598">traffic classifier</span></b> <i><span class="varname" id="EN-US_TASK_0000001563880525__varname199981451185918">classifier-name</span></i> [ <strong><span id="EN-US_TASK_0000001563880525__cmdparmname19981251135919">type</span></strong> { <strong><span id="EN-US_TASK_0000001563880525__cmdparmname0999951175919">and</span></strong> | <strong><span id="EN-US_TASK_0000001563880525__cmdparmname2999145195912">or</span></strong> } ]</pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001563880525__substep1399751105911"><span id="EN-US_TASK_0000001563880525__cmd119971218593">Select proper traffic classification rules as required. For details, see "<a href="galaxy_mqc_cfg_0005.html">Configuring a Traffic Classifier</a>" in MQC Configuration.</span></li><li class="substepexpand" id="EN-US_TASK_0000001563880525__substep156184431908"><span id="EN-US_TASK_0000001563880525__cmd261874313017">Exit the traffic classifier view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__screen8380142716014"><strong id="EN-US_TASK_0000001563880525__b738017276014"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__cmdname61012371799">quit</span></b></strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001563880525__substep13639124817126"><span id="EN-US_TASK_0000001563880525__cmd2639104812125">Create a traffic behavior and enter the traffic behavior view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__screen16562124514523"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__cmdname1138254817175340">traffic behavior</span></b> <i><span class="varname" id="EN-US_TASK_0000001563880525__varname1587706782175340">behavior-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the CAR action of the child traffic policy in the traffic behavior.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__screen17473193192218"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__cmdname1495534672111">car cir pct</span></b> <i><span class="varname" id="EN-US_TASK_0000001563880525__varname129550469219">cir-percentage</span></i> [ <strong><span id="EN-US_TASK_0000001563880525__cmdparmname139554468215">pir</span></strong> <strong><span id="EN-US_TASK_0000001563880525__cmdparmname295514632116">pct</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563880525__varname1095524612117">pir-percentage</span></i> ] <strong><span id="EN-US_TASK_0000001563880525__cmdparmname199561846142117">hierarchical-car</span></strong> [ <strong><span id="EN-US_TASK_0000001563880525__cmdparmname12956144692112">cbs</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563880525__varname9956104614216">cbs-value</span></i> <strong><span id="EN-US_TASK_0000001563880525__cmdparmname1395684632118">pbs</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563880525__varname1795613463213">pbs-value</span></i> ] <strong><span id="EN-US_TASK_0000001563880525__cmdparmname10956146112117">share</span></strong> <strong><span id="EN-US_TASK_0000001563880525__cmdparmname15956204692111">mode</span></strong> <strong><span id="EN-US_TASK_0000001563880525__cmdparmname3956174642117">color-aware</span></strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001563880525__substep7137184662413"><span id="EN-US_TASK_0000001563880525__cmd713774617243">Exit the traffic behavior view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__screen8523111612515"><strong id="EN-US_TASK_0000001563880525__b1640161713253"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__cmdname1367772913254">quit</span></b></strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001563880525__substep13777829122513"><span id="EN-US_TASK_0000001563880525__cmd1177762918251">Create a traffic policy and enter the traffic policy view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__screen1145410616158"><strong id="EN-US_TASK_0000001563880525__b132061657174518"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__cmdname220555714451">traffic policy</span></b> </strong><i><span class="varname" id="EN-US_TASK_0000001563880525__varname173177584617">policy-name</span></i></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001563880525__substep812917488516"><span id="EN-US_TASK_0000001563880525__cmd512954895114">Bind a traffic classifier to a traffic behavior in the traffic policy.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__screen6741455185420"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__cmdname979606411175340">classifier</span></b> <i><span class="varname" id="EN-US_TASK_0000001563880525__varname1735113404175340">classifier-name</span></i> <strong><span id="EN-US_TASK_0000001563880525__cmdparmname1448135958175340">behavior</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563880525__varname272307595175340">behavior-name</span></i><span> [ <strong id="EN-US_TASK_0000001563880525__b795658152175340">precedence</strong> <em id="EN-US_TASK_0000001563880525__i642236598175340">precedence-value</em> ]</span></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000001563880525__substep8982311172714"><span id="EN-US_TASK_0000001563880525__cmd1898291122713">Exit the traffic policy view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__screen6982141142719"><strong id="EN-US_TASK_0000001563880525__b1698271152716"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__cmdname1765719422093">quit</span></b></strong></pre>
+</p></li></ol>
+</li><li><span>Configure a parent traffic policy.</span><ol type="a"><li class="substepexpand"><span>Create a traffic classifier and enter the traffic classifier view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_screen499820516595"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdname999815518598">traffic classifier</span></b> <i><span class="varname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_varname199981451185918">classifier-name</span></i> [ <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname19981251135919">type</span></strong> { <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname0999951175919">and</span></strong> | <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname2999145195912">or</span></strong> } ]</pre>
+</p></li><li class="substepexpand"><span>Select proper traffic classification rules as required. For details, see "<a href="galaxy_mqc_cfg_0005.html">Configuring a Traffic Classifier</a>" in MQC Configuration.</span></li><li class="substepexpand"><span>Exit the traffic classifier view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_screen8380142716014"><strong id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_b738017276014"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdname61012371799">quit</span></b></strong></pre>
+</p></li><li class="substepexpand"><span>Create a traffic behavior and enter the traffic behavior view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_screen16562124514523"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdname1138254817175340">traffic behavior</span></b> <i><span class="varname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_varname1587706782175340">behavior-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the CAR action of the parent traffic policy in the traffic behavior.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_screen17473193192218"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdname1495534672111">car cir pct</span></b> <i><span class="varname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_varname129550469219">cir-percentage</span></i> [ <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname139554468215">pir</span></strong> <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname295514632116">pct</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_varname1095524612117">pir-percentage</span></i> ] <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname199561846142117">hierarchical-car</span></strong> [ <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname12956144692112">cbs</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_varname9956104614216">cbs-value</span></i> <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname1395684632118">pbs</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_varname1795613463213">pbs-value</span></i> ] <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname10956146112117">share</span></strong> <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname15956204692111">mode</span></strong> <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname3956174642117">color-aware</span></strong></pre>
+</p></li><li class="substepexpand"><span>Bind the child traffic policy to the traffic behavior to associate the child traffic policy with the parent traffic policy.</span><p><pre class="screen"><b><span class="cmdqueryname">traffic-policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+<p>The value of <i><span class="varname">policy-name</span></i> is the name of the child traffic policy configured in step 2.</p>
+</p></li><li class="substepexpand"><span>(Optional) Apply an intelligent traffic policing policy.</span><p><pre class="screen"><b><span class="cmdqueryname">itp-policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+<p>For details about how to configure intelligent traffic policing, see <a href="galaxy_hqos_cfg_0040.html">(Optional) Configuring Intelligent Traffic Policing</a>.</p>
+<p>Apply an intelligent traffic policing policy after a child traffic policy is bound to the traffic behavior.</p>
+</p></li><li class="substepexpand"><span>Exit the traffic behavior view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_screen8523111612515"><strong id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_b1640161713253"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdname1367772913254">quit</span></b></strong></pre>
+</p></li><li class="substepexpand"><span>Create a traffic policy and enter the traffic policy view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_screen1145410616158"><strong id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_b132061657174518"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdname220555714451">traffic policy</span></b> </strong><i><span class="varname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_varname173177584617">policy-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Bind a traffic classifier to a traffic behavior in the traffic policy.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_screen6741455185420"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdname979606411175340">classifier</span></b> <i><span class="varname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_varname1735113404175340">classifier-name</span></i> <strong><span id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdparmname1448135958175340">behavior</span></strong> <i><span class="varname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_varname272307595175340">behavior-name</span></i><span> [ <strong id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_b795658152175340">precedence</strong> <em id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_i642236598175340">precedence-value</em> ]</span></pre>
+</p></li><li class="substepexpand"><span>Exit the traffic policy view.</span><p><pre class="screen" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_screen6982141142719"><strong id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_b1698271152716"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563880525__en-us_task_0000001563880525_cmdname1765719422093">quit</span></b></strong></pre>
+</p></li></ol>
+</li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563880525__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Example</h4><p><strong># Configure a child traffic policy.</strong></p>
+<ol><li>Create traffic classifiers <strong>service1</strong> and <strong>service2</strong> to classify different services (FTPS and DNS) by application protocol.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>traffic classifier service1</strong>
+[HUAWEI-classifier-service1] <strong>if-match application FTPS</strong>
+[HUAWEI-classifier-service1] <strong>quit</strong>
+[HUAWEI] <strong>traffic classifier service2</strong>
+[HUAWEI-classifier-service2]<strong> if-match</strong> <strong>application DNS</strong>
+[HUAWEI-classifier-service2] <strong>quit</strong></pre>
+</li><li>Create traffic behaviors <strong>service1</strong> and <strong>service2</strong> and configure corresponding CAR actions. The CAR values in traffic behaviors <strong>service1</strong> and <strong>service2</strong> are 10% and 20% of the CAR value in the upper-level parent traffic policy, respectively.<pre class="screen">[HUAWEI] <strong>traffic behavior</strong> <strong>service1</strong>
+[HUAWEI-behavior-service1] <strong>car cir pct 10 hierarchical-car share mode color-aware</strong>
+[HUAWEI-behavior-service1] <strong>quit</strong>
+[HUAWEI] <strong>traffic behavior</strong> <strong>service2</strong>
+[HUAWEI-behavior-service2] <strong>car cir pct 20 hierarchical-car share mode color-aware </strong>
+[HUAWEI-behavior-service2] <strong>quit</strong></pre>
+</li><li>Create a child traffic policy named <strong>sub-</strong><strong>policy</strong><strong>1</strong> and bind traffic classifiers to traffic behaviors in the traffic policy.<pre class="screen">[HUAWEI] <strong>traffic policy</strong> <strong>sub-</strong><strong>policy</strong><strong>1</strong>
+[HUAWEI-trafficpolicy-sub-policy1] <strong>classifier service1 behavior service1</strong>
+[HUAWEI-trafficpolicy-sub-policy1] <strong>classifier service2 behavior service2</strong></pre>
+</li></ol>
+<p><strong># Configure a parent traffic policy.</strong></p>
+<ol><li>Create traffic classifiers <strong>vpn1</strong> and <strong>vpn2</strong> to classify different users based on QoS local IDs. (Assume that QoS local IDs have been specified for packets on the tunnel interface.)<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>traffic classifier vpn1</strong>
+[HUAWEI-classifier-vpn1] <strong>if-match qos-local-id 1</strong>
+[HUAWEI-classifier-vpn1] <strong>quit</strong>
+[HUAWEI] <strong>traffic classifier vpn2</strong>
+[HUAWEI-classifier-vpn2]<strong> if-match</strong> <strong>qos-local-id 2</strong>
+[HUAWEI-classifier-vpn2] <strong>quit</strong></pre>
+</li><li>Create traffic behaviors <strong>vpn1</strong> and <strong>vpn2</strong>, configure corresponding CAR actions, and bind the child traffic policy to the traffic behaviors. The CAR values in traffic behaviors <strong>vpn1</strong> and <strong>vpn2</strong> are 10% and 20% of the CAR value in the upper-level traffic policy on an interface, respectively.<pre class="screen">[HUAWEI] <strong>traffic behavior</strong> <strong>vpn1</strong>
+[HUAWEI-behavior-vpn1] <strong>car cir pct 10 hierarchical-car</strong> <strong>share mode color-aware</strong>
+[HUAWEI-behavior-vpn1]<strong> traffic-policy </strong><strong>sub-</strong><strong>policy</strong><strong>1</strong>
+[HUAWEI-behavior-vpn1] <strong>quit</strong>
+[HUAWEI] <strong>traffic behavior</strong> <strong>vpn2</strong>
+[HUAWEI-behavior-vpn2] <strong>car cir pct 20 hierarchical-car</strong> <strong>share mode color-aware</strong>
+[HUAWEI-behavior-vpn2]<strong> traffic-policy </strong><strong>sub-</strong><strong>policy</strong><strong>1</strong>
+[HUAWEI-behavior-vpn2] <strong>quit</strong></pre>
+</li><li>Create a parent traffic policy named <strong>hcar</strong> and bind traffic classifiers to traffic behaviors in the traffic policy.<pre class="screen">[HUAWEI] <strong>traffic policy</strong> <strong>h</strong><strong>car</strong>
+[HUAWEI-trafficpolicy-hcar] <strong>classifier vpn1 behavior vpn1</strong>
+[HUAWEI-trafficpolicy-hcar] <strong>classifier vpn2 behavior vpn2</strong></pre>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_hqos_cfg_0026.html">Configuring Hierarchical CAR HQoS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_hqos_cfg_0040.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

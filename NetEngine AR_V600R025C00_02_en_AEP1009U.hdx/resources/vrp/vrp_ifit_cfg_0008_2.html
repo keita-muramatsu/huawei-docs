@@ -1,0 +1,85 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding IFIT Tunnel-Level Quality Measurement">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ifit_cfg_0021.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ifit_cfg_0022.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="IFIT">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001909855581">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Understanding IFIT Tunnel-Level Quality Measurement</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001909855581"></a><a name="EN-US_CONCEPT_0000001909855581"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding IFIT Tunnel-Level Quality Measurement</h1>
+<div><div class="section"><h4 class="sectiontitle">Related Concepts</h4><p>IFIT tunnel-level quality measurement collects statistics on performance indicators of tunnels on a network. On the network shown in <a href="#EN-US_CONCEPT_0000001909855581__fig184238288365">Figure 1</a>, the ingress and egress nodes of a forwarding path function as a Measurement Control Point (MCP) and Data Collecting Point (DCP), respectively. IFIT instances can be created to calculate the quality of each segment list of an SRv6 TE Policy, helping implement intelligent path selection based on measurement results.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001909855581__fig184238288365"><a name="EN-US_CONCEPT_0000001909855581__fig184238288365"></a><a name="fig184238288365"></a><span class="figcap"><b>Figure 1 </b>IFIT tunnel-level quality measurement</span><br><span><img class="vsd" src="figure/en-us_image_0000001863736008.png" width="NaN" height="NaN"></span></div>
+<p>IFIT tunnel-level quality measurement collects statistics on performance indicators of tunnels on a network. As shown in <a href="#EN-US_CONCEPT_0000001909855581__fig1594016394432">Figure 2</a>, the IFIT measurement model consists of the FEI, IFITMCP, IFIT, and SRPOLICY components.</p>
+<ul><li>FEI component: collects original IFIT measurement data.</li><li>IFITMCP component: consists of DCP and MCP. The DCP collects measurement data and reports the data to the MCP. The MCP summarizes the collected data, calculates the result, and sends the result to the SRPOLICY module through the ingress node.</li><li>IFIT component: creates IFIT measurement instances.</li><li>SRPOLICY component: triggers IFIT measurement and implements tunnel switching based on the measurement result.<div class="fignone" id="EN-US_CONCEPT_0000001909855581__fig1594016394432"><a name="EN-US_CONCEPT_0000001909855581__fig1594016394432"></a><a name="fig1594016394432"></a><span class="figcap"><b>Figure 2 </b>IFIT measurement model</span><br><span><img class="vsd" src="figure/en-us_image_0000001863736004.png" width="NaN" height="NaN"></span></div>
+</li></ul>
+<div class="p">The working process of the components is as follows:<ol><li>After IFIT packet loss measurement and delay measurement are enabled on the SRPOLICY component, the SRPOLICY component instructs the IFIT component to create an IFIT measurement instance when creating a segment list. The instance carries the list, measurement parameters, and peer IPv6 address.</li><li>The IFIT component assigns a flow ID to an IFIT measurement flow in the corresponding list, creates an IFIT measurement instance, and sends the creation result to the SRPOLICY component. The IFIT header is added to the IFIT measurement instance on the ingress node and is removed on the inbound interface of the egress node.</li><li>After receiving the creation success feedback, the SRPOLICY component starts to subscribe to measurement data from the IFITMCP component with a specified threshold.</li><li>After the IFITMCP component receives the subscription request, the DCP collects original measurement data from the FEI component.</li><li>The DCP sends the collected data to the MCP. The MCP summarizes the data and performs calculation.</li><li>If the IFITMCP component determines that the measurement result is greater than the threshold, it advertises the measurement result to the SRPOLICY component.</li><li>The Smart Policy Routing (SPR) module of the SRPOLICY component selects routes based on the IFIT measurement result.</li></ol>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Application Scenario</h4><p>A bank access network connects tier-1 banks to tier-2 banks, branches, subsidiaries, and external organizations. Tier-2 banks, branches, subsidiaries, and external organizations first connect to tier-1 banks, which aggregate service traffic and then connect to the bank core network to implement access between them and the head office data center. With the development of banking services, branch services become diversified. In addition to traditional production and office services, branch services also include security protection, IoT, mixed operation, and public cloud services. These services bring the following changes:</p>
+<ul><li>The traffic transmission paths are changing. For example, for security protection traffic, tier-2 banks need to access each branch, forming a semi-full-mesh network.</li><li>The traffic bandwidth is increasing. It is estimated that the bandwidth of a branch will increase to 200 Mbit/s to 300 Mbit/s in the future, and the total bandwidth will increase by 10 times. In addition to using traditional private lines, banks are proactively looking for a substitute for traditional private lines.</li><li>There are few O&amp;M personnel in branches, and the traditional command-based maintenance mode cannot meet the requirements of growing services.</li></ul>
+<p>Based on the preceding changes, it has become a consensus that SD-WAN is used on the access network of banks. In this way, the intelligent O&amp;M solution for one WAN is formed. This solution orchestrates different networks to provide cross-domain network services. In this solution, SRv6 technology is used on the bank access network to simply and quickly establish basic network connections between the cloud and various access points, ensuring efficient service provisioning. The financial industry has high requirements on SLA assurance. The IFIT tunnel-level quality measurement solution can help customers implement intelligent traffic steering, simplify the O&amp;M process, and optimize O&amp;M experience. <a href="#EN-US_CONCEPT_0000001909855581__fig_dc_vrp_feature_new_ipfpm_000702">Figure 3</a> shows the typical networking of IFIT tunnel-level quality measurement in the one WAN scenario.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001909855581__fig_dc_vrp_feature_new_ipfpm_000702"><a name="EN-US_CONCEPT_0000001909855581__fig_dc_vrp_feature_new_ipfpm_000702"></a><a name="fig_dc_vrp_feature_new_ipfpm_000702"></a><span class="figcap"><b>Figure 3 </b>Network diagram of IFIT tunnel-level quality measurement</span><br><span><img class="imgResize" src="figure/en-us_image_0000001909855705.png" width="523.6875" height="415.89592100000004" title="Click to enlarge"></span></div>
+<div class="p">This solution has the following characteristics:<ul><li>IFIT can be used to measure the quality of each SRv6 segment list. SPR selects the optimal link based on the measurement result and periodically compares the current link with the optimal link to optimize route selection, implementing intelligent traffic steering.</li><li>One core controller is deployed on the entire network to implement centralized O&amp;M for the entire bank access network and implement end-to-end visualized management and scheduling.</li></ul>
+</div>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this solution, the device is generally used as a branch-side device, and provides the capability of summarizing and calculating measurement data.</p>
+</div></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_ifit_cfg_0021.html">Configuring IFIT Tunnel-Level Quality Measurement
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_ifit_cfg_0022.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

@@ -1,0 +1,83 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding EVPN L3VPN over SRv6 TE Policy">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0300.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0302.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Learning More">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001471729170">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Understanding EVPN L3VPN over SRv6 TE Policy</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001471729170"></a><a name="EN-US_CONCEPT_0000001471729170"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding EVPN L3VPN over SRv6 TE Policy</h1>
+<div><p></p>
+<div class="section"><h4 class="sectiontitle">EVPN L3VPN over SRv6 TE Policy Data Forwarding</h4><p>This section uses EVPN L3VPNv4 over SRv6 TE Policy as an example to describe how data is forwarded over an SRv6 TE Policy. The data forwarding process in an EVPN L3VPNv6 over SRv6 TE Policy scenario is similar and is therefore not described here.</p>
+<div class="p">On the network shown in <a href="#EN-US_CONCEPT_0000001471729170__fig1426715543313">Figure 1</a>:<ol><li><p>A controller delivers an SRv6 TE Policy to the headend PE1.</p>
+</li><li><p>The endpoint PE2 advertises the BGP EVPN route 10.2.2.2/32 to PE1. The next-hop address in the BGP EVPN route is PE2's address 2001:DB8:A4::4/128.</p>
+</li><li><p>A tunnel policy is configured on PE1. After receiving the BGP EVPN route, PE1 recurses it to the SRv6 TE Policy based on the color value and next hop of the route. The SID list encapsulated into the SRv6 TE Policy is &lt;2001:DB8:2::1, 2001:DB8:3::1, 2001:DB8:4::1&gt;, which can also be expressed as (2001:DB8:4::1, 2001:DB8:3::1, 2001:DB8:2::1) in data forwarding scenarios.</p>
+</li><li><p>After receiving a common unicast packet from CE1, PE1 searches the routing table of the corresponding VPN instance and finds that the outbound interface of the route is an SRv6 TE Policy interface. PE1 then inserts an SRH carrying the SID list of the SRv6 TE Policy and encapsulates an IPv6 header into the packet. After completing these operations, PE1 forwards the packet to P1.</p>
+</li><li><p>Transit nodes P1 and P2 forward the packet hop by hop based on the SRH information.</p>
+</li><li><p>After receiving the packet, the endpoint PE2 searches the My Local SID Table and finds an End SID that matches the IPv6 destination address (DA) 2001:DB8:4::1 in the packet. According to the instruction bound to the SID, PE2 decrements the SL value of the packet by 1 and changes the IPv6 DA to the VPN SID 2001:db8:4::100.</p>
+<p>PE2 searches the My Local SID Table and finds an End.DT4 SID that matches the VPN SID 2001:DB8:4::100. According to the instruction bound to the End.DT4 SID, PE2 decapsulates the packet by removing the SRH and outer IPv6 header, searches the routing table of the VPN instance corresponding to the VPN SID 2001:DB8:4::100 based on the DA in the inner packet, and forwards the packet to CE2.</p>
+</li></ol>
+</div>
+<div class="fignone" id="EN-US_CONCEPT_0000001471729170__fig1426715543313"><a name="EN-US_CONCEPT_0000001471729170__fig1426715543313"></a><a name="fig1426715543313"></a><span class="figcap"><b>Figure 1 </b>SRv6 TE Policy-based data forwarding</span><br><span><img class="imgResize" src="figure/en-us_image_0000001471888814.png" width="522.37828125" height="398.39323895437514" title="Click to enlarge"></span></div>
+<p></p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0300.html">Configuring EVPN L3VPN over SRv6 TE Policy
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0302.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

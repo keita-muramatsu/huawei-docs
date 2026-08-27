@@ -1,0 +1,101 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring BGP Peer Relationships Between the Controller and Forwarder">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0111.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0119.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0117.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001141617202">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring BGP Peer Relationships Between the Controller and Forwarder</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001141617202"></a><a name="EN-US_TASK_0000001141617202"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring BGP Peer Relationships Between the Controller and Forwarder</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001141617202__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Configuring BGP peer relationships between a controller and a forwarder allows the controller to deliver SRv6 TE Policies to the forwarder. This improves the efficiency of automated SRv6 TE Policy deployment.</p>
+<p>The process for a controller to deliver an SRv6 TE Policy is as follows:</p>
+<ol><li><p>The controller collects information, such as network topology and SID information, through BGP-LS.</p>
+</li><li><p>The controller and headend forwarder establish an IPv6 SR Policy address family-specific BGP peer relationship.</p>
+</li><li><p>The controller computes an SRv6 TE Policy path and delivers it to the headend forwarder through the BGP peer relationship. The headend then generates an SRv6 TE Policy entry.</p>
+</li></ol>
+<p>To implement the preceding operations, you need to establish a BGP-LS peer relationship and a BGP IPv6 SR Policy peer relationship between the controller and the specified forwarder.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001141617202__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure a BGP-LS peer relationship.</span><p><p>BGP-LS is used to collect network topology information in a more efficient and easier manner. To ensure that topology information can be reported correctly, you need to configure a BGP-LS peer relationship between the controller and forwarder. This example provides the configuration procedure on the forwarder. The configuration procedure on the controller is similar.</p>
+</p><ol type="a"><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable BGP and enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Create a BGP peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">group-name</span></i> | <i><span class="varname">ipv6-address</span></i> } <strong><span>as-number</span></strong> { <i><span class="varname">as-number-plain</span></i> | <i><span class="varname">as-number-dot</span></i> }</pre>
+</p></li><li class="substepexpand"><span>Enable BGP-LS and enter the BGP-LS address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">link-state-family unicast</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable the device to exchange route information with a specified BGP-LS peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">group-name</span></i> | <i><span class="varname">ipv6-address</span></i> } <strong><span>enable</span></strong></pre>
+</p></li></ol>
+</li><li><span>Configure a BGP IPv6 SR Policy peer relationship.</span><p><p>This example provides the configuration procedure on the forwarder. The configuration procedure on the controller is similar.</p>
+</p><ol type="a"><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable BGP and enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Create a BGP peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">group-name</span></i> | <i><span class="varname">ipv6-address</span></i> } <strong><span>as-number</span></strong> { <i><span class="varname">as-number-plain</span></i> | <i><span class="varname">as-number-dot</span></i> }</pre>
+</p></li><li class="substepexpand"><span>Enter the BGP IPv6 SR Policy address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6-family sr-policy</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable the device to exchange route information with a specified BGP IPv6 SR Policy peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">group-name</span></i> | <i><span class="varname">ipv6-address</span></i> } <strong><span>enable</span></strong></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure the device to advertise SRv6 TE Policy routes to EBGP peers.</span><p><pre class="screen"><b><span class="cmdqueryname">advertise ebgp enable</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure router ID filtering.</span><p><pre class="screen"><b><span class="cmdqueryname">router-id filter</span></b></pre>
+<p>If the RR connection mode is used to reduce the number of required connections, you can configure router ID filtering on non-RRs to discard the traffic optimization policies that are not required by the local device. This prevents a large number of policy nodes from being generated due to the receiving of massive policy-based routes, thereby guaranteeing performance.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure a mode in which the device processes specified path attributes.</span><p><p>You can configure <strong>attribute-id</strong> as required. The <strong>sub-attribute-id</strong> parameter can be configured only when <strong>attribute-id</strong> is set to 23, which indicates the tunnel encapsulation attribute.</p>
+</p><p><pre class="screen"><b><span class="peer attribute-id">peer</span></b> { <i><span class="varname">peerIpv4Addr</span></i> | <i><span class="varname">peerIpv6Addr</span></i> } <strong><span>path-attribute-treat attribute-id</span></strong> { <i><span class="varname">id</span></i> [ <strong><span>to</span></strong> <i><span class="varname">id2</span></i> ] } &amp;&lt;1-255&gt; { <strong><span>discard</span></strong> | <strong><span>withdraw</span></strong> | <strong><span>treat-as-unknown</span></strong> }
+Alternatively: <b><span class="peer attribute-id">peer</span></b> { <i><span class="varname">peerIpv4Addr</span></i> | <i><span class="varname">peerIpv6Addr</span></i> } <strong><span>path-attribute-treat attribute-id</span></strong> <i><span class="varname">id3</span></i> <strong><span>sub-attribute-id</span></strong> <i><span class="varname">sub-attribute-id-val</span></i> <strong><span>treat-as-unknown</span></strong> }</pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure a mode in which the device processes the specified incorrect path attribute.</span><p><pre class="screen"><b><span class="peer attribute-id">peer</span></b> { <i><span class="varname">peerIpv4Addr</span></i> | <i><span class="varname">peerIpv6Addr</span></i> } <strong><span>treat-with-error attribute-id</span></strong> <i><span class="varname">id</span></i> <strong><span>accept-zero-value</span></strong></pre>
+</p></li></ol>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0111.html">Configuring an SRv6 TE Policy (Controller-based Dynamic Delivery)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0119.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_srv6_cfg_0117.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

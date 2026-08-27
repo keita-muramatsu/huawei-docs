@@ -1,0 +1,75 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Fundamentals of RIP">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_rip_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_rip_cfg_0005.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="RIP">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="RIP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="RIP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001176662717">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Fundamentals of RIP</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001176662717"></a><a name="EN-US_CONCEPT_0000001176662717"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Fundamentals of RIP</h1>
+<div><p></p>
+<p>Each routing device running RIP maintains a RIP database which stores all RIP routes discovered by the routing device. Each routing entry in the RIP database contains the destination network address/network mask, metric, next hop address, aging timer, and route state flag. Valid routing entries in the RIP database are loaded to the routing table of the RIP routing device.</p>
+<p>Each RIP routing device periodically advertises the routes in its routing table. When a routing device receives a RIP route update of a valid and undiscovered route, it loads the route to the routing table and sets the metric and next hop address of the route.</p>
+<p><a href="#EN-US_CONCEPT_0000001176662717__fig8306182912237">Figure 1</a> shows each routing device's routing table in the initial startup phase. DeviceA, DeviceB, and DeviceC are directly connected and enabled with RIP, and the routing table of each routing device contains the destination network address, network mask, protocol type, metric value, and outbound interface of a route.</p>
+<p>In the initial startup phase, all routing devices can automatically discover their direct routes and add them to their routing tables as shown in <a href="#EN-US_CONCEPT_0000001176662717__fig8306182912237">Figure 1</a>. Here, DeviceA is used as an example. Two direct routes 192.168.12.0/24 and 10.1.0.0/16 are added to the routing table of DeviceA. RIP considers the metric of a direct route as 0 hops, indicating that the route does not pass through any routing device before reaching the network segment.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662717__fig8306182912237"><a name="EN-US_CONCEPT_0000001176662717__fig8306182912237"></a><a name="fig8306182912237"></a><span class="figcap"><b>Figure 1 </b>Each routing device's routing table in the initial startup phase</span><br><span><img class="vsd" src="figure/en-us_image_0000001176662745.png"></span></div>
+<p><a href="#EN-US_CONCEPT_0000001176662717__fig15947892243">Figure 2</a> shows each routing device's routing table in the initial routing information exchange phase. As DeviceA, DeviceB, and DeviceC run RIP, they all periodically advertise the routes in their routing tables through RIP messages from RIP-enabled interfaces. RIP-1 uses a broadcast address as the destination IP address of a RIP message, and RIP-2 uses a multicast address.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662717__fig15947892243"><a name="EN-US_CONCEPT_0000001176662717__fig15947892243"></a><a name="fig15947892243"></a><span class="figcap"><b>Figure 2 </b>Each routing device's routing table in the initial routing information exchange phase</span><br><span><img class="vsd" src="figure/en-us_image_0000001130782988.png"></span></div>
+<p>DeviceB advertises the routes in its routing table through interface 1 and interface 2. Using the route 192.168.23.0/24 as an example, DeviceB advertises updates of the route to DeviceA through interface 1 and sets the metric of the route to 1 hop. A RIP routing device increases the hop count by 1 before it advertises a route in its routing table. The RIP routing device that receives the updated route then uses this new hop count.</p>
+<p>After DeviceA receives the route update advertised by DeviceB, it determines that route 192.168.23.0/24 does not exist in its routing table. DeviceA then learns the route, adds it to its routing table, and sets the metric of the route to 1 hop (as the route originating from DeviceA to 192.168.23.0/24 passes through one RIP routing device). In addition, the next hop of the route is set to DeviceB (the update source) and interface 1 is configured as the outbound interface.</p>
+<p>DeviceC also receives the route updates advertised by DeviceB through its interface 1. DeviceC learns the route to 192.168.12.0/24, adds the route to its routing table, and sets the metric of the route to 1 hop (as the route originating from DeviceC to 192.168.12.0/24 passes through one RIP routing device). In addition, the next hop of the route is set to DeviceB (the update source) and interface 1 is configured as the outbound interface.</p>
+<p>DeviceB receives route updates advertised by DeviceA and DeviceC through its interface 1 and interface 2 and learns the routes to 10.1.0.0/16 and 10.3.0.0/16, respectively.</p>
+<p>After route convergence is completed, RIP routing devices periodically advertise routes in their routing tables. When the next update period arrives, all the RIP routing devices advertise routes in their routing tables again.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001176662717__fig47078563240"><a name="EN-US_CONCEPT_0000001176662717__fig47078563240"></a><a name="fig47078563240"></a><span class="figcap"><b>Figure 3 </b>Each routing device's routing table after route convergence is completed</span><br><span><img class="vsd" src="figure/en-us_image_0000001130782992.png"></span></div>
+<p>After DeviceA receives the routes advertised by DeviceB, it determines that the route to 10.3.0.0/16 does not exist in the routing table. As a result, DeviceA learns the route, adds it to the routing table, and sets the route metric to two hops. This means that the route originating from DeviceA to 10.3.0.0/16 passes through two routing devices. Similarly, DeviceC can learn the route 10.1.0.0/16 from DeviceB. In this case, all three routing devices have routes to all network segments, as shown in <a href="#EN-US_CONCEPT_0000001176662717__fig47078563240">Figure 3</a>. The routing tables of the routing devices are stable, and route convergence is complete. Although routes on the network have been converged, routing devices still periodically advertise routes in their routing tables through RIP to ensure route validity.</p>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_rip_cfg_0003.html">Understanding RIP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_rip_cfg_0005.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

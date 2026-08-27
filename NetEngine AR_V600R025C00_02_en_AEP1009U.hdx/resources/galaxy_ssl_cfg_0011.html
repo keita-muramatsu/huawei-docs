@@ -1,0 +1,135 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an SSL Policy (Manually Loading a Certificate)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ssl_cfg_0009.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ssl_cfg_0010.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ssl_cfg_0013.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SSL">
+<meta name="featuretype" content="Security">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SSL">
+<meta name="featuretype" content="Security">
+<meta name="featurename" content="SSL">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564112625">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an SSL Policy (Manually Loading a Certificate)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564112625"></a><a name="EN-US_TASK_0000001564112625"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an SSL Policy (Manually Loading a Certificate)</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001564112625__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before loading a trusted-CA file to an SSL policy, you have completed the following task:</p>
+<p>Apply for a certificate from a CA for the client or server and upload the certificate to the <strong>security</strong> sub-directory of the system root directory.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564112625__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>SSL uses data encryption, identity authentication, and message integrity check mechanisms to ensure security of TCP-based application layer protocols. An SSL policy can be applied to application layer protocols to provide secure connections.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564112625__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Configure an SSL policy and enter the SSL policy view.</span><p><pre class="screen"><b><span class="cmdqueryname">ssl policy</span></b> <em>policy-name</em></pre>
+<p>By default, no SSL policy is configured.</p>
+</p></li><li><span>(Optional) Set the elliptic curve parameter for the ECDHE algorithm.</span><p><pre class="screen"><b><span class="cmdqueryname">ecdh group</span></b> { <strong><span>nist</span></strong> | <strong><span>curve</span></strong> | <strong><span>brainpool</span></strong> | <strong>ffdhe</strong> } <sup>*</sup></pre>
+<p>By default, the elliptic curve parameters of the ECDHE algorithm are Curve, Nist, and Brainpool.</p>
+</p></li><li><span>(Optional) Disable TLS 1.3 from using the brainpoolr1 curve.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">ssl forbidden tls13-use-brainpoolr1</span></b></strong></pre>
+<p>By default, TLS 1.3 allows the brainpoolr1 curve to be used.</p>
+</p></li><li><span>(Optional) Configure the minimum path length of the digital certificate chain.</span><p><pre class="screen"><b><span class="ssl verify certificate-chain minimum-path-length">ssl verify certificate-chain minimum-path-length</span></b> <i><span class="varname">path-length</span></i></pre>
+</p><p><p>By default, the minimum path length of a digital certificate chain is 1.</p>
+</p></li><li><span>(Optional) Configure the digital certificate verification function.</span><p><ul><li>Configure the enhanced key usage field for verifying the peer digital certificate.<pre class="screen"><strong><b><span class="ssl verify enable">ssl verify</span></b> key-usage enable</strong></pre>
+</li><li>Configure the hash algorithm and signature algorithm for verifying the peer certificate.<pre class="screen"><strong><b><span class="ssl verify enable">ssl verify</span></b> certificate-signature-algorithm enable</strong></pre>
+</li><li>Configure the basic constraint field for verifying the CA certificate sent by the peer end.<pre class="screen"><strong><b><span class="ssl verify enable">ssl verify</span></b> basic-constrain enable</strong></pre>
+</li><li>Check whether the locally loaded digital certificate is of the X.509v3 version.<pre class="screen"><strong><b><span class="ssl verify enable">ssl verify</span></b> version cert-version3 enable</strong></pre>
+</li><li>Check whether the locally loaded CRL is of the X.509v2 version.<pre class="screen"><strong><b><span class="ssl verify enable">ssl verify</span></b> version crl-version2 enable</strong></pre>
+</li></ul>
+</p><p><p>By default, the digital certificate verification function is disabled.</p>
+</p></li><li><span>(Optional) Configure the modulus of the Diffie-Hellman key exchange algorithm.</span><p><pre class="screen"><b><span class="diffie-hellman modulus">diffie-hellman modulus</span></b> <i><span class="varname">modulus-val</span></i></pre>
+</p><p><p>By default, the modulus of the Diffie-Hellman key exchange algorithm is 3072.</p>
+</p></li><li><span>(Optional) Configure the signature algorithm supported during SSL handshake.</span><p><pre class="screen"><b><span class="signature algorithm-list">signature algorithm-list</span></b> { <strong><span>ecdsa-secp256r1-sha256</span></strong> | <strong><span>ecdsa-secp384r1-sha384</span></strong> | <strong><span>ecdsa-secp521r1-sha512</span></strong> | <strong><span>ed25519</span></strong> | <strong><span>ed448</span></strong> | <strong><span>rsa-pss-pss-sha256</span></strong> | <strong><span>rsa-pss-pss-sha384</span></strong> | <strong><span>rsa-pss-pss-sha512</span></strong> | <strong><span>rsa-pss-rsae-sha256</span></strong> | <strong><span>rsa-pss-rsae-sha384</span></strong> | <strong><span>rsa-pss-rsae-sha512</span></strong> | <strong><span>rsa-pkcs1-sha256</span></strong> | <strong><span>rsa-pkcs1-sha384</span></strong> | <strong><span>rsa-pkcs1-sha512</span></strong> | <strong><span>ecdsa-sha1</span></strong> | <strong><span>ecdsa-sha224</span></strong> | <strong><span>rsa-sha1</span></strong> | <strong><span>rsa-sha224</span></strong> | <strong><span>dsa-sha1</span></strong> | <strong><span>dsa-sha224</span></strong> | <strong><span>dsa-sha256</span></strong> | <strong><span>dsa-sha384</span></strong> | <strong><span>dsa-sha512</span></strong> | <strong><span>sm2-sm3</span></strong> } <sup>*</sup></pre>
+</p><p><p>By default, the following signature algorithms are configured: ed25519, ed448, ecdsa-secp256r1-sha256, ecdsa-secp384r1-sha384, ecdsa-secp521r1-sha512, rsa-pss-pss-sha256, rsa-pss-pss-sha384, rsa-pss-pss-sha512, rsa-pss-rsae-sha256, rsa-pss-rsae-sha384, and rsa-pss-rsae-sha512.</p>
+</p></li><li><span>(Optional) Configure a minimum SSL version for the SSL policy.</span><p><pre class="screen"><b><span class="cmdqueryname">ssl minimum version</span></b> { <strong>tls1.1</strong> | <strong>tls1.2</strong> | <strong>tls1.3</strong> }</pre>
+<p>By default, the minimum version used by an SSL policy is TLS1.2.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>SSL policies support three SSL versions: TLS1.1, TLS1.2, and TLS1.3. TLS1.3 ensures the highest security, followed by TLS1.2 and TLS1.1. TLS1.2 and TLS1.3 are recommended.</li><li>The <strong>tls1.1</strong> parameter in this command can be used only after the weak security algorithm/protocol feature package (WEAKEA) has been installed using the <strong>install feature-software WEAKEA</strong> command.</li></ul>
+</div></div>
+</p></li><li><span>Load a digital certificate for the SSL policy.</span><p><div class="p">By default, no digital certificate is loaded for the SSL policy.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>For enhanced security, you are advised to use more secure certificates. To be specific, RSA/DSA certificates have a key length of 3072 bits or greater, and ECC certificates have a key length of 256 bits or greater. Additionally, the certificate's hash algorithm is SHA-256 or a later version.</li><li>The <strong>install feature-software WEAKEA</strong> command needs to be run if the key length of the RSA/DSA certificate is less than or equal to 2048 bits, the key length of the ECC certificate is less than 256 bits, or the hash algorithm of the certificate is SHA1, SHA-224, MD4, or MD5.</li></ul>
+</div></div>
+</div>
+<ul><li>Load a PEM digital certificate for the SSL policy.<pre class="screen"><b><span class="cmdqueryname">certificate load pem-cert</span></b> <em>certFile</em> <strong>key-pair</strong> <em>keyType</em> <strong>key-file</strong> <em>keyFile</em> <strong>auth-code</strong> [<strong> cipher</strong> <em>authCode</em> ]</pre>
+</li><li>Load a PEM certificate chain for the SSL policy.<pre class="screen"><b><span class="cmdqueryname">certificate load pem-chain</span></b> <em>certFile</em> <strong>key-pair</strong> <em>keyType</em> <strong>key-file</strong> <em>keyFile</em> <strong>auth-code</strong> [<strong> cipher</strong> <em>authCode</em> ]</pre>
+</li><li>Load a PFX digital certificate for the SSL policy.<p>Format 1:</p>
+<pre class="screen"><b><span class="cmdqueryname">certificate load pfx-cert</span></b> <em>certFile</em> <strong>key-pair</strong> <em>keyType</em> <strong>key-file</strong> <em>keyFile</em> <strong>auth-code</strong> [<strong> cipher</strong> <em>authCode</em> ]</pre>
+<div class="p">Format 2:<pre class="screen"><b><span class="cmdqueryname">certificate load pfx-cert</span></b> <em>certFile</em> <strong>key-pair</strong> <em>keyType</em> <strong>mac</strong> [<strong> cipher</strong> <em>macCode</em> <strong>auth-code</strong> <strong>cipher</strong> <em>authCode</em> ] </pre>
+</div>
+</li></ul>
+</p></li><li><span>(Optional) Load a certificate revocation list (CRL) for the SSL policy.</span><p><pre class="screen"><b><span class="cmdqueryname">crl load</span></b> <em>crlType </em><em>crlFile</em></pre>
+<p>By default, no CRL is loaded for the SSL policy.</p>
+</p></li><li><span>(Optional) Load a trusted-CA file for the SSL policy.</span><p><p>By default, no trusted-CA file is loaded for the SSL policy.</p>
+<p>The trusted-CA file is used to verify validity of the digital certificate sent by the server. A maximum of four trusted-CA files can be loaded for an SSL policy.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>Perform this step if the identity of the peer needs to be authenticated.</li><li>For enhanced security, you are advised to use more secure certificates. To be specific, RSA/DSA certificates have a key length of 3072 bits or greater, and ECC certificates have a key length of 256 bits or greater. Additionally, the certificate's hash algorithm is SHA-256 or a later version.</li><li>The <strong>install feature-software WEAKEA</strong> command needs to be run if the key length of the RSA/DSA certificate is less than or equal to 2048 bits, the key length of the ECC certificate is less than 256 bits, or the hash algorithm of the certificate is SHA1, SHA-224, MD4, or MD5.</li></ul>
+</div></div>
+<ul><li>Load an ASN1 trusted-CA file for the SSL policy.<pre class="screen"><b><span class="cmdqueryname">trusted-ca load asn1-ca</span></b> <em>caFile</em></pre>
+</li><li>Load a PEM trusted-CA file for the SSL policy.<pre class="screen"><b><span class="cmdqueryname">trusted-ca load pem-ca</span></b><strong> </strong><em>caFile</em></pre>
+</li><li>Load a PFX trusted-CA file for the SSL policy.<pre class="screen"><b><span class="cmdqueryname">trusted-ca load pfx-ca</span></b><strong> </strong><em>caFile</em> <strong>auth-code</strong> [<strong> cipher</strong> <em>authCode </em>]</pre>
+</li></ul>
+</p></li><li><span>(Optional) Exclude key exchange algorithms from the cipher suite list.</span><p><pre class="screen"><b><span class="cipher-suite exclude">cipher-suite exclude</span></b> <strong>key-exchange </strong>{ <strong>rsa</strong> | <strong>dhe</strong> } <sup>*</sup>
+<b><span class="cipher-suite exclude">cipher-suite exclude</span></b> <strong>cipher mode cbc</strong>
+<b><span class="cipher-suite exclude">cipher-suite exclude</span></b> <strong>hmac sha1</strong></pre>
+</p><p><p>By default, an SSL policy does not support the RSA key exchange algorithm, CBC encryption algorithm, or SHA1 digest algorithm.</p>
+</p></li><li><span>(Optional) Bind a cipher suite to the SSL policy.</span><p><pre class="screen"><b><span class="cmdqueryname">binding cipher-suite-customization</span></b> <em>customization-name</em></pre>
+<p>By default, no cipher suite is bound to an SSL policy.</p>
+<p>The cipher suite to be bound to the SSL policy must have been configured. For details, see <a href="galaxy_ssl_cfg_0010.html">(Optional) Configuring a Cipher Suite for an SSL Policy</a>.</p>
+</p></li><li><span>(Optional) Set the certificate expiration alarm threshold and the interval for checking certificate expiration alarms.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b>
+<b><span class="cmdqueryname">ssl certificate alarm-threshold</span></b> <strong><span>early-alarm</span></strong> <i><span class="varname">time</span></i> <strong><span>check-interval</span></strong> <i><span class="varname">check-period</span></i></pre>
+<p>By default, the certificate expiration alarm threshold is 90 days, and the interval for checking certificate expiration alarms is 24 hours.</p>
+</p></li><li><span>(Optional) Enable the SSL renegotiation function.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">ssl renegotiation enable</span></b></strong></pre>
+<p>By default, the SSL renegotiation function is disabled.</p>
+<p>When SSL is used for data transmission, you can enable the SSL renegotiation function to periodically update the key and algorithm without interrupting the connection, improving communication security.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ssl_cfg_0009.html">Configuring SSL
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ssl_cfg_0010.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ssl_cfg_0013.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

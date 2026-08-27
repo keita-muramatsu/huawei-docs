@@ -1,0 +1,83 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding Eth-Trunk Load Balancing">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_eth-trunk_cfg_0056.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_eth-trunk_cfg_0245.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Eth-Trunk">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Eth-Trunk">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="featurename" content="Eth-Trunk">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001509625745">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding Eth-Trunk Load Balancing</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001509625745"></a><a name="EN-US_CONCEPT_0000001509625745"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding Eth-Trunk Load Balancing</h1>
+<div><div class="section"><p>When an Eth-Trunk is used to forward data frames, those from the same data flow may be transmitted over different physical links. As a result, data frames may arrive at the destination in an order different to that they were transmitted in, resulting in out-of-order packets.</p>
+<p>Flow-based load balancing is introduced to prevent this problem and ensures that data frames of the same data flow are forwarded on the same physical link, implementing load balancing of flows. To achieve this, the system uses the hash algorithm to calculate the address in a data frame and generate a hash key, which is then used to search for the outbound interface in the Eth-Trunk forwarding table. Each MAC or IP address corresponds to a hash key, so the system uses different outbound interfaces to forward data.</p>
+<p><strong>Flow-based Load Balancing</strong></p>
+<p>In <a href="#EN-US_CONCEPT_0000001509625745__fig_dc_fd_eth-trunk_000501">Figure 1</a>, Eth-Trunk is located at the data link layer, between the MAC address and LLC sub-layers.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001509625745__fig_dc_fd_eth-trunk_000501"><a name="EN-US_CONCEPT_0000001509625745__fig_dc_fd_eth-trunk_000501"></a><a name="fig_dc_fd_eth-trunk_000501"></a><span class="figcap"><b>Figure 1 </b>Eth-Trunk in the Ethernet protocol stack</span><br><span><img class="vsd" src="figure/en-us_image_0000001460505114.png" width="NaN" height="NaN"></span></div>
+<p>The Eth-Trunk module maintains a forwarding table consisting of the following fields:</p>
+<ul><li><p>Hash key</p>
+<p>The hash key is calculated through the hash algorithm based on the MAC address or IP address in a data frame.</p>
+</li><li><p>Interface number</p>
+<p>Eth-Trunk forwarding entries are limited by the maximum number of member interfaces in an Eth-Trunk. Different hash keys map to different outbound interfaces.</p>
+<p>For example, if an Eth-Trunk supports a maximum of eight member interfaces, and physical interfaces 1, 2, 3, and 4 are bundled into an Eth-Trunk, the Eth-Trunk forwarding table contains eight entries, as shown in <a href="#EN-US_CONCEPT_0000001509625745__fig_dc_fd_eth-trunk_000502">Figure 2</a>. In the Eth-Trunk forwarding table, hash keys are 0, 1, 2, 3, 4, 5, 6, and 7, and the corresponding interface numbers are 1, 2, 3, 4, 1, 2, 3, and 4.</p>
+</li></ul>
+<div class="fignone" id="EN-US_CONCEPT_0000001509625745__fig_dc_fd_eth-trunk_000502"><a name="EN-US_CONCEPT_0000001509625745__fig_dc_fd_eth-trunk_000502"></a><a name="fig_dc_fd_eth-trunk_000502"></a><span class="figcap"><b>Figure 2 </b>Example of an Eth-Trunk forwarding table</span><br><span><img class="vsd" src="figure/en-us_image_0000001510104997.png" width="NaN" height="NaN"></span></div>
+<p>The Eth-Trunk module uses the Eth-Trunk forwarding table to forward data frames according to the following process:</p>
+<ol><li><p>The Eth-Trunk module receives a data frame from the MAC sub-layer, and then extracts its source MAC/IP address or destination MAC/IP address.</p>
+</li><li><p>The Eth-Trunk module calculates the hash key using the hash algorithm.</p>
+</li><li><p>Using the hash key, the Eth-Trunk module searches for the corresponding interface in the Eth-Trunk forwarding table, and then sends the data frame from the interface.</p>
+</li></ol>
+<p><strong>Selection of Load Balancing Modes</strong></p>
+<p>In flow-based load balancing mode, packet flows are differentiated based on one or some of the following attributes: source MAC address, destination MAC address, source IP address, destination IP address, source TCP/UDP port number, and destination TCP/UDP port number. You can set the load balancing mode based on traffic models. When an attribute of traffic changes frequently, you can set the load balancing mode based on this attribute to ensure that the traffic is load balanced evenly. For example, if IP addresses in packets change frequently, use the load balancing mode based on the destination IP address, source IP address, or both. Likewise, if MAC addresses in packets change frequently and IP addresses are fixed, use the load balancing mode based on the destination MAC address, source MAC address, or both.</p>
+<p>This can be further explained using the following example: DeviceA has two TCP packet flows. For one TCP packet flow, the source IP address is 192.168.1.1 (MAC address: a-a-a; source port number: 50), and the destination IP address is 172.16.1.1 (MAC address: b-b-b; destination port number: 2000). For the other TCP packet flow, the source IP address is 192.168.1.1 (MAC address: a-a-a; source port number: 60), and the destination IP address is 10.1.1.1 (MAC address: c-c-c; destination port number: 2000). If DeviceA is configured to load balance packets based on the source MAC address, only one outbound interface will be available for sending packets. In contrast, if DeviceA is configured to load balance packets based on the destination IP address, packets destined for different destination IP addresses can be sent from different outbound interfaces.</p>
+<p>When configuring a load balancing mode, pay attention to the following points:</p>
+<ul><li>The load balancing mode only takes effect on traffic leaving the outbound interface. If traffic entering the inbound interface is unevenly load balanced, change the load balancing mode of the uplink outbound interface.</li><li>Ensure that packet flows are load balanced among as many active links as possible. Traffic congestion may occur if packet flows are transmitted over just one link, impacting services.<p>For example, when all data frames in a data flow have the same destination MAC address and IP address, load balance the frames based on the source MAC address and IP address, instead of the destination addresses. Otherwise, traffic will be transmitted over just one link, causing congestion.</p>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_eth-trunk_cfg_0056.html">Configuring a Load Balancing Mode for an Eth-Trunk Interface
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_eth-trunk_cfg_0245.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

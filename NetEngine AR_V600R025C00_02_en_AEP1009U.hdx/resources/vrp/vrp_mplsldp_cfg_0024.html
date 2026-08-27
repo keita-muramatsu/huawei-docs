@@ -1,0 +1,111 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Policies for Triggering LDP LSP Establishment">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_1002.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_1003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0025.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001387793993">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring Policies for Triggering LDP LSP Establishment</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001387793993"></a><a name="EN-US_TASK_0000001387793993"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Policies for Triggering LDP LSP Establishment</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001387793993__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>After MPLS LDP is enabled, LSPs are automatically established. If no policy is configured, a large number of LSPs are established, wasting resources.</p>
+<ul><li>A policy for triggering LDP LSP establishment can be configured on the ingress and egress using the <b><span class="cmdqueryname">lsp-trigger</span></b> command, allowing LDP to establish LSPs only for eligible routes. This limits the number of LSPs to be established, thereby reducing network resource consumption.<p>Such policies can be configured using the <b><span class="cmdqueryname">lsp-trigger</span></b> command in both the MPLS and MPLS-LDP-IPv4 views. If they are configured in both views, the configuration in the MPLS-LDP-IPv4 view takes effect.</p>
+</li><li>A policy for triggering LDP LSP establishment can be configured on a transit node using the <b><span class="cmdqueryname">propagate mapping</span></b> command, allowing LDP to establish LSPs only for eligible routes. The local node does not send Label Mapping messages upstream for the routes that are filtered out. This limits the number of LSPs to be established, thereby reducing network resource consumption.<p>Such policies can be configured using the <b><span class="cmdqueryname">propagate mapping</span></b> command in both the MPLS-LDP and MPLS-LDP-IPv4 views. If they are configured in both views, only the latter configuration takes effect.</p>
+</li></ul>
+<p>Generally, using the <b><span class="cmdqueryname">lsp-trigger</span></b> command is recommended. If this command cannot be run on the ingress or egress, use the <b><span class="cmdqueryname">propagate mapping</span></b> command to configure a policy.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001387793993__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Perform the following configuration on the ingress and egress.</span><p><ul><li>Perform the configuration in the MPLS view.</li></ul>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a policy for triggering LDP LSP establishment.</span><p><pre class="screen"><b><span class="cmdqueryname">lsp-trigger</span></b> { <strong><span>all</span></strong> | <strong><span>host</span></strong> | <strong><span>ip-prefix</span></strong> <i><span class="varname">prefix-name</span></i> | <strong><span>none</span></strong> }</pre>
+</p><p><ul><li><p>By default, LDP uses IP routes with 32-bit addresses to trigger LDP LSP establishment.</p>
+</li><li><p>The default configuration is recommended. Running the <b><span class="cmdqueryname">lsp-trigger</span></b> <strong><span>all</span></strong> command is not recommended, as this command enables LDP LSPs to be established for all static routes and IGP routes. As a result, a large number of LSPs are established, consuming excessive label resources and slowing down LSP convergence on the entire network. If this command must be run, configure a policy for filtering out unnecessary routes first, thereby reducing the number of LDP LSPs to be established and system resource consumption.</p>
+</li><li><p>If the <b><span class="cmdqueryname">lsp-trigger</span></b> <strong><span>all</span></strong> command is run and an IGP route that does not overlap with that of an MPLS LDP session exists, the system establishes a proxy egress LSP for the IGP route.</p>
+</li><li>The command allows LDP to establish ingress and egress LSPs for public network routes and for private network IGP routes. To configure a policy for triggering transit LSP establishment, run the <b><span class="cmdqueryname">propagate mapping</span></b> command.</li><li>If the <b><span class="cmdqueryname">lsp-trigger</span></b> command is run in both the MPLS and MPLS-LDP-IPv4 views, the configuration in the MPLS-LDP-IPv4 view takes effect.</li></ul>
+</p></li><li class="substepexpand"><span>Disable the device from establishing proxy egress LSPs.</span><p><pre class="screen"><b><span class="cmdqueryname">proxy-egress disable</span></b></pre>
+<p>If a policy allows LDP to establish LSPs for static and IGP routes or for routes within a specified IP prefix list, the policy also allows LDP to establish proxy egress LSPs. However, these proxy egress LSPs may be useless and unnecessarily consume system resources. To prevent such an issue, run this command to disable the device from establishing proxy egress LSPs.</p>
+</p></li></ol>
+<p><ul><li>Perform the configuration in the MPLS-LDP-IPv4 view.</li></ul>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls</span></b></pre>
+</p></li><li class="substepexpand"><span>Disable the device from establishing proxy egress LSPs.</span><p><pre class="screen"><b><span class="cmdqueryname">proxy-egress disable</span></b></pre>
+<p>If a policy allows LDP to establish LSPs for static and IGP routes or for routes within a specified IP prefix list, the policy also allows LDP to establish proxy egress LSPs. However, these proxy egress LSPs may be useless and unnecessarily consume system resources. To prevent such an issue, run this command to disable the device from establishing proxy egress LSPs.</p>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP-IPv4 view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a policy for triggering LDP LSP establishment.</span><p><pre class="screen"><b><span class="cmdqueryname">lsp-trigger</span></b> { <strong><span>all</span></strong> | <strong><span>host</span></strong> | <strong><span>ip-prefix</span></strong> <i><span class="varname">ip-prefix-name</span></i> | <strong><span>none</span></strong> }</pre>
+</p><p><ul><li><p>By default, LDP uses IP routes with 32-bit addresses to trigger LDP LSP establishment.</p>
+</li><li><p>The default configuration is recommended. Running the <b><span class="cmdqueryname">lsp-trigger</span></b> <strong><span>all</span></strong> command is not recommended, as this command enables LDP LSPs to be established for all static routes and IGP routes. As a result, a large number of LSPs are established, consuming excessive label resources and slowing down LSP convergence on the entire network. If this command must be run, configure a policy for filtering out unnecessary routes first, thereby reducing the number of LDP LSPs to be established and system resource consumption.</p>
+</li><li><p>If the <b><span class="cmdqueryname">lsp-trigger</span></b> <strong><span>all</span></strong> command is run and an IGP route that does not overlap with that of an MPLS LDP session exists, the system establishes a proxy egress LSP for the IGP route.</p>
+</li><li>The command allows LDP to establish ingress and egress LSPs for public network routes and for private network IGP routes. To configure a policy for triggering transit LSP establishment, run the <b><span class="cmdqueryname">propagate mapping</span></b> command.</li><li>If the <b><span class="cmdqueryname">lsp-trigger</span></b> command is run in both the MPLS and MPLS-LDP-IPv4 views, the configuration in the MPLS-LDP-IPv4 view takes effect.</li></ul>
+</p></li></ol>
+</li><li><span>Perform the following configurations on a transit node.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the MPLS-LDP view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Enter the MPLS-LDP-IPv4 view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a policy for triggering LDP LSP establishment.</span><p><pre class="screen"><b><span class="cmdqueryname">propagate mapping for ip-prefix</span></b> <i><span class="varname">ip-prefix-name</span></i></pre>
+</p><p><p>By default, LDP establishes transit LSPs for all routes, without filtering them.</p>
+<p>The command takes effect in both the MPLS-LDP and MPLS-LDP-IPv4 views. If the command is configured in both views, only the latter configuration takes effect.</p>
+</p></li></ol>
+</li></ul></div>
+<div class="result"><a name="EN-US_TASK_0000001387793993__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Result</h4>
+<div class="p"><ul><li>Run the <b><span class="cmdqueryname">display mpls ldp lsp</span></b> [ <i><span class="varname">destination-address</span></i> <i><span class="varname">mask-length</span></i> | <strong><span>all</span></strong> ] command to check LDP LSP information.</li><li>Run the <b><span class="cmdqueryname">display mpls lsp</span></b> [ <strong><span>verbose</span></strong> ] command to check LSP information.</li><li>Run the <b><span class="cmdqueryname">display mpls ldp lsp fault-analysis</span></b> <i><span class="varname">ip-address</span></i> <i><span class="varname">mask</span></i> command to check the cause for an LDP LSP establishment failure.</li></ul>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_1002.html">Configuring LDP LSPs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_1003.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0025.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

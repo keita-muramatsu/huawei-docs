@@ -1,0 +1,304 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Enlarging the Operation Scope of a Network with a Hop Limit">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_00082.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_0017.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_0034_ar.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001896775525">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Example for Enlarging the Operation Scope of a Network with a Hop Limit</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001896775525"></a><a name="EN-US_TASK_0000001896775525"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Enlarging the Operation Scope of a Network with a Hop Limit</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001896775525__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000001896775525__fig_dc_cfg_gre_002501">Figure 1</a>, DeviceA, DeviceB, DeviceC, and DeviceD run RIP to ensure reachability. Data sent from DeviceA to DeviceD should pass through only one hop. That is, the route cost is 1. Without changing the RIP network topology, there are two hops between DeviceA and DeviceD. To eliminate one hop, you need to set up a GRE tunnel between DeviceA and DeviceC. Although the logical hop count is 1, there are two devices on the path from DeviceA to DeviceD. In this way, the hop count allowed on a RIP network is increased.</p>
+<div class="fignone" id="EN-US_TASK_0000001896775525__fig_dc_cfg_gre_002501"><a name="EN-US_TASK_0000001896775525__fig_dc_cfg_gre_002501"></a><a name="fig_dc_cfg_gre_002501"></a><span class="figcap"><b>Figure 1 </b>Enlarging the operation scope of a network with a hop limit</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="imgResize" src="images/fig_dc_cfg_gre_002501.png" width="NaN" height="NaN" title="Click to enlarge"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001896775525__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Run RIP process 1 on DeviceA, DeviceB, and DeviceC to ensure reachability between them.</p>
+</li><li><p>Set up a GRE tunnel between DeviceA and DeviceC to hide DeviceB.</p>
+</li><li><p>Run RIP process 2 on DeviceA, DeviceC, and DeviceD to forward packets over the GRE tunnel. The actual hop counts allowed on a RIP network are increased.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001896775525__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an IP address for each physical interface.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">&lt;HUAWEI&gt;<strong> system-view</strong>
+[HUAWEI]<strong> sysname DeviceA</strong>
+[DeviceA]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>]<strong> </strong><strong>ip address 10.1.1.1 255.255.255.0</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>]<strong> quit</strong></pre>
+<p># Configure DeviceB.</p>
+<pre class="screen">&lt;HUAWEI&gt;<strong> system-view</strong>
+[HUAWEI]<strong> sysname DeviceB</strong>
+[DeviceB]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>]<strong> ip address 10.1.1.2 255.255.255.0</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>]<strong> quit</strong>
+[DeviceB]<strong> interface <span>10GE</span><span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>]<strong> ip address 10.1.2.1 255.255.255.0</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>]<strong> quit</strong></pre>
+<p># Configure DeviceC.</p>
+<pre class="screen">&lt;HUAWEI&gt;<strong> system-view</strong>
+[HUAWEI]<strong> sysname DeviceC</strong>
+[DeviceC]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>]<strong> ip address 10.1.2.2 255.255.255.0</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>]<strong> quit</strong>
+[DeviceC]<strong> interface <span>10GE</span><span>0/0/2</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>]<strong> ip address 10.1.3.1 255.255.255.0</strong>
+[DeviceC-<span>10GE</span><span>0/0/2</span>]<strong> quit</strong></pre>
+<p># Configure DeviceD.</p>
+<pre class="screen">&lt;HUAWEI&gt;<strong> system-view</strong>
+[HUAWEI]<strong> sysname DeviceD</strong>
+[DeviceD]<strong> interface <span>10GE</span><span>0/0/1</span></strong>
+[DeviceD-<span>10GE</span><span>0/0/1</span>]<strong> ip address 10.1.3.2 255.255.255.0</strong>
+[DeviceD-<span>10GE</span><span>0/0/1</span>]<strong> quit</strong></pre>
+</p></li><li><span>Run RIP process 1 on devices.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">[DeviceA]<strong> rip 1</strong>
+[DeviceA-rip-1]<strong> version 2</strong>
+[DeviceA-rip-1]<strong> network 10.1.1.0 </strong>
+[DeviceA-rip-1]<strong> quit</strong></pre>
+<p># Configure DeviceB.</p>
+<pre class="screen">[DeviceB]<strong> rip 1</strong>
+[DeviceB-rip-1]<strong> version 2</strong>
+[DeviceB-rip-1]<strong> network 10.1.1.0</strong>
+[DeviceB-rip-1]<strong> network 10.1.2.0 </strong>
+[DeviceB-rip-1]<strong> quit</strong></pre>
+<p># Configure DeviceC.</p>
+<pre class="screen">[DeviceC]<strong> rip 1</strong>
+[DeviceC-rip-1]<strong> version 2</strong>
+[DeviceC-rip-1]<strong> network 10.1.2.0</strong>
+[DeviceC-rip-1]<strong> quit</strong></pre>
+<p># After the configuration is complete, run the <strong>display ip routing-table</strong> command on DeviceA and DeviceC. The command outputs show that DeviceA and DeviceC can learn RIP routes to the network segments of the remote interfaces.</p>
+<p># The following example uses the command output on DeviceA.</p>
+<pre class="screen">[DeviceA]<strong> display ip routing-table</strong>
+Proto: Protocol        Pre: Preference
+Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route
+------------------------------------------------------------------------------
+Routing Tables: _public_
+         Destinations : 8        Routes : 8
+
+Destination/Mask    Proto   Pre  Cost      Flags NextHop         Interface
+
+       10.1.1.0/24  Direct  0    0           D   10.1.1.1         <span>10GE</span><span>0/0/1</span>
+       10.1.1.1/32  Direct  0    0           D   127.0.0.1       <span>10GE</span><span>0/0/1</span>
+     10.1.1.255/32  Direct  0    0           D   127.0.0.1       <span>10GE</span><span>0/0/1</span>
+       10.1.2.0/24  RIP     100  1           D   10.1.1.2         <span>10GE</span><span>0/0/1</span>
+      127.0.0.0/8   Direct  0    0           D   127.0.0.1       InLoopBack0
+      127.0.0.1/32  Direct  0    0           D   127.0.0.1       InLoopBack0
+127.255.255.255/32  Direct  0    0           D   127.0.0.1       InLoopBack0
+255.255.255.255/32  Direct  0    0           D   127.0.0.1       InLoopBack0</pre>
+</p></li><li><span>Configure tunnel interfaces.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">[DeviceA]<strong> interface tunnel 1</strong>
+[DeviceA-Tunnel1]<strong> tunnel-protocol gre</strong>
+[DeviceA-Tunnel1]<strong> ip address 192.168.1.1 255.255.255.0</strong>
+[DeviceA-Tunnel1]<strong> source 10.1.1.1</strong>
+[DeviceA-Tunnel1]<strong> destination 10.1.2.2</strong>
+[DeviceA-Tunnel1]<strong> quit</strong></pre>
+<p># Configure DeviceC.</p>
+<pre class="screen">[DeviceC]<strong> interface tunnel 1</strong>
+[DeviceC-Tunnel1]<strong> tunnel-protocol gre</strong>
+[DeviceC-Tunnel1]<strong> ip address 192.168.1.2 255.255.255.0</strong>
+[DeviceC-Tunnel1]<strong> source 10.1.2.2</strong>
+[DeviceC-Tunnel1]<strong> destination 10.1.1.1</strong>
+[DeviceC-Tunnel1]<strong> quit</strong></pre>
+<p># After the configuration is complete, the tunnel interfaces go up and can ping each other successfully.</p>
+<p># The following example uses the command output on DeviceA.</p>
+<pre class="screen">[DeviceA]<strong> ping -a 192.168.1.1 192.168.1.2</strong>
+  PING 192.168.1.2: 56  data bytes, press CTRL_C to break
+    Reply from 192.168.1.2: bytes=56 Sequence=1 ttl=255 time=1 ms
+    Reply from 192.168.1.2: bytes=56 Sequence=2 ttl=255 time=1 ms
+    Reply from 192.168.1.2: bytes=56 Sequence=3 ttl=255 time=1 ms
+    Reply from 192.168.1.2: bytes=56 Sequence=4 ttl=255 time=1 ms
+    Reply from 192.168.1.2: bytes=56 Sequence=5 ttl=255 time=1 ms
+
+  --- 192.168.1.2 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 1/1/1 ms
+</pre>
+</p></li><li><span>Run RIP process 2 on tunnel interfaces.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">[DeviceA]<strong> rip 2</strong>
+[DeviceA-rip-2]<strong> version 2</strong>
+[DeviceA-rip-2]<strong> network 192.168.1.0</strong>
+[DeviceA-rip-2]<strong> quit</strong></pre>
+<p># Configure DeviceC.</p>
+<pre class="screen">[DeviceC]<strong> rip 2</strong>
+[DeviceC-rip-2]<strong> version 2</strong>
+[DeviceC-rip-2]<strong> network 192.168.1.0</strong>
+[DeviceC-rip-2]<strong> network 10.1.3.0</strong>
+[DeviceC-rip-2]<strong> quit</strong></pre>
+<p># Configure DeviceD.</p>
+<pre class="screen">[DeviceD]<strong> rip 2</strong>
+[DeviceD-rip-2]<strong> version 2</strong>
+[DeviceD-rip-2]<strong> network 10.1.3.0</strong>
+[DeviceD-rip-2]<strong> quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001896775525__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After the configuration is complete, run the <strong>display ip routing-table</strong> command on DeviceA and DeviceD. The command outputs show that the cost of the route to the destination address of the peer device is 1.</p>
+<p># The following example uses the command output on DeviceA.</p>
+<pre class="screen">[DeviceA]<strong> display ip routing-table</strong>
+Proto: Protocol        Pre: Preference
+Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route
+------------------------------------------------------------------------------
+Routing Table : _public_
+         Destinations : 12       Routes : 12
+
+Destination/Mask    Proto   Pre  Cost      Flags NextHop         Interface
+
+       10.1.1.0/24  Direct  0    0           D   10.1.1.1         <span>10GE</span><span>0/0/1</span>
+       10.1.1.1/32  Direct  0    0           D   127.0.0.1       <span>10GE</span><span>0/0/1</span>
+     10.1.1.255/32  Direct  0    0           D   127.0.0.1       <span>10GE</span><span>0/0/1</span>
+       10.1.2.0/24  RIP     100  1           D   10.1.1.2         <span>10GE</span><span>0/0/1</span>
+       10.1.3.0/24  RIP     100  1           D   192.168.1.2    Tunnel1
+    192.168.1.0/24  Direct  0    0           D   192.168.1.1    Tunnel1
+    192.168.1.1/32  Direct  0    0           D   127.0.0.1      Tunnel1
+  192.168.1.255/32  Direct  0    0           D   127.0.0.1       Tunnel1
+      127.0.0.0/8   Direct  0    0           D   127.0.0.1       InLoopBack0
+      127.0.0.1/32  Direct  0    0           D   127.0.0.1       InLoopBack0
+127.255.255.255/32  Direct  0    0           D   127.0.0.1       InLoopBack0
+255.255.255.255/32  Direct  0    0           D   127.0.0.1       InLoopBack0
+</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001896775525__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+interface Tunnel1
+ ip address 192.168.1.1 255.255.255.0
+ tunnel-protocol gre
+ source 10.1.1.1
+ destination 10.1.2.2
+#
+rip 1
+ version 2
+ network 10.1.1.0
+#
+rip 2
+ version 2
+ network 192.168.1.0
+#
+return</pre>
+</li><li><p>DeviceB</p>
+<pre class="screen">#
+sysname DeviceB
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.1 255.255.255.0
+#
+rip 1
+ version 2
+ network 10.1.1.0
+ network 10.1.2.0
+#
+return</pre>
+</li><li><p>DeviceC</p>
+<pre class="screen">#
+sysname DeviceC
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.2.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.3.1 255.255.255.0
+#
+interface Tunnel1
+ ip address 192.168.1.2 255.255.255.0
+ tunnel-protocol gre
+ source 10.1.2.2
+ destination 10.1.1.1
+#
+rip 1
+ version 2
+ network 10.1.2.0
+#
+rip 2
+ version 2
+ network 10.1.3.0
+ network 192.168.1.0
+#
+return</pre>
+</li><li>DeviceD<pre class="screen">#
+sysname DeviceD
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.3.2 255.255.255.0
+#
+rip 2
+ version 2
+ network 10.1.3.0
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_gre_cfg_00082.html">Configuration Examples for GRE
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_gre_cfg_0017.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_gre_cfg_0034_ar.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

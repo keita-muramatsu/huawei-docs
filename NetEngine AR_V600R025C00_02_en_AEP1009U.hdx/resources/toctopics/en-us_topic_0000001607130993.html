@@ -1,0 +1,170 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Example for Configuring FEC">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000001554914034.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000002448239813.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001605832837.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001607130993">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring FEC</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001607130993"></a><a name="EN-US_TOPIC_0000001607130993"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring FEC</h1>
+<div><div class="section"><h4 class="sectiontitle">Network Requirements</h4><p>On the network shown in <a href="#EN-US_TOPIC_0000001607130993__fig64434455813">Figure 1</a>, DeviceA and DeviceB communicate with each other through Tunnel 1. FEC optimization needs to be performed for traffic sent from DeviceA to DeviceB. The FEC type is D-FEC, and the tunnel type is SD-WAN.</p>
+<div class="fignone" id="EN-US_TOPIC_0000001607130993__fig64434455813"><a name="EN-US_TOPIC_0000001607130993__fig64434455813"></a><a name="fig64434455813"></a><span class="figcap"><b>Figure 1 </b>Network diagram of FEC</span><br><span><img src="../images/en-us_image_0000001615526905.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li>Configure an FEC service profile and an FEC parameter profile on DeviceA and DeviceB.</li><li>Configure an FEC policy on DeviceA and DeviceB.</li><li>Apply the FEC policy to Tunnel 1 on DeviceA and DeviceB.</li></ol>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>This example describes only the roadmap and procedure for configuring FEC. If the tunnel interface uses the SD-WAN encapsulation mode, ensure that the SD-WAN EVPN network configurations have been completed and SD-WAN EVPN site connections have been established. Before configuring FEC, you can run the <strong>display evpn connection all</strong> command to check the SD-WAN EVPN configurations.</li><li>For details about how to configure SD-WAN EVPN, see "SD-WAN EVPN Configuration" in VPN Configuration.</li></ul>
+</div></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li>Configure an FEC service profile on DeviceA and DeviceB.<p># Create an FEC service profile named <strong>map1</strong> on DeviceA.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>forward-error-correction</strong>
+[DeviceA-forward-error-correction] <strong>service-map map1</strong>
+[DeviceA-forward-error-correction-service-map-map1] <strong>match acl 3000 application-group videos</strong>
+[DeviceA-forward-error-correction-service-map-map1] <strong>quit</strong></pre>
+<p># Create an FEC service profile named <strong>map1</strong> on DeviceB.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceB</strong>
+[DeviceB] <strong>forward-error-correction</strong>
+[DeviceB-forward-error-correction] <strong>service-map map1</strong>
+[DeviceB-forward-error-correction-service-map-map1] <strong>match acl 3000 application-group videos</strong>
+[DeviceB-forward-error-correction-service-map-map1] <strong>quit</strong></pre>
+</li><li>Configure an FEC parameter profile on DeviceA and DeviceB.<p># Create an FEC parameter profile named <strong>profile1</strong> on DeviceA.</p>
+<pre class="screen">[DeviceA-forward-error-correction] <strong>fec profile profile1</strong>
+[DeviceA-forward-error-correction-profile-profile1] <strong>type <strong><span>determined-fec</span></strong></strong>
+[DeviceA-forward-error-correction-profile-profile1] <strong>quit</strong></pre>
+<p># Create an FEC parameter profile named <strong>profile1</strong> on DeviceB.</p>
+<pre class="screen">[DeviceB-forward-error-correction] <strong>fec profile profile1</strong>
+[DeviceB-forward-error-correction-profile-profile1] <strong>type <strong><span>determined-fec</span></strong></strong>
+[DeviceB-forward-error-correction-profile-profile1] <strong>quit</strong></pre>
+</li><li>Configure an FEC policy on DeviceA and DeviceB.<p># Create an FEC policy named <strong>policy1</strong> on DeviceA.</p>
+<pre class="screen">[DeviceA-forward-error-correction] <strong>fec policy policy1</strong>
+[DeviceA-forward-error-correction-policy-policy1] <strong>binding service-map map1 fec-profile profile1 precedence 10</strong>
+[DeviceA-forward-error-correction-policy-policy1] <strong>quit</strong>
+[DeviceA-forward-error-correction] <strong>quit</strong></pre>
+<p># Create an FEC policy named <strong>policy1</strong> on DeviceB.</p>
+<pre class="screen">[DeviceB-forward-error-correction] <strong>fec policy policy1</strong>
+[DeviceB-forward-error-correction-policy-policy1] <strong>binding service-map map1 fec-profile profile1 precedence 10</strong>
+[DeviceB-forward-error-correction-policy-policy1] <strong>quit</strong>
+[DeviceB-forward-error-correction] <strong>quit</strong></pre>
+</li><li>Apply the FEC policy to Tunnel 1 on DeviceA and DeviceB.<p># Apply the FEC policy on DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>interface Tunnel 1</strong>
+[DeviceA] <strong>tunnel-protocol sd-wan</strong>
+[DeviceA-Tunnel1] <strong>fec-policy policy1</strong></pre>
+<p># Apply the FEC policy on DeviceB.</p>
+<pre class="screen">[DeviceB] <strong>interface Tunnel 1</strong>
+[DeviceB] <strong>tunnel-protocol sd-wan</strong>
+[DeviceB-Tunnel1] <strong>fec-policy policy1</strong></pre>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Verifying the Configuration</h4><p># Run the <strong>display forward-error-correction statistics</strong> command on DeviceA to check FEC statistics.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>display forward-error-correction statistics</strong>
+Last 60 seconds encode rate: 5236111 bits/sec
+Last 60 seconds encode overload count: 2332
+Last 60 seconds decode rate: 0 bits/sec
+Last 60 seconds decode overload count: 0
+Encode instances(used/total): 1360/2000
+Decode instances(used/total): 0/2000
+
+No  Profile    Before-Loss-Rate After-Loss-Rate Max-Burst-Loss Redundancy-Rate
+-----------------------------------------------------------------------------
+1   profile1   8                0               3              20</pre>
+<p># Run the <strong>display forward-error-correction statistics</strong> command on DeviceB to check FEC statistics.</p>
+<pre class="screen">&lt;DeviceB&gt; <strong>display forward-error-correction statistics</strong>
+Last 60 seconds encode rate: 0 bits/sec
+Last 60 seconds encode overload count: 0
+Last 60 seconds decode rate: 5236111 bits/sec
+Last 60 seconds decode overload count: 2332
+Encode instances(used/total): 0/2000
+Decode instances(used/total): 1360/2000
+
+No  Profile    Before-Loss-Rate After-Loss-Rate Max-Burst-Loss Redundancy-Rate
+-----------------------------------------------------------------------------
+1   profile1   8                0               3              20</pre>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4><div class="p">DeviceA<pre class="screen">#
+sysname DeviceA
+#
+forward-error-correction
+ service-map map1
+  match acl 3000 application-group videos
+ fec profile profile1
+  type determined-fec
+ fec policy policy1
+  binding service-map map1 fec-profile profile1 precedence 10
+#
+interface Tunnel 1
+ tunnel-protocol sd-wan
+ fec-policy policy1
+#
+return</pre>
+</div>
+<div class="p">DeviceB<pre class="screen">#
+sysname DeviceB
+#
+forward-error-correction
+ service-map map1
+  match acl 3000 application-group videos
+ fec profile profile1
+  type determined-fec
+ fec policy policy1
+  binding service-map map1 fec-profile profile1 precedence 10
+#
+interface Tunnel 1
+ tunnel-protocol sd-wan
+ fec-policy policy1
+#
+return</pre>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_concept_0000001554914034.html">FEC Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_task_0000002448239813.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_task_0000001605832837.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

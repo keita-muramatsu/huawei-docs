@@ -1,0 +1,123 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring DPD">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0038.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0040.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0043.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513153854">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring DPD</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513153854"></a><a name="EN-US_TASK_0000001513153854"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring DPD</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001513153854__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>DPD takes effect only for the following IPsec:</p>
+<ul><li>ACL-based IPsec (involving ISAKMP IPsec policies and template IPsec policies)</li><li>Route-based IPsec (involving IPsec profiles)</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513153854__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>The DPD mechanism determines whether IPsec traffic is received to minimize the number of packets to be sent for peer status detection, effectively saving CPU resources. Unlike the heartbeat detection mechanism (refer to <a href="security_ipsec_cfg_0040.html">Configuring Heartbeat Detection</a>), the DPD mechanism does not need to periodically send heartbeat packets. If the local end can receive IPsec traffic from the remote end, it considers the remote end as active. The local end sends DPD packets to detect the status of the remote end only when it does not receive IPsec traffic from the remote end for a certain amount of time.</p>
+<p>The local end retransmits DPD request packets to the remote end if it does not receive any DPD response packet from the remote end within the retransmission interval. If the local end still does not receive any DPD response packet within the retransmission interval after the maximum number of retransmissions is reached, the local end considers that the remote end is offline and deletes the IKE SAs and IPsec SAs established with the remote end. When configuring DPD, ensure that the payload sequence in DPD packets on the local end matches that on the remote end. The DPD idle time and DPD packet retransmission interval on the local end do not need to be the same as those on the remote end.</p>
+<div class="p">Two DPD types are available:<ul><li>On-demand DPD: If the local end needs to send IPsec packets to the remote end, it sends a DPD request packet to the remote end when it determines that the time since it received the last IPsec packet from the remote end exceeds the DPD idle time.</li><li>Periodic DPD: If the time since the local end received the last IPsec packet or DPD request packet from the remote end exceeds the DPD idle time, the local end sends a DPD request packet to the remote end.</li></ul>
+</div>
+<p>On-demand DPD and periodic DPD can be configured globally or on an IKE peer. The DPD configuration in the IKE peer view takes precedence over that in the system view. When there is no DPD configuration in the IKE peer view, the DPD configuration in the system view takes effect.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001513153854__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure DPD globally.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Configure the version of DPD packets sent by the local end when SM digital envelope authentication is used during IKEv1 negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">ike dpd version</span></b> { <strong><span>1.0</span></strong> | <strong><span>1.1</span></strong> }</pre>
+<p id="EN-US_TASK_0000001513153854__p12508180151113">This command takes effect only when SM digital envelope authentication is used during IKEv1 negotiation. Both ends of an IPsec tunnel must send DPD packets of the same version. If not, they cannot identify the DPD packets sent by each other.</p>
+<p id="EN-US_TASK_0000001513153854__p8351182232">By default, the device does not support this command, that is, SA negotiation through IKEv1 is not supported. To use this command, install the IKEv1 feature package.</p>
+<p id="EN-US_TASK_0000001513153854__p18608656121">If the <strong id="EN-US_TASK_0000001513153854__b191918187478"><b><span class="cmdname" id="EN-US_TASK_0000001513153854__cmdname7416135872012">dpd version</span></b></strong> command is configured for an IKE peer, the local end sends DPD packets of the version specified in this command to that peer. If only the <strong id="EN-US_TASK_0000001513153854__b1660183618487"><b><span class="cmdname" id="EN-US_TASK_0000001513153854__cmdname56521914142110">ike dpd version</span></b></strong> command is configured globally, the local end sends DPD packets of the version specified in that command.</p>
+<p id="EN-US_TASK_0000001513153854__p134564171410">If the peer end is the initiator, the local end sends DPD packets of the same version as those received from the peer end.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Configure the payload sequence in DPD packets globally.</span><p><pre class="screen"><b><span class="cmdqueryname">ike dpd msg</span></b> { <strong><span>seq-hash-notify</span></strong> | <strong><span>seq-notify-hash</span></strong> }</pre>
+</p><p><p>By default, the payload sequence in DPD packets is <strong><span>seq-hash-notify</span></strong> globally.</p>
+<p>The two ends must use the same payload sequence in DPD packets; otherwise, DPD does not take effect.</p>
+</p></li><li class="substepexpand"><span>Set the DPD type globally.</span><p><pre class="screen"><b><span class="cmdqueryname">ike dpd type</span></b> { <strong><span>on-demand</span></strong> | <strong><span>periodic</span></strong> }</pre>
+<p>By default, the global DPD type is not configured, and DPD is disabled.</p>
+<p>When the DPD type is configured, DPD is enabled.</p>
+<p>By default, the device does not support this command (the device does not support SA negotiation through IKEv1). To use this command, you need to load the IKEv1 feature package.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Set the DPD idle time, DPD packet retransmission interval, and maximum number of DPD packet retransmissions globally.</span><p><pre class="screen"><b><span class="cmdqueryname">ike dpd</span></b> { <strong><span>idle-time</span></strong> <i><span class="varname">idle-time</span></i> | <strong><span>retransmit-interval</span></strong> <i><span class="varname">interval</span></i> | <strong><span>retry-limit</span></strong> <i><span class="varname">times</span></i> }</pre>
+<p>By default, the DPD idle time is 30s, the DPD packet retransmission interval is 15s, and the maximum number of DPD packet retransmissions is 3 globally.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Enable the function of checking whether the interface receiving DPD packets is the interface establishing an IPsec SA globally.</span><p><pre class="screen"><b><span class="cmdqueryname">ike dpd packet receive if-related enable</span></b></pre>
+<p>By default, the function of checking whether the interface receiving DPD packets is the interface establishing an IPsec SA is disabled globally.</p>
+<p>This function applies only when IPsec policies have been applied to physical interfaces. When IPsec policies with different names and the same parameters have been applied to multiple interfaces of the device and post-IPsec check has been enabled, the device discards encrypted traffic if the interface that receives encrypted traffic is not the interface that establishes an IPsec SA during an interface switchover. However, the DPD detection result of IKE peers is still normal, causing a failure to trigger IKE renegotiation. As a result, services are interrupted for a long period of time. After this function is enabled, if the interface that receives DPD packets is not the interface that establishes an IPsec SA, the device discards DPD packets, making DPD detection become abnormal. The device then deletes the IPsec SA and triggers IKE renegotiation.</p>
+</p></li></ol>
+</li><li><span>Configure DPD on a specific IKE peer.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Configure the version of DPD packets sent by the local end when SM digital envelope authentication is used during IKEv1 negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">dpd version</span></b> { <strong><span>1.0</span></strong> | <strong><span>1.1</span></strong> }</pre>
+<p>This command takes effect only when SM digital envelope authentication is used during IKEv1 negotiation. Both ends of an IPsec tunnel must send DPD packets of the same version. If not, they cannot identify the DPD packets sent by each other.</p>
+<p>By default, the device does not support this command, that is, SA negotiation through IKEv1 is not supported. To use this command, install the IKEv1 feature package.</p>
+<p>If the <strong id="EN-US_TASK_0000001513153854__en-us_task_0000001513153854_b191918187478"><b><span class="cmdname" id="EN-US_TASK_0000001513153854__en-us_task_0000001513153854_cmdname7416135872012">dpd version</span></b></strong> command is configured for an IKE peer, the local end sends DPD packets of the version specified in this command to that peer. If only the <strong id="EN-US_TASK_0000001513153854__en-us_task_0000001513153854_b1660183618487"><b><span class="cmdname" id="EN-US_TASK_0000001513153854__en-us_task_0000001513153854_cmdname56521914142110">ike dpd version</span></b></strong> command is configured globally, the local end sends DPD packets of the version specified in that command.</p>
+<p>If the peer end is the initiator, the local end sends DPD packets of the same version as those received from the peer end.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Configure the payload sequence in DPD packets for the IKE peer.</span><p><pre class="screen"><b><span class="cmdqueryname">dpd msg</span></b> { <strong><span>seq-hash-notify</span></strong> | <strong><span>seq-notify-hash</span></strong> }</pre>
+<p>By default, the payload sequence in DPD packets for an IKE peer is <strong><span>seq-hash-notify</span></strong>.</p>
+<p>The two ends must use the same payload sequence in DPD packets; otherwise, DPD does not take effect.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Enable the function of automatically learning the payload sequence in DPD packets from the IKE peer.</span><p><pre class="screen"><b><span class="cmdqueryname">dpd msg notify-hash-sequence learning</span></b></pre>
+</p><p><p>By default, the function of automatically learning the payload sequence in DPD packets from an IKE peer is enabled.</p>
+<p>When the local end receives a DPD packet from the peer end, the local end learns the payload sequence in the DPD packet, and sends a DPD packet with the same payload sequence to the peer end.</p>
+</p></li><li class="substepexpand"><span>Set the DPD type on the IKE peer.</span><p><pre class="screen"><b><span class="cmdqueryname">dpd type</span></b> { <strong><span>on-demand</span></strong> | <strong><span>periodic</span></strong> }</pre>
+<p>By default, the DPD type is not set on an IKE peer.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Set the DPD idle time, DPD packet retransmission interval, and maximum number of DPD packet retransmissions on the IKE peer.</span><p><pre class="screen"><b><span class="cmdqueryname">dpd</span></b> { <strong><span>idle-time</span></strong> <i><span class="varname">interval</span></i> | <strong><span>retransmit-interval</span></strong> <i><span class="varname">interval</span></i> | <strong><span>retry-limit</span></strong> <i><span class="varname">times</span></i> }</pre>
+<p>By default, the DPD idle time is 30s, the DPD packet retransmission interval is 15s, and the maximum number of DPD packet retransmissions is 3 on an IKE peer.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Enable the function of checking whether the interface that receives DPD packets is the interface that establishes an IPsec SA on the IKE peer.</span><p><pre class="screen"><b><span class="cmdqueryname">dpd packet receive if-related enable</span></b></pre>
+<p>By default, the function of checking whether the interface that receives DPD packets is the interface that establishes an IPsec SA is disabled on an IKE peer.</p>
+<p>This function applies only when IPsec policies have been applied to physical interfaces. When IPsec policies with different names and the same parameters have been applied to multiple interfaces of the device and post-IPsec check has been enabled, the device discards encrypted traffic if the interface that receives encrypted traffic is not the interface that establishes an IPsec SA during an interface switchover. However, the DPD detection result of IKE peers is still normal, causing a failure to trigger IKE renegotiation. As a result, services are interrupted for a long period of time. After this function is enabled, if the interface that receives DPD packets is not the interface that establishes an IPsec SA, the device discards DPD packets, making DPD detection become abnormal. The device then deletes the IPsec SA and triggers IKE renegotiation.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0038.html">IPsec Reliability
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0040.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0043.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

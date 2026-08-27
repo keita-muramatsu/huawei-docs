@@ -1,0 +1,112 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Checking MPLS Network Connectivity Using Ping">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ping_tracert_cfg_0021_ar.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ping_tracert_cfg_0023_ar.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Ping and Tracert">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Ping and Tracert">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="Ping and Tracert">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="Ping and Tracert">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001718077317">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Checking MPLS Network Connectivity Using Ping</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001718077317"></a><a name="EN-US_TASK_0000001718077317"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Checking MPLS Network Connectivity Using Ping</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001718077317__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_prereq32308743172748"><ul id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_ul188381747183416"><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li1583844763420">The MPLS network has been correctly configured before MPLS ping is used to check the connectivity of an LSP.</li><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li144461649133418">The <span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_ph706267725214104"><b><span class="cmdqueryname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdname1099537106214104">undo lspv mpls-lsp-ping echo disable</span></b></span> command has been run to enable a device to respond to MPLS Echo Request messages.</li><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li10181716163512">Both the initiator and responder send LSP ping packets to the main control unit for processing. If a large number of packets are sent to the main control unit, the CPU usage of the main control unit surges, affecting normal device running. To prevent this problem, you can run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdname1347299319214104">lspv mpls-lsp-ping cpu-defend</span></b> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname56143495214104">cpu-defend</span></i> command to limit the rate at which MPLS Echo Request messages are sent to the main control unit.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001718077317__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_context1677625172748"><p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p1150877314214014">On an MPLS network, the MPLS control plane for establishing label switched paths (LSPs) cannot detect data forwarding failures in LSPs, complicating network maintenance. To address this, MPLS ping and tracert can be used to detect LSP faults and quickly locate faulty nodes. MPLS ping is mainly used to check network connectivity and host reachability.</p>
+<p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p386799651214014">MPLS ping checks the LSP status by sending MPLS Echo Request and Reply messages. The two types of messages are encapsulated into UDP packets and transmitted using port 3503. The receiver identifies the MPLS Echo Request and Reply messages based on the UDP port number.</p>
+<p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p1973068045214014">An MPLS Echo Request message carries information about the forwarding equivalence class (FEC) for an LSP to be checked. The MPLS Echo Request message is forwarded along the LSP with other packets belonging to this FEC. This procedure enables the LSP connectivity to be checked. MPLS Echo Request messages are forwarded to the destination using MPLS, whereas MPLS Echo Reply messages are forwarded to the source using IP.</p>
+<p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p1835989680214014">To prevent the egress from forwarding a received MPLS Echo Request message to other nodes, you can set the destination IP address to 127.0.0.0/8 (the local loopback address) and the TTL value to 1 in the IP header of the message.</p>
+<p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p982180104214014">In <a href="#EN-US_TASK_0000001718077317__en-us_task_0000001176744461_fig_dc_vrp_network-monitor_feature_004401">Figure 1</a>, an LSP destined for Device D is configured on Device A. The MPLS ping process on Device A is as follows:</p>
+<ol id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_ol59341472281"><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li109342718287">Device A checks whether the LSP is established. If the LSP does not exist, an error message is displayed, and the ping process ends. If the LSP is established, the ping process continues.</li><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li7934137192819">Device A constructs an MPLS Echo Request message, with destination IP address 127.0.0.0/8 and TTL value 1 in the IP header. Then, Device A adds an LSP label to the MPLS Echo Request message and sends the message to Device B.</li><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li893416762817">Transit nodes Device B and Device C forward this MPLS Echo Request message using MPLS.<p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p454319123614"><a name="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li893416762817"></a><a name="en-us_task_0000001176744461_li893416762817"></a>If either transit node fails to forward the MPLS Echo Request message, this message is discarded.</p>
+</li><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li17165131643619">If the forwarding is successful, the MPLS Echo Request message reaches the egress (Device D), which returns an MPLS Echo Reply message.</li></ol>
+<div class="fignone" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_fig_dc_vrp_network-monitor_feature_004401"><a name="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_fig_dc_vrp_network-monitor_feature_004401"></a><a name="en-us_task_0000001176744461_fig_dc_vrp_network-monitor_feature_004401"></a><span class="figcap"><b>Figure 1 </b>MPLS network</span><br><span><img class="vsd" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_image309749974214014" src="figure/en-us_image_0000001400757050.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001718077317__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_steps-unordered654510396214104"><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_step1732048301214104"><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmd1394959822214104">Configure an LSP ping test to check the LDP tunnel that carries IPv4 packets.</span><p><pre class="screen" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_screen494618102320"><b><span class="cmdqueryname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdname735616115214104">ping lsp</span></b> [ <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname1259356598214104">-a</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname2126504745214104">source-ip</span></i> | <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname2136728991214104">-c</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname1477518684214104">count</span></i> | <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname586266225214104">-exp</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname1789263712214104">exp-value</span></i> | <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname1283424575214104">-h</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname1086408942214104">ttl-value</span></i> | <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname1407622200214104">-m</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname2061329825214104">interval</span></i> | <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname1222683683214104">-r</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname506430053214104">reply-mode</span></i> | <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname786650648214104">-s</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname723641152214104">packet-size</span></i> | <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname1740632161214104">-t</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname1794097925214104">time-out</span></i> | <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname1436807345214104">-v</span></strong> | <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname1827326613214104">-g</span></strong> ] <sup id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_sup368129791214104">*</sup> <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname726161380214104">ip</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname1074793999214104">destination-iphost</span></i> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname1949234872214104">mask-length</span></i> [ <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname1055175435214104">ip-address</span></i> ] <span>[ <strong><span id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdparmname1052554603214104">nexthop</span></strong> <i><span class="varname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_varname1992178246214104">nexthop-address</span></i> ]</span></pre>
+<div class="note" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_note2151114531318"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p11151104551310">If FEC is not required for LDP services, you can run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdname637487500214104">lspv echo-reply fec-validation ldp disable</span></b> command to disable FEC.</p>
+</div></div>
+</p></li></ul></div>
+<div class="example" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_example17461175711562"><a name="EN-US_TASK_0000001718077317__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Example</h4><ul id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_ul725217429589"><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li3252342105810">Perform the LSP ping test to check the connectivity of the LDP tunnel.<pre class="screen" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_screen7521153412113">&lt;<span class="keyword" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_keyword1272125171119">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_b954042520214156">ping lsp -v ip 3.3.3.3 32</strong>
+  LSP PING FEC: IPV4 PREFIX 3.3.3.3/32 : 100  data bytes, press CTRL_C to break
+    Reply from 3.3.3.3: bytes=100 Sequence=1 time = 4 ms Return Code 3, Subcode 1
+    Reply from 3.3.3.3: bytes=100 Sequence=2 time = 4 ms Return Code 3, Subcode 1
+    Reply from 3.3.3.3: bytes=100 Sequence=3 time = 4 ms Return Code 3, Subcode 1
+    Reply from 3.3.3.3: bytes=100 Sequence=4 time = 4 ms Return Code 3, Subcode 1
+    Reply from 3.3.3.3: bytes=100 Sequence=5 time = 5 ms Return Code 3, Subcode 1
+
+  --- FEC: IPV4 PREFIX 3.3.3.3/32 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 4/4/5 ms   </pre>
+</li></ul>
+<p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p94444421264">In the command output:</p>
+<ul id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_ul24444423262"><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li944418426262"><p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p154441842192614"><a name="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li944418426262"></a><a name="en-us_task_0000001176744461_li944418426262"></a>If still no response message is received on the source after the timer expires, the message "Request time out" is displayed. If a response message is received before the timer expires, information such as the number of data bytes, packet sequence number, and response time is displayed.</p>
+</li><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li16444134212265"><p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p10444184210266"><a name="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li16444134212265"></a><a name="en-us_task_0000001176744461_li16444134212265"></a>The statistics include the numbers of sent and received packets, the percentage of packets that are not replied to, and the minimum, maximum, and average response time.</p>
+</li></ul>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001718077317__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_postreq912722811423"><ul id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_ul10517116435"><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li10519115436">Check LSPV packet statistics.<pre class="screen" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_screen15521714134310"><b><span class="cmdqueryname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdname270713221214103">display lspv statistics</span></b></pre>
+<p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_p11322161716430">If the test performed using the <b><span class="cmdqueryname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdname921741335218">ping lsp</span></b> command fails, you can run this command to check whether the fault occurs on the LSP or the device.</p>
+</li><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li19503152954311">Clear LSPV packet statistics.<pre class="screen" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_screen1935094374317"><b><span class="cmdqueryname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdname1471818377214104">reset lspv statistics</span></b></pre>
+</li><li id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_li204115264455">Disable devices from responding to MPLS Echo Request messages.<pre class="screen" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_screen1968334819450"><span><b><span class="cmdqueryname" id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_cmdname123016531828">lspv mpls-lsp-ping echo disable</span></b></span></pre>
+<p id="EN-US_TASK_0000001718077317__en-us_task_0000001176744461_ph_dc_vrp_ping_cfg_000601">After the test is complete, you are advised to run this command to disable devices from responding to MPLS Echo Request messages to prevent system resource consumption.</p>
+</li></ul>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_ping_tracert_cfg_0021_ar.html">Checking MPLS Network Connectivity Using Ping/Tracert
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_ping_tracert_cfg_0023_ar.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

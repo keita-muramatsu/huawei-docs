@@ -1,0 +1,341 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Queue Scheduling HQoS (Configuring a Connection-based QoS Policy in CBQ Mode)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_275.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_326.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_327.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001573060514">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Queue Scheduling HQoS (Configuring a Connection-based QoS Policy in CBQ Mode)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001573060514"></a><a name="EN-US_TASK_0000001573060514"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Queue Scheduling HQoS (Configuring a Connection-based QoS Policy in CBQ Mode)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001573060514__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_context1677625172748"><h4 class="sectiontitle">Networking Requirements</h4><div class="note" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_note164081125205118"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p13408132518511">This example is supported only by the AR8000 series and AR6700-H series.</p>
+</div></div>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p0677105473020">On an SD-WAN EVPN network shown in <a href="#EN-US_TASK_0000001573060514__en-us_task_0000001513160538_fig934819104294">Figure 1</a>, an enterprise has the headquarters (HQ) and multiple branches, and subscribes to 50 Mbit/s bandwidth. When the downstream bandwidth usage of the HQ exceeds 50 Mbit/s, traffic sent from the HQ to branches is discarded at random. The enterprise has the following QoS requirements:</p>
+<ul id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_ul78418205208"><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li484118204205">Limit the bandwidth allocated to Site2 and Site3 in the outbound direction of the HQ site.</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li1185214525244">Ensure the bandwidth for high-priority services (voice and video conference services) when traffic is sent from the HQ site to branch sites.
+<div class="tableBorder"><a name="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_table775312215342"></a><a name="en-us_task_0000001513160538_table775312215342"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_table775312215342" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Branch site bandwidth and service bandwidth requirements</caption><thead align="left"><tr id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_row6753192111344"><th align="left" class="cellrowborder" rowspan="2" valign="top" id="mcps1.3.1.4.2.1.2.5.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p1275332110342">Branch</p>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p71222571538"></p>
+</th>
+<th align="left" class="cellrowborder" rowspan="2" valign="top" id="mcps1.3.1.4.2.1.2.5.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p134212512148">Outbound Bandwidth Limit of the HQ</p>
+</th>
+<th align="left" class="cellrowborder" colspan="2" valign="top" id="mcps1.3.1.4.2.1.2.5.1.3" liSelected="liSelected"><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p18820184815388">Service Bandwidth Percentage Requirement</p>
+</th>
+</tr>
+<tr id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_row2121357145318"><th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.2.1.2.5.2.1" liSelected="liSelected"><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p1712210573534">Service Type</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.2.1.2.5.2.2" liSelected="liSelected"><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p212218570537">Bandwidth Percentage</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_row1754182117348"><td class="cellrowborder" rowspan="3" valign="top" width="18.77%" headers="mcps1.3.1.4.2.1.2.5.1.1 mcps1.3.1.4.2.1.2.5.2.1 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p47541217342">Site2</p>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p10263181045518"></p>
+</td>
+<td class="cellrowborder" rowspan="3" valign="top" width="24.57%" headers="mcps1.3.1.4.2.1.2.5.1.2 mcps1.3.1.4.2.1.2.5.2.2 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p17541121153412">30 Mbit/s</p>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p1826401020556"></p>
+</td>
+<td class="cellrowborder" valign="top" width="27.889999999999997%" headers="mcps1.3.1.4.2.1.2.5.1.3 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p19820104813381">Voice</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.77%" headers="mcps1.3.1.4.2.1.2.5.1.3 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p0305172211397">20%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_row1834871743917"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.1.2.5.1.1 mcps1.3.1.4.2.1.2.5.2.1 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p834871710394">Video conference</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.1.2.5.1.2 mcps1.3.1.4.2.1.2.5.2.2 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p430520228392">40%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_row16263161014554"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.1.2.5.1.1 mcps1.3.1.4.2.1.2.5.2.1 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p142641510135513">Others</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.1.2.5.1.2 mcps1.3.1.4.2.1.2.5.2.2 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p3264161013551">40%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_row775422119343"><td class="cellrowborder" rowspan="3" valign="top" width="18.77%" headers="mcps1.3.1.4.2.1.2.5.1.1 mcps1.3.1.4.2.1.2.5.2.1 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p17754821133415">Site3</p>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p17901413135519"></p>
+</td>
+<td class="cellrowborder" rowspan="3" valign="top" width="24.57%" headers="mcps1.3.1.4.2.1.2.5.1.2 mcps1.3.1.4.2.1.2.5.2.2 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p102116653519">20 Mbit/s</p>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p1879019136555"></p>
+</td>
+<td class="cellrowborder" valign="top" width="27.889999999999997%" headers="mcps1.3.1.4.2.1.2.5.1.3 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p531111497446">Voice</p>
+</td>
+<td class="cellrowborder" valign="top" width="28.77%" headers="mcps1.3.1.4.2.1.2.5.1.3 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p113051622123914">20%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_row78831843134417"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.1.2.5.1.1 mcps1.3.1.4.2.1.2.5.2.1 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p14311174964415">Video conference</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.1.2.5.1.2 mcps1.3.1.4.2.1.2.5.2.2 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p11884643114413">40%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_row13789213175514"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.1.2.5.1.1 mcps1.3.1.4.2.1.2.5.2.1 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p1379031345510">Others</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.1.2.5.1.2 mcps1.3.1.4.2.1.2.5.2.2 "><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p14790141325517">40%</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li></ul>
+<div class="fignone" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_fig934819104294"><a name="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_fig934819104294"></a><a name="en-us_task_0000001513160538_fig934819104294"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring a connection-based QoS policy</span><div class="note" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_note163690483552"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p113691482557">In this example, interface 1 represents <span>10GE</span> <span>0/0/1</span>.1.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_image115011591174" src="figure/en-us_image_0000001513040630.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001573060514__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_context1696554961910"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p107141551151915">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_ol1568711176217"><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li1765353712327">On DeviceB and DeviceC, set the inbound bandwidth of the peer site to 50 Mbit/s (50000 kbit/s). The bandwidth value will be used as the base value of the connection-based QoS policy on DeviceA, that is, the base value in step 5.</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li33562218244">Configure a CBQ traffic policy on DeviceA to set bandwidth values for services at branch sites.<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p893881141810"><a name="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li33562218244"></a><a name="en-us_task_0000001513160538_li33562218244"></a>Application identification is used to differentiate services. The enterprise uses WeLink to carry office applications. <a href="#EN-US_TASK_0000001573060514__en-us_task_0000001513160538_table775312215342">Table 1</a> lists the bandwidth allocated to the voice service (WeLink_VideoCall), video conference service (WeLink_Meeting), and other services.</p>
+</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li1859484011538">Enable the application identification function on the SD-WAN tunnel interface of DeviceA because this function needs to be used.</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li1294854852711">To prevent other traffic classifiers that match ACL rules from failing to be matched in this scenario, you are advised to configure the packet pre-extraction function on the tunnel interface.</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li44526314107">Configure a site group on DeviceA and set the bandwidth percentage for each branch site. The outbound bandwidth limit of the connection-based QoS policy is the product of the bandwidth percentage configured in this step and the inbound bandwidth of the peer site (the value configured in step 1).<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p369686544"><a name="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li44526314107"></a><a name="en-us_task_0000001513160538_li44526314107"></a>According to <a href="#EN-US_TASK_0000001573060514__en-us_task_0000001513160538_table775312215342">Table 1</a>, the HQ outbound bandwidth limits for Site2 and Site3 are 30 Mbit/s and 20 Mbit/s, respectively, and the inbound bandwidth limit for the peer site is 50 Mbit/s. As such, you need to set the bandwidth percentages for Site2 and Site3 to 60% and 40%, respectively.</p>
+</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li43191225349">Apply the CBQ traffic policy to the site group view of DeviceA to ensure the bandwidth for high-priority services at branch sites.</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li5136145692618">In this example, the outbound interface of DeviceA is a sub-interface. You need to enable the queue capability of the sub-interface.</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li17735811162315">Configure a bypass QoS policy on the outbound interface of DeviceA to ensure the bandwidth for sites that are not added to any site group. In addition, the CBQ traffic policy may fail to be applied to sites in a site group due to insufficient resources on the device. For this reason, the bypass QoS policy must be configured.</li></ol>
+<div class="note" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_note279231071611"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_ul19676191981616"><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li11154204184020">This example describes only the configuration roadmap and procedure for configuring a connection-based QoS policy. Assume that SD-WAN EVPN network configurations have been completed. You need to ensure that SD-WAN EVPN site connections have been established. Before configuring a connection-based QoS policy, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_cmdname665611187407">display evpn connection all</span></b> command to check whether the connections have been established.</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li06761519131618">For details about SD-WAN EVPN configurations, see "SD-WAN EVPN Configuration" in <span id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_ph9695135117616">CLI Configuration Guide</span> &gt; VPN Configuration.</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li11503539181816">In practice, if the application identification function is used to differentiate service traffic, you can query the names of related applications in <a href="https://isecurity.huawei.com/sec/web/queryApplication.do" target="_blank" rel="noopener noreferrer">Huawei security center</a> or by running the <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b971710418207">display application</strong> command.</li></ul>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001573060514__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_steps10132325172748"><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_step183261436152315"><span id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_cmd1432663662319">On DeviceB and DeviceC, configure the inbound bandwidth of the peer site.</span><p><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p24548129502"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen12953522102417">&lt;<span class="keyword" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_keyword1517086799183309">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b182894533175348">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_keyword1943027164920">HUAWEI</span>] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b278176590175348">sysname </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b74691143202610">DeviceB</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b75831347184215">evpn site 2</strong>
+[DeviceB-site-2]<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b152150201765"> </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1050163011617">system-id 10.2.2.2</strong>
+[DeviceB-site-2] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b15581928104316">transport-network-port 1</strong>
+[DeviceB-site-2-transport-network-port-1]<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b143641324122819"> </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b12511133164610">bandwidth input 50000</strong>
+[DeviceB-site-2-transport-network-port-1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b16758145673110">quit</strong>
+[DeviceB-site-2]<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b93264477472"> quit</strong></pre>
+</p><p><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p10741842155018"># Configure DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen16741842135011">&lt;<span class="keyword" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_keyword13740425501">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b177516426502">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_keyword13752042105020">HUAWEI</span>] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1275142195019">sysname </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b137514275018">DeviceC</strong>
+[DeviceC] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1375842115011">evpn site 3</strong>
+[DeviceC-site-3]<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b17997244366"> </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b119681554762">system-id 10.3.3.3</strong>
+[DeviceC-site-3] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b8751242155018">transport-network-port 1</strong>
+[DeviceC-site-3-transport-network-port-1]<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1075124213506"> </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1675184255019">bandwidth input 50000</strong>
+[DeviceC-site-3-transport-network-port-1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b075442145020">quit</strong>
+[DeviceC-site-3] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b108198517487">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_step17998153824315"><span id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_cmd5998193810435">Configure a CBQ traffic policy on DeviceA.</span><p><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p1346834865117"># Configure an FQ profile for a CBQ traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen847917513457">&lt;<span class="keyword" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_keyword887517297529">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b58752029185217">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_keyword13875132945212">HUAWEI</span>] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1887512912525">sysname </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b208751292526">DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b9774183819472">flow-queue fq1</strong>
+[DeviceA-flow-queue-fq1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b4244151187">queue service1 pq shaping </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b138183221889">cir-shaping-percentage 20</strong>
+[DeviceA-flow-queue-fq1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1635113181217">queue service2 pq shaping cir-shaping-percentage 40</strong>
+[DeviceA-flow-queue-fq1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1794451511318">queue service3 pq shaping cir-shaping-percentage 40</strong>
+[DeviceA-flow-queue-fq1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b239984472414">quit</strong></pre>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p18274125134511">In this example, the PIR value is not specified and is the same as the CIR value.</p>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p2655135835517"># Configure a CBQ traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen94126331104">[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b102041339141012">traffic classifier service1</strong>
+[DeviceA-classifier-service1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b3298135994419">if-match application WeLink_VideoCall</strong>
+[DeviceA-classifier-service1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b46113371338">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1161123713336">traffic classifier service2</strong>
+[DeviceA-classifier-service2]<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b2061163743319"> if-match</strong> <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b17611137103317">application WeLink_Meeting</strong>
+[DeviceA-classifier-service2] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b26120377331">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b78889201138">traffic classifier service3</strong>
+[DeviceA-classifier-service3]<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b158882207317"> if-match</strong> <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b118652817314">any</strong>
+[DeviceA-classifier-service3] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b108881920336">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b15843141919010">traffic behavior</strong> <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b458319216212">service1</strong>
+[DeviceA-behavior-service1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b8843119902">flow-queue </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b68432019303">fq1</strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b284351916012"> queue </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1798619302319">service1</strong>
+[DeviceA-behavior-service1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b18843201920020">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b78434191702">traffic behavior</strong> <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b122063813314">service2</strong>
+[DeviceA-behavior-service2] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b084315191008">flow-queue </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1843191915010">fq1</strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b188431519900"> queue </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b61349333315">service2</strong>
+[DeviceA-behavior-service2] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b14843171910017">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b163595443318">traffic behavior</strong> <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b8359114420312">service3</strong>
+[DeviceA-behavior-service3] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1136024412318">flow-queue </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b153601444031">fq1</strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b103601447316"> queue </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b133603441135">service3</strong>
+[DeviceA-behavior-service3] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b036094419319">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b6844101910011">traffic policy</strong> <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b51371548153117">site-policy</strong>
+[DeviceA-trafficpolicy-site-policy] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b17844171912016">classifier service1 behavior service1</strong>
+[DeviceA-trafficpolicy-site-policy] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b158441197018">classifier service2 behavior service2</strong>
+[DeviceA-trafficpolicy-site-policy] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b178442019904">classifier service3 behavior service3</strong>
+[DeviceA-trafficpolicy-site-policy] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b284481920014">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_step1783912132516"><span id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_cmd1783931335116">Enable the application identification function on the SD-WAN tunnel interface of DeviceA.</span><p><pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen199915373557">[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b11567171765616">interface tunnel100</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b147381481598">tunnel-protocol sd-wan</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b187179101594">sd-wan service enable</strong>
+[DeviceA-Tunnel100] ip binding vpn-instance vpn1
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b7852201815719">sa enable</strong></pre>
+</p></li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_step1331023135012"><span id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_cmd833123145019">Configure the packet pre-extraction function on the SD-WAN tunnel interface of DeviceA.</span><p><pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen23264281514">[DeviceA-Tunnel100]<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b9219144818512"> qos pre-classify</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b563319304511">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_step297918716516"><span id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_cmd129791671254">Configure a site group on DeviceA and configure bandwidth percentages for different branch sites.</span><p><pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen11914533555">[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b104131296614">evpn site-group group1</strong>
+[DeviceA-evpn-site-group-group1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b2988835577">peer-site 2 bandwidth percentage 60</strong>
+[DeviceA-evpn-site-group-group1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b6479833684">peer-site 3 bandwidth percentage 40</strong></pre>
+</p></li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_step3239955102910"><span id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_cmd52397557290">Apply the CBQ traffic policy in the site group view of DeviceA.</span><p><pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen1640571713305">[DeviceA-evpn-site-group-group1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1781723962911">traffic-policy </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b14116599318">site-policy</strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b17817439182914"> outbound</strong> 
+[DeviceA-evpn-site-group-group1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b189778216323">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_step19595434917"><span id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_cmd18959134104911">Enable the queue capability on the outbound interface <span>10GE</span> <span>0/0/1</span>.1 of DeviceA. (This step needs to be performed when the outbound interface is a sub-interface.)</span><p><pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen297364704911">[DeviceA]<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1435345483911"> interface </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1935314546391"><span>10ge</span> <span>0/0/1</span>.1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>.1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b138018122257">qos queue-scheduling enable</strong></pre>
+</p></li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_step04901016183914"><span id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_cmd20490121617397">Configure a bypass QoS policy on the outbound interface of DeviceA. You can use the traffic policy <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b8175114274814">site-policy</strong> configured in step 2 or configure a new traffic policy as the bypass QoS policy. In this example, the configured traffic policy <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b4452024192016">site-policy</strong> is used.</span><p><pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen14232134510391">[DeviceA-<span>10GE</span><span>0/0/1</span>.1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1956319208462">qos</strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b356317202468"> lr cir 50000 kbps outbound</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>.1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b13732172104712">traffic-policy </strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b588891415472">site-policy</strong><strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b9732162116475"> outbound</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>.1] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b343285362614">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_example121226172748"><a name="EN-US_TASK_0000001573060514__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p13719228145818"># Check the configured traffic classifiers.</p>
+<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen666420172915">[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b61402318434">display traffic classifier</strong>
+  Traffic Classifier Information:                                               
+    Classifier: <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1383313524222">service1</strong>                                                        
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match application WeLink_VideoCall                                   
+
+    Classifier: <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b67275513222">service2</strong>                                                        
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match application WeLink_Meeting                                     
+
+    Classifier: <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b165361457142210">service3</strong>                                                        
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match any    
+                                                       
+<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b87851330185820">Total classifier number is 3</strong>   </pre>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p5512115243316"># Check the configured traffic behaviors. The command output shows the FQ profile referenced by the traffic behaviors of different services.</p>
+<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen1469011171343">[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b16828164563418">display traffic behavior </strong>                                               
+  Traffic Behavior Information:                                                 
+    Behavior: <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b94801532102119">service1</strong>                                                              
+      Flow queue:                                                               
+       Flow-queue fq1 queue service1                                                 
+                                    
+    Behavior: <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b680872911397">service2 </strong>                                                            
+      Flow queue:                                                               
+       Flow-queue fq1 queue service2                                               
+
+    Behavior: <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b173674011216">service3</strong>                                                             
+      Flow queue:                                                               
+       Flow-queue fq1 queue service3                                               
+
+<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b109460174535">Total behavior number is 3 </strong></pre>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p2080065185116"># Check the configured traffic policy. The command output shows the configured CBQ traffic policy <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1085217212310">site-policy</strong>.</p>
+<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen16760142175210">[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b14889113412527">display traffic policy </strong>                                                 
+  Traffic Policy Information:                                                                                               
+    Policy: <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b263947145317">site-policy </strong>                                                         
+      Classifier: service1                                                         
+        Type: OR                                                                
+      Behavior: service1                                                           
+        Flow queue:                                                             
+         Flow-queue fq1 queue service1 
+                                            
+      Classifier: service2                                                        
+        Type: OR                                                                
+      Behavior: service2                                                           
+        Flow queue:                                                             
+         Flow-queue fq1 queue service2
+
+      Classifier: service3                                                          
+        Type: OR                                                                
+      Behavior: service3                                                            
+        Flow queue:                                                             
+         Flow-queue fq1 queue service3                                              
+
+<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b9426102219531">Total policy number is 1  </strong></pre>
+<p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p135551685920"># Check the application records of the site connection-based traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen1884184804">[DeviceA] <strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1517018231109">display traffic-policy applied-record connection </strong>                                  
+Total records : 2                                                               
+--------------------------------------------------------------------------------
+Policy Type/Name                 Apply Parameter                 Slot  State    
+--------------------------------------------------------------------------------
+<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b1833517372157">site-policy </strong>                    CONNECTION 1(OUT)               <span>0</span>     success
+<strong id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_b197226240254">    </strong>                             CONNECTION 2(OUT)               <span>0</span>     success  
+--------------------------------------------------------------------------------</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001573060514__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_p193658184816">The following configuration scripts provide only the configuration information related to this example.</p>
+<ul id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_ul17635323134016"><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li9635323134011">DeviceA<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen654919151545"># 
+sysname DeviceA                           
+#                                                                               
+flow-queue fq1
+ queue service1 pq shaping cir-shaping-percentage 20
+ queue service2 pq shaping cir-shaping-percentage 40
+ queue service3 pq shaping cir-shaping-percentage 40
+#
+traffic classifier service1 type or
+ if-match application WeLink_VideoCall  
+#
+traffic classifier service2 type or
+ if-match application WeLink_Meeting  
+#
+traffic classifier service3 type or
+ if-match any
+#
+traffic behavior service1
+ flow-queue fq1 queue service1 
+#
+traffic behavior service2
+ flow-queue fq1 queue service2 
+#
+traffic behavior service3
+ flow-queue fq1 queue service3 
+#
+traffic policy site-policy 
+ classifier service1 behavior service1 precedence 5
+ classifier service2 behavior service2 precedence 10
+ classifier service3 behavior service3 precedence 15
+#
+interface 10GE0/0/1.1
+ qos lr cir 50000 kbps outbound
+ qos queue-scheduling enable
+ traffic-policy site-policy outbound 
+#
+interface Tunnel100
+ tunnel-protocol sd-wan
+ sd-wan service enable
+ ip binding vpn-instance vpn1
+ qos pre-classify
+ sa enable
+#
+evpn site-group group1
+ peer-site 2 bandwidth percentage 60
+ peer-site 3 bandwidth percentage 40
+ traffic-policy site-policy outbound 
+#</pre>
+</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li18241730194014">DeviceB<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen54384342402"># 
+sysname DeviceB                           
+#                                                                               
+evpn site 2 site-type cpe                                                       
+ system-id 10.2.2.2                                                 
+ transport-network-port 1                                                       
+  bandwidth input 50000                                                         
+#</pre>
+</li><li id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_li96871551144614">DeviceC<pre class="screen" id="EN-US_TASK_0000001573060514__en-us_task_0000001513160538_screen595136124718"># 
+sysname DeviceC                           
+#                                                                               
+evpn site 3 site-type cpe                                                       
+ system-id 10.3.3.3                                                 
+ transport-network-port 1                                                       
+  bandwidth input 50000                                                         
+#</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_275.html">HQoS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_326.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="feature-specific_327.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

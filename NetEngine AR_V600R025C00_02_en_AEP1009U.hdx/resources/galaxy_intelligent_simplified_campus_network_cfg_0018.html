@@ -1,0 +1,199 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring MACsec for an RU">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0010.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0017.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002019799122">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring MACsec for an RU</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002019799122"></a><a name="EN-US_TASK_0000002019799122"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring MACsec for an RU</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002019799122__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>When data is transmitted in plaintext, there are many security risks, for example, bank account information is stolen and tampered with, or malicious network attacks occur. MACsec is a Layer 2 encryption technology that provides hop-by-hop secure data transmission. It protects transmitted Ethernet frames to reduce the risk of information leakage and malicious network attacks. MACsec is suitable for meeting high requirements on data confidentiality.</p>
+<p>Before enabling MACsec for an RU, you need to enable MACsec on the RU ports and set the static CKN and CAK.</p>
+<p>After the MACsec function is enabled on interfaces of two connected devices, they elect a key server based on their priorities. A smaller priority value indicates a higher priority. The device with a higher priority is elected as the key server. If the two devices have the same priority, their Secure Channel Identifiers (SCIs) are compared. An SCI consists of the MAC address of an interface and the last two bytes of the interface index. The device with a smaller SCI value is elected as the key server.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>For the S5751-L and S5731I-L series RUs, MACsec is supported on all ports but can be enabled on a maximum of 16 ports.</p>
+</div></div>
+</div></div>
+<div class="example"><a name="EN-US_TASK_0000002019799122__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4><ul><li>Configure MACsec for RUs in batches in the global RU view.<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the global RU view.<pre class="screen"><b><span class="cmdqueryname">remote-unit</span></b></pre>
+</li><li>Enable MACsec on the RU ports and set the static CKN and CAK.<pre class="screen"><strong><b><span class="remote-unit macsec enable port ">remote-unit</span></b> </strong>{ <i><span class="varname">ru-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">ru-id2</span></i> ] } &amp;&lt;1-8&gt;<strong> macsec</strong> <strong>enable <strong><span>ckn</span></strong></strong> <i><span class="varname">string-name</span></i> <strong>cak</strong> <i><span class="varname">string-key</span></i><strong> <strong><span>port</span></strong> </strong>{ <i><span class="varname">port-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">port-id2</span></i> ] }<strong> </strong>&amp;&lt;1-34&gt;</pre>
+<p>By default, MACsec is disabled on an RU port, and no static CKN or CAK is set.</p>
+<p>A CKN is the name of a CAK. To ensure that an MKA session can be successfully established between two devices, configure the same CKN and CAK on their connected interfaces.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p><i><span class="varname">port-id</span></i> indicates the port ID of an RU, which may be different from the physical port number printed on the panel. For example, if the downlink port numbers are 1 to 8 and the uplink port numbers are 9 to 10 on the panel, set <i><span class="varname">port-id</span></i> to an integer in the range from 1 to 10 according to the actual port for connection. If the downlink port numbers are 1 to 8 and the uplink port numbers are 1 to 2 on the panel, set <i><span class="varname">port-id</span></i> to an integer in the range from 1 to 10 (1 to 8: downlink ports; 9: uplink port 1; 10: uplink port 2).</p>
+</div></div>
+</li><li>(Optional) Configure the MACsec encryption mode on RU ports.<pre class="screen"><b><span class="remote-unit macsec mode port ">remote-unit</span></b> { <i><span class="varname">ru-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">ru-id2</span></i> ] } &amp;&lt;1-8&gt;<strong> </strong><strong>macsec mode</strong> { <strong>none</strong> | <strong>normal</strong> | <strong>integrity-only</strong> } <strong><strong><span>port</span></strong> </strong>{ <i><span class="varname">port-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">port-id2</span></i> ] }<strong> </strong>&amp;&lt;1-34&gt; </pre>
+<p>By default, the MACsec encryption mode of an RU port is normal.</p>
+<div class="note" id="EN-US_TASK_0000002019799122__note34021971851"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><div class="p" id="EN-US_TASK_0000002019799122__p9402479511">To ensure secure transmission of service data on the network, MACsec provides the data encryption and integrity check functions. You can specify an encryption mode to selectively enable data encryption and integrity check. Three encryption modes are available:<ul id="EN-US_TASK_0000002019799122__ul6402473511"><li id="EN-US_TASK_0000002019799122__li13402157655">None: Neither data encryption nor integrity check is performed.</li><li id="EN-US_TASK_0000002019799122__li114021671759">Normal: Both data encryption and integrity check are performed.</li><li id="EN-US_TASK_0000002019799122__li74031076515">Integrity-only: Integrity check is performed, and data encryption is not performed.</li></ul>
+</div>
+<p id="EN-US_TASK_0000002019799122__p3403771454">When configuring MACsec on a network where data traffic is being transmitted, you can set the encryption mode on both ends to none. After MKA session negotiation is successful, change the encryption mode on both ends to normal. This shortens the traffic interruption time.</p>
+</div></div>
+</li><li>(Optional) Set MACsec parameters.<ul><li>Configure the MKA session timeout period.<pre class="screen"><b><span class="remote-unit macsec mka life-time port">remote-unit</span></b> { <i><span class="varname">ru-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">ru-id2</span></i> ] } &amp;&lt;1-8&gt; <strong><span>macsec mka life-time</span></strong> <i><span class="varname">life-time-value</span></i><strong> <strong><span>port</span></strong> </strong>{ <i><span class="varname">port-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">port-id2</span></i> ] }<strong> </strong>&amp;&lt;1-34&gt;</pre>
+<p>By default, the MKA session timeout period on an RU port is 6 seconds. For S5731I-L series RUs, it is recommended that MACsec be enabled on a maximum of 10 ports. If MACsec needs to be enabled on more than 10 ports, it is recommended that the timeout period be set to a value greater than or equal to 15 seconds on both ends.</p>
+<p>After session negotiation is complete and a secure channel is established, the two devices exchange MKA protocol packets to ensure that the session is alive. The MKA protocol defines an MKA session keepalive timer that specifies the timeout period of an MKA session. The local device starts the timer when receiving MKA protocol packets from the remote device.</p>
+<ul><li>If the local device receives subsequent MKA protocol packets within the timeout period, it restarts the timer.</li><li>If the local device does not receive subsequent MKA protocol packets within the timeout period, it considers the session insecure, deletes the session, and performs MKA session negotiation again.</li></ul>
+</li><li>Configure a MACsec security policy.<pre class="screen"><b><span class="remote-unit macsec policy port">remote-unit</span></b> { <i><span class="varname">ru-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">ru-id2</span></i> ] } &amp;&lt;1-8&gt; <strong><span>macsec policy</span></strong> { <strong><span>must-secure</span></strong> | <strong><span>should-secure</span></strong> }<strong> </strong><strong><span>port</span></strong> { <i><span class="varname">port-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">port-id2</span></i> ] }<strong> </strong>&amp;&lt;1-34&gt;</pre>
+<p>By default, the MACsec security policy is must-secure.</p>
+<p>The MACsec security policies are described as follows:</p>
+<ul><li><strong>must-secure</strong>: All plaintext packets are discarded after MKA session negotiation starts. After the negotiation succeeds, packets are encrypted and decrypted normally.</li><li><strong>should-secure</strong>: Plaintext packets are permitted before MKA session negotiation succeeds. After the negotiation succeeds, plaintext packets are discarded and packets are encrypted and decrypted normally.</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When an RU is connected to an AP, you need to set the security policy to <strong>should-secure</strong>. Otherwise, the AP will work abnormally when it is restarted.</p>
+</div></div>
+</li></ul>
+<ul><li>Other MACsec parameters cannot be set for RUs. For details about the default settings, see <a href="#EN-US_TASK_0000002019799122__table174039714512">Table 1</a>.
+<div class="tableBorder"><a name="EN-US_TASK_0000002019799122__table174039714512"></a><a name="table174039714512"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000002019799122__table174039714512" frame="border" border="1" rules="all"><caption><b>Table 1 </b>MACsec parameter settings</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="20.59205920592059%" id="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.1" liSelected="liSelected"><p>Operation</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="30.61306130613061%" id="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="48.7948794879488%" id="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.3" liSelected="liSelected"><p>Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="20.59205920592059%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.1 "><p>Configure the MKA key server priority.</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.61306130613061%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.2 "><p>This parameter cannot be configured using commands.</p>
+</td>
+<td class="cellrowborder" valign="top" width="48.7948794879488%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.3 "><p>By default, the MACsec MKA key server priority is 16 for an RU.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.59205920592059%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.1 "><p>Configure an MKA key generation algorithm.</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.61306130613061%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.2 "><p>This parameter cannot be configured using commands.</p>
+</td>
+<td class="cellrowborder" valign="top" width="48.7948794879488%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.3 "><p>The MKA key generation algorithm used by RUs is AES-CMAC-128.</p>
+<p>After generating the SAK, the key server sends the encrypted SAK to the peer device through an MKA packet. Upon receipt of the MKA packet, the peer device checks the integrity of the packet. If the check fails, the peer device drops the packet. If the check succeeds, the peer device decrypts the packet to obtain the original SAK. In addition, ensure that the key generation algorithms configured on both ends are the same. Otherwise, the negotiation may fail. The AES-CMAC-128 algorithm must be used on the device connected to the RU.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.59205920592059%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.1 "><p>Configure an encryption algorithm for MACsec data packets.</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.61306130613061%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.2 "><p>This parameter cannot be configured using commands.</p>
+</td>
+<td class="cellrowborder" valign="top" width="48.7948794879488%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.3 "><p>After session negotiation is complete, the devices at both ends use the SAK to encrypt and decrypt data packets for encrypted communication.</p>
+<p>The actually used algorithm is automatically negotiated by the devices at both ends in descending order of encryption strength.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.59205920592059%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.1 "><p>Configure the MACsec encryption offset.</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.61306130613061%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.2 "><p>This parameter cannot be configured using commands.</p>
+</td>
+<td class="cellrowborder" valign="top" width="48.7948794879488%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.3 "><p>The MACsec encryption offset indicates from which byte behind the MACsec tag field a data frame is encrypted.</p>
+<p>The MACsec encryption offset is 0 bytes for RUs.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.59205920592059%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.1 "><p>Configure the MACsec replay protection window size.</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.61306130613061%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.2 "><p>This parameter cannot be configured using commands.</p>
+</td>
+<td class="cellrowborder" valign="top" width="48.7948794879488%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.3 "><p>To prevent malicious users from repeatedly sending obtained data packets, the receiver discards duplicate or out-of-order data packets by default. In some cases, however, data packets are reordered during transmission because their sending priorities are different. As a result, the data packets are out of order when they reach the receiver. To ensure that these out-of-order data packets can be received normally, configure the replay protection window size.</p>
+<p>Assume that the replay protection window size configured on the device is a. If the device receives a packet with the sequence number x, the sequence number of the next packet that is allowed to be received must be greater than or equal to (x + 1 - a). Set an appropriate replay protection window size based on the data packet forwarding path on the network. If data packets may be forwarded multiple times, there is a high probability that many of them become out of order. To address this issue, you are advised to increase the replay protection window size. Otherwise, decrease the window size.</p>
+<p>By default, the MACsec replay protection window size is 1024 for RUs. The replay protection window size must be greater than 1024 on the device connected to the RU. Otherwise, packet loss may occur.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.59205920592059%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.1 "><p>Configure the device to add an SCI to the MACsec frame header.</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.61306130613061%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.2 "><p>This parameter cannot be configured using commands.</p>
+</td>
+<td class="cellrowborder" valign="top" width="48.7948794879488%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.3 "><p>An SCI identifies the source of a packet. It consists of the MAC address of an interface and the last two bytes of the interface index. When the device is connected to a non-Huawei device and MACsec is configured on them, the MACsec frame header may need to contain the SCI to identify the source of packets because the implementation of MACsec on the device is different from that on the non-Huawei device.</p>
+<p>On RUs, the MACsec frame header contains an SCI.</p>
+<p>The settings of whether the MACsec frame header contains an SCI must be the same at both ends. That is, the MACsec frame header must also contain an SCI on the device connected to the RU.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.59205920592059%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.1 "><p>Configure the SAK timeout period.</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.61306130613061%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.2 "><p>This parameter cannot be configured using commands.</p>
+</td>
+<td class="cellrowborder" valign="top" width="48.7948794879488%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.3 "><p>When MACsec is used for secure communication, an SAK is used to encrypt and decrypt data packets. To improve the security of data packets, an SAK needs to be replaced when the number of data packets encrypted using the SAK reaches a certain value or the time for using the SAK exceeds a certain period. In this case, the key server generates and advertises a new SAK.</p>
+<p>The SAK timeout period is fixed at 3600 seconds for RUs.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="20.59205920592059%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.1 "><p>Configure the MACsec capability value.</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.61306130613061%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.2 "><p>This parameter cannot be configured using commands.</p>
+</td>
+<td class="cellrowborder" valign="top" width="48.7948794879488%" headers="mcps1.3.2.2.1.1.5.2.1.2.2.4.1.3 "><p>The MACsec capability value is fixed at 3 for RUs. You need to set the MACsec capability value of the RU to be the same as that of the remote device.</p>
+<p>The MACsec capability values are as follows:</p>
+<ul><li><strong>2</strong>: Both integrity check and confidentiality check are supported. Encryption can only start from the packet header.</li><li><strong>3</strong>: Both integrity check and confidentiality check are supported. The encryption offset can be 0 bytes (encryption starting from the packet header), 30 bytes, or 50 bytes.</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li></ul>
+</li><li>Deliver the configuration to all RUs or a single RU.<pre class="screen"><strong><b><span class="cmdqueryname">commit</span></b></strong> {<strong> all</strong> | <strong>name </strong><em>remote-unit-name</em> |<em> </em><strong>interface</strong><em> <i><span class="varname">interface-type</span></i></em><em> <i><span class="varname">interface-number</span></i> </em>}</pre>
+</li></ol>
+</li><li>Configure MACsec for an RU in the single RU view.<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the single RU view.<pre class="screen"><strong><b><span class="cmdqueryname">remote-unit</span></b></strong> {<em> <i><span class="varname">id</span></i></em> | <strong>connect-interface</strong> <em>interface-type</em> <em>interface-number</em> | <strong>name</strong> <em>remote-unit-name</em> }</pre>
+</li><li>Enable MACsec on the RU ports and set the static CKN and CAK.<pre class="screen"><b><span class="macsec enable port">macsec enable</span></b> <strong><strong><span>ckn</span></strong></strong> <i><span class="varname">string-name</span></i> <strong>cak</strong> <i><span class="varname">string-key</span></i> <strong><b><span class="macsec enable port ">port</span></b> </strong>{ <i><span class="varname">port-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">port-id2</span></i> ] } &amp;&lt;1-34&gt;<strong> </strong></pre>
+<p>By default, MACsec is disabled on an RU port, and no static CKN or CAK is set.</p>
+<p>A CKN is the name of a CAK. To ensure that an MKA session can be successfully established between two devices, configure the same CKN and CAK on their connected interfaces.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p><i><span class="varname">port-id</span></i> indicates the port ID of an RU, which may be different from the physical port number printed on the panel. For example, if the downlink port numbers are 1 to 8 and the uplink port numbers are 9 to 10 on the panel, set <i><span class="varname">port-id</span></i> to an integer in the range from 1 to 10 according to the actual port for connection. If the downlink port numbers are 1 to 8 and the uplink port numbers are 1 to 2 on the panel, set <i><span class="varname">port-id</span></i> to an integer in the range from 1 to 10 (1 to 8: downlink ports; 9: uplink port 1; 10: uplink port 2).</p>
+</div></div>
+</li><li>(Optional) Configure the MACsec encryption mode on RU ports.<pre class="screen"><strong><b><span class="macsec mode port">macsec mode</span></b></strong> { <strong>none</strong> | <strong>normal</strong> | <strong>integrity-only</strong> } <strong><b><span class="macsec mode port">port</span></b> </strong>{ <i><span class="varname">port-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">port-id2</span></i> ] } &amp;&lt;1-34&gt;<strong> </strong></pre>
+<p>By default, the MACsec encryption mode of an RU port is normal.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><div class="p" id="EN-US_TASK_0000002019799122__en-us_task_0000002019799122_p9402479511">To ensure secure transmission of service data on the network, MACsec provides the data encryption and integrity check functions. You can specify an encryption mode to selectively enable data encryption and integrity check. Three encryption modes are available:<ul id="EN-US_TASK_0000002019799122__en-us_task_0000002019799122_ul6402473511"><li id="EN-US_TASK_0000002019799122__en-us_task_0000002019799122_li13402157655">None: Neither data encryption nor integrity check is performed.</li><li id="EN-US_TASK_0000002019799122__en-us_task_0000002019799122_li114021671759">Normal: Both data encryption and integrity check are performed.</li><li id="EN-US_TASK_0000002019799122__en-us_task_0000002019799122_li74031076515">Integrity-only: Integrity check is performed, and data encryption is not performed.</li></ul>
+</div>
+<p id="EN-US_TASK_0000002019799122__en-us_task_0000002019799122_p3403771454">When configuring MACsec on a network where data traffic is being transmitted, you can set the encryption mode on both ends to none. After MKA session negotiation is successful, change the encryption mode on both ends to normal. This shortens the traffic interruption time.</p>
+</div></div>
+</li><li>(Optional) Set MACsec parameters.<ul><li>Configure the MKA session timeout period.<pre class="screen"><b><span class="macsec mka life-time port">macsec mka life-time</span></b> <i><span class="varname">life-time-value</span></i> <b><span class="macsec mka life-time port">port</span></b> { <i><span class="varname">port-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">port-id2</span></i> ] }<strong> </strong>&amp;&lt;1-34&gt; </pre>
+<p>By default, the MKA session timeout period on an RU port is 6 seconds. For S5731I-L series RUs, it is recommended that MACsec be enabled on a maximum of 10 ports. If MACsec needs to be enabled on more than 10 ports, it is recommended that the timeout period be set to a value greater than or equal to 15 seconds on both ends.</p>
+<p>After session negotiation is complete and a secure channel is established, the two devices exchange MKA protocol packets to ensure that the session is alive. The MKA protocol defines an MKA session keepalive timer that specifies the timeout period of an MKA session. The local device starts the timer when receiving MKA protocol packets from the remote device.</p>
+<ul><li>If the local device receives subsequent MKA protocol packets within the timeout period, it restarts the timer.</li><li>If the local device does not receive subsequent MKA protocol packets within the timeout period, it considers the session insecure, deletes the session, and performs MKA session negotiation again.</li></ul>
+</li><li>Configure a MACsec security policy.<pre class="screen"><b><span class="macsec policy port">macsec policy</span></b> { <strong><span>must-secure</span></strong> | <strong><span>should-secure</span></strong> } <b><span class="macsec policy port">port</span></b> { <i><span class="varname">port-id1</span></i> [ <strong><span>to</span></strong> <i><span class="varname">port-id2</span></i> ] }<strong> </strong>&amp;&lt;1-34&gt; </pre>
+<p>By default, the MACsec security policy is must-secure.</p>
+<p>The MACsec security policies are described as follows:</p>
+<ul><li><strong>must-secure</strong>: All plaintext packets are discarded after MKA session negotiation starts. After the negotiation succeeds, packets are encrypted and decrypted normally.</li><li><strong>should-secure</strong>: Plaintext packets are permitted before MKA session negotiation succeeds. After the negotiation succeeds, plaintext packets are discarded and packets are encrypted and decrypted normally.</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>When an RU is connected to an AP, you need to set the security policy to <strong>should-secure</strong>. Otherwise, the AP will work abnormally when it is restarted.</p>
+</div></div>
+</li></ul>
+<ul><li>Other MACsec parameters cannot be set for RUs. For details about the default settings, see <a href="#EN-US_TASK_0000002019799122__table174039714512">Table 1</a>.</li></ul>
+</li><li>Deliver the configuration to the RU.<pre class="screen"><strong><b><span class="cmdqueryname">commit</span></b></strong></pre>
+</li></ol>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0010.html">(Optional) Configuring an RU on the Central Device
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0017.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

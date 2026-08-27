@@ -1,0 +1,102 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring a Network-Wide Username and Password and SSL Policy">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0010.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0012.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002133709997">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring a Network-Wide Username and Password and SSL Policy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002133709997"></a><a name="EN-US_TASK_0000002133709997"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring a Network-Wide Username and Password and SSL Policy</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002133709997__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>After the network-wide username and password are configured, the configuration process on the master and member devices is as follows:</p>
+<ul><li>The master device creates a local administrator with the same username and password as the network-wide username and password.</li><li>After a member device is approved, a secure HTTPS communication channel is established between it and the master device. Through this channel, the master device sends a packet carrying the network-wide username and password to the member device. After receiving the packet, the member device creates a local administrator with the same network-wide username and password. The master device uses the CA certificate in the PKI realm specified in the SSL policy to verify the local certificate provided by the member device.</li><li>The master device can then log in to and manage the member device by using the username and password.</li></ul>
+<p>All commands in this section need to be configured on the master device.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002133709997__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Load the initial CA certificate to the <strong>default</strong> realm.</span><p><pre class="screen"><strong><b><span class="pki import-certificate realm default">pki import-certificate</span></b> default_ca realm default</strong>  </pre>
+<p>The initial CA certificate has been saved to the NVRAM before the device is delivered. To use the initial CA certificate and load it to the <strong>default</strong> realm, run this command.</p>
+</p></li><li><span>Enter the net assistant view.</span><p><pre class="screen"><b><span class="net-assistant ">net-assistant</span></b></pre>
+</p><p><p>By default, the net assistant view is not displayed.</p>
+</p></li><li><span>Enter the system management view.</span><p><pre class="screen"><b><span class="system-management">system-management</span></b></pre>
+</p><p><p>By default, the system management view is not displayed.</p>
+</p></li><li><span>Create a network-wide username and password.</span><p><pre class="screen"><b><span class="user">user</span></b> <i><span class="varname">name-paravalue</span></i> <strong><span>password</span></strong> [ <i><span class="varname">password-paravalue</span></i> ]</pre>
+</p><p><p>By default, no network-wide username and password are created.</p>
+</p></li><li><span>Return to the net assistant view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>(Optional) Configure an SSL policy on the master device.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>Using the initial certificate in the default domain poses security risks. To enhance security, you can use your own digital certificate and bind it to the SSL policy. For details about how to apply for and load a certificate, see <span>CLI Configuration Guide</span> - PKI Configuration.</li><li>The certificates of the master device and member devices must be the same. If the SSL policy bound to the master device changes, the SSL certificates of the member device must be replaced. The procedure is as follows:<ol type="a"><li>To apply for a local certificate for a member device, use the device's ESN as the CN field in its local certificate. The CN field must be in the format XXXX.huawei.com (XXXX indicates the ESN of the member device).</li><li>To configure a local certificate for a member device, run the <b><span class="cmdqueryname">web-manager security server-certificate</span></b> <i><span class="varname">server-certificate-file</span></i> command.</li></ol>
+</li></ul>
+</div></div>
+</p><p><ol type="a"><li>Create a PKI realm and enter its view.<pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <i><span class="varname">realm-name</span></i> 
+<b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Import the CA certificate to the device memory.<pre class="screen"><b><span class="cmdqueryname">pki import-certificate</span></b> <strong><span>ca</span></strong> [ [ <strong><span>realm</span></strong> <i><span class="varname">realm-name</span></i> ] { <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> } ] <strong><span>filename</span></strong> <i><span class="varname">file-name</span></i> [ <strong><span>cert-name</span></strong> <i><span class="varname">cert-name</span></i> ] [ <strong><span>no-check-hash-alg</span></strong> ] [ <strong><span>no-check-same-name</span></strong> ]</pre>
+</li><li>Create an SSL policy and bind it to the PKI realm.<pre class="screen"><b><span class="cmdqueryname">ssl policy</span></b> <i><span class="varname">sslPolicyName</span></i>
+<b><span class="cmdqueryname">pki-domain</span></b> <em>pki-domain</em> 
+<b><span class="cmdqueryname">quit</span></b> </pre>
+</li><li>Configure an SSL policy for the net assistant function.<pre class="screen"><b><span class="cmdqueryname">net-assistant</span></b>
+<b><span class="cmdqueryname">system-management</span></b>
+<b><span class="ssl-policy">ssl-policy</span></b> <i><span class="varname">sslPolicyName</span></i></pre>
+</li><li>Configure the HTTPS server to perform SSL verification on the client.<pre class="screen"><b><span class="ssl-verify peer">ssl-verify-peer enable</span></b></pre>
+</li></ol>
+</p></li></ol></div>
+<div class="result"><a name="EN-US_TASK_0000002133709997__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Result</h4>
+<div class="p"><p>Run the <b><span class="cmdqueryname">display net-assistant system-management history-accounts</span></b> command to view historical network-wide usernames.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Net_Assistant_cfg_0007.html">Configuring Net Assistant
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Net_Assistant_cfg_0010.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_Net_Assistant_cfg_0012.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

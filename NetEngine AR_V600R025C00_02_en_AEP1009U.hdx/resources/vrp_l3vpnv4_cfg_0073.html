@@ -1,0 +1,87 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Establishing MP-IBGP Peer Relationships Between PEs">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0006.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_1008.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0072.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001387850745">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Establishing MP-IBGP Peer Relationships Between PEs</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001387850745"></a><a name="EN-US_TASK_0000001387850745"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Establishing MP-IBGP Peer Relationships Between PEs</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001387850745__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>If VPN sites in a basic IPv4 L3VPN need to communicate, PEs must use MP-IBGP to advertise VPNv4 routes carrying the RD attribute to each other. Since all the PEs reside in the same AS, MP-IBGP peer relationships can be established between them.</p>
+<p>Perform the following steps on each PE.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001387850745__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li><span>Configure the remote PE as a peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>as-number</span></strong> <i><span class="varname">as-number</span></i></pre>
+</p></li><li><span>Specify an interface for setting up a TCP connection with the BGP peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">ipv4-address</span></i> <b><span class="cmdqueryname">connect-interface</span></b> <strong><span>loopback</span></strong> <i><span class="varname">interface-number</span></i></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>A PE must use a loopback interface address with a 32-bit mask to set up an MP-IBGP peer relationship with the peer PE so that VPN routes can recurse to tunnels. The route to the local loopback interface is advertised to the peer PE using IGP on the MPLS backbone network.</p>
+</div></div>
+</p></li><li><span>Enter the BGP-VPNv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b> <strong><span>vpnv4</span></strong></pre>
+</p></li><li><span>(Optional) Enable the VPNv4 route matching rule.</span><p><pre class="screen"><b><span class="cmdqueryname">activate-route-tag compatible</span></b></pre>
+<p>By default, the tag value of VPNv4 routes is 0, and the VPNv4 routes that carry tag 0 can be matched against the rule configured using the <b><span class="cmdqueryname">if-match tag</span></b> command. If the tag value of a VPNv4 route is not 0, you need to run the <b><span class="cmdqueryname">activate-route-tag compatible</span></b> command to enable the <b><span class="cmdqueryname">if-match tag</span></b> command, so that the VPNv4 route can be matched against the rule configured using the <b><span class="cmdqueryname">if-match tag</span></b> command.</p>
+</p></li><li><span>Enable the ability to exchange VPN-IPv4 routes with a specified peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>enable</span></strong></pre>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0006.html">Configuring Basic IPv4 L3VPN over MPLS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_1008.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_L3VPNv4_cfg_0072.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

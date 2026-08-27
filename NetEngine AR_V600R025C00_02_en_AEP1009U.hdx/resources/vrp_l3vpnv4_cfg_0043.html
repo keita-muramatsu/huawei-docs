@@ -1,0 +1,175 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding IPv4 L3VPN over MPLS HVPN">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0036.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0044.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001335544898">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding IPv4 L3VPN over MPLS HVPN</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001335544898"></a><a name="EN-US_CONCEPT_0000001335544898"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding IPv4 L3VPN over MPLS HVPN</h1>
+<div><p></p>
+<div class="section"><h4 class="sectiontitle">Context</h4><div class="p">Currently, the hierarchical architecture is generally used in networking design. For example, the typical architecture of a MAN consists of three layers: access layer, aggregation layer, and core layer. On the network shown in <a href="#EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200401">Figure 1</a>, all PEs reside on the same plane and must provide the following functions:<ul><li><p>Provide access services for users. This function requires each PE to provide a large number of interfaces.</p>
+</li><li><p>Manage and advertise VPN routes and process user packets. This function requires each PE to have a high-capacity memory and strong forwarding capabilities.</p>
+</li></ul>
+</div>
+<div class="fignone" id="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200401"><a name="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200401"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_200401"></a><span class="figcap"><b>Figure 1 </b>Basic IPv4 L3VPN network structure</span><br><span><img class="vsd" src="figure/en-us_image_0000001335710046.png"></span></div>
+<p>To deploy an IPv4 L3VPN on a hierarchical network, you need to use a hierarchical model instead of a plane model. This is where the concept of HVPN comes in.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Related Concepts</h4><div class="p"><a href="#EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200402">Figure 2</a> shows a basic HVPN architecture consisting of mainly UPEs, SPEs, and NPEs:<ul><li>UPE: directly connects to a user and is referred to as an underlayer PE or user-end PE. A UPE mainly provides user access.</li><li>SPE: a type of PE connected to UPEs and located at the core of a network. An SPE is also called a superstratum PE or service provider-end PE. An SPE manages and advertises VPN routes.</li><li>NPE: connects to SPEs and is located at the network side. An NPE is known as a network provider-end PE.</li></ul>
+</div>
+<p>A UPE and an SPE are connected by only one link and exchange packets based on labels. An SPE does not need to provide a large number of interfaces for access users. UPEs and SPEs can be connected by physical interfaces with physical links, by sub-interfaces with VLANs or PVCs, or by tunnel interfaces with LSPs. If an IP or MPLS network resides between a UPE and an SPE, the UPE and SPE can be connected by tunnel interfaces to exchange labeled packets over a tunnel.</p>
+<p>The capabilities of SPEs and UPEs differ according to the roles they play on a network. SPEs require large-capacity routing tables and high forwarding performance, but few interface resources. UPEs, on the other hand, require only low-capacity routing tables and low forwarding performance, but high access capabilities.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The roles of UPEs and SPEs are relative. On an HVPN, a superstratum PE is the SPE of an understratum PE, and an understratum PE is the UPE of a superstratum PE.</p>
+<p>An HoPE is compatible with common PEs on an MPLS network.</p>
+</div></div>
+<p>If a UPE and an SPE belong to the same AS, they use MP-IBGP. If they belong to different ASs, they use MP-EBGP.</p>
+<p>If MP-IBGP is used, an SPE can function as the RR for multiple UPEs to advertise routes between IBGP peers. To reduce the number of routes on UPEs, ensure that an SPE that is already acting as the RR for UPEs is not used as the RR for other PEs.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200402"><a name="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200402"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_200402"></a><span class="figcap"><b>Figure 2 </b>HVPN architecture</span><br><span><img class="vsd" src="figure/en-us_image_0000001386350061.png"></span></div>
+<p>HVPN can be classified into HoVPN and H-VPN.</p>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Comparison of HoVPN and H-VPN</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="26.119999999999997%" id="mcps1.4.2.10.2.3.1.1" liSelected="liSelected"><p>HVPN Mode</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="73.88%" id="mcps1.4.2.10.2.3.1.2" liSelected="liSelected"><p>Characteristic</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="26.119999999999997%" headers="mcps1.4.2.10.2.3.1.1 "><p>HoVPN</p>
+</td>
+<td class="cellrowborder" valign="top" width="73.88%" headers="mcps1.4.2.10.2.3.1.2 "><p>An SPE advertises only a default or summary route to a UPE.</p>
+<ul><li>An export policy must be configured on an SPE so that the SPE advertises only specific routes, such as the default routes, to UPEs.</li><li>VPN instances must be configured on an SPE for the SPE to import default routes locally or summarize routes received from remote sites, so that the SPE advertises only a default or summary route to a UPE.</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="26.119999999999997%" headers="mcps1.4.2.10.2.3.1.1 "><p>H-VPN</p>
+</td>
+<td class="cellrowborder" valign="top" width="73.88%" headers="mcps1.4.2.10.2.3.1.2 "><p>An SPE advertises all VPN routes to UPEs.</p>
+<ul><li>VPN instances do not need to be configured on SPEs.</li><li>MP-BGP peer relationships must be configured between SPEs and NPEs and between SPEs and UPEs. The NPEs and UPEs must be configured as the clients of SPEs that function as RRs and be configured to set the next hops of routes they receive as themselves.</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The following describes the route exchange and packet forwarding processes on an HoVPN or H-VPN. In the following figures, N indicates a next hop, and L indicates a label.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Route Advertisement from CE1 to Device1 on an HoVPN or H-VPN</h4><div class="p"><a href="#EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200403">Figure 3</a> shows route advertisement from CE1 to Device1 on an HoVPN or H-VPN.<ol><li><p>CE1 advertises an IPv4 route to the UPE using the IP protocol.</p>
+</li><li><p>The UPE applies for label L1 for the received IPv4 route and converts it into a VPNv4 route. Then, the UPE sets itself as the next hop of the route and advertises it to the SPE.</p>
+</li><li><p>After receiving the VPNv4 route, the SPE saves label L1 locally and applies for label L2 for the route. Then, the SPE sets itself as the next hop of the route and advertises it to the NPE.</p>
+</li><li><p>After receiving the VPNv4 route, the NPE converts it into an IPv4 route and imports the route to its VPN IPv4 routing table if the route's next hop is reachable. The NPE retains VPN label L2 and recursion tunnel ID information of the route for later packet forwarding.</p>
+</li><li><p>The NPE then advertises the IPv4 route to Device1 using the IP protocol.</p>
+</li></ol>
+</div>
+<div class="fignone" id="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200403"><a name="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200403"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_200403"></a><span class="figcap"><b>Figure 3 </b>Route advertisement from CE1 to Device1 on an HoVPN or H-VPN</span><br><span><img class="vsd" src="figure/en-us_image_0000001335390506.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Route Advertisement from Device1 to CE1 on an HoVPN</h4><div class="p"><a href="#EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200404">Figure 4</a> shows route advertisement from Device1 to CE1 on an HoVPN.<ol><li><p>Device1 advertises an IPv4 route to the NPE using the IP protocol.</p>
+</li><li><p>The NPE applies for label L3 for the received IPv4 route and converts it into a VPNv4 route. Then, the NPE sets itself as the next hop of the route and advertises it to the SPE.</p>
+</li><li><p>After receiving the VPNv4 route, the SPE saves label L3 locally, converts the route into an IPv4 route, and imports the route into its VPN IPv4 routing table if the route's next hop is reachable.</p>
+</li><li><p>The SPE imports a default route into its VPN IPv4 routing table or generates a summary VPN route based on the received IPv4 route in its VPN IPv4 routing table and applies for label L4 for the default route or summary VPN route. Then, the SPE converts the default route or summary VPN route into a VPNv4 route, sets itself as the next hop of the route, and advertises the route to the UPE.</p>
+</li><li><p>After receiving the VPNv4 route, the UPE converts the route into an IPv4 route and imports it into its VPN IPv4 routing table if the route's next hop is reachable.</p>
+</li><li><p>The UPE advertises the IPv4 route to CE1 using the IP protocol.</p>
+</li></ol>
+</div>
+<div class="fignone" id="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200404"><a name="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200404"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_200404"></a><span class="figcap"><b>Figure 4 </b>Route advertisement from Device1 to CE1 on an HoVPN</span><br><span><img class="vsd" src="figure/en-us_image_0000001335870050.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Route Advertisement from Device1 to CE1 on an H-VPN</h4><div class="p"><a href="#EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200405">Figure 5</a> shows route advertisement from Device1 to CE1 on an H-VPN.<ol><li><p>Device1 advertises an IPv4 route to the NPE using the IP protocol.</p>
+</li><li><p>The NPE applies for label L3 for the received IPv4 route and converts it into a VPNv4 route. Then, the NPE sets itself as the next hop of the route and advertises it to the SPE.</p>
+</li><li><p>After receiving the VPNv4 route, the SPE saves label L3 locally and applies for label L4 for the route. Then, the SPE sets itself as the next hop of the route and advertises it to the UPE.</p>
+</li><li><p>After receiving the VPNv4 route, the UPE converts the route into an IPv4 route and imports it into its VPN IPv4 routing table if the route's next hop is reachable.</p>
+</li><li><p>The UPE advertises the IPv4 route to CE1 using the IP protocol.</p>
+</li></ol>
+</div>
+<div class="fignone" id="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200405"><a name="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200405"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_200405"></a><span class="figcap"><b>Figure 5 </b>Route advertisement from Device1 to CE1 on an H-VPN</span><br><span><img class="vsd" src="figure/en-us_image_0000001386190117.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Packet Forwarding from Device1 to CE1 on an HoVPN or H-VPN</h4><div class="p"><a href="#EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200406">Figure 6</a> shows packet forwarding from Device1 to CE1 on an HoVPN or H-VPN.<ol><li><p>Device1 sends a VPN packet to the NPE.</p>
+</li><li><p>After receiving the packet, the NPE searches its VPN forwarding table for a tunnel to forward the packet based on the destination address of the packet. Then, the NPE adds an inner label L2 and an outer label Lu to the packet and sends the packet to the SPE over the found tunnel.</p>
+</li><li><p>After receiving the packet, the SPE replaces the outer label Lu with Lv and the inner label L2 with L1. Then, the SPE sends the packet to the UPE over the same tunnel.</p>
+</li><li><p>After receiving the packet, the UPE removes the outer label Lv, searches for a VPN instance corresponding to the packet based on the inner label L1, and removes the inner label L1 after the VPN instance is found. Finally, the UPE sends the packet through this outbound interface to CE1. At this time, the packet is a native IP packet.</p>
+</li></ol>
+</div>
+<div class="fignone" id="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200406"><a name="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200406"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_200406"></a><span class="figcap"><b>Figure 6 </b>Packet forwarding from Device1 to CE1 on an HoVPN or H-VPN</span><br><span><img class="vsd" src="figure/en-us_image_0000001386350053.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Packet Forwarding from CE1 to Device1 on an HoVPN</h4><div class="p"><a href="#EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200407">Figure 7</a> shows packet forwarding from CE1 to Device1 on an HoVPN.<ol><li><p>CE1 sends a VPN packet to the UPE.</p>
+</li><li><p>After receiving the packet, the UPE searches its VRF table for a tunnel to forward the packet based on the destination address of the packet (the UPE does so by matching the destination address of the packet against the forwarding entry for the default or summary route). Then, the UPE adds an inner label L4 and an outer label Lv to the packet and sends the packet to the SPE over the found tunnel.</p>
+</li><li><p>After receiving the packet, the SPE removes the outer label Lv and searches for the VPN instance corresponding to the packet based on the inner label L4. Then, the SPE removes the inner label L4 and searches the VPN forwarding table of the found VPN instance for a tunnel to forward the packet based on the destination address of the packet. Finally, the SPE adds an inner label L3 and an outer label Lu to the packet and sends the packet to the NPE over the found tunnel.</p>
+</li><li><p>After receiving the packet, the NPE removes the outer label Lu, searches for a VPN instance corresponding to the packet based on the inner label L3, and removes the inner label L3 after the VPN instance is found. Finally, the NPE sends the packet through this outbound interface to Device1. At this time, the packet is a native IP packet.</p>
+</li></ol>
+</div>
+<div class="fignone" id="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200407"><a name="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200407"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_200407"></a><span class="figcap"><b>Figure 7 </b>Packet forwarding from CE1 to Device1 on an HoVPN</span><br><span><img class="vsd" src="figure/en-us_image_0000001335870046.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Packet Forwarding from CE1 to Device1 on an H-VPN</h4><div class="p"><a href="#EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200408">Figure 8</a> shows packet forwarding from CE1 to Device1 on an H-VPN.<ol><li><p>CE1 sends a VPN packet to the UPE.</p>
+</li><li><p>After receiving the packet, the UPE searches its VPN forwarding table for a tunnel to forward the packet based on the destination address of the packet (the UPE does so by matching the destination address of the packet against the forwarding entries for specific routes received from the SPE). Then, the UPE adds an inner label L4 and an outer label Lv to the packet and sends the packet to the SPE over the found tunnel.</p>
+</li><li><p>After receiving the packet, the SPE replaces the outer label Lv with Lu and the inner label L2 with L3. Then, the SPE sends the packet to the NPE over the same tunnel.</p>
+</li><li><p>After receiving the packet, the NPE removes the outer label Lu, searches for a VPN instance corresponding to the packet based on the inner label L3, and removes the inner label L3 after the VPN instance is found. Finally, the NPE sends the packet through this outbound interface to Device1. At this time, the packet is a native IP packet.</p>
+</li></ol>
+</div>
+<div class="fignone" id="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200408"><a name="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200408"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_200408"></a><span class="figcap"><b>Figure 8 </b>Packet forwarding from CE1 to Device1 on an H-VPN</span><br><span><img class="vsd" src="figure/en-us_image_0000001386510021.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Related Functions</h4><p>H-VPN supports HoPE embedding:</p>
+<ul><li><p>You can connect an HoPE as a UPE to an existing SPE for them to form a new HoPE.</p>
+</li><li><p>Similarly, you can connect an HoPE as an SPE to multiple UPEs for them to form a new HoPE.</p>
+</li><li><p>HoPEs can be embedded repeatedly in the preceding two situations.</p>
+</li></ul>
+<p>HoPE embedding can infinitely expand a VPN in theory.</p>
+<p><a href="#EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200410">Figure 9</a> shows a three-layer HoPE, and the PEs in the middle are referred to as middle-level PEs (MPEs). MP-BGP runs between the SPE and MPEs, and between the MPEs and UPEs.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The MPE concept is introduced solely for descriptive purposes and does not actually exist in an H-VPN model.</p>
+</div></div>
+<p>MP-BGP advertises all the VPN routes of UPEs to the SPE, but advertises only the default routes of the VPN instances of the SPE to UPEs.</p>
+<p>An SPE maintains the routes of all VPN sites connected to its understratum PEs, whereas a UPE maintains only the routes of its directly connected VPN sites. The numbers of routes maintained by an SPE, an MPE, and a UPE are in descending order.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200410"><a name="EN-US_CONCEPT_0000001335544898__fig_dc_vrp_mpls-l3vpn-v4_feature_200410"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_200410"></a><span class="figcap"><b>Figure 9 </b>HoPE embedding</span><br><span><img class="vsd" src="figure/en-us_image_0000001335870054.png"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Benefits</h4><p>HVPN networking offers the following benefits:</p>
+<ul><li><p>Flexible expansibility If the performance of a UPE is insufficient, you can add an SPE for the UPE. If the access capabilities of an SPE are insufficient, you can add more UPEs to the SPE.</p>
+</li><li><p>Less interface resource consumption. Since a UPE and an SPE exchange packets based on labels, they only need to be connected over a single link.</p>
+</li><li><p>Reduced pressure on UPEs A UPE needs to maintain only local VPN routes. The remote VPN routes are represented by a default or summary route, reducing the pressure on UPEs.</p>
+</li><li><p>Less configuration workload SPEs and UPEs use MP-BGP, a dynamic routing protocol, to exchange routes and advertise labels. Each UPE only needs to establish one MP-BGP peer relationship with an SPE.</p>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0036.html">Configuring IPv4 L3VPN over MPLS HVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0044.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

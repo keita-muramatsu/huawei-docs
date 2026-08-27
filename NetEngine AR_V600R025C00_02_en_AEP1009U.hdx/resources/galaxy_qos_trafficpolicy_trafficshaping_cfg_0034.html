@@ -1,0 +1,309 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring MQC-based Traffic Policing">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0063.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_trafficpolicy_trafficshaping_cfg_0061.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Interface-based Rate Limiting">
+<meta name="featurename" content="Traffic Policing">
+<meta name="featurename" content="Traffic Shaping">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Interface-based Rate Limiting">
+<meta name="featurename" content="Traffic Policing">
+<meta name="featurename" content="Traffic Shaping">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564129869">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring MQC-based Traffic Policing</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564129869"></a><a name="EN-US_TASK_0000001564129869"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring MQC-based Traffic Policing</h1>
+<div class="taskbody" id="taskbody1582641251601"><div class="context"><a name="EN-US_TASK_0000001564129869__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001564129869__context1287332956175347"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001564129869__p2127435884175347">In <a href="#EN-US_TASK_0000001564129869__fig_dc_cfg_qos_012902">Figure 1</a>, packets sent by Host1, Host2, and Host3 traverse <span class="keyword" id="EN-US_TASK_0000001564129869__keyword1949133416388">Device</span>A, <span class="keyword" id="EN-US_TASK_0000001564129869__keyword19703318400">Device</span>B, and <span class="keyword" id="EN-US_TASK_0000001564129869__keyword123561553194512">Device</span>C to reach the external network. Interface 1 (connected to Host1), interface 2 (connected to Host2), and interface 3 (connected to Host3) join VLAN 10, VLAN 20, and VLAN 30, respectively.</p>
+<div class="fignone" id="EN-US_TASK_0000001564129869__fig_dc_cfg_qos_012902"><a name="EN-US_TASK_0000001564129869__fig_dc_cfg_qos_012902"></a><a name="fig_dc_cfg_qos_012902"></a><span class="figcap"><b>Figure 1 </b>Networking for configuring MQC to implement traffic policing</span><div class="note" id="EN-US_TASK_0000001564129869__note20851927163310"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001564129869__p514862733314">In this example, interface 1, interface 2, interface 3, and interface 4 represent <span>10GE</span> <span>0/0/1</span>, <span>10GE</span> <span>0/0/2</span>, <span>10GE</span> <span>0/0/3</span>, and <span>10GE</span> <span>0/0/4</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001564129869__image7758125644115" src="figure/en-us_image_0000001564010045.png" width="NaN" height="NaN"></span></div>
+<p id="EN-US_TASK_0000001564129869__p1393793729175347">The rates of traffic from tenants must be limited within proper ranges on <span class="keyword" id="EN-US_TASK_0000001564129869__keyword45875754112">Device</span>B. <a href="#EN-US_TASK_0000001564129869__tab_dc_cfg_qos_012901">Table 1</a> lists the required CIR values for uplink traffic from tenants.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000001564129869__tab_dc_cfg_qos_012901"></a><a name="tab_dc_cfg_qos_012901"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001564129869__tab_dc_cfg_qos_012901" frame="border" border="1" rules="all"><caption><b>Table 1 </b>CIR values for uplink traffic from tenants on <span class="keyword" id="EN-US_TASK_0000001564129869__keyword1225216464219">Device</span>B</caption><thead align="left"><tr id="EN-US_TASK_0000001564129869__row1429733540175347"><th align="left" class="cellrowborder" valign="top" width="44.82%" id="mcps1.3.1.5.2.3.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000001564129869__p310838436175347">Host</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="55.17999999999999%" id="mcps1.3.1.5.2.3.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000001564129869__p1456592305175347">CIR (kbit/s)</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000001564129869__row2082412145175347"><td class="cellrowborder" valign="top" width="44.82%" headers="mcps1.3.1.5.2.3.1.1 "><p id="EN-US_TASK_0000001564129869__p1644060332175347">Host1</p>
+</td>
+<td class="cellrowborder" valign="top" width="55.17999999999999%" headers="mcps1.3.1.5.2.3.1.2 "><p id="EN-US_TASK_0000001564129869__p347698720175347">2000</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564129869__row1712863999175347"><td class="cellrowborder" valign="top" width="44.82%" headers="mcps1.3.1.5.2.3.1.1 "><p id="EN-US_TASK_0000001564129869__p1805320936175347">Host2</p>
+</td>
+<td class="cellrowborder" valign="top" width="55.17999999999999%" headers="mcps1.3.1.5.2.3.1.2 "><p id="EN-US_TASK_0000001564129869__p989055693175347">4000</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001564129869__row159103966175347"><td class="cellrowborder" valign="top" width="44.82%" headers="mcps1.3.1.5.2.3.1.1 "><p id="EN-US_TASK_0000001564129869__p1056427977175347">Host3</p>
+</td>
+<td class="cellrowborder" valign="top" width="55.17999999999999%" headers="mcps1.3.1.5.2.3.1.2 "><p id="EN-US_TASK_0000001564129869__p40099209175347">8000</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564129869__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001564129869__steps1526741770175347"><li id="EN-US_TASK_0000001564129869__step1055665685175347"><span id="EN-US_TASK_0000001564129869__cmd63276281175347">Create VLANs and configure interfaces so that hosts can access the network through <span class="keyword" id="EN-US_TASK_0000001564129869__keyword129950124216">Device</span>B.</span><p><p id="EN-US_TASK_0000001564129869__p1349210820175347"># Create VLANs 10, 20, and 30 on <span class="keyword" id="EN-US_TASK_0000001564129869__keyword3418511154213">Device</span>A and add interfaces to the corresponding VLANs.</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen760622421175347">&lt;<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1517086799183309">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001564129869__b1593150040175347">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1680575213387">HUAWEI</span>] <strong id="EN-US_TASK_0000001564129869__b981323988175347">sysname <span class="keyword" id="EN-US_TASK_0000001564129869__keyword611313194214">Device</span>A</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword142861514194216">Device</span>A] <strong id="EN-US_TASK_0000001564129869__b808281169175347">vlan batch 10 20 30</strong><strong id="EN-US_TASK_0000001564129869__b191647441714"> </strong> 
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword11641161664213">Device</span>A] <strong id="EN-US_TASK_0000001564129869__b2039950395175347">interface </strong><strong id="EN-US_TASK_0000001564129869__b450112759175336"><span>10ge</span> <span>0/0/1</span></strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword92928011239">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b17239819461">portswitch</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword877954319416">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b4351432331">port link-type access</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword112851517124213">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b1371955374175347">port default vlan 10</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword16994817164214">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b793475624175347">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword06697184429">Device</span>A] <strong id="EN-US_TASK_0000001564129869__b4754009175347">interface </strong><strong id="EN-US_TASK_0000001564129869__b1792709314175336"><span>10ge</span> <span>0/0/2</span></strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword192236517251">Device</span>A-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564129869__b89602912254">portswitch</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword10764631646">Device</span>A-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564129869__b18522774515">port link-type access</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1425114192423">Device</span>A-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564129869__b2023866797175347">port default vlan 20</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1685921912424">Device</span>A-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001564129869__b230979915175347">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword15362142016425">Device</span>A] <strong id="EN-US_TASK_0000001564129869__b529422302175347">interface </strong><strong id="EN-US_TASK_0000001564129869__b55031934892"><span>10ge</span> <span>0/0/3</span></strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword8355141911253">Device</span>A-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001564129869__b1964024192512">portswitch</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword716591817412">Device</span>A-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001564129869__b19226141216510">port link-type access</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword760102016427">Device</span>A-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001564129869__b1009026372175347">port default vlan 30</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword17842112044211">Device</span>A-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000001564129869__b851917513175347">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword87814217427">Device</span>A] <strong id="EN-US_TASK_0000001564129869__b998859781175347">interface </strong><strong id="EN-US_TASK_0000001564129869__b162261233111015"><span>10ge</span> <span>0/0/4</span></strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword186419425251">Device</span>A-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001564129869__b1769784652519">portswitch</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword3318293715">Device</span>A-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001564129869__b1940497404175347">port link-type trunk</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword12723721174215">Device</span>A-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001564129869__b1399325284175347">port trunk allow-pass vlan 10 20 30</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword14365192254215">Device</span>A-<span>10GE</span><span>0/0/4</span>] <strong id="EN-US_TASK_0000001564129869__b1273380373175347">quit</strong></pre>
+<p id="EN-US_TASK_0000001564129869__p1752313539466"># Create VLANs 10, 20, and 30 on <span class="keyword" id="EN-US_TASK_0000001564129869__keyword1494612418429">Device</span>B and add <span>10GE</span> <span>0/0/1</span> to the VLANs.</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen821709102175347">&lt;<span class="keyword" id="EN-US_TASK_0000001564129869__keyword16641811209">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001564129869__b491718724175347">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword36588411013">HUAWEI</span>] <strong id="EN-US_TASK_0000001564129869__b1523267771175347">sysname <span class="keyword" id="EN-US_TASK_0000001564129869__keyword18250928204214">DeviceB</span></strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1285102964213">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b1182891022175347">vlan batch 10</strong><strong id="EN-US_TASK_0000001564129869__b2051137134720"> 20 30</strong> 
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword12435235307">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b343503193017">interface </strong><strong id="EN-US_TASK_0000001564129869__b64355316306"><span>10ge</span> <span>0/0/1</span></strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword12435935301">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b144352333018">portswitch</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword184354319309">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b8435183103019">port link-type trunk</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword743683133017">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b1643623113014">port trunk allow-pass vlan 10</strong><strong id="EN-US_TASK_0000001564129869__b16983245487"> 20 30</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword104362363012">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b14361239307">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001564129869__step568805253175347"><span id="EN-US_TASK_0000001564129869__cmd1460174374175347">Configure traffic classifiers.</span><p><p id="EN-US_TASK_0000001564129869__p571960749175347"># On <span class="keyword" id="EN-US_TASK_0000001564129869__keyword1633193814422">Device</span>B, configure traffic classifiers <strong id="EN-US_TASK_0000001564129869__b1068953752014">c1</strong>, <strong id="EN-US_TASK_0000001564129869__b869073752013">c2</strong>, and <strong id="EN-US_TASK_0000001564129869__b769013372207">c3</strong> to match service flows from different hosts based on VLAN IDs.</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen2112876658175347">[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword10750173819429">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b161741320175347">traffic classifier c1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword8361139204217">Device</span>B-classifier-c1] <strong id="EN-US_TASK_0000001564129869__b1767016731175347">if-match vlan 10</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword3954939184218">Device</span>B-classifier-c1] <strong id="EN-US_TASK_0000001564129869__b1391316217175347">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword11490174018422">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b1716691522175347">traffic classifier c2</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword5331141114219">Device</span>B-classifier-c2] <strong id="EN-US_TASK_0000001564129869__b1789822418175347">if-match vlan 20</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1536114116429">DeviceB</span>-classifier-c2] <strong id="EN-US_TASK_0000001564129869__b680870876175347">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword189811417426">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b7417621175347">traffic classifier c3</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1336093420712">Device</span>B-classifier-c3] <strong id="EN-US_TASK_0000001564129869__b555446980175347">if-match vlan 30</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword5434154284219">Device</span>B-classifier-c3] <strong id="EN-US_TASK_0000001564129869__b1694783514175347">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001564129869__step1105018454175347"><span id="EN-US_TASK_0000001564129869__cmd606577122175347">Configure traffic behaviors and define traffic policing.</span><p><p id="EN-US_TASK_0000001564129869__p58081257175347"># On <span class="keyword" id="EN-US_TASK_0000001564129869__keyword1362711717711">Device</span>B, create traffic behaviors <strong id="EN-US_TASK_0000001564129869__b1951342555416">b1</strong>, <strong id="EN-US_TASK_0000001564129869__b1941822705413">b2</strong>, and <strong id="EN-US_TASK_0000001564129869__b1823723035415">b3</strong> to police packets from different hosts.</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen397992634175347">[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1484684316422">DeviceB</span>] <strong id="EN-US_TASK_0000001564129869__b271812528175347">traffic behavior b1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1740464418424">Device</span>B-behavior-b1] <strong id="EN-US_TASK_0000001564129869__b2071594313175347">car cir 2000</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1834174417428">Device</span>B-behavior-b1] <strong id="EN-US_TASK_0000001564129869__b378771701175347">statistics enable</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1667474594214">Device</span>B-behavior-b1] <strong id="EN-US_TASK_0000001564129869__b977248351175347">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword333465421">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b1665219031175347">traffic behavior b2</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword72841546184211">Device</span>B-behavior-b2] <strong id="EN-US_TASK_0000001564129869__b184277844175347">car cir 4000</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword20597146204211">Device</span>B-behavior-b2] <strong id="EN-US_TASK_0000001564129869__b1676185646175347">statistics enable</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword6866146124214">Device</span>B-behavior-b2] <strong id="EN-US_TASK_0000001564129869__b392956197175347">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword1819464716428">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b338659841175347">traffic behavior b3</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword125374473425">Device</span>B-behavior-b3] <strong id="EN-US_TASK_0000001564129869__b488252851175347">car cir 8000</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword89301247144214">Device</span>B-behavior-b3] <strong id="EN-US_TASK_0000001564129869__b2098800910175347">statistics enable</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword14418194810428">Device</span>B-behavior-b3] <strong id="EN-US_TASK_0000001564129869__b1112945387175347">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001564129869__step101480684175347"><span id="EN-US_TASK_0000001564129869__cmd483840270175347">Configure a traffic policy and apply it to an inbound interface.</span><p><p id="EN-US_TASK_0000001564129869__p1428886919175347"># On <span class="keyword" id="EN-US_TASK_0000001564129869__keyword0962204915421">Device</span>B, create traffic policy <strong id="EN-US_TASK_0000001564129869__b87889266247">p1</strong>, bind configured traffic behaviors and traffic classifiers to this traffic policy, and apply the traffic policy to the inbound direction of <span>10GE</span> <span>0/0/1</span> to police packets from hosts.</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen1939265771175347">[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword66661250204220">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b909782281175347">traffic policy p1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword202991151174218">Device</span>B-trafficpolicy-p1] <strong id="EN-US_TASK_0000001564129869__b2111994443175347">classifier c1 behavior b1</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword68821251184210">Device</span>B-trafficpolicy-p1] <strong id="EN-US_TASK_0000001564129869__b1650831648175347">classifier c2 behavior b2</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword7354652124212">Device</span>B-trafficpolicy-p1] <strong id="EN-US_TASK_0000001564129869__b882058418175347">classifier c3 behavior b3</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword168458524425">Device</span>B-trafficpolicy-p1] <strong id="EN-US_TASK_0000001564129869__b1071857625175347">quit</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword2441115317423">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b922471769175347">interface </strong><strong id="EN-US_TASK_0000001564129869__b158859281059"><span>10ge</span> <span>0/0/1</span></strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword203805413427">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b2041986619175347">traffic-policy p1 inbound</strong>
+[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword077075464212">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001564129869__b1265057352175347">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001564129869__example1183070784175347"><a name="EN-US_TASK_0000001564129869__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001564129869__p2098722492317">After the configuration is complete, check the traffic policing configuration on <span class="keyword" id="EN-US_TASK_0000001564129869__keyword668515192312">Device</span>B.</p>
+<p id="EN-US_TASK_0000001564129869__p2006756475175347"># Check the traffic classifier configuration.</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen136315999175347">[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword125975794220">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b434457464175347">display traffic classifier</strong>
+  Traffic Classifier Information: 
+    Classifier: c1
+      Type: OR
+      Rule(s):
+        <strong id="EN-US_TASK_0000001564129869__b1864825326175347">if-match vlan 10</strong>
+
+    Classifier: c2
+      Type: OR
+      Rule(s):
+        <strong id="EN-US_TASK_0000001564129869__b1683819001175347">if-match vlan 20</strong>
+
+    Classifier: c3
+      Type: OR
+      Rule(s):
+        <strong id="EN-US_TASK_0000001564129869__b2026925176175347">if-match vlan 30</strong>
+
+Total classifier number is 3</pre>
+<p id="EN-US_TASK_0000001564129869__p1453211698175347"># Check the traffic policy configuration.</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen985039758175347">[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword4810135774219">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b1311708170175347">display traffic policy p1</strong>
+  Traffic Policy Information:
+    Policy: p1
+      Classifier: c1
+        Type: OR
+      Behavior: b1
+        Committed Access Rate:
+          CIR 2000 (Kbps), PIR 2000 (Kbps), CBS 16000 (Bytes), PBS 16000 (Bytes)
+          Color Mode: color blind
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard                                                        
+        Statistics: enable
+
+      Classifier: c2
+        Type: OR
+      Behavior: b2
+        Committed Access Rate:
+          CIR 4000 (Kbps), PIR 4000 (Kbps), CBS 32000 (Bytes), PBS 32000 (Bytes)
+          Color Mode: color blind
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard
+        Statistics: enable
+
+      Classifier: c3
+        Type: OR
+      Behavior: b3
+        Committed Access Rate:
+          CIR 8000 (Kbps), PIR 8000 (Kbps), CBS 64000 (Bytes), PBS 64000 (Bytes)
+          Color Mode: color blind
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard
+        Statistics: enable</pre>
+<p id="EN-US_TASK_0000001564129869__p333270264175347"># Check statistics about the traffic policy applied to <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen817008185175347">[<span class="keyword" id="EN-US_TASK_0000001564129869__keyword139381459154211">Device</span>B] <strong id="EN-US_TASK_0000001564129869__b428044015614">display traffic-policy statistics interface </strong><strong id="EN-US_TASK_0000001564129869__b19382956155"><span>10ge</span> <span>0/0/1</span></strong><strong id="EN-US_TASK_0000001564129869__b202809401461"> inbound</strong>
+Traffic policy: p1, inbound                                                                                                         
+--------------------------------------------------------------------------------
+ Slot: <span>0</span>                                                                        
+ Item                  Packets                Bytes           pps           bps 
+ -------------------------------------------------------------------------------
+ Matched                363949175          46585494400       8460795    8663854896
+  Passed                363949175          46585494400       8460795    8663854896
+  Dropped                    0                    0             0             0 
+   Filter                    0                    0             0             0 
+   CAR                       0                    0             0             0 
+  Car                        0                    0             0             0 
+   Green                     0                    0             0             0 
+   Yellow                    0                    0             0             0 
+   Red                       0                    0             0             0 
+ -------------------------------------------------------------------------------</pre>
+<p id="EN-US_TASK_0000001564129869__p9175104917355">The preceding command output shows that the traffic policy <strong id="EN-US_TASK_0000001564129869__b7855151114276">p1</strong> is applied to <span>10GE</span> <span>0/0/1</span>.</p>
+<h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001564129869__ul1983953972175347"><li id="EN-US_TASK_0000001564129869__li547026729175347"><p id="EN-US_TASK_0000001564129869__p500741496175347"><a name="EN-US_TASK_0000001564129869__li547026729175347"></a><a name="li547026729175347"></a><span class="keyword" id="EN-US_TASK_0000001564129869__keyword1417111174312">Device</span>B</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen905170675175347">#
+sysname <span class="keyword" id="EN-US_TASK_0000001564129869__keyword1287515117433">Device</span>B
+#
+vlan batch 10 20 30
+#
+traffic classifier c1 type or
+ if-match vlan 10
+#
+traffic classifier c2 type or
+ if-match vlan 20
+#
+traffic classifier c3 type or
+ if-match vlan 30
+#
+traffic behavior b1
+ statistics enable
+ car cir 2000 kbps
+#
+traffic behavior b2
+ statistics enable
+ car cir 4000 kbps
+#
+traffic behavior b3
+ statistics enable
+ car cir 8000 kbps
+#
+traffic policy p1
+ classifier c1 behavior b1 precedence 5 
+ classifier c2 behavior b2 precedence 10 
+ classifier c3 behavior b3 precedence 15                                   
+# 
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10 20 30
+ traffic-policy p1 inbound
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001564129869__li954118615175347"><p id="EN-US_TASK_0000001564129869__p611170156175347"><a name="EN-US_TASK_0000001564129869__li954118615175347"></a><a name="li954118615175347"></a><span class="keyword" id="EN-US_TASK_0000001564129869__keyword1881719216435">Device</span>A</p>
+<pre class="screen" id="EN-US_TASK_0000001564129869__screen1375181354175347">#
+sysname <span class="keyword" id="EN-US_TASK_0000001564129869__keyword158295310436">Device</span>A
+#
+vlan batch 10 20 30
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type access
+ port default vlan 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type access
+ port default vlan 20
+#
+interface <span>10GE</span><span>0/0/3</span>
+ portswitch
+ port link-type access
+ port default vlan 30
+#
+interface <span>10GE</span><span>0/0/4</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10 20 30
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0063.html">Configuration Examples for Traffic Policing, Traffic Shaping, and Interface-based Rate Limiting
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_qos_trafficpolicy_trafficshaping_cfg_0061.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring an NQA HTTP Test to Measure the Response Speed on a Network">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_nqa_cfg_0080.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_nqa_cfg_0018.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_nqa_cfg_0053.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="NQA">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NQA">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featurename" content="NQA">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001719173386">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring an NQA HTTP Test to Measure the Response Speed on a Network</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001719173386"></a><a name="EN-US_TASK_0000001719173386"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring an NQA HTTP Test to Measure the Response Speed on a Network</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001719173386__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000001719173386__fig_dc_vrp_cfg_00214301">Figure 1</a>, DeviceA is connected to the DNS server and HTTP server through a network. DeviceA needs to access the HTTP server using the domain name (https://huawei.com). In this process, an HTTP test instance can be configured on DeviceA to measure the speed at which DeviceA accesses the HTTP server.</p>
+<div class="fignone" id="EN-US_TASK_0000001719173386__fig_dc_vrp_cfg_00214301"><a name="EN-US_TASK_0000001719173386__fig_dc_vrp_cfg_00214301"></a><a name="fig_dc_vrp_cfg_00214301"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring an HTTP test to measure the response speed on a network</span><br><span><img class="vsd" src="figure/en-us_image_0000001719248942.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001719173386__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Configure reachable routes between DeviceA, the DNS server, and the HTTP server at the network layer.</p>
+</li><li>Configure an SSL policy for the HTTP test instance.</li><li><p>Configure an HTTP test instance on DeviceA and start the test instance to measure the response speed at which DeviceA accesses the HTTP server.</p>
+</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001719173386__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Data Preparation</h4><p>To complete the configuration, you need the following data:</p>
+<ul><li><p>IP address of the DNS server</p>
+</li><li><p>Domain name of the HTTP server</p>
+</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001719173386__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure the name of DeviceA.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA]</pre>
+</p></li><li><span>Configure reachable routes between DeviceA, the DNS server, and the HTTP server at the network layer. The configuration is not provided here.</span></li><li><span>Configure an SSL policy for the HTTP test instance.</span><p><p># Upload the obtained digital certificate to the <strong>/pki/public</strong> directory of the device through SFTP. For details about how to apply for a digital certificate in PKI mode, see <span>CLI Configuration Guide</span> &gt; PKI Configuration.</p>
+<p># Configure a PKI realm and import the local certificate and private key file.</p>
+<pre class="screen">[DeviceA] <strong>pki realm domain1</strong>
+[DeviceA-pki-realm-domain1]<strong> quit</strong>
+[DeviceA] <strong>pki import-certificate local realm domain1 pem filename restconf_local.pem</strong>
+[DeviceA] <strong>pki import rsa-key-pair restconf-key pem restconf.pem</strong> //Skip this step if the private key file is generated on the local device.</pre>
+<p># Import the CA certificate of the peer collector to verify the validity of the local certificate for the collector.</p>
+<pre class="screen">[DeviceA] <strong>pki import-certificate ca realm domain1 pem filename restconf_ca.pem</strong></pre>
+<p># Configure an SSL policy and bind it to the PKI realm.</p>
+</p><p><pre class="screen">[<span class="keyword"></span>DeviceA] <strong>ssl policy policy1</strong>
+[<span class="keyword"></span>DeviceA-ssl-policy-policy1] <strong>pki-domain domain1</strong>
+[<span class="keyword"></span>DeviceA-ssl-policy-policy1] <strong>quit</strong></pre>
+</p></li><li><span>Configure an HTTP test instance and start it.</span><p><pre class="screen">[DeviceA] <strong>dns resolve</strong>
+[DeviceA] <strong>dns server 10.3.1.1</strong>
+[DeviceA]<strong> nqa test-instance admin http</strong>
+[DeviceA-nqa-admin-http]<strong> test-type http</strong>
+[DeviceA-nqa-admin-http]<strong> http-url ipv4 https://huawei.com</strong>
+[DeviceA-nqa-admin-http]<strong> </strong><strong>ssl-policy policy1</strong>
+[DeviceA-nqa-admin-http] <strong>frequency</strong><strong> 20</strong>
+[DeviceA-nqa-admin-http]<strong> start now</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001719173386__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Verify the test result. The command output shows measurement information, including RTTs for DNS resolution, TCP connection setup, and HTTP transmission.</p>
+<pre class="screen">[DeviceA-nqa-admin-http] <strong>display nqa results test-instance admin http</strong>
+
+NQA entry(admin, http): test flag is active, test type is HTTP
+  1 . Test 1 result   The test is finished
+   SendProbe:3                            ResponseProbe:3                       
+   Completion:success                     
+   MessageBodyOctetsSum:258783            TargetAddress:10.1.1.1           
+   DNSQueryError number:0                 HTTPError number:0                    
+   TcpConnError number :0                 System busy operation number:0        
+   DNSRTT Sum/Min/Max:865/300/565         TCPConnectRTT Sum/Min/Max:47/22/25    
+   TransactionRTT Sum/Min/Max:165/76/89  
+   RTT Sum/Min/Max/Avg:1077/411/666/538  
+   DNSServerTimeout:0                     TCPConnectTimeout:0                   
+   TransactionTimeout:0                   OtherTimeout:0                        
+   Lost packet ratio:0 %
+...</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001719173386__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+ssl policy policy1
+ pki-domain domain1
+#
+dns resolve
+dns server 10.3.1.1
+#
+nqa test-instance admin http
+ test-type http
+ http-url ipv4 https://huawei.com
+ ssl-policy policy1
+ frequency 20
+#
+pki realm domain1
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_nqa_cfg_0080.html">Configuration Examples for NQA
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_nqa_cfg_0018.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_nqa_cfg_0053.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

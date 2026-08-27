@@ -1,0 +1,150 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a Script Assistant for Setting User-Defined Environment Variables to Monitor Board Status Changes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ops_cfg_0050.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ops_cfg_0059.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ops_cfg_0061.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="OPS">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="OPS">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001926577597">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a Script Assistant for Setting User-Defined Environment Variables to Monitor Board Status Changes</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001926577597"></a><a name="EN-US_TASK_0000001926577597"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a Script Assistant for Setting User-Defined Environment Variables to Monitor Board Status Changes</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001926577597__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001926577597__fig14510483544">Figure 1</a>, a user manages a device through a remote network. The user wants to detect the change in time and record a log <span>when the board in the specified slot restarts</span>.</p>
+<div class="fignone" id="EN-US_TASK_0000001926577597__fig14510483544"><a name="EN-US_TASK_0000001926577597__fig14510483544"></a><a name="fig14510483544"></a><span class="figcap"><b>Figure 1 </b>Network diagram of <span>monitoring board status changes and </span>recording logs</span><br><span><img src="figure/en-us_image_0000002344566409.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001926577597__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li><p>Make a Python script <strong>slot_syslog.py</strong>.</p>
+</li><li><p>Remotely manage the device, upload the Python script to DeviceA, and install the script.</p>
+</li><li><p>Configure a user-defined environment variable and specify <span></span><span>the slot ID of the board</span> to be monitored. You can customize environment variables to switch the <span>board</span> to be monitored without rewriting the Python script.</p>
+</li><li><p>Configure a Python script assistant.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001926577597__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IP addresses and routing protocols for interfaces shown in <a href="#EN-US_TASK_0000001926577597__fig14510483544">Figure 1</a>. For details, see Configuration Scripts.</span></li><li><span>Make a Python script.</span><p><p># Make a Python script named <strong>slot_syslog.py</strong> to implement the following functions:</p>
+<ul><li><p>Subscribes to the <span></span><span>board status change</span> event to monitor whether <span></span><span>the board restarts</span>. If yes, a log is recorded.</p>
+</li><li><p>You can specify the <span></span><span>slot ID of the board</span> to be monitored.</p>
+</li></ul>
+<p>The following is an example of the Python script:</p>
+<pre class="screen"># -*- coding: utf-8 -*-
+import ops         # Import the ops module.
+import sys         # Import the sys module.
+import os         # Import the os module.
+# Subscription processing function
+def ops_condition(_ops):
+    # Obtain the value of the user-defined environment variable <strong>slotid</strong>.
+    slotid, errstr = _ops.environment.get("slotid")
+    # Monitor the <span><span>board restart</span></span> event.
+    conditions = []
+    con1 = {'name':'Event', 'op':'eq', 'value':'9'}
+    conditions.append(con1)
+    con2 = {'name':' Position', 'op':'eq', 'value': slotid}
+    conditions.append(con2)
+    value1, err_str1 = _ops.event.subscribe("driver", "driver", "DEVM_ENT_STATUS_CHANGE_VERBOSE", conditions)
+    return 0
+# Work processing function
+def ops_execute(_ops):
+    # Obtain the value of the user-defined environment variable <strong>slotid</strong>.
+    slotid, errstr = _ops.environment.get("slotid")
+    slot = "slot " + slotid
+    logstring = "Slot %s has been reset." %slotid
+    # Print the user log<strong> Slot x has been reset</strong>.
+    status, err_log = _ops.syslog(logstring, "informational", "syslog")</pre>
+</p></li><li><span>Upload the script file to the device and install it.</span><p><p># Configure DeviceA as the SFTP client to download the Python script from the SFTP server.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>sftp 10.2.1.1</strong>
+Trying 10.2.1.1 ... 
+Press CTRL+K to abort 
+Connected to 10.2.1.1 ... 
+Please input the username:  
+Enter password: 
+sftp-client&gt; <strong>get slot_syslog.py</strong>
+Info: Transfer file in binary mode.
+Please wait for a while...
+/    1020 bytes transferred
+Info: Downloaded the file successfully.</pre>
+<p># Install the Python script on DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>quit</strong>
+&lt;DeviceA&gt; <strong>ops install file slot_syslog.py</strong></pre>
+</p></li><li><span>Configure a user-defined environment variable.</span><p><p># Configure the user-defined environment variable <strong>slotid</strong> and specify the <span></span><span>slot ID of the board</span> to be monitored. You can switch the <span>board</span> to be monitored without rewriting the Python script.</p>
+<p>For example, to monitor <span>the board in slot 2</span>, set <strong>slotid </strong>to 2. To monitor <span>the board in slot 3</span>, set <strong>slotid </strong>to 3. The following uses slotid 2 as an example.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>system-view</strong>
+[<span class="keyword"></span>DeviceA] <strong>ops</strong>
+[<span class="keyword"></span>DeviceA-ops] <strong>environment slotid 2</strong></pre>
+</p></li><li><span>Configure a Python script assistant.</span><p><p># Configure a Python script assistant and register the subscribed event in the script <strong>slot_syslog.py</strong>. Wait for the event to be triggered.</p>
+<pre class="screen">[<span class="keyword"></span>DeviceA-ops] <strong>script-assistant python slot_syslog.py</strong>
+[DeviceA-ops] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001926577597__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Enable the log function so that DeviceA outputs logs when the value of the user-defined environment variable <strong>slotid </strong>is 2 and <span>the board in slot 2</span> is restarted.</p>
+<pre class="screen">[<span class="keyword"></span>DeviceA] <strong>info-center enable</strong>
+[DeviceA] <strong>quit</strong>
+&lt;DeviceA&gt; <strong>terminal monitor</strong>
+&lt;DeviceA&gt; <strong>terminal logging</strong>
+&lt;DeviceA&gt;
+Apr 08 2024 14:29:17+08:00 DeviceA %%01OPSA/6/SCRIPT_LOG: OPS: Slot 2 has been reset. (user="slot_syslog.py", session=864036019).</pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><div class="p"># DeviceA<pre class="screen">#
+sysname DeviceA
+#
+ops
+ environment slotid 2
+ script-assistant python slot_syslog.py
+#
+return</pre>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ops_cfg_0050.html">OPS Configuration Examples
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ops_cfg_0059.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_ops_cfg_0061.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

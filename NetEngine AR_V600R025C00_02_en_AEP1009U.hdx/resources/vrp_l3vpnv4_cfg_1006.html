@@ -1,0 +1,98 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding IPv4 L3VPN over MPLS">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0006.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_1007.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001490821342">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding IPv4 L3VPN over MPLS</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001490821342"></a><a name="EN-US_CONCEPT_0000001490821342"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding IPv4 L3VPN over MPLS</h1>
+<div><p></p>
+<div class="section"><h4 class="sectiontitle">Definition</h4><p>IPv4 L3VPN over MPLS uses BGP to advertise VPN routes and uses MPLS to forward VPN packets on the SP backbone network.</p>
+<p><a href="#EN-US_CONCEPT_0000001490821342__fig_dc_vrp_mpls-l3vpn-v4_feature_000201">Figure 1</a> shows the basic IPv4 L3VPN model.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001490821342__fig_dc_vrp_mpls-l3vpn-v4_feature_000201"><a name="EN-US_CONCEPT_0000001490821342__fig_dc_vrp_mpls-l3vpn-v4_feature_000201"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_000201"></a><span class="figcap"><b>Figure 1 </b>IPv4 L3VPN model</span><br><span><img class="vsd" src="figure/en-us_image_0000001490899870.png"></span></div>
+<p>The basic IPv4 L3VPN model consists of three parts:</p>
+<ul><li><p>Customer edge (CE): edge device on the customer network. A CE provides interfaces to directly connect to the SP network. A CE can be a device or host. Generally, a CE is unaware of VPNs and does not need to support MPLS.</p>
+</li><li><p>Provider edge (PE): edge device on the SP network. A PE directly connects to CEs. On an MPLS network, PEs process all VPN services and must have high performance.</p>
+</li><li><p>Provider device (P): backbone device on the SP network. A P does not directly connect to CEs. Ps only need to possess basic MPLS forwarding capabilities and do not maintain VPN information.</p>
+</li></ul>
+<p>Generally, PEs and Ps are managed by SPs, and CEs are managed by users. Users can also delegate CE management to SPs.</p>
+<p>A PE can connect to multiple CEs. A CE can connect to multiple PEs of the same SP or of different SPs.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">IPv4 L3VPN Route Advertisement</h4><div class="p">On an IPv4 L3VPN, CEs and PEs are responsible for advertising VPN routing information, whereas Ps only need to maintain backbone network routes without knowing VPN routing information. Generally, a PE maintains only the routes of VPNs that the PE accesses, not all VPN routes. VPN route advertisement consists of the following phases: route advertisement from the local CE to the ingress PE, route advertisement from the ingress PE to the egress PE, and route advertisement from the egress PE to the remote CE. After the process of route advertisement is complete, the local and remote CEs can obtain reachable routes to each other, and VPN routing information can be advertised on the backbone network. The following describes the three phases of route advertisement:<ol><li><p>Route advertisement from the local CE to the ingress PE</p>
+<p>After a peer relationship is established between a CE and the directly connected PE, the CE advertises the local IPv4 routes to the PE. Static routes or a routing protocol (RIP, OSPF, IS-IS, or BGP) can be used between the CE and PE. Routes advertised by the CE to the PE are standard IPv4 routes, regardless of which routing protocol is used.</p>
+<p><a href="vrp_L3VPNv4_cfg_0003.html#EN-US_CONCEPT_0000001130621662__li137111699552">VPN instances</a> on a PE are isolated from each other and independent of the public routing and forwarding table, to prevent problems caused by VPN address space overlapping. After learning routes from a CE, a PE needs to determine to which routing and forwarding table the routes should be installed. Common routing protocols, however, do not have this capability, and manual configuration is required.</p>
+</li><li><p>Route advertisement from the ingress PE to the egress PE</p>
+<p>Route advertisement from the ingress PE to the egress PE further consists of the following phases:</p>
+<ul><li><p>After learning VPN routes from a CE, a PE stores these routes in the corresponding VPN instances and adds RDs to these standard IPv4 routes. VPN-IPv4 routes are then generated.</p>
+</li><li><p>The ingress PE advertises VPN-IPv4 routes to the egress PE by sending MP-BGP Update messages. The Update messages also contain VPN targets and MPLS labels.</p>
+</li></ul>
+<p>Before the next-hop PE receives the VPN-IPv4 routes, the routes are first filtered by BGP route-policies, including the VRF export policy and peer export policy.</p>
+<p>After these routes arrive at the egress PE, if they match the BGP peer import policy and their next hops are reachable or they can perform recursion, the egress PE performs local route leaking and filters these routes based on a VRF import policy. The egress PE then decides which routes are to be added to its VPN routing tables. Routes received from other PEs are added to a VPN routing table based on VPN targets. The egress PE stores the following information for subsequent packet forwarding:</p>
+<ul><li><p>Values of MPLS labels contained in MP-BGP Update messages</p>
+</li><li><p>Tunnel IDs generated after recursion to tunnels is successful</p>
+</li></ul>
+</li><li><p>Route advertisement from the egress PE to the remote CE</p>
+<p>A remote CE can learn VPN routes from an egress PE over static routes or routes established using RIP, OSPF, IS-IS, or BGP. Route advertisement from the egress PE to a remote CE is similar to that from a local CE to the ingress PE. The details are not described here. Note that the routes advertised by the egress PE to the remote CE are standard IPv4 routes.</p>
+</li></ol>
+</div>
+<p>After a PE receives routes of different VPNs from a local CE, if the next hops of these routes are reachable or these routes are recursive, the PE matches the export VPN targets of these routes against the import VPN targets of its local VPN instances. This process is called local route leaking. During local route leaking, the PE filters these routes based on a VRF import policy and modifies the attributes of eligible routes.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">IPv4 L3VPN Packet Forwarding</h4><p>On an IPv4 L3VPN backbone network, Ps are unaware of VPN routing information. VPN packets are forwarded between PEs over tunnels. <a href="#EN-US_CONCEPT_0000001490821342__fig_dc_vrp_mpls-l3vpn-v4_feature_002506">Figure 2</a> shows an example of packet forwarding on an IPv4 L3VPN. <a href="#EN-US_CONCEPT_0000001490821342__fig_dc_vrp_mpls-l3vpn-v4_feature_002506">Figure 2</a> shows packet transmission from CE1 to CE2. I-L indicates an inner label, and O-L indicates an outer label. The outer label directs the packet to the BGP next hop, and the inner label identifies the outbound interface for the packet or the VPN to which the packet belongs.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001490821342__fig_dc_vrp_mpls-l3vpn-v4_feature_002506"><a name="EN-US_CONCEPT_0000001490821342__fig_dc_vrp_mpls-l3vpn-v4_feature_002506"></a><a name="fig_dc_vrp_mpls-l3vpn-v4_feature_002506"></a><span class="figcap"><b>Figure 2 </b>VPN packet forwarding</span><br><span><img class="vsd" src="figure/en-us_image_0000001491142670.png"></span></div>
+<div class="p">The specific packet forwarding process is as follows:<ol><li>CE1 sends an IP packet to the ingress PE.</li><li>After receiving the packet from an interface bound to a VPN instance, the ingress PE performs the following steps:<ul><li>Searches the corresponding VPN forwarding table based on the RD of the bound VPN instance.</li><li>Matches the destination IPv4 prefix against forwarding entries to search for the corresponding tunnel ID.</li><li>Adds an I-L to the packet and finds the tunnel to be used based on the tunnel ID.</li><li>Adds an outer label to the packet and sends the packet over the corresponding tunnel. In this example, the tunnel is an LSP, and the outer label is an MPLS label (O-L1).</li><li>Transmits the double-tagged packet over the backbone network. Each P on the forwarding path swaps the outer label of the packet.</li></ul>
+</li><li>After receiving the packet with double labels, the egress PE sends the packet to MPLS for processing. MPLS removes the outer label.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, the final outer label of the packet is O-L2. If PHP is configured, O-L2 is removed on the penultimate hop, and the egress PE receives a packet with the inner label only.</p>
+</div></div>
+</li><li>The egress PE determines which VPN forwarding table to use based on the inner label, searches this table for the outbound interface based on the IPv4 prefix, and then removes the inner label.</li><li>The egress PE sends the packet through the corresponding outbound interface to CE2. At this time, the packet is a native IP packet.</li></ol>
+</div>
+<p>In this manner, the packet is sent from CE1 to CE2. CE2 forwards the packet to the destination in the way it sends other IP packets.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0006.html">Configuring Basic IPv4 L3VPN over MPLS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_1007.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

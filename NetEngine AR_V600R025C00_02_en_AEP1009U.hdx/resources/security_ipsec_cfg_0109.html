@@ -1,0 +1,109 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring IPsec Multi-Instance">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0107.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0108.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513153870">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring IPsec Multi-Instance</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513153870"></a><a name="EN-US_TASK_0000001513153870"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring IPsec Multi-Instance</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513153870__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>IPsec multi-instance can isolate traffic on different subnets. To achieve this, an IKE-negotiated IPsec tunnel needs to be bound to a VPN instance on an IKE peer.</p>
+<div class="p">Pay attention to the following points when configuring IPsec multi-instance:<ul><li>Before configuring IPsec multi-instance, run the <b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> and <b><span class="cmdqueryname">route-distinguisher</span></b> <i><span class="varname">route-distinguisher</span></i> commands to create a VPN instance and configure a route distinguisher (RD) for the VPN instance.</li><li>Run the <b><span class="cmdqueryname">ip binding vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> command on an interface to bind the interface to the specified VPN instance according to the network plan. When an IKE-negotiated IPsec tunnel needs to be established and inter-VPN forwarding is implemented through tunnel interfaces, you need to run the <b><span class="cmdqueryname">ip binding vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> command to bind the specified VPN instance to the tunnel interface that has an IPsec policy applied and whose encapsulation mode is IPsec. You are advised to use tunnel interfaces for inter-VPN forwarding.</li><li>When an advanced ACL is used to define the data flows to be protected, all rules in the ACL must be bound to the same VPN instance.</li><li>To enable communication between the VPN instance used for service access and the public system, and between VPN instances, run the <b><span class="cmdqueryname">ip route-static vpn-instance</span></b> command to configure static routes.</li></ul>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001513153870__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Binding an IPsec tunnel to a VPN instance based on SAs</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the VPN instance to which IPsec tunnel traffic belongs.</span><p><pre class="screen"><b><span class="cmdqueryname">sa binding vpn-instance</span></b> <i><span class="varname">vpn-instance</span></i>
+<b><span class="cmdqueryname">quit</span></b></pre>
+<p>By default, the VPN instance to which IPsec tunnel traffic belongs is not configured on an IKE peer.</p>
+<p>The VPN instance specified by <i><span class="varname">vpn-instance</span></i> must have been created using the <b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> command, and must be the same as the VPN instance bound to the tunnel interface that has a specific IPsec policy applied, and also the VPN instance bound to the ACL rule that is referenced by the IPsec policy.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Disable the device from checking VPN instance information in data flows during IPsec encryption and decryption.</span><p><ol type="a"><li>Enter the IPsec policy view or policy template view.<p># Enter the ISAKMP IPsec policy view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec policy</span></b> <i><span class="varname">policy-name</span></i> <i><span class="varname">seq-number</span></i> [ <strong><span>isakmp</span></strong> ]</pre>
+<p># Enter the template IPsec policy view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec policy-template</span></b> <i><span class="varname">template-name</span></i> <i><span class="varname">seq-number</span></i></pre>
+</li><li>Disable the device from checking VPN instance information in data flows during IPsec encryption and decryption.<pre class="screen"><b><span class="cmdqueryname">flow-vrf check disable</span></b></pre>
+<p>By default, the device checks VPN instance information in data flows during IPsec encryption and decryption.</p>
+<p>In the scenario where branches connect to the headquarters, multiple VPN instances are typically deployed at the headquarters so that the branches access different VPN instances based on services. The IPsec tunnel of the headquarters can be bound to only one VPN instance, and therefore routes need to be imported between VPNs to implement inter-VPN traffic forwarding. To prevent the device from discarding packets of the VPN instance that is different from the VPN instance of the interface that receives these packets, perform this step to disable the function of checking VPN instance information in data flows during IPsec encryption and decryption.</p>
+</li></ol>
+</p></li></ol>
+</li><li><span>Binding an IPsec tunnel to a VPN instance based on an IKE user table</span><p><p>When an IPsec tunnel is bound to a VPN instance based on an IKE user table, the device determines the VPN instance to which branch traffic passing through an IPsec tunnel belongs based on users. This isolates traffic from different branches. The configuration of binding an IPsec tunnel to a VPN instance based on an IKE user table takes precedence over that based on SAs.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE user table view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike user-table</span></b> <i><span class="varname">user-table-id</span></i></pre>
+<p>The user table specified by <i><span class="varname">user-table-id</span></i> is an IKE user table that has been created.</p>
+</p></li><li class="substepexpand"><span>Enter the IKE user view.</span><p><pre class="screen"><b><span class="cmdqueryname">user</span></b> <i><span class="varname">user-name</span></i></pre>
+<p>The user specified by <i><span class="varname">user-name</span></i> is an IKE user that has been created.</p>
+</p></li><li class="substepexpand"><span>Configure the VPN instance to which traffic of users in the IKE user table belongs.</span><p><pre class="screen"><b><span class="cmdqueryname">vpn-instance-traffic</span></b> { <strong><span>public</span></strong> | <strong><span>name</span></strong> <i><span class="varname">vpn-instance-name</span></i> }
+<b><span class="cmdqueryname">quit</span></b></pre>
+<p>The VPN instance specified by <i><span class="varname">vpn-instance-name</span></i> must have been created using the <b><span class="cmdqueryname">ip vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i> command, and must be the same as the VPN instance bound to the tunnel interface that has a specific IPsec policy applied, and also the VPN instance bound to the ACL rule that is referenced by the IPsec policy.</p>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the IKE peer to reference the specified IKE user table.</span><p><pre class="screen"><b><span class="cmdqueryname">user-table</span></b> <i><span class="varname">user-table-id</span></i>
+<b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Disable the device from checking VPN instance information in data flows during IPsec encryption and decryption.</span><p><ol type="a"><li>Enter the IPsec policy template view.<pre class="screen"><b><span class="cmdqueryname">ipsec policy-template</span></b> <i><span class="varname">template-name</span></i> <i><span class="varname">seq-number</span></i></pre>
+</li><li>Disable the device from checking VPN instance information in data flows during IPsec encryption and decryption.<pre class="screen"><b><span class="cmdqueryname">flow-vrf check disable</span></b></pre>
+<p>By default, the device checks VPN instance information in data flows during IPsec encryption and decryption.</p>
+<p>In the scenario where branches connect to the headquarters, multiple VPN instances are typically deployed at the headquarters so that the branches access different VPN instances based on services. The IPsec tunnel of the headquarters can be bound to only one VPN instance, and therefore routes need to be imported between VPNs to implement inter-VPN traffic forwarding. To prevent the device from discarding packets of the VPN instance that is different from the VPN instance of the interface that receives these packets, perform this step to disable the function of checking VPN instance information in data flows during IPsec encryption and decryption.</p>
+</li></ol>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0107.html">Configuring IPsec Multi-Instance
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0108.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding U-BFD for SRv6 TE Policy">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0129.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0131.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Learning More">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001188016979">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Understanding U-BFD for SRv6 TE Policy</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001188016979"></a><a name="EN-US_CONCEPT_0000001188016979"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding U-BFD for SRv6 TE Policy</h1>
+<div><p></p>
+<p>In inter-AS SRv6 TE Policy scenarios, the constraints on the reflector discriminator make network planning inconvenient. To address this issue, U-BFD for SRv6 TE Policy is introduced.</p>
+<div class="section"><h4 class="sectiontitle">Fundamentals of U-BFD for SRv6 TE Policy</h4><p><a href="#EN-US_CONCEPT_0000001188016979__fig387415330188">Figure 1</a> shows the U-BFD for SRv6 TE Policy detection process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001188016979__fig387415330188"><a name="EN-US_CONCEPT_0000001188016979__fig387415330188"></a><a name="fig387415330188"></a><span class="figcap"><b>Figure 1 </b>U-BFD for SRv6 TE Policy detection</span><br><span><img class="imgResize" src="figure/en-us_image_0000001141937050.png" width="521.072335546875" height="356.8471420330688" title="Click to enlarge"></span></div>
+<p>The U-BFD for SRv6 TE Policy detection process is as follows:</p>
+<ol><li>After U-BFD is configured on the headend of the specified SRv6 TE Policy, the headend constructs a special BFD packet in which both the source and destination IP addresses in the IP header are the local IP address (that is, the TE IPv6 Router-ID) and both the local and remote discriminators are the same.</li><li>The headend encapsulates a SID stack corresponding to the SRv6 TE Policy into the BFD packet. This transforms the packet into an SRv6 one.</li><li>After receiving the SRv6 packet through the SRv6 TE Policy, the endpoint processes the packet, searches for a route according to the destination IPv6 address in the BFD packet, and then loops back the BFD packet to the headend.</li><li><p>If the headend receives a U-BFD reply, it considers that the corresponding segment list in the SRv6 TE Policy is normal. Otherwise, it considers that the segment list fails. If all the segment lists of a candidate path fail, U-BFD triggers a switchover to the backup candidate path.</p>
+</li></ol>
+<p>U-BFD return packets are forwarded over IPv6 routes. In cases where the primary paths of multiple SRv6 TE Policies between two nodes differ due to different path constraints, if U-BFD return packets are transmitted over the same path and this path fails, all the involved U-BFD sessions may go down. As a result, all the SRv6 TE Policies between the two nodes go down. This problem also applies to U-BFD sessions of multiple segment lists in the same SRv6 TE Policy.</p>
+<p>By default, if HSB is not enabled for an SRv6 TE Policy, U-BFD detects all the segment lists of only the candidate path with the highest preference in the SRv6 TE Policy. Conversely, when HSB is enabled, U-BFD can detect all the segment lists of the candidate paths with the highest and second highest preferences in the SRv6 TE Policy. If the segment lists of the candidate path with the highest preference all fail, a switchover to the HSB path is triggered.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Forwarding of U-BFD Return Packets over a Segment List</h4><p>To address the problem caused by the forwarding of U-BFD for SRv6 TE Policy packets over an IPv6 route, a solution is provided to allow U-BFD return packets to be forwarded over a segment list.</p>
+<p><a href="#EN-US_CONCEPT_0000001188016979__fig1977988131813">Figure 2</a> shows the key configurations that enable the forwarding of U-BFD return packets over a segment list. The corresponding configuration requirements are as follows:</p>
+<ol><li>Create two bidirectional co-routed SRv6 TE Policies between the headend and endpoint, ensuring that the forward and reverse segment lists of one SRv6 TE Policy share the same path as those of the other SRv6 TE Policy.</li><li>Specify a binding SID (BSID) and a reverse BSID for the bidirectional co-routed segment lists, with the BSID of one segment list being the same as the reverse BSID of the other segment list.</li></ol>
+<div class="fignone" id="EN-US_CONCEPT_0000001188016979__fig1977988131813"><a name="EN-US_CONCEPT_0000001188016979__fig1977988131813"></a><a name="fig1977988131813"></a><span class="figcap"><b>Figure 2 </b>Key configurations that enable the forwarding of U-BFD return packets over a segment list</span><br><span><img class="imgResize" src="figure/en-us_image_0000001177550952.png" width="523.6875" height="262.68035325000005" title="Click to enlarge"></span></div>
+<p>After the forwarding of U-BFD return packets over a segment list is enabled and a U-BFD session is initiated for a specific segment list, the reverse BSID of this segment list is sent to the peer device through BFD packets. The peer device then finds the corresponding segment list according to the received BSID and forwards return packets over this segment list.</p>
+<p>Return packets can also be encapsulated in Insert or Encaps mode, depending on the encapsulation mode configured on device D for the SRv6 TE Policy.</p>
+<p><a href="#EN-US_CONCEPT_0000001188016979__fig109231121113115">Figure 3</a> shows the detection process when U-BFD return packets forwarded over a segment list are encapsulated in Insert mode.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001188016979__fig109231121113115"><a name="EN-US_CONCEPT_0000001188016979__fig109231121113115"></a><a name="fig109231121113115"></a><span class="figcap"><b>Figure 3 </b>Detection process when U-BFD return packets forwarded over a segment list are encapsulated in Insert mode</span><br><span><img class="imgResize" src="figure/en-us_image_0000001177392400.png" width="523.6875" height="417.26063400000004" title="Click to enlarge"></span></div>
+<p><a href="#EN-US_CONCEPT_0000001188016979__fig162711192153">Figure 4</a> shows the detection process when U-BFD return packets forwarded over a segment list are encapsulated in Encaps mode.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001188016979__fig162711192153"><a name="EN-US_CONCEPT_0000001188016979__fig162711192153"></a><a name="fig162711192153"></a><span class="figcap"><b>Figure 4 </b>Detection process when U-BFD return packets forwarded over a segment list are encapsulated in Encaps mode</span><br><span><img class="imgResize" src="figure/en-us_image_0000001177710880.png" width="523.6875" height="451.89153974999994" title="Click to enlarge"></span></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0129.html">Configuring U-BFD for SRv6 TE Policy
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0131.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

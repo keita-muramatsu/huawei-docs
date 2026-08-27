@@ -1,0 +1,101 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an IKE Proposal">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0014.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0017.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0019.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564113969">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an IKE Proposal</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564113969"></a><a name="EN-US_TASK_0000001564113969"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an IKE Proposal</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564113969__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>An IKE proposal defines IKE negotiation parameters, including the encryption algorithm, authentication method, authentication algorithm, Diffie-Hellman (DH) group, and security association (SA) lifetime.</p>
+<p>During IKE negotiation, the initiator sends its IKE proposal to the responder. The responder starts from the highest priority IKE proposal to match its IKE proposals against the received IKE proposal and uses the first matched one to establish an IKE SA. The priority of an IKE proposal is determined by its sequence number. A smaller sequence number indicates a higher priority.</p>
+<p>Two matching IKE proposals define the same encryption algorithm, authentication method, authentication algorithm, and DH group. If both ends have a different IKE SA lifetime, the two ends use the smaller IKE SA lifetime for IKE negotiation.</p>
+<p>By default, there is an IKE proposal <strong>Default</strong> with the lowest priority and default parameter values. If only the sequence number is specified during the creation of an IKE proposal, the parameters in the IKE proposal use the default values. <a href="security_ipsec_cfg_0007.html">Default Settings for IPsec</a> describes the default settings for an IKE proposal.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564113969__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an IKE proposal and enter the IKE proposal view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike proposal</span></b> { <i><span class="varname">proposal-number</span></i> | <strong><span>default</span></strong> }</pre>
+</p></li><li><span>Configure an identity authentication method.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication-method</span></b> { <strong><span>pre-share</span></strong> | <strong><span>rsa-signature</span></strong> | <strong><span>sm2 digital-envelope</span></strong> }</pre>
+<p>By default, an IKE proposal uses pre-shared key (PSK) authentication.</p>
+<p>In IKE negotiation, the authentication methods in the IKE proposals used by the IKE peers on both ends must be the same. Otherwise, IKE negotiation fails.</p>
+<p id="EN-US_TASK_0000001564113969__p4666168926">SM digital envelope authentication is supported only in IKEv1 negotiation scenarios. The <strong><span id="EN-US_TASK_0000001564113969__cmdparmname191191214453">sm2 digital-envelope</span></strong> parameter can be configured only after the IKEv1 feature package is installed.</p>
+</p></li><li><span>Configure the identity authentication algorithm used for IKEv1 negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">authentication-algorithm</span></b> { <strong><span>md5</span></strong> | <strong><span>sha1</span></strong> | <strong><span>sha2-256</span></strong> | <strong><span>sha2-384</span></strong> | <strong><span>sha2-512</span></strong> | <strong><span>sm3</span></strong> }<sup>*</sup></pre>
+<p>By default, the SHA2-256 authentication algorithm is used for IKEv1 negotiation.</p>
+<p>An authentication algorithm must be configured for IKEv1 negotiation. The following authentication algorithms are listed in descending order of security level: SM3, SHA2-512, SHA2-384, SHA2-256, SHA1, and MD5. Of these, SHA1 and MD5 are not recommended because they cannot meet security requirements.</p>
+</p></li><li><span>Configure the identity encryption algorithm used for IKE negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">encryption-algorithm</span></b> { <strong><span>des</span></strong> | <strong><span>3des</span></strong> | <strong><span>aes-128</span></strong> | <strong><span>aes-192</span></strong> | <strong><span>aes-256</span></strong> | <strong><span>sm4</span></strong> | <strong><span>aes-gcm-128</span></strong> | <strong><span>aes-gcm-192</span></strong> | <strong><span>aes-gcm-256</span></strong> }<sup>*</sup></pre>
+<p>By default, the AES-GCM-256 encryption algorithm is used for IKE negotiation.</p>
+<p>The following encryption algorithms are listed in descending order of security level: SM4, AES-GCM-256, AES-GCM-192, AES-GCM-128, AES-256, AES-192, AES-128, 3DES, and DES. DES, 3DES, and AES in CBC mode are not recommended because they cannot meet security requirements.</p>
+</p></li><li><span>Configure the DH group used for IKE negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">dh</span></b> { <strong><span>group1</span></strong> | <strong><span>group2</span></strong> | <strong><span>group5</span></strong> | <strong><span>group14</span></strong> | <strong><span>group15</span></strong> | <strong><span>group16</span></strong> | <strong><span>group18</span></strong> | <strong><span>group19</span></strong> | <strong><span>group20</span></strong> | <strong><span>group21</span></strong> | <strong><span>group24</span></strong> }<sup>*</sup></pre>
+<p>By default, the DH group used for IKE negotiation is Group 14.</p>
+<p>The following DH groups are listed in descending order of security level: Group 24, Group 21, Group 20, Group 19, Group 18, Group 16, Group 15, Group 14, Group 5, Group 2, and Group 1. Group 1, Group 2, and Group 5 are not recommended because they cannot meet security requirements.</p>
+</p></li><li><span>Configure the pseudo-random function (PRF) algorithm used for IKEv2 negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">prf</span></b> { <strong><span>aes-xcbc-128</span></strong> | <strong><span>hmac-md5</span></strong> | <strong><span>hmac-sha1</span></strong> | <strong><span>hmac-sha2-256</span></strong> | <strong><span>hmac-sha2-384</span></strong> | <strong><span>hmac-sha2-512</span></strong> }<sup>*</sup></pre>
+</p><p><p>By default, the HMAC-SHA2-256 PRF algorithm is used for IKEv2 negotiation.</p>
+<p>AES-XCBC-128, HMAC-MD5 and HMAC-SHA1 are not recommended because they cannot meet security requirements.</p>
+</p></li><li><span>Configure the identity authentication algorithm used for IKEv2 negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">integrity-algorithm</span></b> { <strong><span>aes-xcbc-96</span></strong> | <strong><span>hmac-md5-96</span></strong> | <strong><span>hmac-sha1-96</span></strong> | <strong><span>hmac-sha2-256</span></strong> | <strong><span>hmac-sha2-384</span></strong> | <strong><span>hmac-sha2-512</span></strong> }<sup>*</sup></pre>
+<p>By default, the HMAC-SHA2-256 authentication algorithm is used for IKEv2 negotiation.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564113969__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display ike proposal</span></b> [ <strong><span>number</span></strong> <i><span class="varname">proposal-number</span></i> | <strong><span>default</span></strong> ] [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] command in the user view to check the IKE proposal configuration.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001564113969__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>The configured IKE proposal can be referenced by IKE peers. For details, see <a href="security_ipsec_cfg_0019.html">Configuring an IKE Peer</a>.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0014.html">Configuring IKE Negotiation
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0017.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0019.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

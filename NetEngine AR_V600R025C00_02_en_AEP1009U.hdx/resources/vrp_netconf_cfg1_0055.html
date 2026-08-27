@@ -1,0 +1,136 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="URL">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0047.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0054.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0056.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_system_setup_0009.xml">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001564122041">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>URL</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001564122041"></a><a name="EN-US_TOPIC_0000001564122041"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">URL</h1>
+<div><div class="p">This capability indicates that the device can modify or copy files in a specified path. Currently, the &lt;edit-config&gt; and &lt;copy-config&gt; operations are supported. Password information in URLs is protected. When configuration data is exported, password information is exported in ciphertext.<ul><li>&lt;edit-config&gt;: submits the configuration file in a specified path to &lt;candidate/&gt; or &lt;running/&gt;.</li><li>&lt;copy-config&gt;: copies data in &lt;candidate/&gt; or &lt;running/&gt; to a file in a specified path.</li></ul>
+</div>
+<div class="p">Currently, the SFTP, FTP, file, HTTP, and HTTPS protocols are supported.<ul><li>The SFTP or FTP protocol is used to query files on an SFTP or FTP server. The path format is ftp://user name:password@IP address of the SFTP or FTP server/file directory/file name.</li><li>The file protocol is used to query local files. The path format is file:///file directory/file name.</li><li><p>The HTTP or HTTPS protocol is used to search for files on an HTTP or HTTPS server. The path format is http (or https)://IP address of the HTTP or HTTPS server (or DNS):port number/file directory/file name.</p>
+</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The file name is a string of case-sensitive characters starting with an underscore (_) or a letter. It supports only underscores, digits, and letters. The dot (.) can be used only in the file name extension, and only one dot is supported. The file name including a path cannot contain more than 256 characters.</p>
+<p>For the &lt;copy-config&gt; operation, if the file specified in the &lt;url&gt; element does not exist, the file is directly created. If the file exists, it is overwritten.</p>
+<p>When you perform the &lt;edit-config&gt; operation, the file specified in &lt;url&gt; must exist.</p>
+<p>The HTTP or HTTPS protocol supports only the &lt;edit-config&gt; operation in a YANG model.</p>
+</div></div>
+</div>
+<p>The following example shows how to copy the data in the &lt;running/&gt; configuration database to the local <strong>abc.xml</strong> file.</p>
+<ul><li><p>RPC request</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"&gt;
+ &lt;copy-config&gt;
+  &lt;target&gt;
+   &lt;url&gt;file:///abc.xml&lt;/url&gt;
+  &lt;/target&gt;
+  &lt;source&gt;
+   &lt;running/&gt;
+  &lt;/source&gt;
+ &lt;/copy-config&gt;
+&lt;/rpc&gt;
+</pre>
+</li><li><p>RPC reply</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="5"&gt;
+ &lt;ok/&gt;
+&lt;/rpc&gt;
+</pre>
+</li></ul>
+<p>The following example shows how to commit the content of the <strong>config.xml</strong> file on the FTP server to the &lt;candidate/&gt; database.</p>
+<ul><li><p>RPC request</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="5"&gt;
+ &lt;edit-config&gt;
+  &lt;target&gt;
+   &lt;candidate/&gt;
+  &lt;/target&gt;
+  &lt;url&gt;ftp://root:root@10.1.1.2/config.xml&lt;/url&gt;
+ &lt;/edit-config&gt;
+&lt;/rpc&gt;</pre>
+</li><li><p>RPC reply</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+ &lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="5"&gt;
+&lt;ok/&gt;
+&lt;/rpc&gt;
+</pre>
+</li></ul>
+<div class="p">The following example shows how to commit the content of the <strong>config.xml</strong> file on the HTTP server to the &lt;candidate/&gt; database.<ul><li><p>RPC request</p>
+<pre class="screen">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="2"&gt;
+  &lt;edit-config&gt;
+    &lt;target&gt;
+      &lt;candidate/&gt;
+    &lt;/target&gt;
+    &lt;url&gt;https://192.168.1.1:8080/config.xml&lt;/url&gt;
+  &lt;/edit-config&gt;
+&lt;/rpc&gt;</pre>
+</li><li>RPC reply<pre class="screen">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="2"&gt;
+ &lt;ok/&gt;
+&lt;/rpc&gt;</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_netconf_cfg1_0047.html">NETCONF Standard Capability Set
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_netconf_cfg1_0054.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_netconf_cfg1_0056.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

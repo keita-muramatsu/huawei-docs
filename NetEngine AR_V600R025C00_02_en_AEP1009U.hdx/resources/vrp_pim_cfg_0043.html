@@ -1,0 +1,423 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring PIM Anycast RP">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_1089.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_1087.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_pim_cfg_1088.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="PIM">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001176743283">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring PIM Anycast RP</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001176743283"></a><a name="EN-US_TASK_0000001176743283"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring PIM Anycast RP</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001176743283__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In scenarios where multiple multicast sources and receivers are located in a PIM-SM domain, you can configure anycast RP peer relationships so that IP routing will select the closest RP for each source and receiver. This alleviates burdens on RPs and optimizes multicast data forwarding paths.</p>
+<p>In a traditional PIM-SM domain, each multicast group can be mapped to only one RP. When the network is overloaded or traffic congestion occurs, the following problems may occur: the RP is overburdened; route convergence is slow after the RP fails; the multicast forwarding path is not optimal. Configuring PIM anycast RP in a single AS can address these problems. IP routing will automatically select the topologically closest RP for each source and receiver. In this way, receivers can quickly receive multicast data. On the network shown in <a href="#EN-US_TASK_0000001176743283__fig61819557114">Figure 1</a>, Receiver2 needs to receive multicast data from Source. To do this, configure an anycast RP peer relationship between <span class="keyword">Device</span>C and <span class="keyword">Device</span>D so that Receiver2 can send a Join message to the closest RP, that is, <span class="keyword">Device</span>D. After receiving multicast data from Source, <span class="keyword">Device</span>A encapsulates the multicast data into a Register message and sends it to <span class="keyword">Device</span>C. Upon receipt, <span class="keyword">Device</span>C forwards it to <span class="keyword">Device</span>D so that Receiver2 can receive the multicast data from Source.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<div class="fignone" id="EN-US_TASK_0000001176743283__fig61819557114"><a name="EN-US_TASK_0000001176743283__fig61819557114"></a><a name="fig61819557114"></a><span class="figcap"><b>Figure 1 </b>Networking diagram of configuring PIM anycast RP</span><br><span><img class="vsd" src="figure/en-us_image_0000001176743353.png"></span></div>
+<p>To complete the configuration, you need the following data:</p>
+<ul><li><p>Multicast group address: 226.1.1.1/24</p>
+</li><li><p>RP address</p>
+</li><li><p>Anycast RPs' local addresses</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001176743283__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Assign an IP address to each device interface and configure OSPF to implement IP interworking.</p>
+</li><li><p>Enable the multicast function, and enable PIM-SM on related interfaces.</p>
+</li><li><p>Enable IGMP on the interfaces connecting devices to hosts.</p>
+</li><li><p>Configure Loopback0 interfaces on <span class="keyword">Device</span>C and <span class="keyword">Device</span>D as both Candidate-Rendezvous Points (C-RPs) and Candidate-BootStrap Routers (C-BSRs).</p>
+</li><li><p>Configure the addresses of Loopback0 interfaces on <span class="keyword">Device</span>C and <span class="keyword">Device</span>D as the anycast RP address.</p>
+</li><li><p>Configure the addresses of Loopback1 interfaces on <span class="keyword">Device</span>C and <span class="keyword">Device</span>D as their respective anycast RPs' local addresses.</p>
+</li><li><p>Configure an anycast RP peer relationship between <span class="keyword">Device</span>C and <span class="keyword">Device</span>D.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001176743283__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IP address to each <span class="keyword">device</span> interface and configure OSPF to implement IP interworking. Enable the multicast function, and enable PIM-SM on related interfaces.</span><p><p># Assign an IP address and mask to each device interface in the PIM-SM domain according to <a href="#EN-US_TASK_0000001176743283__fig61819557114">Figure 1</a>, and configure OSPF between devices to implement IP interworking. Enable the multicast function, and enable PIM-SM on related interfaces.</p>
+<p># Configure <span class="keyword">Device</span>A.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span class="keyword">Device</span>A</strong>
+[<span class="keyword">Device</span>A] <strong>multicast routing-enable</strong>
+[<span class="keyword">Device</span>A] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitch</strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.110.1.1 24</strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>A] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/2</span>] <strong>undo portswitch</strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/2</span>] <strong>ip address 192.168.1.1 24</strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/2</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>A-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>A] <strong>ospf</strong>
+[<span class="keyword">Device</span>A-ospf-1] <strong>area 0</strong>
+[<span class="keyword">Device</span>A-ospf-1-area-0.0.0.0] <strong>network 10.110.1.0 0.0.0.255</strong>
+[<span class="keyword">Device</span>A-ospf-1-area-0.0.0.0] <strong>network 192.168.1.0 0.0.0.255</strong>
+[<span class="keyword">Device</span>A-ospf-1-area-0.0.0.0] <strong>quit</strong>
+[<span class="keyword">Device</span>A-ospf-1] <strong>quit</strong></pre>
+<p># Configure <span class="keyword">Device</span>B.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span class="keyword">Device</span>B</strong>
+[<span class="keyword">Device</span>B] <strong>multicast routing-enable</strong>
+[<span class="keyword">Device</span>B] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitch</strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong>ip address 192.168.2.1 24</strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>B-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>B] <strong>ospf</strong>
+[<span class="keyword">Device</span>B-ospf-1] <strong>area 0</strong>
+[<span class="keyword">Device</span>B-ospf-1-area-0.0.0.0] <strong>network 192.168.2.0 0.0.0.255</strong>
+[<span class="keyword">Device</span>B-ospf-1-area-0.0.0.0] <strong>quit</strong>
+[<span class="keyword">Device</span>B-ospf-1] <strong>quit</strong></pre>
+<p># Configure <span class="keyword">Device</span>C.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span class="keyword">Device</span>C</strong>
+[<span class="keyword">Device</span>C] <strong>multicast routing-enable</strong>
+[<span class="keyword">Device</span>C] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitch</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/1</span>] <strong>ip address 192.168.3.1 24</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/1</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>C] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/2</span>] <strong>undo portswitch</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/2</span>] <strong>ip address 192.168.1.2 24</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/2</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>C] <strong>interface <span>10GE</span> <span>0/0/3</span></strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/3</span>] <strong>undo portswitch</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/3</span>] <strong>ip address 10.110.2.1 24</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/3</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>C] <strong>interface loopback 0</strong>
+[<span class="keyword">Device</span>C-LoopBack0] <strong>ip address 1.1.1.1 32</strong>
+[<span class="keyword">Device</span>C-LoopBack0] <strong>pim sm</strong>
+[<span class="keyword">Device</span>C-LoopBack0] <strong>quit</strong>
+[<span class="keyword">Device</span>C] <strong>interface loopback 1</strong>
+[<span class="keyword">Device</span>C-LoopBack1] <strong>ip address 2.2.2.2 32</strong>
+[<span class="keyword">Device</span>C-LoopBack1] <strong>pim sm</strong>
+[<span class="keyword">Device</span>C-LoopBack1] <strong>quit</strong>
+[<span class="keyword">Device</span>C] <strong>ospf</strong>
+[<span class="keyword">Device</span>C-ospf-1] <strong>area 0</strong>
+[<span class="keyword">Device</span>C-ospf-1-area-0.0.0.0] <strong>network 192.168.3.0 0.0.0.255</strong>
+[<span class="keyword">Device</span>C-ospf-1-area-0.0.0.0] <strong>network 192.168.1.0 0.0.0.255</strong>
+[<span class="keyword">Device</span>C-ospf-1-area-0.0.0.0] <strong>network 10.110.2.0 0.0.0.255</strong>
+[<span class="keyword">Device</span>C-ospf-1-area-0.0.0.0] <strong>network 1.1.1.1 0.0.0.0</strong>
+[<span class="keyword">Device</span>C-ospf-1-area-0.0.0.0] <strong>network 2.2.2.2 0.0.0.0</strong>
+[<span class="keyword">Device</span>C-ospf-1-area-0.0.0.0] <strong>quit</strong>
+[<span class="keyword">Device</span>C-ospf-1] <strong>quit</strong></pre>
+<p># Configure <span class="keyword">Device</span>D.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span class="keyword">Device</span>D</strong>
+[<span class="keyword">Device</span>D] <strong>multicast routing-enable</strong>
+[<span class="keyword">Device</span>D] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitch</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/1</span>] <strong>ip address 192.168.2.2 24</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/1</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>D] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/2</span>] <strong>undo portswitch</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.110.3.1 24</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/2</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>D] <strong>interface <span>10GE</span> <span>0/0/3</span></strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/3</span>] <strong>undo portswitch</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/3</span>] <strong>ip address 192.168.3.2 24</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/3</span>] <strong>pim sm</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[<span class="keyword">Device</span>D] <strong>interface loopback 0</strong>
+[<span class="keyword">Device</span>D-LoopBack0] <strong>ip address 1.1.1.1 32</strong>
+[<span class="keyword">Device</span>D-LoopBack0] <strong>pim sm</strong>
+[<span class="keyword">Device</span>D-LoopBack0] <strong>quit</strong>
+[<span class="keyword">Device</span>D] <strong>interface loopback 1</strong>
+[<span class="keyword">Device</span>D-LoopBack1] <strong>ip address 3.3.3.3 32</strong>
+[<span class="keyword">Device</span>D-LoopBack1] <strong>pim sm</strong>
+[<span class="keyword">Device</span>D-LoopBack1] <strong>quit</strong>
+[<span class="keyword">Device</span>D] <strong>ospf</strong>
+[<span class="keyword">Device</span>D-ospf-1] <strong>area 0</strong>
+[<span class="keyword">Device</span>D-ospf-1-area-0.0.0.0] <strong>network 192.168.2.0 0.0.0.255</strong>
+[<span class="keyword">Device</span>D-ospf-1-area-0.0.0.0] <strong>network 10.110.3.0 0.0.0.255</strong>
+[<span class="keyword">Device</span>D-ospf-1-area-0.0.0.0] <strong>network 192.168.3.0 0.0.0.255</strong>
+[<span class="keyword">Device</span>D-ospf-1-area-0.0.0.0] <strong>network 1.1.1.1 0.0.0.0</strong>
+[<span class="keyword">Device</span>D-ospf-1-area-0.0.0.0] <strong>network 3.3.3.3 0.0.0.0</strong>
+[<span class="keyword">Device</span>D-ospf-1-area-0.0.0.0] <strong>quit</strong>
+[<span class="keyword">Device</span>D-ospf-1] <strong>quit</strong></pre>
+</p></li><li><span>Enable IGMP on the interfaces connecting <span class="keyword">devices</span> to hosts.</span><p><p>Enable IGMP on the interfaces connecting <span class="keyword">Device</span>C and <span class="keyword">Device</span>D to hosts.</p>
+<p># Configure <span class="keyword">Device</span>C.</p>
+<pre class="screen">[<span class="keyword">Device</span>C] <strong>interface <span>10GE</span> <span>0/0/3</span></strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/3</span>] <strong>igmp enable</strong>
+[<span class="keyword">Device</span>C-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong></pre>
+<p># Configure <span class="keyword">Device</span>D.</p>
+<pre class="screen">[<span class="keyword">Device</span>D] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/2</span>] <strong>igmp enable</strong>
+[<span class="keyword">Device</span>D-<span>10GE</span><span>0/0/2</span>]<strong> quit</strong></pre>
+</p></li><li><span>Configure Loopback0 interfaces on <span class="keyword">Device</span>C and <span class="keyword">Device</span>D as both C-RPs and C-BSRs.</span><p><p># Configure <span class="keyword">Device</span>C.</p>
+<pre class="screen">[<span class="keyword">Device</span>C] <strong>pim</strong>
+[<span class="keyword">Device</span>C-pim] <strong>c-bsr loopback 0</strong>
+[<span class="keyword">Device</span>C-pim] <strong>c-rp loopback 0</strong></pre>
+<p># Configure <span class="keyword">Device</span>D.</p>
+<pre class="screen">[<span class="keyword">Device</span>D] <strong>pim</strong>
+[<span class="keyword">Device</span>D-pim] <strong>c-bsr loopback 0</strong>
+[<span class="keyword">Device</span>D-pim] <strong>c-rp loopback 0</strong></pre>
+</p></li><li><span>Configure the addresses of Loopback0 interfaces on <span class="keyword">Device</span>C and <span class="keyword">Device</span>D as the anycast RP address.</span><p><p># Configure <span class="keyword">Device</span>C.</p>
+<pre class="screen">[<span class="keyword">Device</span>C-pim] <strong>anycast-rp 1.1.1.1</strong>
+[<span class="keyword">Device</span>C-pim-anycast-rp-1.1.1.1] <strong>quit</strong></pre>
+<p># Configure <span class="keyword">Device</span>D.</p>
+<pre class="screen">[<span class="keyword">Device</span>D-pim] <strong>anycast-rp 1.1.1.1</strong>
+[<span class="keyword">Device</span>D-pim-anycast-rp-1.1.1.1] <strong>quit</strong></pre>
+</p></li><li><span>Configure the addresses of Loopback1 interfaces on <span class="keyword">Device</span>C and <span class="keyword">Device</span>D as their respective anycast RPs' local addresses.</span><p><p># Configure <span class="keyword">Device</span>C.</p>
+<pre class="screen">[<span class="keyword">Device</span>C-pim] <strong>anycast-rp 1.1.1.1</strong>
+[<span class="keyword">Device</span>C-pim-anycast-rp-1.1.1.1] <strong>local-address 2.2.2.2</strong>
+[<span class="keyword">Device</span>C-pim-anycast-rp-1.1.1.1] <strong>quit</strong></pre>
+<p># Configure <span class="keyword">Device</span>D.</p>
+<pre class="screen">[<span class="keyword">Device</span>D-pim] <strong>anycast-rp 1.1.1.1</strong>
+[<span class="keyword">Device</span>D-pim-anycast-rp-1.1.1.1] <strong>local-address 3.3.3.3</strong>
+[<span class="keyword">Device</span>D-pim-anycast-rp-1.1.1.1] <strong>quit</strong></pre>
+</p></li><li><span>Configure an anycast RP peer relationship between <span class="keyword">Device</span>C and <span class="keyword">Device</span>D.</span><p><p># Configure <span class="keyword">Device</span>C.</p>
+<pre class="screen">[<span class="keyword">Device</span>C-pim] <strong>anycast-rp 1.1.1.1</strong>
+[<span class="keyword">Device</span>C-pim-anycast-rp-1.1.1.1] <strong>peer 3.3.3.3</strong>
+[<span class="keyword">Device</span>C-pim-anycast-rp-1.1.1.1] <strong>quit</strong>
+[<span class="keyword">Device</span>C-pim] <strong>quit</strong></pre>
+<p># Configure <span class="keyword">Device</span>D.</p>
+<pre class="screen">[<span class="keyword">Device</span>D-pim] <strong>anycast-rp 1.1.1.1</strong>
+[<span class="keyword">Device</span>D-pim-anycast-rp-1.1.1.1] <strong>peer 2.2.2.2</strong>
+[<span class="keyword">Device</span>D-pim-anycast-rp-1.1.1.1] <strong>quit</strong>
+[<span class="keyword">Device</span>D-pim] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001176743283__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Run the <strong>display pim rp-info</strong> command on <span class="keyword">Device</span>C and <span class="keyword">Device</span>D to check RP information.</p>
+<pre class="screen">&lt;<span class="keyword">Device</span>C&gt; <strong>display pim rp-info</strong>
+ VPN-Instance: public net
+ PIM-SM BSR RP Number:1
+ Group/MaskLen: 224.0.0.0/4
+     <strong>RP: 1.1.1.1 (local)</strong>
+     Priority: 0
+     Uptime: 00:45:19
+     Expires: 00:02:11
+&lt;<span class="keyword">Device</span>D&gt; <strong>display pim rp-info</strong>
+ VPN-Instance: public net
+ PIM-SM BSR RP Number:1
+ Group/MaskLen: 224.0.0.0/4
+     <strong>RP: 1.1.1.1 (local)</strong>
+     Priority: 0
+     Uptime: 02:27:56
+     Expires: 00:01:39
+</pre>
+<p>The preceding command outputs show that <span class="keyword">Device</span>C and <span class="keyword">Device</span>D both serve as RPs and can forward Register messages from the multicast source to each other.</p>
+<p># Run the <strong>display pim routing-table</strong> command to check PIM entries on a device. Source (10.110.1.2/24) in the PIM-SM domain sends multicast data to G (226.1.1.1), and Receiver2 joins G and receives the multicast data sent to G. Source registers with <span class="keyword">Device</span>C, and Receiver2 sends a Join message to <span class="keyword">Device</span>D.</p>
+<pre class="screen">&lt;<span class="keyword">Device</span>C&gt; <strong>display pim routing-table</strong>
+ VPN-Instance: public net
+ Total 0 (*, G) entry; 1 (S, G) entries
+
+ (10.110.1.2, 226.1.1.1)
+     <strong>RP: 1.1.1.1 (local)</strong>
+     Protocol: pim-sm, Flag: 2MSDP ACT
+     UpTime: 00:00:38
+     Upstream interface: Register, Refresh time: 00:00:38
+         Upstream neighbor: NULL
+         RPF prime neighbor: NULL
+     Downstream interface(s) information: None
+&lt;<span class="keyword">Device</span>D&gt; <strong>display pim routing-table</strong>
+ VPN-Instance: public net
+ Total 1 (*, G) entry; 1 (S, G) entries
+
+ (*, 226.1.1.1)
+     <strong>RP: 1.1.1.1 (local)</strong>
+     Protocol: pim-sm, Flag: WC
+     UpTime: 00:01:25
+     Upstream interface: Register, Refresh time: 00:01:25
+         Upstream neighbor: NULL
+         RPF prime neighbor: NULL
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: igmp, UpTime: 00:01:25, Expires: -
+
+ (10.110.1.2, 226.1.1.1)
+     <strong>RP: 1.1.1.1 (local)</strong>
+     Protocol: pim-sm, Flag: 2MSDP SWT ACT
+     UpTime: 00:00:02
+     Upstream interface: Register, Refresh time: 00:00:02
+         Upstream neighbor: NULL
+         RPF prime neighbor: NULL
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/2</span>
+             Protocol: pim-sm, UpTime: 00:00:02, Expires: -</pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p><span class="keyword">Device</span>A</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>A
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.110.1.1 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.1.1 255.255.255.0
+ pim sm
+#
+ospf 1
+ area 0.0.0.0
+  network 10.110.1.0 0.0.0.255
+  network 192.168.1.0 0.0.0.255
+#
+return</pre>
+</li><li><p><span class="keyword">Device</span>B</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>B
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.2.1 255.255.255.0
+ pim sm
+#
+ospf 1
+ area 0.0.0.0
+   network 192.168.2.0 0.0.0.255
+#
+return</pre>
+</li><li><p><span class="keyword">Device</span>C</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>C
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.3.1 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.1.2 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span> <span>0/0/3</span>
+ ip address 10.110.2.1 255.255.255.0
+ pim sm
+ igmp enable
+#
+interface LoopBack0
+ ip address 1.1.1.1 255.255.255.255
+ pim sm
+#
+interface LoopBack1
+ ip address 2.2.2.2 255.255.255.255
+ pim sm
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.1.0 0.0.0.255
+  network 192.168.3.0 0.0.0.255
+  network 10.110.2.0 0.0.0.255
+  network 1.1.1.1 0.0.0.0
+  network 2.2.2.2 0.0.0.0
+#
+pim
+ c-bsr LoopBack0
+ c-rp LoopBack0
+ anycast-rp 1.1.1.1
+  local-address 2.2.2.2
+  peer 3.3.3.3
+#
+return</pre>
+</li><li><p><span class="keyword">Device</span>D</p>
+<pre class="screen">#
+sysname <span class="keyword">Device</span>D
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.2.2 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.110.3.1 255.255.255.0
+ pim sm
+ igmp enable
+#
+interface <span>10GE</span> <span>0/0/3</span>
+ ip address 192.168.3.2 255.255.255.0
+ pim sm
+#
+interface LoopBack0
+ ip address 1.1.1.1 255.255.255.255
+ pim sm
+#
+interface LoopBack1
+ ip address 3.3.3.3 255.255.255.0
+ pim sm
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.2.0 0.0.0.255
+  network 192.168.3.0 0.0.0.255
+  network 10.110.3.0 0.0.0.255
+  network 3.3.3.3 0.0.0.0
+  network 1.1.1.1 0.0.0.0
+#
+pim
+ c-bsr LoopBack0
+ c-rp LoopBack0
+ anycast-rp 1.1.1.1
+  local-address 3.3.3.3
+  peer 2.2.2.2
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_pim_cfg_1089.html">Configuration Examples for PIM
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_pim_cfg_1087.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_pim_cfg_1088.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

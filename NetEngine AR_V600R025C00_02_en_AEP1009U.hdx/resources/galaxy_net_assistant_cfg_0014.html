@@ -1,0 +1,119 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Enabling the Net Assistant Function and Logging In to WebMaster">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Net_Assistant_cfg_0007.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Net Assistant">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002098031118">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Enabling the Net Assistant Function and Logging In to WebMaster</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002098031118"></a><a name="EN-US_TASK_0000002098031118"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Enabling the Net Assistant Function and Logging In to WebMaster</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002098031118__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000002098031118__fig1538819210140">Figure 1</a>, devices on the network are physically connected and powered on. DeviceA functions as the egress gateway, DeviceB functions as the master device and DHCPv4 server, and DeviceC, DeviceD, and DeviceE function as member devices and start with default configurations.</p>
+<p>After the net assistant function is enabled, the system automatically generates a virtual IP address. You can use this IP address to log in to WebMaster and implement unified configuration and management of network devices through simple web operations. For details, see <span><a href="toctopics/en-us_topic_0000002130271253.html">WebMaster Solution Overview</a>.</span></p>
+<div class="fignone" id="EN-US_TASK_0000002098031118__fig1538819210140"><a name="EN-US_TASK_0000002098031118__fig1538819210140"></a><a name="fig1538819210140"></a><span class="figcap"><b>Figure 1 </b>Enabling the net assistant function</span><br><span><img src="figure/en-us_image_0000002451526376.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002098031118__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li>Enable DHCP on DeviceB and configure an IP address for VLANIF1.</li><li>Create a local account on DeviceB.</li><li>Configure the master role for DeviceB.</li><li>Open the web browser on a PC connected to the network, use the created local account to access the virtual IP address of the master device, and log in to WebMaster.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002098031118__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enable DHCP and configure an IP address for VLANIF1.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname DeviceB</strong>
+[DeviceB] <strong>dhcp enable</strong>
+[DeviceB]<strong> interface vlanif 1</strong> 
+[DeviceB-Vlanif1]<strong> ip address 10.10.1.1 24</strong></pre>
+</p></li><li><span>Enable VLANIF1 to use the DHCP interface address pool.</span><p><pre class="screen">[DeviceB-Vlanif1]<strong> dhcp select interface</strong>
+[DeviceB-Vlanif1]<strong> </strong><strong>dhcp server gateway-list </strong><strong>10.10.1.1</strong>
+[DeviceB-Vlanif1] <strong>quit</strong></pre>
+</p></li><li><span>Create a local account.</span><p><pre class="screen">[DeviceB] <strong>aaa</strong>
+[DeviceB-aaa]<strong> local-user admin123 password irreversible-cipher YsHsjx_202206</strong>
+[DeviceB-aaa]<strong> local-user admin123 service-type http</strong>
+[DeviceB-aaa]<strong> local-user admin123 privilege level 3</strong>
+[DeviceB-aaa]<strong> quit</strong></pre>
+</p></li><li><span>Configure the master role for the device.</span><p><pre class="screen">[DeviceB] <strong>ual role controller</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002098031118__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Open the browser on a PC connected to the network and enter https://10.231.10.253:443 to access the virtual IP address of the master device. Enter the username <strong>admin123</strong> and password <strong>YsHsjx_202206</strong> to log in to WebMaster.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002098031118__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p># DeviceB</p>
+<pre class="screen">#
+sysname DeviceB
+#
+dhcp enable
+#
+interface Vlanif1                                                            
+ ip address 10.10.1.1 255.255.255.0
+ dhcp select interface
+<strong> </strong>dhcp server gateway-list 10.10.1.1
+#  
+ual role controller
+#
+net-assistant
+ net-assistant enable
+ #
+ system-management
+  ssl-policy netasstpolicy
+  ssl-verify-peer enable
+#
+aaa
+ local-user admin123 password irreversible-cipher $1d$OwseVRh@LH}ZeTBm$1nH4$ab&gt;d(N{-%0!ab48y=Ic*xEUR4pVhR2"9-<font style="font-size:8pt" Face="Courier New" >~</font>,$
+ local-user admin123 service-type http
+ local-user admin123 privilege level 3
+#
+web-manager server-source -i Vlanif1
+undo web-manager captcha enable
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Net_Assistant_cfg_0001.html">Net Assistant Configuration (WebMaster)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Net_Assistant_cfg_0007.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

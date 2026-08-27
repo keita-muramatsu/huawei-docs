@@ -1,0 +1,99 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="CPU Attack Defense">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0022.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0060.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563772109">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>CPU Attack Defense</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563772109"></a><a name="EN-US_TASK_0000001563772109"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">CPU Attack Defense</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563772109__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Overview</h4><p>CPU attack defense limits the rate of packets sent to the CPU so that only a limited number of packets are sent to the CPU within a certain period of time. This ensures that the CPU can properly process services.</p>
+<p>Control Plane Committed Access Rate (CPCAR) is the core of CPU attack defense. CPCAR limits the rate at which protocol packets are sent to the management and control planes to protect the two planes.</p>
+<p>You can reduce the CPCAR value or set the CPCAR to <strong>deny</strong> to prevent the packets that do not need to be processed or have low priorities from being sent to the CPU, ensuring normal system operation.</p>
+<h4 class="sectiontitle">Impact on the System</h4><p>To prevent an improper CPCAR value from affecting services, set a proper CPCAR value as required.</p>
+
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563772109__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an attack defense policy and enter the attack defense policy view.</span><p><pre class="screen"><b><span class="cmdqueryname">cpu-defend policy</span></b> <i><span class="varname">policy-name</span></i></pre>
+</p></li><li><span>Configure the method used to limit the packets to be sent to the CPU.</span><p><ul><li>Set a CPCAR value for protocol packets of a specified type. <pre class="screen"><strong><b><span class="cmdqueryname"><span>car packet-type</span></span></b></strong><span> <em><i><span class="varname">packet-type</span></i></em> <strong>pps</strong> <em>pps-value</em></span></pre>
+</li></ul>
+<ul><li>Set a CPCAR value for all packets to be sent to the CPU.<pre class="screen"><b><span class="cmdqueryname">car all-packets pps</span></b> <em>pps-value</em></pre>
+</li><li>Configure rate limiting based on protocol association.<ol type="a" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_ol17377181819114"><li id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_li218515471859">Enable protocol association.<pre class="screen" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_screen13635205314616"><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b33451401170"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_cmdname1112831385">application-apperceive</span></b> </strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i93452003713">packet-type</em><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b1934516010716"> enable</strong></pre>
+</li><li id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_li1213324121117">Set a CPCAR value for packets of a specific protocol upon the establishment of the protocol connection.<pre class="screen" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_screen072845121116"><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b1892915211113"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_cmdname84445421220">linkup-car</span></b> </strong><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b14151143073010">packet-type</strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i751112291302"> packet-type</em><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b892914529112"> pps </strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i5929125281120">pps-value</em></pre>
+</li><li id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_li12432827103116">Configure the penalty ratio threshold for protocol association.<pre class="screen" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_screen174933596317"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_cmdname961120549612">linkup session</span></b> <strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b1925411643116">anti-attack ratio-threshold </strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i1768214514317">rate-value-percent</em> </pre>
+<p id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_p1132072719325">By default, the threshold is 50%.</p>
+</li><li id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_li75037559426">(Optional) Enable the session CAR function for rate limiting by session.<pre class="screen" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_screen18745132416445"><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b1374514244446"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_cmdname182701837191815">session-car</span></b> </strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i18791550192319">packet-type</em><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b8791550142316"> enable</strong></pre>
+<p id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_p1974513247448">By default, session CAR is disabled.</p>
+<div class="note" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_note65471455455"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_p125471352459">The session CAR function relies on the protocol association function, so you must run the <strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b55361223191114">application-apperceive enable</strong> command to enable protocol association first. Otherwise, session CAR cannot be enabled.</p>
+</div></div>
+</li><li id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_li6677328104720">(Optional) Configure the CIR and PIR for protocol packets of each session upon the establishment of the protocol connection.<pre class="screen" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_screen0814042134816"><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b1981414217481"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_cmdname16369141916509">session-car</span></b> </strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i1707181215436">packet-type </em><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b157081812204317">cir</strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i8708812114314"> cir-value</em> [ <strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b13708212104314">pir</strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i770814129433"> pir-value</em> ]</pre>
+<div class="note" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_note218616554482"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_p1186125574819">It is recommended that the PIR (specified by <strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b5177165921112">pir</strong>) for the session CAR function do not exceed the CPCAR value (specified by <strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b171771559191115">pps</strong>) for protocol association in Step b.</p>
+</div></div>
+</li></ol>
+</li></ul>
+</p></li><li><span>(Optional) Configure the device to discard packets to be sent to the CPU. </span><p></p><p><pre class="screen"><strong>deny packet-type</strong> <em>packet-type</em></pre>
+<p>By default, the device does not discard the packets to be sent to the CPU.</p>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>Apply the attack defense policy.</span><p><ul id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_ul187417318538"><li id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_li6741173125310">Configure attack defense policies in batches.<pre class="screen" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_screen1214533413538"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_cmdname221512514546">cpu-defend-policy</span></b> <em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i1821585165416">policy-name</em> <strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b17956929185412">batch</strong><strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b7956629185418"> slot</strong> { <em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i1795682955418">start-slot</em> [ <strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b1595602965419">to</strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i0956729135411"> end-slot</em> ] } &amp;&lt;1-12&gt;</pre>
+<p id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_p1037462817574">You cannot batch configure attack defense policies on the AR8700 series and AR6700-H.</p>
+</li><li id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_li20136134065316">Configure an attack defense policy separately.<p id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_p129831713821"><a name="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_li20136134065316"></a><a name="en-us_task_0000001563756889_li20136134065316"></a>For the AR5700, AR6700-L, and AR8100 series:</p>
+<pre class="screen" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_screen07011461574"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_cmdname15559175725716">cpu-defend-policy</span></b> <em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i555915713574">policy-name</em> [ <strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b4233161617221">slot</strong><em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i13233516152214"> slot-id</em> ]</pre>
+<p id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_p1134013583012">For the AR8700 series and AR6700-H:</p>
+<pre class="screen" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_screen11899431322"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_cmdname181941991833">cpu-defend-policy</span></b> <em id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_i61941597315">policy-name</em> [ <strong id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_b133399261530">mcu</strong> ]</pre>
+</li></ul>
+<p id="EN-US_TASK_0000001563772109__en-us_task_0000001563756889_p8122345193912">After an attack defense policy is created, you must apply the policy in the system view. Otherwise, the policy does not take effect.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563772109__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><ul><li>Run the <strong>display cpu-defend policy</strong> [ <em>policy-name</em> ] command to check the attack defense policy configuration.</li><li>Run the <b><span class="cmdqueryname">display cpu-defend configuration</span></b> [ <strong><span>packet-type</span></strong> <i><span class="varname">packet-type</span></i> ] { <strong><span>all</span></strong> | <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> } command to check the rate configuration for protocol packets sent to the CPU.</li><li>Run the <strong><b><span class="cmdqueryname">display cpu-defend rate</span></b></strong> [ <strong>packet-type</strong> <em>packet-type</em> ] { <strong>all</strong> | <strong>slot</strong> <em>slot-id</em> } command to check the CPCAR value configured for protocol packets.</li><li>Run the <b><span class="cmdqueryname">display cpu-defend statistics</span></b> [ <strong>packet-type</strong> <em>packet-type</em> ] { <strong>all</strong> | <strong>slot</strong> <em>slot-id</em> } command to check statistics on the packets sent to the CPU.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0022.html">Local Attack Defense
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0060.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

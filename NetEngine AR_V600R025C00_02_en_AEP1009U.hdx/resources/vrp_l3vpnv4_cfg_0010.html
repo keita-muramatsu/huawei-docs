@@ -1,0 +1,229 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Mutual Access Between Local IPv4 L3VPNs">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0371.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0110.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001130621702">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Mutual Access Between Local IPv4 L3VPNs</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001130621702"></a><a name="EN-US_TASK_0000001130621702"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Mutual Access Between Local IPv4 L3VPNs</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001130621702__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001130621702__fig_dc_vrp_gre_cfg_203101">Figure 1</a>, CE1 and CE2 are connected to PE1. CE1 belongs to <strong>vpna</strong>, and CE2 belongs to <strong>vpnb</strong>. It is required that Site 1 and Site 2 communicate with each other. To meet this requirement, configure mutual access between local VPNs.</p>
+<div class="fignone" id="EN-US_TASK_0000001130621702__fig_dc_vrp_gre_cfg_203101"><a name="EN-US_TASK_0000001130621702__fig_dc_vrp_gre_cfg_203101"></a><a name="fig_dc_vrp_gre_cfg_203101"></a><span class="figcap"><b>Figure 1 </b>Mutual access between local IPv4 VPNs</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/6</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001176741247.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001130621702__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li>Configure VPN instances on PE1 and different VPN targets for the instances to isolate VPNs.</li><li>On PE1, bind the interfaces connected to CEs to the VPN instances to provide access for VPN users.</li><li>Import direct routes destined for local CEs into the VPN routing tables on PE1. On each CE connected to PE1, configure a static route to the other local CE so that both CEs can communicate with each other.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001130621702__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure VPN instances on PE1 and bind PE1 interfaces connected to CEs to the corresponding VPN instances.</span><p><p># Configure PE1.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname PE1</strong> 
+[PE1] <strong>ip vpn-instance vpna</strong> 
+[PE1-vpn-instance-vpna] <strong>ipv4-family</strong> 
+[PE1-vpn-instance-vpna-af-ipv4] <strong>route-distinguisher 100:1</strong> 
+[PE1-vpn-instance-vpna-af-ipv4] <strong>vpn-target 111:1 export-extcommunity</strong> 
+[PE1-vpn-instance-vpna-af-ipv4] <strong>vpn-target 111:1 222:2 import-extcommunity </strong>
+[PE1-vpn-instance-vpna-af-ipv4] <strong>quit</strong> 
+[PE1-vpn-instance-vpna] <strong>quit</strong> 
+[PE1] <strong>ip vpn-instance vpnb</strong> 
+[PE1-vpn-instance-vpnb] <strong>ipv4-family</strong> 
+[PE1-vpn-instance-vpnb-af-ipv4] <strong>route-distinguisher 100:2</strong> 
+[PE1-vpn-instance-vpnb-af-ipv4] <strong>vpn-target 222:2 export-extcommunity</strong> 
+[PE1-vpn-instance-vpnb-af-ipv4] <strong>vpn-target 222:2 111:1 import-extcommunity</strong> 
+[PE1-vpn-instance-vpnb-af-ipv4] <strong>quit</strong> 
+[PE1-vpn-instance-vpnb] <strong>quit</strong> 
+[PE1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong> 
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>ip binding vpn-instance vpna</strong> 
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.1.1.2 24</strong> 
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[PE1] <strong>interface <span>10ge</span> <span>0/0/6</span></strong> 
+[PE1-<span>10GE</span><span>0/0/6</span>] <strong>ip binding vpn-instance vpnb</strong> 
+[PE1-<span>10GE</span><span>0/0/6</span>] <strong>ip address 10.2.1.2 24</strong> 
+[PE1-<span>10GE</span><span>0/0/6</span>] <strong>quit</strong> </pre>
+<p># Configure an IP address for a related interface on CE1.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname CE1</strong> 
+[CE1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong> 
+[CE1-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.1.1.1 24</strong>  
+[CE1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure an IP address for the related interface on CE2.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname CE2</strong> 
+[CE2] <strong>interface <span>10ge</span> <span>0/0/1</span></strong> 
+[CE2-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.2.1.1 24</strong> 
+[CE2-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p>The PE can ping its connected CE. The following uses the ping between PE1 and CE1 as an example.</p>
+<pre class="screen">[PE1] <strong>ping -vpn-instance vpna 10.1.1.1</strong>
+  PING 10.1.1.1: 56  data bytes, press CTRL_C to break         
+    Reply from 10.1.1.1: bytes=56 Sequence=1 ttl=255 time=2 ms 
+    Reply from 10.1.1.1: bytes=56 Sequence=2 ttl=255 time=2 ms 
+    Reply from 10.1.1.1: bytes=56 Sequence=3 ttl=255 time=2 ms 
+    Reply from 10.1.1.1: bytes=56 Sequence=4 ttl=255 time=2 ms 
+    Reply from 10.1.1.1: bytes=56 Sequence=5 ttl=255 time=2 ms 
+
+  --- 10.1.1.1 ping statistics ---                             
+    5 packet(s) transmitted                                    
+    5 packet(s) received                                       
+    0.00% packet loss                                          
+    round-trip min/avg/max = 2/2/2 ms</pre>
+</p></li><li><span>Configure BGP and import the local direct routes destined for CEs to the VPN routing table on PE1.</span><p><p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>bgp 100</strong>  
+[PE1-bgp] <strong>ipv4-family vpn-instance vpna</strong> 
+[PE1-bgp-vpna] <strong>import-route direct</strong> 
+[PE1-bgp-vpna] <strong>quit</strong> 
+[PE1-bgp] <strong>ipv4-family vpn-instance vpnb</strong> 
+[PE1-bgp-vpnb] <strong>import-route direct</strong> 
+[PE1-bgp-vpnb] <strong>quit</strong> 
+[PE1-bgp] <strong>quit </strong></pre>
+</p></li><li><span>Configure a static route on each CE.</span><p><p># Configure CE1.</p>
+<pre class="screen">[CE1] <strong>ip route-static 10.2.1.0 24 10.1.1.2</strong></pre>
+<p># Configure CE2.</p>
+<pre class="screen">[CE2] <strong>ip route-static 10.1.1.0 24 10.2.1.2</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001130621702__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After the configuration is complete, run the <b><span class="cmdqueryname">display ip routing-table vpn-instance</span></b> command on PE1. The VPNs have imported routes of each other. The following uses <strong>vpna</strong> as an example.</p>
+<pre class="screen">[PE1] <strong>display ip routing-table vpn-instance vpna</strong>
+Proto: Protocol        Pre: Preference
+Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route    
+------------------------------------------------------------------------------   
+Routing Table : vpna          
+         Destinations : 7        Routes : 7                                      
+
+Destination/Mask    Proto   Pre  Cost        Flags NextHop         Interface     
+
+       10.1.1.0/24  Direct  0    0             D   10.1.1.2        <span>10GE</span><span>0/0/1</span>
+       10.1.1.2/32  Direct  0    0             D   127.0.0.1       <span>10GE</span><span>0/0/1</span> 
+     10.1.1.255/32  Direct  0    0             D   127.0.0.1       <span>10GE</span><span>0/0/1</span> 
+       10.2.1.0/24  BGP     255  0             RD  10.2.1.2        <span>10GE</span><span>0/0/6</span>
+       10.2.1.2/32  BGP     255  0             RD  127.0.0.1       <span>10GE</span><span>0/0/6</span>
+      127.0.0.0/8   Direct  0    0             D   127.0.0.1       InLoopBack0   
+255.255.255.255/32  Direct  0    0             D   127.0.0.1       InLoopBack0</pre>
+<p>CE1 and CE2 can ping each other.</p>
+<pre class="screen">[CE1] <strong>ping 10.2.1.1</strong>
+  PING 10.2.1.1: 56  data bytes, press CTRL_C to break                           
+    Reply from 10.2.1.1: bytes=56 Sequence=1 ttl=254 time=8 ms                   
+    Reply from 10.2.1.1: bytes=56 Sequence=2 ttl=254 time=3 ms                   
+    Reply from 10.2.1.1: bytes=56 Sequence=3 ttl=254 time=2 ms                   
+    Reply from 10.2.1.1: bytes=56 Sequence=4 ttl=254 time=3 ms                   
+    Reply from 10.2.1.1: bytes=56 Sequence=5 ttl=254 time=2 ms                   
+
+  --- 10.2.1.1 ping statistics ---                                               
+    5 packet(s) transmitted   
+    5 packet(s) received      
+    0.00% packet loss         
+    round-trip min/avg/max = 2/3/8 ms </pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001130621702__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>PE1</p>
+<pre class="screen">#
+sysname PE1
+#
+ip vpn-instance vpna
+ ipv4-family
+  route-distinguisher 100:1
+  vpn-target 111:1 export-extcommunity
+  vpn-target 111:1 import-extcommunity
+  vpn-target 222:2 import-extcommunity
+#
+ip vpn-instance vpnb
+ ipv4-family 
+  route-distinguisher 100:2
+  vpn-target 222:2 export-extcommunity
+  vpn-target 222:2 import-extcommunity
+  vpn-target 111:1 import-extcommunity
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip binding vpn-instance vpna
+ ip address 10.1.1.2 255.255.255.0
+# 
+interface <span>10GE</span><span>0/0/6</span>
+ ip binding vpn-instance vpnb
+ ip address 10.2.1.2 255.255.255.0
+#
+bgp 100
+ #
+ ipv4-family unicast
+ # 
+ ipv4-family vpn-instance vpna
+  import-route direct
+ #
+ ipv4-family vpn-instance vpnb
+  import-route direct
+#
+return</pre>
+</li><li><p>CE1</p>
+<pre class="screen">#
+sysname CE1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+ip route-static 10.2.1.0 255.255.255.0 10.1.1.2
+#
+return</pre>
+</li><li><p>CE2</p>
+<pre class="screen">#
+sysname CE2
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.2.1.1 255.255.255.0
+#
+ip route-static 10.1.1.0 255.255.255.0 10.2.1.2
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0371.html">Configuration Examples for IPv4 L3VPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0110.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

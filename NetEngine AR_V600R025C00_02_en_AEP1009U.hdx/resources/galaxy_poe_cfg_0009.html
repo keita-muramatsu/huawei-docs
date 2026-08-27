@@ -1,0 +1,88 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Configuring Compatibility with Non-Standard PDs">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_poe_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_poe_cfg_0008.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_poe_cfg_0010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="PoE">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="PoE">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="PoE">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564010961">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Configuring Compatibility with Non-Standard PDs</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564010961"></a><a name="EN-US_TASK_0000001564010961"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Configuring Compatibility with Non-Standard PDs</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564010961__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><div class="p">When a non-standard PD is connected to an interface, you need to configure the interface to be compatible with non-standard PDs so that the non-standard PD can be powered on successfully. After the compatibility with non-standard PDs is configured on an interface:<ul><li>The interface can detect the compatibility of PDs.<p>When non-standard PDs are connected to a device, the device cannot detect resistances that meet requirements and cannot identify the PDs as a result. After compatibility with non-standard PDs is configured on a device, the device can detect PDs that do not comply with IEEE standards and provide power for the non-standard PDs.</p>
+</li><li>Forcible PoE power supply on interfaces<p>When a device has sufficient power and connects to a non-standard PD, the PoE interface can forcibly provide power to the PD.</p>
+</li><li>The interface supports high inrush current during power-on.<p>High inrush current is generated when a non-standard PD is powered on. In this case, the device cuts off the power of the PD to protect itself. After compatibility with non-standard PDs is configured on a device, the device allows high inrush current during power-on. Note that this may cause damage to the components of the device.</p>
+</li></ul>
+</div>
+<p>By default, a PoE interface works in standard hierarchical power supply mode. If PoE interfaces provide power to non-standard PDs in standard hierarchical power supply mode, these PDs cannot initiate power requests using LLDP and can only obtain low power. As a result, these PDs are unable to operate normally. You can configure the single-class power supply mode for PoE interfaces to address this issue. These non-standard PDs can then initiate power requests and obtain the standard power supply to ensure normal operation.</p>
+<p>For some non-standard PDs, the power supply delay function needs to be configured on the interfaces:</p>
+<p>As the holding current of the used PD is insufficient at the power-on moment, the device assumes that the PD has been disconnected and powers it off. IEEE standards require a powered-on PD to maintain a current value of more than 10 mA for at least 75 ms in each 325 ms duration. Otherwise, the PoE device assumes that the PD has been disconnected and powers it off. To enable the PoE device to power on these non-standard PDs, you can set the PoE power supply delay on the appropriate device interfaces. After the delay expires, the device detects the holding current to ensure that non-standard PDs can be properly powered on.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564010961__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Configure the interface to be compatible with non-standard PDs.</span><p><pre class="screen"><b><span class="cmdqueryname">poe legacy enable</span></b></pre>
+<p>By default, the compatibility with non-standard PDs is disabled on an interface.</p>
+</p></li><li><span>Configure the single-class power supply mode for the interface.</span><p><pre class="screen"><b><span class="cmdqueryname">poe single-class enable</span></b></pre>
+<p>By default, an interface works in standard hierarchical power supply mode.</p>
+</p></li><li><span>Configure a power supply delay.</span><p><pre class="screen"><b><span class="cmdqueryname">poe power-on delay</span></b> <i><span class="varname">delay-time</span></i></pre>
+<p>By default, the power supply delay is 0 (the power supply is not delayed).</p>
+</p></li><li><span>Configure the current amplitude, current hold time, and detection period.</span><p><pre class="screen"><b><span class="cmdqueryname">poe mps</span></b> <strong><span>imps</span></strong> <i><span class="varname">imps-value</span></i> <strong><span>tmps</span></strong> <i><span class="varname">tmps-value </span></i><strong><span>tmpdo</span></strong> <i><span class="varname">tmpdo-value</span></i></pre>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_poe_cfg_0001.html">PoE Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_poe_cfg_0008.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_poe_cfg_0010.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

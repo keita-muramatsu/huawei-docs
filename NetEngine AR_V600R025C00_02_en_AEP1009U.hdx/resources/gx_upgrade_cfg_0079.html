@@ -1,0 +1,203 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Smart Upgrade">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="gx_upgrade_cfg_0081.html">
+<meta name="DC.Relation" scheme="URI" content="gx_upgrade_cfg_0025.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Upgrade Maintenance">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Upgrade Maintenance">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="Upgrade Maintenance">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001848416842">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Smart Upgrade</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001848416842"></a><a name="EN-US_TASK_0000001848416842"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Smart Upgrade</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001848416842__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>When a large number of devices need to be upgraded to the recommended version, you can configure smart upgrade to implement fast upgrade.</p>
+<p>As shown in <a href="#EN-US_TASK_0000001848416842__fig74551142122315">Figure 1</a>, DeviceA, DeviceB, and DeviceC reside on the public network and can communicate with the HOUP through the Internet.</p>
+<p>The configurations of DeviceA, DeviceB, and DeviceC are similar. This section uses DeviceA as an example.</p>
+<div class="fignone" id="EN-US_TASK_0000001848416842__fig74551142122315"><a name="EN-US_TASK_0000001848416842__fig74551142122315"></a><a name="fig74551142122315"></a><span class="figcap"><b>Figure 1 </b>Network diagram for upgrading a new device</span><br><span><img src="figure/en-us_image_0000001851851480.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001848416842__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Import the initial CA certificate to the default domain.</li><li>Configure the device to communicate with the HOUP server.</li><li>Execute the smart upgrade task.</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001848416842__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Precautions</h4><ul><li>The basic software package contains the initial certificate <strong>HOUP_Actalis_CA.cer</strong>. When loading the basic software package, the device automatically saves the certificate to the <strong>flash:/pki/public</strong> directory.</li><li>If the certificate does not exist or has expired, perform the following operations to obtain or update the certificate:<ol><li>Download the certificate: Click <a href="https://houp.huawei.com/download/public/houp.huawei.com.zip" target="_blank" rel="noopener noreferrer">https://houp.huawei.com/download/public/houp.huawei.com.zip</a> to download the certificate.</li><li>Upload the certificate: Upload the certificate to the <strong>flash:/pki/public</strong> directory of the device through FTP or SFTP. For details, see <a href="vrp_file_cfg_0008.html">Managing Files Using FTP</a>/<a href="vrp_file_cfg_0013.html">Managing Files Using SFTP</a>. SFTP is recommended because it is more secure than FTP.</li></ol>
+</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001848416842__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Import the initial CA certificate to the default domain.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt;<strong> system-view</strong>
+[<span class="keyword">HUAWEI</span>]<strong> sysname <span class="keyword">DeviceA</span></strong>
+[<span class="keyword">DeviceA</span>] <strong>pki import-certificate</strong> <strong>ca realm default pem filename HOUP_Actalis_CA.cer</strong></pre>
+</p></li><li><span>Configure the device to communicate with the HOUP server.</span><p><p># Load an SSL policy.</p>
+</p><p><pre class="screen">[<span class="keyword">DeviceA</span>] <strong>ssl policy policy1</strong>
+[<span class="keyword">DeviceA</span>-ssl-policy-policy1] <strong>pki-domain default</strong> //Bind the name of the PKI realm to which the initial certificate is loaded to the SSL policy.
+[<span class="keyword">DeviceA</span>-ssl-policy-policy1] <strong>quit</strong></pre>
+<p># In the smart upgrade view, configure the URL of the server and bind the SSL policy.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>]<strong> </strong><strong>smart-upgrade</strong>
+[<span class="keyword">DeviceA</span>-smart-upgrade] <strong>http url https://houp.huawei.com</strong>
+[<span class="keyword">DeviceA</span>-smart-upgrade] <strong>http ssl-policy policy1</strong>
+[<span class="keyword">DeviceA</span>-smart-upgrade] <strong>quit</strong></pre>
+</p></li><li><span>Check details about the current smart upgrade.</span><p><pre class="screen">[DeviceA] <strong>display smart-upgrade information</strong>
+Configuration:
+    URL                          : houp.huawei.com
+    HTTPS port                   : 443
+    Telephone                    : 1****1111
+    Email                        : ****@huawei.com
+    Next upgrade time            : -
+    Ssl policy                   : policy1                                      
+    Server verify                : Enable                                       
+    Server cn/san verify         : Disable 
+
+Version information:
+    Refresh time                 : 2019-01-23 12:24:06
+    Check version result         : needUpdate
+    Upgrade description          : -
+    Recommended software version : -
+    Recommended patch version    : -
+    Recommended feature list version:
+        ----------------------------------------------------------------------------
+        Software Name          Software Version              Patch Version
+        ----------------------------------------------------------------------------
+        -                      -                             -
+        ----------------------------------------------------------------------------
+    Waitting-install feature list version:
+        ----------------------------------------------------------------------------
+        Feature Name           Software Version              Patch Version
+        ----------------------------------------------------------------------------
+        -                      -                             -
+        ----------------------------------------------------------------------------
+    Recommended sub-product list version:
+        ----------------------------------------------------------------------------
+        Product Type           Software Version              Patch Version
+        ----------------------------------------------------------------------------
+        -                      -                             -
+        ----------------------------------------------------------------------------
+Upgrade information:
+    Upgrade Time                 : 2020-10-22 3:6:18
+    Upgrade status               : success
+    Cancellation status          : -
+    Last upgrade time            : 2020-10-22 3:6:18
+    Last upgrade result          : success
+    File download info:
+    ----------------------------------------------------------------------------
+    Progress(%)   Speed(KB/s)      File Size(B)     File Name
+    ----------------------------------------------------------------------------
+    100           850              11,955,052      -
+    ----------------------------------------------------------------------------
+Local information:
+    Device name                  : -
+    ESN                          : 2102351XFR1****
+    Software version             : - 
+    Patch version                : - 
+    Feature list version:
+    ----------------------------------------------------------------------------
+    Software Name                 Software Version       Patch Version
+    ----------------------------------------------------------------------------
+    -                             -                      -
+    ----------------------------------------------------------------------------
+    Sub-product list version:
+    ----------------------------------------------------------------------------
+    Product Type           Software Version              Patch Version
+    ----------------------------------------------------------------------------
+    -                      -                             -
+    ----------------------------------------------------------------------------
+    Sub-product feature list version:
+    ---------------------------------------------------------------------------------------------------
+    Product Type           Software Name                 Software Version       Patch Version
+    ---------------------------------------------------------------------------------------------------
+    -                      -                             -                      -
+    ---------------------------------------------------------------------------------------------------
+Scheduled download information:
+    Scheduled download time        :2024-10-10 10:00:00
+    Download software version      : -
+    Download patch version         : -
+    Download feature list:
+    ----------------------------------------------------------------------------
+    Feature Name                  Software Version       
+    ----------------------------------------------------------------------------
+    -                                       -     
+    -                                       -     
+    ----------------------------------------------------------------------------</pre>
+<p><strong>Check version result : needUpdate</strong> in the command output indicates that a new system software version is available.</p>
+</p></li><li><span>Execute the smart upgrade task immediately.</span><p><pre class="screen">[DeviceA] <strong>smart-upgrade</strong>
+[DeviceA-smart-upgrade] <strong>upgrade right-now</strong>
+Warning: This may cause the device to restart and connect to the Internet, confirm the execution continues? [Y/N]:y
+Info: Getting version information from houp, please wait ......
+Info: Downloading file software.cc.asc ...
+Info: Download file software.cc.asc successfully.
+INFO: 473 byte(s) received in 0.058 second(s) 8.155 Kbyte(s)/sec.
+Info: Downloading file software.cc... 
+Info: Download file software.cc successfully.
+INFO: 1024 byte(s) received in 1 second(s) 1 Kbyte(s)/sec.
+Info: Start verifying signature ......
+Info: Signature verification passed. 
+Info: Download package done.
+Info: Product abc start upgrade software....................
+Info: Product abc upgrade successfully.</pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001848416842__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Wait several minutes until the device restart is complete. Then run the <strong>display version</strong> command to check the current system version. If the version is new, the upgrade has succeeded.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001848416842__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#
+sysname DeviceA
+#
+ssl policy policy1
+ pki-domain default
+# 
+smart-upgrade
+ http url https://houp.huawei.com
+<strong> </strong>http ssl-policy policy1
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="gx_upgrade_cfg_0081.html">Configuration Examples for Upgrade Maintenance
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="gx_upgrade_cfg_0025.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

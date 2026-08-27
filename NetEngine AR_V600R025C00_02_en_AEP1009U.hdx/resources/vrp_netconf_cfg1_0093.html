@@ -1,0 +1,164 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a Device to Communicate with iMaster NCE-Campus Using NETCONF">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0185.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0075.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_system_setup_0009.xml">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564002249">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a Device to Communicate with iMaster NCE-Campus Using NETCONF</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564002249"></a><a name="EN-US_TASK_0000001564002249"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a Device to Communicate with iMaster NCE-Campus Using NETCONF</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001564002249__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>The cloud management platform (iMaster NCE-Campus) is a system that manages network devices in a unified manner. When devices can be migrated to the cloud and you want to use an NMS to centrally manage the devices on a network that requires high security and scalability, you can use NETCONF to ensure communication between the NMS and the devices.</p>
+<p>In <a href="#EN-US_TASK_0000001564002249__fig4889184712118">Figure 1</a>, a Huawei iMaster NCE-Campus server is used as the NMS. The administrator wants to configure and manage devices on the network through the NMS to improve network configuration and maintenance efficiency.</p>
+<div class="fignone" id="EN-US_TASK_0000001564002249__fig4889184712118"><a name="EN-US_TASK_0000001564002249__fig4889184712118"></a><a name="fig4889184712118"></a><span class="figcap"><b>Figure 1 </b>Network diagram of communication with iMaster NCE-Campus using NETCONF</span><p><span><img src="figure/en-us_image_0000002355038981.png"></span></p>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564002249__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>Configure NETCONF connections between the NMS and devices so that the NMS can be used to configure and manage the devices. Configure a reachable route between the devices and the NMS based on the actual networking. DeviceA and DeviceB function as servers. The following uses DeviceA as an example. The configuration of DeviceB is similar to that of DeviceA, and is not described here.</p>
+<ol><li>Configure an SSH server user.</li><li>Configure the source interface, PKI certificate, authorization type, and public key algorithm for the SSH server.</li><li>Enable NETCONF.</li><li>Establish a NETCONF connection between the device and the NMS.</li><li>Configure iMaster NCE-Campus.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564002249__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Change the device name.</span><p><pre class="screen">&lt;HUAWEI&gt;<strong> system-view</strong>
+[HUAWEI]<strong> sysname DeviceA</strong>                         </pre>
+</p></li><li><span>Configure an SSH server user.</span><p><pre class="screen">[DeviceA]<strong> ssh user huawei</strong>                               
+[DeviceA]<strong> ssh user huawei authentication-type x509v3-rsa</strong>
+Warning: To use the X.509 public key, the SSH user must be bound to a PKI realm.
+Warning: Insecure authentication type X509 RSA is assigned to this user. Disabling it is recommended.
+[DeviceA]<strong> ssh user huawei assign pki default</strong>
+Warning: A preset certificate is loaded to the specified PKI domain. The current operation has security risks. Continue? [Y/N]:<strong>Y</strong>
+Warning: The certificate in the pki domain has expired.
+[DeviceA] <strong>ssh user huawei service-type snetconf</strong>                          </pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The SSH username must be <strong>huawei</strong>. The configuration in this step is used only for the device to communicate with iMaster NCE-Campus through NETCONF. You are advised not to modify the configuration.</p>
+</div></div>
+</p></li><li><span>Check the public key algorithm of the SSH server.</span><p><pre class="screen">[DeviceA] <strong>display current-configuration | include ssh server publickey</strong></pre>
+</p></li><li><span>Configure the source interface, PKI certificate, authorization type, and public key algorithm for the SSH server. Add the x509v3-rsa2048-sha256 algorithm without changing the current public key algorithms configured on the SSH server. In this example, the default public key algorithms RSA_SHA2_256 and RSA_SHA2_512 are used.</span><p><pre class="screen">[DeviceA]<strong> ssh server-source all-interface </strong>                     
+Warning: SSH server source configuration will take effect in the next login. Do you want to continue? [Y/N]:<strong>Y</strong>
+Warning: It expands the range of accessed IP.
+[DeviceA]<strong> ssh server assign pki default </strong>   
+Warning: A preset certificate is loaded to the specified PKI domain. The current operation has security risks. Continue? [Y/N]:<strong>Y</strong>
+Warning: The certificate in the pki domain has expired.
+[DeviceA]<strong> ssh authorization-type default root</strong>                       
+[DeviceA]<strong> </strong><strong>ssh server publickey x509v3-rsa2048-sha256</strong> <strong>rsa_sha2_256 rsa_sha2_512</strong>
+Warning: Insecure public key algorithm (x509v3-rsa2048-sha256) is enabled. Disabling it is recommended.</pre>
+</p></li><li><span>Enable NETCONF.</span><p><pre class="screen">[DeviceA]<strong> snetconf server enable</strong></pre>
+</p></li><li><span>Establish a NETCONF connection between the device and the NMS.</span><p><pre class="screen">[DeviceA]<strong> netconf</strong>
+[DeviceA-netconf]<strong> callhome default-callhome</strong>
+[DeviceA-netconf-callhome-default-callhome]<strong> endpoint netconf_192.168.30.1</strong>
+[DeviceA-netconf-callhome-default-callhome-endpoint-netconf_192.168.30.1]<strong> peer-ip 192.168.30.1 port 10020</strong>
+[DeviceA-netconf-callhome-default-callhome-endpoint-netconf_192.168.30.1] <strong>return</strong>
+&lt;DeviceA&gt;</pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The callhome name must be default-callhome.</p>
+<p>NETCONF is carried over SSH to ensure data transmission security. Before authentication, you need to import the ESN, device type, and CA certificate of each device to iMaster NCE-Campus. To perform certificate-related operations, such as updating the local certificate, run commands on the device. For details about how to add configurations using CLIs, see "PKI Configuration" in <span>CLI Configuration Guide</span> &gt; Security.</p>
+</div></div>
+</p></li><li><span>Load the initial CA certificate from the NVRAM to the <strong>default</strong> realm.</span><p><pre class="screen">&lt;DeviceA&gt; <strong>system-view</strong>
+[DeviceA] <strong>pki import-certificate default_ca realm default </strong>
+Info: Succeeded in importing the certificate.</pre>
+</p></li><li><span>Configure iMaster NCE-Campus.</span><p><p>Log in to iMaster NCE-Campus and add a device using the ESN of the device. For details about how to configure iMaster NCE-Campus, see <a href="https://support.huawei.com/enterprise/en/enterprise-network-solution/cloudcampus-pid-22611515" target="_blank" rel="noopener noreferrer">iMaster NCE-Campus Product Documentation</a>.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564002249__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display controller connect-status</span></b> command in the system view to check the status of the controller through which the device goes online. Check the <strong>Register phase</strong> field to determine whether the device is successfully connected to the NMS. If <strong>Registered</strong> is displayed, the registration is successful.</p>
+<pre class="screen">&lt;DeviceA&gt;<strong>display controller connect-status</strong> 
+    Controller IP address            : 192.168.30.1 #Controller IP address
+    Controller port                  : 10020 #Controller port
+    Upstream port                    : 10GE3/0/1 #Upstream port
+    Register phase                   : Registered #Register phase
+    Last registration failure reason :  - #Reason for the last registration failure </pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><ul><li>DeviceA<pre class="screen"># 
+sysname DeviceA 
+#
+snetconf server enable
+ssh user huawei
+ssh user huawei authentication-type x509v3-rsa
+ssh user huawei assign pki default
+ssh user huawei service-type snetconf
+ssh server-source all-interface
+ssh server assign pki default
+ssh authorization-type default root
+#
+ssh server publickey x509v3-rsa2048-sha256 rsa_sha2_256 rsa_sha2_512
+#
+netconf
+ callhome default-callhome
+  endpoint netconf_192.168.30.1
+   peer-ip 192.168.30.1 port 10020
+#
+return</pre>
+</li><li>DeviceB<pre class="screen"># 
+sysname DeviceB 
+#
+snetconf server enable
+ssh user huawei
+ssh user huawei authentication-type x509v3-rsa
+ssh user huawei assign pki default
+ssh user huawei service-type snetconf
+ssh server-source all-interface
+ssh server assign pki default
+ssh authorization-type default root
+#
+ssh server publickey x509v3-rsa2048-sha256 rsa_sha2_256 rsa_sha2_512
+#
+netconf
+ callhome default-callhome
+  endpoint netconf_192.168.30.1
+   peer-ip 192.168.30.1 port 10020
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_netconf_cfg1_0185.html">Configuration Examples for NETCONF
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_netconf_cfg1_0075.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

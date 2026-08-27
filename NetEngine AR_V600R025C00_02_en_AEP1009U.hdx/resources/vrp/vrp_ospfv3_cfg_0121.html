@@ -1,0 +1,242 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring an OSPFv3 Stub Area">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ospfv3_cfg_0129.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ospfv3_cfg_0122.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_ospfv3_cfg_0069.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="OSPFv3">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="OSPFv3">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="OSPFv3">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001891234441">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring an OSPFv3 Stub Area</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001891234441"></a><a name="EN-US_TASK_0000001891234441"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring an OSPFv3 Stub Area</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001891234441__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001891234441__fig_dc_vrp_ospf_cfg_009501">Figure 1</a>, OSPFv3 runs on all devices, and the entire AS is divided into two areas: area 0 and area 1. DeviceA functions as an ABR and connects area 0 and area 1. DeviceB functions as an ASBR and communicates with an OSPFv3 external network. It is required that the size of the OSPFv3 routing table on DeviceC be reduced without affecting communication.</p>
+<div class="fignone" id="EN-US_TASK_0000001891234441__fig_dc_vrp_ospf_cfg_009501"><a name="EN-US_TASK_0000001891234441__fig_dc_vrp_ospf_cfg_009501"></a><a name="fig_dc_vrp_ospf_cfg_009501"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring an OSPFv3 stub area</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001891074897.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001891234441__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>To improve security, you are advised to deploy OSPFv3 authentication. For details, see "Configuring OSPFv3 Authentication." OSPFv3 area authentication is used as an example. For details, see "Example for Configuring Basic OSPFv3 Functions."</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001891234441__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Configure basic OSPFv3 functions on each device for interworking.</p>
+</li><li>Configure a static route to the external network on DeviceB and import the static route to the OSPFv3 routing table so that the external network is routable to the OSPFv3 network.</li><li><p>Configure area 1 as a stub area to reduce the size of the OSPFv3 routing table on DeviceC.</p>
+</li><li>Configure area 1 as a totally stub area. That is, prevent the ABR (DeviceA) in area 1 from advertising Type 3 LSAs to the stub area to minimize the size of the OSPFv3 routing table on DeviceC.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001891234441__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Assign an IPv6 address to each involved interface. For detailed configurations, see Configuration Scripts.</span></li><li><span>Configure basic OSPFv3 functions.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>ospfv3</strong>
+[DeviceA-ospfv3-1] <strong>router-id 1.1.1.1</strong>
+[DeviceA-ospfv3-1] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ospfv3 1 area 0</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ospfv3 1 area 1</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+<p># Configure DeviceB.</p>
+<pre class="screen">[DeviceB] <strong>ospfv3</strong>
+[DeviceB-ospfv3-1] <strong>router-id 2.2.2.2</strong>
+[DeviceB-ospfv3-1] <strong>quit</strong>
+[DeviceB] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>ospfv3 1 area 0</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Configure DeviceC.</p>
+<pre class="screen">[DeviceC] <strong>ospfv3</strong>
+[DeviceC-ospfv3-1] <strong>router-id 3.3.3.3</strong>
+[DeviceC-ospfv3-1] <strong>quit</strong>
+[DeviceC] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong>ospfv3 1 area 1</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+<p># Check the OSPFv3 neighbors of DeviceA. The command output shows that DeviceA has established neighbor relationships with DeviceB and DeviceC.</p>
+<pre class="screen">[DeviceA] <strong>display ospfv3 peer</strong>
+OSPFv3 Process (1)
+OSPFv3 Area (0.0.0.0)
+Neighbor ID     Pri  State            Dead Time Interface            Instance ID
+2.2.2.2           1  Full/Backup      00:00:35  <span>10GE</span><span>0/0/1</span>                      0
+OSPFv3 Area (0.0.0.1)
+Neighbor ID     Pri  State            Dead Time Interface            Instance ID
+3.3.3.3           1  Full/DR          00:00:31  <span>10GE</span><span>0/0/2</span>                      0</pre>
+</p></li><li><span>Configure a static route to the external network on DeviceB and import the static route to the OSPFv3 routing table so that the external network is routable to the OSPFv3 network.</span><p><pre class="screen">[DeviceB] <strong>ipv6 route-static 2001:db8:fc01::1 96 null 0</strong>
+[DeviceB] <strong>ospfv3</strong>
+[DeviceB-ospfv3-1] <strong>import-route static type 1</strong>
+[DeviceB-ospfv3-1] <strong>quit</strong></pre>
+<p># Check the OSPFv3 routing table of DeviceC. The command output shows that the OSPFv3 routing table contains the AS external route.</p>
+<pre class="screen">[DeviceC] <strong>display ospfv3 routing</strong>
+
+Codes : E2 - Type 2 External, E1 - Type 1 External, IA - Inter-Area,
+        N - NSSA
+ Flags: A - Added to URT6, LT - Locator Routing
+
+OSPFv3 Process (1)
+     Destination                                               Metric
+       Next-hop
+  IA 2001:DB8:1000::/96                                            2
+       via FE80::4E1F:CCFF:FE43:5A9E, <span>10GE</span><span>0/0/2</span>
+     2001:DB8:1001::/96                                            1
+       directly connected, <span>10GE</span><span>0/0/2</span>
+  <strong>E1 2001:DB8:FC01::/96</strong><strong>    </strong>                                     3
+       via FE80::4E1F:CCFF:FE43:5A9E, <span>10GE</span><span>0/0/2</span></pre>
+</p></li><li><span>Configure area 1 as a stub area to reduce the size of the OSPFv3 routing table on DeviceC.</span><p><p># Configure DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>ospfv3 1</strong>
+[DeviceA-ospfv3-1] <strong>area 1</strong>
+[DeviceA-ospfv3-1-area-0.0.0.1] <strong>stub</strong>
+[DeviceA-ospfv3-1-area-0.0.0.1] <strong>default-cost 10</strong>
+[DeviceA-ospfv3-1-area-0.0.0.1] <strong>quit</strong>
+[DeviceA-ospfv3-1] <strong>quit</strong></pre>
+<p># Configure DeviceC.</p>
+<pre class="screen">[DeviceC] <strong>ospfv3 1</strong>
+[DeviceC-ospfv3-1] <strong>area 1</strong>
+[DeviceC-ospfv3-1-area-0.0.0.1] <strong>stub</strong>
+[DeviceC-ospfv3-1-area-0.0.0.1] <strong>quit</strong>
+[DeviceC-ospfv3-1] <strong>quit</strong></pre>
+<p># Check the OSPFv3 routing table of DeviceC. The command output shows that the route to the destination outside the AS is suppressed on DeviceC and that a default route is added. The cost of the default route is the cost of a direct route plus the configured cost.</p>
+<pre class="screen">[DeviceC] <strong>display ospfv3 routing</strong>
+
+Codes : E2 - Type 2 External, E1 - Type 1 External, IA - Inter-Area,
+        N - NSSA
+ Flags: A - Added to URT6, LT - Locator Routing
+
+OSPFv3 Process (1)
+     Destination                                               Metric
+       Next-hop
+  IA ::/0                                                         11       
+       via FE80::4E1F:CCFF:FE43:5A9E, <span>10GE</span><span>0/0/2</span>
+  IA 2001:DB8:1000::/96                                            2
+       via FE80::4E1F:CCFF:FE43:5A9E, <span>10GE</span><span>0/0/2</span>
+     2001:DB8:1001::/96                                            1
+       directly connected, <span>10GE</span><span>0/0/2</span></pre>
+</p></li><li><span>Configure area 1 as a totally stub area to prevent Type 3 LSAs from being advertised to the stub area and in turn minimize the size of the OSPFv3 routing table on DeviceC.</span><p><pre class="screen">[DeviceA] <strong>ospfv3</strong>
+[DeviceA-ospfv3-1] <strong>area 1</strong>
+[DeviceA-ospfv3-1-area-0.0.0.1] <strong>stub no-summary</strong>
+[DeviceA-ospfv3-1-area-0.0.0.1] <strong>quit</strong>
+[DeviceA-ospfv3-1] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001891234441__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Check the OSPFv3 routing table of DeviceC. The command output shows that the number of entries in the routing table on DeviceC is further reduced and that the AS external route and inter-area route are both suppressed.</p>
+<pre class="screen">[DeviceC] <strong>display ospfv3 routing</strong>
+
+Codes : E2 - Type 2 External, E1 - Type 1 External, IA - Inter-Area,
+        N - NSSA
+ Flags: A - Added to URT6, LT - Locator Routing
+
+OSPFv3 Process (1)
+     Destination                                               Metric
+       Next-hop
+  IA ::/0                                                         11       
+       via FE80::4E1F:CCFF:FE43:5A9E, <span>10GE</span><span>0/0/2</span>
+     2001:DB8:1001::/96                                            1
+       directly connected, <span>10GE</span><span>0/0/2</span></pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001891234441__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:1000::1/96
+ ospfv3 1 area 0.0.0.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:1001::1/96
+ ospfv3 1 area 0.0.0.1
+#
+ospfv3 1
+ router-id 1.1.1.1
+ area 0.0.0.0
+ area 0.0.0.1
+  stub no-summary
+  default-cost 10
+#
+return</pre>
+</li><li><p>DeviceB</p>
+<pre class="screen">#
+sysname DeviceB
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:1000::2/96
+ ospfv3 1 area 0.0.0.0
+#
+ospfv3 1
+ router-id 2.2.2.2
+ area 0.0.0.0
+ import-route static type 1
+#
+ipv6 route-static 2001:DB8:FC01::1 96 null 0
+#
+return</pre>
+</li><li><p>DeviceC</p>
+<pre class="screen">#
+sysname DeviceC
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:1001::2/96
+ ospfv3 1 area 0.0.0.1
+#
+ospfv3 1
+ router-id 3.3.3.3
+ area 0.0.0.1
+  stub
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_ospfv3_cfg_0129.html">Configuration Examples for OSPFv3
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_ospfv3_cfg_0122.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_ospfv3_cfg_0069.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

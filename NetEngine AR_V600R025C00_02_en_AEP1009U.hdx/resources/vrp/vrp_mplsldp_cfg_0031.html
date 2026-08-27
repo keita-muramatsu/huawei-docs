@@ -1,0 +1,245 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a Policy for Triggering LDP LSP Establishment (Ingress and Egress)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_example_1001.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0030.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0032.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001337593608">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a Policy for Triggering LDP LSP Establishment (Ingress and Egress)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001337593608"></a><a name="EN-US_TASK_0000001337593608"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a Policy for Triggering LDP LSP Establishment (Ingress and Egress)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001337593608__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001337593608__fig_dc_vrp_ldp-p2p_cfg_003901">Figure 1</a>, LSRA, LSRB, and LSRC function as core or edge devices on the backbone network. To implement MPLS service deployment, each pair of LSRs are required to advertise labels to each other and establish LDP LSPs after local LDP sessions are set up.</p>
+<div class="fignone" id="EN-US_TASK_0000001337593608__fig_dc_vrp_ldp-p2p_cfg_003901"><a name="EN-US_TASK_0000001337593608__fig_dc_vrp_ldp-p2p_cfg_003901"></a><a name="fig_dc_vrp_ldp-p2p_cfg_003901"></a><span class="figcap"><b>Figure 1 </b>Configuring a policy for triggering LDP LSP establishment</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Interfaces 1 and 2 in this example represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001456254101.png"></span></div>
+<p></p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001337593608__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>During the configuration, note the following:</p>
+<ul><li><p>Each LSR must have route entries that exactly match FECs for the LSPs to be established.</p>
+</li><li><p>By default, the triggering policy is <strong>host</strong>, allowing a device to use host IP routes with 32-bit addresses to trigger LDP LSP establishment.</p>
+</li><li><p>If the triggering policy is <strong>all</strong>, all static routes and IGP routes are used to trigger LDP LSP establishment. The device does not use public network BGP routes to trigger LDP LSP establishment.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001337593608__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Configure local LDP sessions.</p>
+</li><li><p>Change the policy for triggering LSP establishment on each LSR.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001337593608__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure LDP LSPs.</span><p><p>After you complete the task described in <a href="vrp_mplsldp_cfg_0029.html">Example for Configuring Local LDP Sessions</a>, each LSR uses the default LDP LSP triggering policy. That is, each LSR uses host IP routes with 32-bit addresses to trigger LDP LSP establishment.</p>
+<p># Run the <b><span class="cmdqueryname">display mpls ldp lsp</span></b> command on each LSR. The command output shows the LSR has successfully established LDP LSPs for all host routes.</p>
+<p>The following example uses the command output on LSRA.</p>
+<pre class="screen">[LSRA]<strong> display mpls ldp lsp</strong>
+  LDP LSP Information 
+  ------------------------------------------------------------------------------- 
+  Flag after Out IF: (I) - RLFA Iterated LSP, (I*) - Normal and RLFA Iterated LSP 
+  ------------------------------------------------------------------------------- 
+  DestAddress/Mask   In/OutLabel    UpstreamPeer    NextHop          OutInterface 
+  ------------------------------------------------------------------------------- 
+  1.1.1.9/32         3/NULL         2.2.2.9         127.0.0.1        LoopBack1 
+ *1.1.1.9/32         Liberal/3                      DS/2.2.2.9 
+  2.2.2.9/32         NULL/3         -               10.1.1.2         <span>10GE</span><span>0/0/1</span> 
+  2.2.2.9/32         1024/3         2.2.2.9         10.1.1.2         <span>10GE</span><span>0/0/1</span>
+  3.3.3.9/32         NULL/1025      -               10.1.1.2         <span>10GE</span><span>0/0/1</span> 
+  3.3.3.9/32         1025/1025      3.3.3.9         10.1.1.2         <span>10GE</span><span>0/0/1</span>      
+  ------------------------------------------------------------------------------ 
+  TOTAL: 5 Normal LSP(s) Found. 
+  TOTAL: 1 Liberal LSP(s) Found. 
+  TOTAL: 0 Frr LSP(s) Found. 
+  An asterisk (*) before an LSP means the LSP is not established 
+  An asterisk (*) before a Label means the USCB or DSCB is stale 
+  An asterisk (*) before an UpstreamPeer means the session is stale 
+  An asterisk (*) before a DS means the session is stale 
+  An asterisk (*) before a NextHop means the LSP is FRR LSP </pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The default triggering policy is recommended, as this allows a device to use host IP routes with 32-bit addresses to trigger LDP LSP establishment. You can also perform the following steps to change the policy for triggering LDP LSP establishment as required.</p>
+</div></div>
+</p></li><li><span>Change the policy for triggering LDP LSP establishment.</span><p><p>Change the policy for triggering LDP LSP establishment to <strong>all</strong> on each LSR so that the LSR uses all static routes and IGP routes in the routing table to trigger LDP LSP establishment.</p>
+<p># Configure LSRA.</p>
+<pre class="screen">[LSRA] <strong>mpls</strong>
+[LSRA-mpls] <strong>lsp-trigger all</strong>
+[LSRA-mpls] <strong>quit</strong></pre>
+<p># Configure LSRB.</p>
+<pre class="screen">[LSRB] <strong>mpls</strong>
+[LSRB-mpls] <strong>lsp-trigger all</strong>
+[LSRB-mpls] <strong>quit</strong></pre>
+<p># Configure LSRC.</p>
+<pre class="screen">[LSRC] <strong>mpls</strong>
+[LSRC-mpls] <strong>lsp-trigger all</strong>
+[LSRC-mpls] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p># After completing the configuration, run the <b><span class="cmdqueryname">display mpls ldp lsp</span></b> command on each node to check information about LDP LSPs. The following example uses the command output on LSRA.</p>
+<pre class="screen">[LSRA]<strong> display mpls ldp lsp</strong>
+ LDP LSP Information 
+  ------------------------------------------------------------------------------- 
+  Flag after Out IF: (I) - RLFA Iterated LSP, (I*) - Normal and RLFA Iterated LSP 
+  ------------------------------------------------------------------------------- 
+  DestAddress/Mask   In/OutLabel   UpstreamPeer    NextHop     OutInterface 
+  ------------------------------------------------------------------------------- 
+  1.1.1.9/32         3/NULL        2.2.2.9         127.0.0.1   LoopBack1     
+ *1.1.1.9/32         Liberal/3                     DS/2.2.2.9 
+  2.2.2.9/32         NULL/3        -               10.1.1.2    <span>10GE</span><span>0/0/1</span>     
+  2.2.2.9/32         1024/3        2.2.2.9         10.1.1.2    <span>10GE</span><span>0/0/1</span>     
+  3.3.3.9/32         NULL/1025     -               10.1.1.2    <span>10GE</span><span>0/0/1</span>     
+  3.3.3.9/32         1025/1025     2.2.2.9         10.1.1.2    <span>10GE</span><span>0/0/1</span>     
+  10.1.1.0/30        3/NULL        2.2.2.9         10.1.1.1    <span>10GE</span><span>0/0/1</span>     
+ *10.1.1.0/30        Liberal/3                     DS/2.2.2.9 
+  10.2.1.0/30        NULL/3        -               10.1.1.2    <span>10GE</span><span>0/0/1</span>     
+  10.2.1.0/30        1026/3        2.2.2.9         10.1.1.2    <span>10GE</span><span>0/0/1</span>     
+  ------------------------------------------------------------------------------- 
+  TOTAL: 8 Normal LSP(s) Found. 
+  TOTAL: 2 Liberal LSP(s) Found. 
+  TOTAL: 0 Frr LSP(s) Found. 
+  An asterisk (*) before an LSP means the LSP is not established 
+  An asterisk (*) before a Label means the USCB or DSCB is stale 
+  An asterisk (*) before an UpstreamPeer means the session is stale 
+  An asterisk (*) before a DS means the session is stale 
+  An asterisk (*) before a NextHop means the LSP is FRR LSP </pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001337593608__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>LSRA</p>
+<pre class="screen">#
+sysname LSRA
+#
+mpls lsr-id 1.1.1.9
+#
+mpls
+  lsp-trigger all
+#
+mpls ldp
+ # 
+  ipv4-family
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack1
+ ip address 1.1.1.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 1.1.1.9 0.0.0.0
+  network 10.1.1.0 0.0.0.3
+#
+return</pre>
+</li><li><div class="p">LSRB<pre class="screen">#
+ sysname LSRB
+#
+ mpls lsr-id 2.2.2.9
+#
+ mpls
+  lsp-trigger all
+#
+mpls ldp
+ # 
+  ipv4-family
+#
+interface <span>10GE</span><span>0/0/1</span>
+  ip address 10.1.1.2 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.2.1.1 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack1
+ ip address 2.2.2.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 2.2.2.9 0.0.0.0
+  network 10.1.1.0 0.0.0.3
+  network 10.2.1.0 0.0.0.3
+#
+return</pre>
+</div>
+</li><li><p>LSRC</p>
+<pre class="screen">#
+sysname LSRC
+#
+mpls lsr-id 3.3.3.9
+#
+mpls
+  lsp-trigger all
+#
+mpls ldp
+ # 
+  ipv4-family
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.2.1.2 255.255.255.252
+ mpls
+ mpls ldp
+#
+interface LoopBack1
+ ip address 3.3.3.9 255.255.255.255
+#
+ospf 1
+ area 0.0.0.0
+  network 3.3.3.9 0.0.0.0
+  network 10.2.1.0 0.0.0.3
+#
+return</pre>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_example_1001.html">Configuration Examples for MPLS LDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0030.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_mplsldp_cfg_0032.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

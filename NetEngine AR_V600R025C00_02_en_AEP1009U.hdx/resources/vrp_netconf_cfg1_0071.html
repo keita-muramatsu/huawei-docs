@@ -1,0 +1,107 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="(Optional) Enabling Proactive NETCONF Registration">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0068.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0103.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_netconf_cfg1_0072.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_system_setup_0009.xml">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="NETCONF">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513161890">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>(Optional) Enabling Proactive NETCONF Registration</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513161890"></a><a name="EN-US_TASK_0000001513161890"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">(Optional) Enabling Proactive NETCONF Registration</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513161890__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>If an NMS does not support automatic device discovery, it cannot manage devices as soon as they go online. To address this problem, you can configure proactive NETCONF registration. This enables a device to send a NETCONF connection request to the NMS when the device goes online, allowing the NMS to manage the device.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513161890__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the NETCONF user interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">netconf</span></b></pre>
+</p></li><li><span>Create a callhome template and enter the callhome template view.</span><p><pre class="screen"><b><span class="cmdqueryname">callhome</span></b> <i><span class="varname">callhome-name</span></i></pre>
+</p></li><li><span>Configure the interval at which the device sends NETCONF connection requests to the NMS.</span><p><pre class="screen"><b><span class="cmdqueryname">reconnection interval</span></b> <i><span class="varname">interval</span></i></pre>
+<p>By default, a device sends a NETCONF connection request to the NMS at an interval of 5s.</p>
+</p></li><li><span>(Optional) When multiple NETCONF connection instances are configured, configure the selection mode of the NETCONF connection instances as required.</span><p><ul><li>Select a NETCONF connection instance based on the configuration delivery sequence to establish a connection.<p>Configure the default mode for the NETCONF connection instance.</p>
+<pre class="screen"><b><span class="cmdqueryname">work-endpoint select-mode</span></b> <strong><span>default</span></strong></pre>
+<p>By default, a NETCONF connection instance uses the default mode.</p>
+</li><li>Select a NETCONF connection instance based on the priority to establish a connection.<ol type="a"><li>Configure the priority mode for the NETCONF connection instance.<pre class="screen"><b><span class="cmdqueryname">work-endpoint select-mode</span></b> <strong><span>priority</span></strong></pre>
+<p>By default, a NETCONF connection instance uses the default mode.</p>
+</li><li>Configure an interval for initiating a round of link detection.<pre class="screen"><b><span class="cmdqueryname">link-detect interval</span></b> <i><span class="varname">interval-val</span></i></pre>
+<p>By default, the device initiates a round of link detection at an interval of 5 minutes.</p>
+</li></ol>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In priority mode, the device initiates TCP link detection for all NETCONF connection instances. After the device successfully connects to the NMS, if it detects that an available NETCONF connection instance with a higher priority than the currently connected instance exists, the device switches to that instance with a higher priority.</p>
+</div></div>
+</li></ul>
+</p></li><li><span>Create a NETCONF connection instance and enter the NETCONF connection instance view.</span><p><pre class="screen"><b><span class="cmdqueryname">endpoint</span></b> <i><span class="varname">endpoint-name</span></i></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>A device supports 20 IPv4 NETCONF connection instances and 20 IPv6 NETCONF connection instances, but only one NETCONF connection instance can be used for connection. If a connection fails, the device connects to the NMS through the next NETCONF connection instance. If the <b><span class="service disable">service disable</span></b> command is configured, the device does not connect to the NMS through the next NETCONF connection instance.</p>
+</div></div>
+</p></li><li><span>Configure a callhome keepalive interval.</span><p><pre class="screen"><b><span class="cmdqueryname">keepalive-interval</span></b> <i><span class="varname">intervalTime</span></i></pre>
+</p></li><li><span>Configure the number of callhome keepalive times.</span><p><pre class="screen"><b><span class="cmdqueryname">keepalive-maxcount</span></b> <i><span class="varname">maxcount</span></i></pre>
+</p></li><li><span>Configure the IP address and TCP port number of the NMS that establishes a NETCONF connection with the device, as well as the device's source IP address and VPN instance.</span><p><pre class="screen">{ <b><span class="cmdqueryname">peer-ip</span></b> <i><span class="varname">ip-address</span></i> | <strong><span>peer</span></strong> { <i><span class="varname">peerName</span></i> <strong><span>ipv6</span></strong> | <i><span class="varname">peerName</span></i> } <strong><span>port</span></strong> <i><span class="varname">port-number</span></i> { [ [ <strong><span>local-address</span></strong> <i><span class="varname">source-ip</span></i> ] | [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance</span></i> | <strong><span>public-net</span></strong> ] ] <sup>*</sup> | [ <strong>source-interface</strong> { <em>interface-name</em> | <em>interface-type</em> <em>interface-num</em> } ] }</pre>
+</p></li><li><span>(Optional) Configure a priority for the NETCONF connection instance.</span><p><pre class="screen"><b><span class="cmdqueryname">priority</span></b> <i><span class="varname">priority-val</span></i></pre>
+<p>By default, no priority is configured for a NETCONF connection instance.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Before running this command, ensure that the <b><span class="cmdqueryname">work-endpoint select-mode</span></b> <strong><span>priority</span></strong> command has been run in the callhome view to configure the priority mode for the NETCONF connection instance. Otherwise, this command fails to be executed.</p>
+</div></div>
+</p></li><li><span>(Optional) Disable a device from proactively sending a NETCONF connection request to the NMS and establishing a NETCONF connection with the NMS.</span><p><pre class="screen"><b><span class="service disable">service disable</span></b></pre>
+</p><p><p>By default, a device proactively sends a NETCONF connection request to the NMS and establishes a NETCONF connection with the NMS.</p>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001513161890__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>After proactive NETCONF registration is configured during deployment, you can perform the following operations to check the registration status and offline reasons of a device to facilitate deployment.</p>
+<ul><li>Run the <b><span class="cmdqueryname">display controller connect-status</span></b> command to check the registration status of the device with the NMS.</li><li>Run the <b><span class="cmdqueryname">display controller register-fail-record</span></b> command to check records about device registration failures. This allows you to determine the failure cause as well as date and time when the device failed to register with the NMS.</li><li>Run the <b><span class="cmdqueryname">display controller offline-record</span></b> command to check the reason why the device went offline from the NMS.</li><li>Run the <b><span class="cmdqueryname">reset controller register-fail-record</span></b> command to clear records about device registration failures. This enables the device to re-collect statistics about registration failures with the NMS.</li><li>Run the <b><span class="cmdqueryname">reset controller offline-record</span></b> command to clear records about the reasons why the device went offline from the NMS.</li></ul>
+<p></p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_netconf_cfg1_0068.html">Establishing a NETCONF Session
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_netconf_cfg1_0103.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_netconf_cfg1_0072.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

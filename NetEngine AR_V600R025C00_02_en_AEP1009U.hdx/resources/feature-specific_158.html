@@ -1,0 +1,398 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Basic BGP Functions">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_157.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_159.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001623034301">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Basic BGP Functions</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001623034301"></a><a name="EN-US_TASK_0000001623034301"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Basic BGP Functions</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001623034301__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_section_dc_vrp_bgp_cfg_407101"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1685544129214038">If multiple ASs in a region require mutual access, they need to exchange their local routes with one another, and BGP can be used to meet this requirement.</p>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p276263943214038">On the network shown in <a href="#EN-US_TASK_0000001623034301__en-us_task_0000001130624140_fig_dc_vrp_bgp_cfg_407101">Figure 1</a>, DeviceA is in AS 65008, and DeviceB, DeviceC, and DeviceD are in AS 65009. The routing tables of these devices store a large number of routes, and routes change frequently. After BGP is enabled on the devices, they can exchange routes with one another. If the routes on one device are updated, the device sends Update messages to its peers carrying only the updated routing information, which greatly reduces bandwidth consumption.</p>
+<div class="fignone" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_fig_dc_vrp_bgp_cfg_407101"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_fig_dc_vrp_bgp_cfg_407101"></a><a name="en-us_task_0000001130624140_fig_dc_vrp_bgp_cfg_407101"></a><span class="figcap"><b>Figure 1 </b>Network diagram of basic BGP functions</span><div class="note" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_note726381156214038"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1991039344214038">In this example, interface 1, interface 2, and interface 3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_image555094622214038" src="figure/en-us_image_0000001130624210.png"></span></div>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1090360043214038">To complete the configuration, you need the following data:</p>
+<ul id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_ul1374495642112"><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1215492575214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1919257761214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1215492575214038"></a><a name="en-us_task_0000001130624140_li1215492575214038"></a>AS number and router ID of DeviceA</p>
+</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li97451256102111"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p774565611210"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li97451256102111"></a><a name="en-us_task_0000001130624140_li97451256102111"></a>AS number and router IDs of DeviceB, DeviceC, and DeviceD</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001623034301__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_context396270919214038"><h4 class="sectiontitle">Precautions</h4><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p918085582214038">During the configuration, note the following:</p>
+<ul id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_ul1680215856214038"><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li195661061938">Before establishing a BGP peer relationship, ensure that BGP peers are reachable to each other through IGP routes. In this way, the BGP peers can exchange routing information.</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li647072725214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p494100667214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li647072725214038"></a><a name="en-us_task_0000001130624140_li647072725214038"></a>During the establishment of a peer relationship, if the IP address of the specified peer is a loopback interface address<span> or a sub-interface address</span>, the <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b775456701214038">peer connect-interface</strong> command needs to be run on both ends to ensure correct connection.</p>
+</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li460791512214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p696911102214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li460791512214038"></a><a name="en-us_task_0000001130624140_li460791512214038"></a>If there is no directly connected physical link between EBGP peers, run the <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1910179230214038">peer ebgp-max-hop</strong> command to allow the EBGP peers to establish a TCP connection through multiple hops.</p>
+</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li20322142481511">To improve security, you are advised to deploy BGP security measures. For details, see "Configuring BGP Authentication." Keychain authentication is used as an example. For details, see <a href="vrp_bgp_cfg_0130.html">Example for Configuring Keychain Authentication for BGP</a>.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001623034301__1.3.3"></a><a name="1.3.3"></a>
+<div class="p" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_section_dc_vrp_bgp_cfg_407102"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p304284486214038">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_ol547007538214038"><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li494011317213">Establish IGP connections among DeviceB, DeviceC, and DeviceD. (OSPF is used as the IGP in this example.)</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1387615795214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p2133743792214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1387615795214038"></a><a name="en-us_task_0000001130624140_li1387615795214038"></a>Establish IBGP connections between DeviceB, DeviceC, and DeviceD.</p>
+</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1893616280214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p301169420214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1893616280214038"></a><a name="en-us_task_0000001130624140_li1893616280214038"></a>Establish an EBGP connection between DeviceA and DeviceB.</p>
+</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1673833327214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p80951189214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1673833327214038"></a><a name="en-us_task_0000001130624140_li1673833327214038"></a>Use the <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1104257731214038">network</strong> command on DeviceA to configure BGP to import local routes and advertise them to peers. Then, check the BGP routing tables on DeviceA, DeviceB, and DeviceC.</p>
+</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li973749447214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1981565589214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li973749447214038"></a><a name="en-us_task_0000001130624140_li973749447214038"></a>Configure BGP on DeviceB to import direct routes, and then check the routing tables of DeviceA and DeviceC.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001623034301__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_section_dc_vrp_bgp_cfg_407104"><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_step132523854214038"><span id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_cmd387872239214038">Assign an IP address to each interface. DeviceA is used here as an example, and configurations of other devices are similar to that of DeviceA.</span><p><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p16994120132419"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen1072582811247">&lt;<span class="keyword" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_keyword20930185532712">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b17809162522810">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_keyword771516308281">HUAWEI</span>] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1453205612817">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b19771132822416">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b12732141414251">ip address 172.16.0.1 16</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b12565644172517">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b9697145116253">interface <span>10ge</span> <span><span><span>0/0/2</span></span></span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1769995112515">ip address 192.168.0.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b196991518259">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b111561655182517">interface loopback0</strong>
+[DeviceA-loopback0] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b14157145518252">ip address 1.1.1.1 32</strong>
+[DeviceA-loopback0] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b5157175542513">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_step517334483214038"><span id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_cmd1826852725214038">Configure OSPF to ensure that BGP peers can exchange routing information.</span><p><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p699999829214038"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen319804174712">[DeviceB]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b826914114471"> ospf 1</strong>
+[DeviceB-ospf-1]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b6270124174712"> area 0</strong>
+[DeviceB-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b10270141114714"> network 10.1.1.0 0.0.0.255</strong>
+[DeviceB-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b18271154104719"> network 10.1.3.0 0.0.0.255</strong>
+[DeviceB-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1027104116479"> network 2.2.2.2 0.0.0.0</strong>
+[DeviceB-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b62712041134712"> quit</strong>
+[DeviceB-ospf-1]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b22711741104717"> quit</strong></pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1990314941214038"># Configure DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen2099442513218">[DeviceC]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b19222619218"> ospf 1</strong>
+[DeviceC-ospf-1]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b14216261210"> area 0</strong>
+[DeviceC-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b113326726"> network 10.1.2.0 0.0.0.255</strong>
+[DeviceC-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1131826722"> network 10.1.3.0 0.0.0.255</strong>
+[DeviceC-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b533261626"> network 3.3.3.3 0.0.0.0</strong>
+[DeviceC-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b141261725"> quit</strong>
+[DeviceC-ospf-1]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b841261216"> quit</strong></pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p20584081214038"># Configure DeviceD.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen435025252214038">[DeviceD]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b136820234"> ospf 1</strong>
+[DeviceD-ospf-1]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b15369701835"> area 0</strong>
+[DeviceD-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b3369506311"> network 10.1.1.0 0.0.0.255</strong>
+[DeviceD-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b2036970434"> network 10.1.2.0 0.0.0.255</strong>
+[DeviceD-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b9370104311"> network 4.4.4.4 0.0.0.0</strong>
+[DeviceD-ospf-1-area-0.0.0.0]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1537012013316"> quit</strong>
+[DeviceD-ospf-1]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b4370607311"> quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_step282966366214038"><span id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_cmd1286918904214038">Configure IBGP connections.</span><p><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p202681157214038"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen163953142314">[DeviceB]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b6405111411318"> bgp 65009</strong>
+[DeviceB-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b14061714236"> router-id 2.2.2.2</strong>
+[DeviceB-bgp] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b540681417318">peer 3.3.3.3 as-number 65009</strong>
+[DeviceB-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1540615141313"> peer 4.4.4.4 as-number 65009</strong>
+[DeviceB-bgp] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b64062141237">peer 3.3.3.3 connect-interface LoopBack0</strong>
+[DeviceB-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b20407101415317"> peer 4.4.4.4 connect-interface LoopBack0</strong>
+[DeviceB-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1640751411314"> quit</strong></pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p2105118962214038"># Configure DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen11925226033">[DeviceC]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b893619261231"> bgp 65009</strong>
+[DeviceC-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b17937182616317"> router-id 3.3.3.3</strong>
+[DeviceC-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1593722618318"> peer 2.2.2.2 as-number 65009</strong>
+[DeviceC-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b179371261733"> peer 4.4.4.4 as-number 65009</strong>
+[DeviceC-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1993718261431"> peer 2.2.2.2 connect-interface LoopBack0</strong>
+[DeviceC-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b14937182614310"> peer 4.4.4.4 connect-interface LoopBack0</strong>
+[DeviceC-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b19938122611316"> quit</strong></pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p732741928214038"># Configure DeviceD.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen2067904512214038">[DeviceD]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b12245383319"> bgp 65009</strong>
+[DeviceD-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b722483815318"> router-id 4.4.4.4</strong>
+[DeviceD-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1622518385312"> peer 2.2.2.2 as-number 65009</strong>
+[DeviceD-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b32258381936"> peer 3.3.3.3 as-number 65009</strong>
+[DeviceD-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b42253381634"> peer 2.2.2.2 connect-interface LoopBack0</strong>
+[DeviceD-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b422673813312"> peer 3.3.3.3 connect-interface LoopBack0</strong>
+[DeviceD-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b12226103817316"> quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_step1320516582214038"><span id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_cmd1826185576214038">Configure EBGP.</span><p><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p749687023214038"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen103051741148">[DeviceA]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b131524243"> bgp 65008</strong>
+[DeviceA-bgp] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b12316142048">router-id 1.1.1.1</strong>
+[DeviceA-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b16316104543"> peer 192.168.0.2 as-number 65009</strong>
+[DeviceA-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b4317144243"> quit</strong></pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p521243368214038"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen042114151248">[DeviceB]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b9431415349"> bgp 65009</strong>
+[DeviceB-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b124324152412"> peer 192.168.0.1 as-number 65008</strong>
+[DeviceB-bgp]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b64327151746"> quit</strong></pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p619873537214038"># Check the status of BGP connections.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen763354935017">[DeviceB] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b17670154917502">display bgp peer</strong>
+
+ BGP local router ID : 2.2.2.2
+ Local AS number : 65009
+ Total number of peers : 3                 Peers in established state : 3
+
+  Peer            V    AS  MsgRcvd  MsgSent  OutQ  Up/Down       State PrefRcv
+
+  3.3.3.3         4 65009        5        5     0 00:44:58 <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b067116493509">Established</strong>       0
+  4.4.4.4         4 65009        4        4     0 00:40:54 <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1767214975012">Established</strong>       0
+  192.168.0.1     4 65008        3        3     0 00:44:03 <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b567218499505">Established</strong>       0</pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p686233363214038">The command output shows that DeviceB has established BGP connections with other devices and the connection status is <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1185430162419">Established</strong>.</p>
+</p></li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_step1457259515214038"><span id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_cmd109674570214038">Configure DeviceA to advertise the route 172.16.0.0/16 to BGP peers.</span><p><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1305848702214038"># Configure DeviceA to advertise the route.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen4611338599">[DeviceA]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b56171335590"> bgp 65008</strong>
+[DeviceA-bgp] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b4618113105919">ipv4-family unicast</strong>
+[DeviceA-bgp-af-ipv4] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b661817385919">network 172.16.0.0 255.255.0.0</strong>
+[DeviceA-bgp-af-ipv4] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b461893175917">quit</strong>
+[DeviceA-bgp] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b146198320591">quit</strong></pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1937523035214038"># Check the routing table of DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen48261318135110">[DeviceA] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b587291885112">display bgp routing-table</strong>
+
+ BGP Local router ID is 1.1.1.1
+ Status codes: * - valid, &gt; - best, d - damped,<span> x - best external,</span><span> a - add path,</span>
+               h - history,  i - internal, s - suppressed, S - Stale
+               Origin : i - IGP, e - EGP, ? - incomplete
+ RPKI validation codes: V - valid, I - invalid, N - not-found
+
+ Total Number of Routes: 1
+      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn
+
+ *&gt;   172.16.0.0         0.0.0.0         0                     0      i</pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p958684435214038"># Check the routing table of DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen18430143725115">[DeviceB] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b194955373512">display bgp routing-table</strong>
+
+ BGP Local router ID is 2.2.2.2
+ Status codes: * - valid, &gt; - best, d - damped,<span> x - best external,</span><span> a - add path,</span>
+               h - history,  i - internal, s - suppressed, S - Stale
+               Origin : i - IGP, e - EGP, ? - incomplete
+ RPKI validation codes: V - valid, I - invalid, N - not-found
+
+ Total Number of Routes: 1
+      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn
+
+ *&gt;   172.16.0.0         192.168.0.1    0                     0      65008i</pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p756802342214038"># Check the routing table of DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen1926152175218">[DeviceC] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b13981528528">display bgp routing-table</strong>
+
+ BGP Local router ID is 3.3.3.3
+ Status codes: * - valid, &gt; - best, d - damped,<span> x - best external,</span><span> a - add path,</span>
+               h - history,  i - internal, s - suppressed, S - Stale
+               Origin : i - IGP, e - EGP, ? - incomplete
+ RPKI validation codes: V - valid, I - invalid, N - not-found
+
+ Total Number of Routes: 1
+      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn
+
+   i  172.16.0.0         192.168.0.1    0          100        0      65008i</pre>
+<div class="note" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_note128388629214038"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1754106015214038">The command output shows that DeviceC has learned the route to 172.16.0.0 from AS 65008. However, this route is invalid because its next hop, 192.168.0.1, is unreachable.</p>
+</div></div>
+</p></li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_step1669902705214038"><span id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_cmd590980292214038">Configure BGP to import direct routes.</span><p><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1911171500214038"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen1432763818214038">[DeviceB]<strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b878933410419"> bgp 65009</strong>
+[DeviceB-bgp] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b278919344420">ipv4-family unicast</strong>
+[DeviceB-bgp-af-ipv4] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1878913415415">import-route direct</strong>
+[DeviceB-bgp-af-ipv4] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1679033419420">quit</strong>
+[DeviceB-bgp] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b117908341841">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_section_dc_vrp_bgp_cfg_407105"><a name="EN-US_TASK_0000001623034301__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p2026820511214038"># Check the BGP routing table of DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen14583327145215">[DeviceA] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b1774612277521">display bgp routing-table</strong>
+
+ BGP Local router ID is 1.1.1.1
+ Status codes: * - valid, &gt; - best, d - damped,<span> x - best external,</span><span> a - add path,</span>
+               h - history,  i - internal, s - suppressed, S - Stale
+               Origin : i - IGP, e - EGP, ? - incomplete
+<span> RPKI validation codes: V - valid, I - invalid, N - not-found</span>
+
+ Total Number of Routes: 8
+      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn
+
+ *&gt;   2.2.2.2/32         192.168.0.2     0                     0      65009?
+ *&gt;   172.16.0.0         0.0.0.0         0                     0      i
+ *&gt;   10.1.1.0/24        192.168.0.2     0                     0      65009?
+ *&gt;   10.1.1.2/32        192.168.0.2     0                     0      65009?
+ *&gt;   10.1.3.0/24        192.168.0.2     0                     0      65009?
+ *&gt;   10.1.3.2/32        192.168.0.2     0                     0      65009?
+ *    192.168.0.0        192.168.0.2     0                     0      65009?
+ *    192.168.0.1/32     192.168.0.2     0                     0      65009?</pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p361251569214038"># Check the routing table of DeviceC.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen13892165045219">[DeviceC] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b890935055218">display bgp routing-table</strong>
+
+ BGP Local router ID is 3.3.3.3
+ Status codes: * - valid, &gt; - best, d - damped,<span> x - best external,</span><span> a - add path,</span>
+               h - history,  i - internal, s - suppressed, S - Stale
+               Origin : i - IGP, e - EGP, ? - incomplete
+<span> RPKI validation codes: V - valid, I - invalid, N - not-found</span>
+
+ Total Number of Routes: 8
+      Network            NextHop        MED        LocPrf    PrefVal Path/Ogn
+
+   i  2.2.2.2/32         2.2.2.2         0          100        0      ?
+ *&gt;i  172.16.0.0         192.168.0.1     0          100        0      65008i
+ *&gt;i  10.1.1.0/24        2.2.2.2         0          100        0      ?
+ *&gt;i  10.1.1.2/32        2.2.2.2         0          100        0      ?
+ * i  10.1.3.0/24        2.2.2.2         0          100        0      ?
+ * i  10.1.3.2/32        2.2.2.2         0          100        0      ?
+ *&gt;i  192.168.0.0        2.2.2.2         0          100        0      ?
+ *&gt;i  192.168.0.1/32     2.2.2.2         0          100        0      ?</pre>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p556817326214038">The command output shows that the route to 172.16.0.0 becomes valid and that its next hop address is DeviceA's IP address.</p>
+<p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p58330528214038"># Verify the configuration using the <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b25151236103517">ping</strong> command.</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen143055865315">[DeviceC] <strong id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_b53235885312">ping 172.16.0.1</strong>
+  PING 172.16.0.1: 56  data bytes, press CTRL_C to break
+    Reply from 172.16.0.1: bytes=56 Sequence=1 ttl=254 time=31 ms
+    Reply from 172.16.0.1: bytes=56 Sequence=2 ttl=254 time=47 ms
+    Reply from 172.16.0.1: bytes=56 Sequence=3 ttl=254 time=31 ms
+    Reply from 172.16.0.1: bytes=56 Sequence=4 ttl=254 time=16 ms
+    Reply from 172.16.0.1: bytes=56 Sequence=5 ttl=254 time=31 ms
+
+  --- 172.16.0.1 ping statistics ---
+    5 packet(s) transmitted
+    5 packet(s) received
+    0.00% packet loss
+    round-trip min/avg/max = 16/31/47 ms</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001623034301__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_ul2074341461214038"><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1360654100214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p2107585444214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1360654100214038"></a><a name="en-us_task_0000001130624140_li1360654100214038"></a>DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen0897231115310">#
+sysname DeviceA
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 172.16.0.1 255.255.0.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.0.1 255.255.255.0
+#
+interface LoopBack0
+ ip address 1.1.1.1 255.255.255.255
+#
+bgp 65008
+ router-id 1.1.1.1
+ peer 192.168.0.2 as-number 65009
+ #
+ ipv4-family unicast
+  network 172.16.0.0 255.255.0.0
+  peer 192.168.0.2 enable
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1986095512214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1968944863214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1986095512214038"></a><a name="en-us_task_0000001130624140_li1986095512214038"></a>DeviceB</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen025705618535">#
+sysname DeviceB
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.0.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.1.3.1 255.255.255.0
+#
+interface LoopBack0
+ ip address 2.2.2.2 255.255.255.255
+#
+bgp 65009
+ router-id 2.2.2.2
+ peer 3.3.3.3 as-number 65009
+ peer 3.3.3.3 connect-interface LoopBack0
+ peer 4.4.4.4 as-number 65009
+ peer 4.4.4.4 connect-interface LoopBack0
+ peer 192.168.0.1 as-number 65008
+ #
+ ipv4-family unicast
+  import-route direct
+  peer 3.3.3.3 enable
+  peer 4.4.4.4 enable 
+  peer 192.168.0.1 enable
+#
+ospf 1
+ area 0.0.0.0
+  network 2.2.2.2 0.0.0.0
+  network 10.1.1.0 0.0.0.255
+  network 10.1.3.0 0.0.0.255
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1929454783214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1343468181214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li1929454783214038"></a><a name="en-us_task_0000001130624140_li1929454783214038"></a>DeviceC</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen360911745418">#
+sysname DeviceC
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.1.3.2 255.255.255.0
+#
+interface LoopBack0
+ ip address 3.3.3.3 255.255.255.255
+#
+bgp 65009
+ router-id 3.3.3.3
+ peer 2.2.2.2 as-number 65009
+ peer 2.2.2.2 connect-interface LoopBack0
+ peer 4.4.4.4 as-number 65009
+ peer 4.4.4.4 connect-interface LoopBack0
+ #
+ ipv4-family unicast
+  peer 2.2.2.2 enable
+  peer 4.4.4.4 enable
+#
+ospf 1
+ area 0.0.0.0
+  network 3.3.3.3 0.0.0.0
+  network 10.1.2.0 0.0.0.255
+  network 10.1.3.0 0.0.0.255
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li475130381214038"><p id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_p1172113921214038"><a name="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_li475130381214038"></a><a name="en-us_task_0000001130624140_li475130381214038"></a>DeviceD</p>
+<pre class="screen" id="EN-US_TASK_0000001623034301__en-us_task_0000001130624140_screen173124113543">#
+sysname DeviceD
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.2 255.255.255.0
+#
+interface LoopBack0
+ ip address 4.4.4.4 255.255.255.255
+#
+bgp 65009
+ router-id 4.4.4.4
+ peer 2.2.2.2 as-number 65009
+ peer 2.2.2.2 connect-interface LoopBack0
+ peer 3.3.3.3 as-number 65009
+ peer 3.3.3.3 connect-interface LoopBack0
+ #
+ ipv4-family unicast
+  peer 2.2.2.2 enable
+  peer 3.3.3.3 enable
+#
+ospf 1
+ area 0.0.0.0
+  network 4.4.4.4 0.0.0.0
+  network 10.1.1.0 0.0.0.255
+  network 10.1.2.0 0.0.0.255
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_157.html">BGP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_159.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

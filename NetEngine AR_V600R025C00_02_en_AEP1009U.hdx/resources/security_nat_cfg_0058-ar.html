@@ -1,0 +1,206 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Intranet Users to Access Intranet Servers Using Public Addresses">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_nat_cfg_0098.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="NAT">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="NAT">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001835910997">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Intranet Users to Access Intranet Servers Using Public Addresses</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001835910997"></a><a name="EN-US_TASK_0000001835910997"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Intranet Users to Access Intranet Servers Using Public Addresses</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001835910997__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_context1947313748181342"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p20826124213517">An enterprise has deployed <span><span class="eudemon">DeviceA</span></span> as the access gateway at the network border, and deployed a web server and an FTP server on the intranet to provide services for intranet users (PC D is used as an example). Due to limited IP address resources, the enterprise has only one available public IP address 1.1.1.1. This IP address is assigned to the WAN interface of <span><span class="eudemon">DeviceA</span></span>. To protect intranet servers against attacks from intranet users, the enterprise requires that NAT (NAT Server + source NAT) be configured on <span><span class="eudemon">DeviceA</span></span> to allow intranet users to access the intranet FTP and web servers and the Internet using the only available public IP address. <a href="#EN-US_TASK_0000001835910997__en-us_task_0000001512676906_fig01">Figure 1</a> shows the network diagram, in which the router is the access gateway provided by the ISP.</p>
+<div class="fignone" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_fig01"><a name="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_fig01"></a><a name="en-us_task_0000001512676906_fig01"></a><span class="figcap"><b>Figure 1 </b>Network diagram of NAT Server and source NAT</span><div class="note" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_note13728172219115"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1272872213116">In this example, interfaces 1 and 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_image139356301418" src="figure/en-us_image_0000001789253884.png"></span></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_tab01" frame="border" border="1" rules="all"><thead align="left"><tr id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_row1637339632181342"><th align="left" class="cellrowborder" colspan="2" valign="top" id="mcps1.3.1.4.1.5.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_entry1358124017181342p0">Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.1.5.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_entry957987696181342p0">Data</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.1.5.1.3" liSelected="liSelected"><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_entry1492409961181342p0">Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_row1825191893181342"><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p811808113181342"><span>10GE</span><span>0/0/1</span></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.2 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p266237348181342">IP address: 1.1.1.1/24</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.3 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p189469545181342">1.1.1.1/24 is a public address provided by the ISP.</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_row1738873153181342"><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p61972746181342"><span>10GE</span><span>0/0/2</span></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.2 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p276077092181342">IP address: 10.2.0.1/24</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.3 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p919435119181342">Intranet servers use 10.2.0.1 as the default gateway address.</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_row1340893716181342"><td class="cellrowborder" rowspan="2" colspan="2" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p660298352181342">NAT Server</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.2 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p544679494181342">Name: policy_web</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1906319061181342">Public IP address: 1.1.1.1</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1673099365181342">Private IP address: 10.2.0.7</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1751994402181342">Public port: 8080</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1027118302181342">Private port: 80</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.3 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1531776948181342">When intranet users send traffic to 1.1.1.1 through port 8080, DeviceA can forward the traffic to the web server based on this mapping entry.</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1435828555181342">The web server has the private address 10.2.0.7 and private port number 80.</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_row365513658181342"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p686711979181342">Name: policy_ftp</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1737478393181342">Public IP address: 1.1.1.1</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1635873449181342">Private IP address: 10.2.0.8</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p351312576181342">Public port: 21</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p416435711181342">Private port: 21</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1691756267181342">When intranet users send traffic to 1.1.1.1 through port 21, DeviceA can forward the traffic to the FTP server based on this mapping entry.</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p941714064181342">The FTP server has the private address 10.2.0.8 and private port number 21.</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_row1476969599181342"><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1556204144181342">Source NAT policy</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.2 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p2030270707181342">Name: policy_nat1</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p280552297181342">Private address that can access the Internet: 10.2.0.6</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p6717018155916"></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.3 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1446537990181342">-</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_row2031049587181342"><td class="cellrowborder" colspan="2" valign="top" headers="mcps1.3.1.4.1.5.1.1 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1243874432181342">Default route</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.2 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p213505088181342">Destination address: 0.0.0.0</p>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p70506323181342">Next-hop address: 1.1.1.254</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.1.5.1.3 "><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p741713636181342">Configure a default route to the Internet on <span><span class="eudemon">DeviceA</span></span> to enable it to forward traffic from intranet users to the ISP router.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001835910997__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_context203592699181342"><h4 class="sectiontitle">Configuration Roadmap</h4><ol id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_ol1985244305181342"><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_li1725540277181342">Configure IP addresses for interfaces, enabling network connectivity.</li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_li60704279181342">Configure NAT Server by specifying two static mapping entries, that is, one for the web server and one for the FTP server.</li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_li627950395181342">Configure a source NAT policy to allow PC D to access intranet servers using a public address.</li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_li1975062418298">Configure a default route on <span id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_ph2397124842918"><span class="eudemon">DeviceA</span></span> to enable it to forward traffic from intranet users to the ISP router.</li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_li234127361181342">Configure a static route to the public address of intranet servers on the ISP router.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001835910997__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_steps20484923181342"><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_step991499800181342"><span id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_cmd1811521527181342">Configure IP addresses for interfaces, enabling network connectivity.</span><p><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p731686977181342"># Configure an IP address for <span>10GE</span> <span>0/0/1</span> and enable the NAT function on this interface.</p>
+<pre class="screen" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_screen1133269650181342">&lt;<span class="keyword" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_keyword1755443442518">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b1275025333181341">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_keyword1713915012610">HUAWEI</span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b192153120263">sysname DeviceA</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b86646973181342">interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b1703259210181342">ip address 1.1.1.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b0620118451">nat enable</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b1821579015181342">quit</strong></pre>
+<p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1204969057181342"># Configure an IP address for <span>10GE</span> <span>0/0/2</span> and enable the NAT function on this interface.</p>
+<pre class="screen" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_screen2054549754181342">[<span><span class="eudemon">DeviceA</span></span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b1536288927181342">interface <span>10ge</span> <span>0/0/2</span></strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b978798397181342">ip address 10.2.0.1 24</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b123601438122210">nat enable</strong>
+[<span><span class="eudemon">DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b2014810450181342">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_step1787998337181342"><span id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_cmd1149377488181342">Configure a source NAT policy.</span><p><pre class="screen" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_screen1075981112181342">[<span><span class="eudemon">DeviceA</span></span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b2074339630181342">nat-policy</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b278488382181342">rule name policy_nat1</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b521031766181342">source-address 10.2.0.6 32</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b78101314151213">destination-address</strong><strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b155571949999"> 10.2.0.7 32</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b722142071216">destination-address</strong><strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b146078326117"> 10.2.0.8 32</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b134401842152417">action source-nat easy-ip</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat-rule-policy_nat1] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b514759664181342">quit</strong>
+[<span><span class="eudemon">DeviceA</span></span>-policy-nat] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b258764172181342">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_step1341881189181342"><span id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_cmd123882729181342">Configure NAT Server by specifying two static mapping entries, that is, one for the web server and one for the FTP server.</span><p><pre class="screen" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_screen2145093319181342">
+[<span><span class="eudemon">DeviceA</span></span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b3277122319272">nat server policy_web protocol tcp global 1.1.1.1 8080 inside 10.2.0.7 www no-reverse route</strong>
+[<span><span class="eudemon">DeviceA</span></span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b12473745116">nat server policy_ftp protocol tcp global 1.1.1.1 ftp inside 10.2.0.8 ftp no-reverse route</strong></pre>
+</p></li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_step571569784181342"><span id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_cmd679006657181342">Enable the NAT ALG function for FTP.</span><p><pre class="screen" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_screen1739354982181342">
+[<span><span class="eudemon">DeviceA</span></span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b665113201109">firewall </strong><strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b186501420161014">detect</strong> <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b4374128111017">ftp</strong></pre>
+</p></li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_step151588250181342"><span id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_cmd828112408181342">Configure a default route on DeviceA to enable it to forward traffic from intranet users to the ISP router.</span><p><pre class="screen" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_screen379342809181342">[<span><span class="eudemon">DeviceA</span></span>] <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b841946359181342">ip route-static 0.0.0.0 0.0.0.0 1.1.1.2</strong><strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b53373218494">54</strong></pre>
+</p></li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_step1348228446181342"><span id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_cmd1575532425181342">On the ISP router, configure a static route to the public address of intranet servers, with the next-hop address set to 1.1.1.1. The ISP router can then forward traffic destined for the intranet servers to <span><span class="eudemon">DeviceA</span></span>.</span><p><p id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_p1742732441181342">Contact the ISP network administrator to perform this step.</p>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_example2047844318712"><a name="EN-US_TASK_0000001835910997__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_ol1488850981181341"><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_li1966071161181341">Verify that intranet users can access intranet servers.</li><li id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_li344218591954">When intranet users access intranet servers, check for the session entries with the destination addresses being the public address of intranet servers and the source addresses being the private addresses of intranet PCs. If such an entry is found, the post-NAT destination IP address is the private IP address of a server, and the post-NAT source IP address is an address in the address pool, the NAT policy has been configured successfully.<pre class="screen" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_screen103222353475">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b87979569493">display session all verbose</strong>
+  Session Table Information:
+    Protocol          : 6(TCP)
+    SrcAddr  Port Vpn : 10.2.0.6 2474
+    DestAddr Port Vpn : 1.1.1.1 8080
+    Time To Live      : 60s
+    NAT Info
+      New SrcAddr     : 10.2.0.1
+      New SrcPort     : 2674
+      New DestAddr    : 10.2.0.7
+      New DestPort    : 80
+
+  Total : 1</pre>
+</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001835910997__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen" id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_screen1358227423181342">#
+ sysname <span><span class="eudemon">DeviceA</span></span>
+#
+ nat server policy_web protocol tcp global 1.1.1.1 8080 inside 10.2.0.7 www no-reverse route
+<strong id="EN-US_TASK_0000001835910997__en-us_task_0000001512676906_b715333454415"> </strong>nat server policy_ftp protocol tcp global 1.1.1.1 ftp inside 10.2.0.8 ftp no-reverse route
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.1.1 255.255.255.0 
+ nat enable
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.2.0.1 255.255.255.0 
+ nat enable
+#
+firewall detect ftp
+#
+ ip route-static 0.0.0.0 0.0.0.0 1.1.1.254 
+#  
+nat-policy  
+  rule name policy_nat1 
+    source-address 10.2.0.6 32
+    destination-address 10.2.0.7 32
+    destination-address 10.2.0.8 32
+    action source-nat easy-ip
+# 
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_nat_cfg_0098.html">Bidirectional NAT
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

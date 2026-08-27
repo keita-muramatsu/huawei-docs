@@ -1,0 +1,95 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Enabling Periodic Configuration File Backup">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_cfgfile_cfg_0048.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_cfgfile_cfg_0009.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_cfgfile_cfg_0015.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Configuration File Management">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Configuration File Management">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563770609">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Enabling Periodic Configuration File Backup</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563770609"></a><a name="EN-US_TASK_0000001563770609"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Enabling Periodic Configuration File Backup</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563770609__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>To prevent configuration file loss caused by device damage, you can enable automatic backup of configuration files to the storage device of a local or remote server.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001563770609__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Back up the configuration file to the storage medium of the local device.</span><p><ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Set the local backup start time and interval.<pre class="screen"><b><span class="cmdqueryname">configuration current backup-to-file</span></b> [ <strong><span>interval</span></strong> <i><span class="varname">interval-time</span></i> | <strong><span>from</span></strong> <i><span class="varname">time</span></i> ] <sup>*</sup>
+<b><span class="cmdqueryname">quit</span></b></pre>
+<p>By default, the function of periodically backing up the configuration file is disabled.</p>
+<p>After this function is enabled, the system automatically saves the currently running configurations to the configuration file and stores the configuration file in the <strong>$_autobackup</strong> directory in the flash memory.</p>
+</li></ol>
+</p></li><li><span>Back up the configuration file to the storage medium of the remote server.</span><p><ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Configure the system to save the configurations at a scheduled time.<pre class="screen"><span><b><span class="cmdqueryname">configuration file auto-save</span></b> [ <strong><span>interval</span></strong> <i><span class="varname">interval</span></i> | <strong><span>delay</span></strong> <i><span class="varname">delay-interval</span></i> <span>| <strong><span>cpu-limit</span></strong> <i><span class="varname">cpu-usage</span></i></span> ] <sup>*</sup></span></pre>
+<p>By default, scheduled configuration saving is disabled.</p>
+<div class="p">The system does not automatically save the configurations in the following scenarios when the scheduled time arrives:<ul><li>The system is writing the configuration file.</li><li>The system is restoring device configurations.</li><li>The CPU usage exceeds the preset threshold.</li></ul>
+</div>
+</li><li>Configure server information, including the IP address of the server where the configuration file is automatically saved, user name and password, storage path, and mode for transmitting the configuration file to the server.<pre class="screen"><b><span class="cmdqueryname">configuration file auto-save backup-to-server</span></b> <b><span class="cmdqueryname">server</span></b> <i><span class="varname">server-ip</span></i> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ] <strong><span>transport-type</span></strong> { { <strong><span>ftp</span></strong> | <strong><span>sftp</span></strong> }<span> [ <strong><span>port</span></strong> <i><span class="varname">port-value</span></i> ]</span> <strong><span>user</span></strong> <i><span class="varname">user-name</span></i> <strong><span>password</span></strong> <i><span class="varname">password</span></i> | <strong><span>tftp</span></strong> } [ <strong><span>path</span></strong> <i><span class="varname">folder</span></i> ]</pre>
+<p>By default, the system does not periodically save configurations to a server.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>If the local storage medium does not have sufficient space or is damaged, or the configuration file needs to be backed up, you can run this command to specify a file server for saving the backup configuration file.</li><li>SFTP has higher security and is therefore recommended for saving the configuration file to the file server.</li><li>If the configuration file needs to be saved to the file server through FTP, run the <strong>install feature-software WEAKEA</strong> command in the user view to install the weak encryption algorithm/protocol feature package (WEAKEA).</li><li>The configuration file is saved on the server as a package, named in the <em>YY-MM-DD.HH-MM-SS</em>.<em>device name</em>.zip format (for example, <strong>2019-10-25.15-13-37.HUAWEI.zip</strong>). After decompression, the file with the file name extension .cfg is the configuration file.</li></ul>
+</div></div>
+</li><li>(Optional) Configure the function for uploading the configuration file at a specific time point of a certain day every month.<pre class="screen"><b><span class="cmdqueryname">configuration current backup-to-server monthly</span></b> <strong><span>date</span></strong> <i><span class="varname">date-value</span></i> [ <strong><span>time</span></strong> <i><span class="varname">time-value</span></i> ]</pre>
+<p>By default, the function of uploading a configuration file to the server on a specific date and time every month is disabled.</p>
+</li></ol>
+</p></li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001563770609__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Example</h4><p>If the device is unexpectedly damaged, the configuration file cannot be restored. To prevent this problem, you can configure the device to periodically save the configuration file to the SFTP server for backup.</p>
+<ol><li>Configure a routing protocol to ensure that there are reachable routes between the device and SFTP server.</li><li>Configure the SFTP server function and related parameters, create an SSH user named <strong>huawei</strong>, set the authentication mode to password authentication, and set the password to <strong>YsHsjx_202206</strong>. For details, see "File System Management Configuration" in <span>CLI Configuration Guide</span> &gt; Basic Configuration.</li><li>Set the interval at which the configuration file is saved to 60 minutes.<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>configuration file auto-save interval 60</strong></pre>
+</li><li>Configure the configuration file to be transferred to the SFTP server.<pre class="screen"> <strong>configuration file auto-save backup-to-server server 10.2.1.2 transport-type sftp user huawei password YsHsjx_202206</strong></pre>
+</li><li>After 60 minutes, view the configuration file named after the date and time in the root directory on the SFTP server.</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_cfgfile_cfg_0048.html">Backing Up Configuration Files
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_cfgfile_cfg_0009.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_cfgfile_cfg_0015.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

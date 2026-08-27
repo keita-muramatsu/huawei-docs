@@ -1,0 +1,147 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding Centralized License Control">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0092.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0093.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0096.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002007621817">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Understanding Centralized License Control</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002007621817"></a><a name="EN-US_CONCEPT_0000002007621817"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding Centralized License Control</h1>
+<div><p></p>
+<p>On a WAC + Fit AP network architecture, licenses can be loaded on the WAC to control the number of APs. With centralized license control, licenses on the network are centralized on the license server to form a resource pool for unified management and allocation.</p>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Network diagram of centralized license control</span><br><span><img src="images/fig_dc_cfg_wlan_lic_000301.png" width="518.7" height="295.09082400000005" title="Click to enlarge" class="imgResize"></span></div>
+<ul><li>License client: reports and applies for licenses.</li><li>License server: centrally manages and allocates licenses.</li></ul>
+<div class="section"><h4 class="sectiontitle">Connection Establishment Between the License Server and License Clients</h4><ol><li>After enabling the centralized license control function on the license server and license clients, users specify the IP address of the license server on the license clients.</li><li>A license client sends a connection establishment request to the license server.</li><li>The license server responds to the connection establishment request, and establishes a CAPWAP tunnel with the license client. The license server and license client then communicate through the CAPWAP tunnel.</li></ol>
+<p>The license server supports connections with a maximum of <span>32</span> license clients.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">License Synchronization</h4><p>License synchronization is triggered in the following scenarios:</p>
+<ul><li>A license client establishes a connection with the license server.</li><li>After centralized license control is enabled, a license file is loaded on any WAC.</li><li>License information is changed due to license application or release on the network.</li></ul>
+<p>In the preceding scenarios, the license client reports local license information to the license server, and the license server then synchronizes the latest license resource pool information to all connected license clients.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">License Application and Release</h4><p>After successfully establishing connections with the license server, license clients do not use the local licenses. Instead, the license server allocates licenses in the license resource pool to them.</p>
+<ul><li>Applying for licenses<ol><li>When an AP requests to go online on any WAC, the WAC checks the number of online APs and remaining licenses in the license resource pool. If the number of online APs does not exceed the upper limit and the license resource pool has available licenses, the WAC allows the AP to go online.</li><li>The WAC reports license information changes to the license server.</li><li>The license server updates the license resource pool and synchronizes it to all license clients.</li></ol>
+</li><li>Releasing licenses<ol><li>When an AP goes offline from the WAC, the WAC releases the corresponding license.</li><li>The WAC reports license information changes to the license server.</li><li>The license server updates the license resource pool and synchronizes it to all license clients.</li></ol>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Handling of Disconnection Between the License Server and License Clients</h4><div class="p">After a license client is disconnected from the license server, the license client performs the following operations:<ul><li>Retains the total number of licenses in the license resource pool. The number of available licenses is updated to the total number minus the number of licenses used by the license client. The validity period of the license resource pool is 30 days.</li><li>Supports only local licenses on the license client after the license resource pool expires. If the number of used licenses exceeds the number of local licenses, the WAC randomly disconnects some APs until the number of used licenses is the same as the number of local licenses.</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Local licenses refer to the licenses imported to the local WAC.</p>
+</div></div>
+</div>
+<div class="p">The license server performs the following operations:<ul><li>Excludes the number of licenses used on the disconnected license client from the number of used licenses in the license resource pool.</li><li>Retains the number of licenses in the license resource pool for 30 days. If the connection is not restored after 30 days, the license resource pool on the license server deducts the local licenses reported by the disconnected license client and then synchronizes the latest resource pool information to other properly connected license clients.</li></ul>
+</div>
+<p><a href="#EN-US_CONCEPT_0000002007621817__table_1">Table 1</a> assumes that WAC_2 (license client) has 500 local licenses and 600 licenses have been used. After the license resource pool becomes invalid, the number of licenses used by WAC_2 is 100 greater than the number of local licenses. As a result, 100 APs are forcibly disconnected, and 500 local licenses on WAC_2 is deducted from the total number of licenses in the resource pool on the license server.</p>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000002007621817__table_1"></a><a name="table_1"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000002007621817__table_1" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Example for using licenses after disconnection</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="19.958004199580042%" id="mcps1.4.7.5.2.6.1.1" liSelected="liSelected"><p>License Client-Server Connection Status</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="18.158184181581845%" id="mcps1.4.7.5.2.6.1.2" liSelected="liSelected"><p>Number of Local Licenses on WAC_2</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="17.16828317168283%" id="mcps1.4.7.5.2.6.1.3" liSelected="liSelected"><p>Number of Licenses Used by WAC_2</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="22.357764223577643%" id="mcps1.4.7.5.2.6.1.4" liSelected="liSelected"><p>Number of Licenses in the License Resource Pool on WAC_2 (Used/Total)</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="22.357764223577643%" id="mcps1.4.7.5.2.6.1.5" liSelected="liSelected"><p>Number of Licenses in the License Resource Pool on the License Server (Used/Total)</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="19.958004199580042%" headers="mcps1.4.7.5.2.6.1.1 "><p>Properly connected</p>
+</td>
+<td class="cellrowborder" valign="top" width="18.158184181581845%" headers="mcps1.4.7.5.2.6.1.2 "><p>500</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.16828317168283%" headers="mcps1.4.7.5.2.6.1.3 "><p>600</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.357764223577643%" headers="mcps1.4.7.5.2.6.1.4 "><p>800/1000</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.357764223577643%" headers="mcps1.4.7.5.2.6.1.5 "><p>800/1000</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.958004199580042%" headers="mcps1.4.7.5.2.6.1.1 "><p>Disconnected (within 30 days)</p>
+</td>
+<td class="cellrowborder" valign="top" width="18.158184181581845%" headers="mcps1.4.7.5.2.6.1.2 "><p>500</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.16828317168283%" headers="mcps1.4.7.5.2.6.1.3 "><p>600</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.357764223577643%" headers="mcps1.4.7.5.2.6.1.4 "><p>600/1000</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.357764223577643%" headers="mcps1.4.7.5.2.6.1.5 "><p>200/1000</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="19.958004199580042%" headers="mcps1.4.7.5.2.6.1.1 "><p>Disconnected (more than 30 days)</p>
+</td>
+<td class="cellrowborder" valign="top" width="18.158184181581845%" headers="mcps1.4.7.5.2.6.1.2 "><p>500</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.16828317168283%" headers="mcps1.4.7.5.2.6.1.3 "><p>500</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.357764223577643%" headers="mcps1.4.7.5.2.6.1.4 "><p>Invalid</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.357764223577643%" headers="mcps1.4.7.5.2.6.1.5 "><p>200/500</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Application Scenarios of Centralized License Control</h4><p>Centralized license control can be applied to wireless configuration synchronization in VRRP HSB scenarios. You need to specify the master WAC and backup master WAC. The master WAC synchronizes wireless configurations to the backup master WAC. In this scenario, the two WACs in a VRRP group must be both license servers or license clients, as shown in <a href="#EN-US_CONCEPT_0000002007621817__fig_dc_cfg_wlan_lic_000405">Figure 2</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002007621817__fig_dc_cfg_wlan_lic_000405"><a name="EN-US_CONCEPT_0000002007621817__fig_dc_cfg_wlan_lic_000405"></a><a name="fig_dc_cfg_wlan_lic_000405"></a><span class="figcap"><b>Figure 2 </b>N+1 backup + VRRP HSB networking</span><br><span><img class="imgResize" src="images/fig_dc_cfg_wlan_lic_000405.png" width="526.6800000000001" title="Click to enlarge"></span></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ap_management_cfg_0092.html">Configuring Centralized License Control
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ap_management_cfg_0093.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ap_management_cfg_0096.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

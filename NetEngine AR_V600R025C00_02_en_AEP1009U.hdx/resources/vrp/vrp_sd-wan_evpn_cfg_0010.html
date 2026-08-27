@@ -1,0 +1,257 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configure a BGP EVPN Peer">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0123.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_sd-wan_evpn_cfg_0131.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="SD-WAN EVPN">
+<meta name="featurename" content="SD-WAN EVPN over SRv6">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001130623226">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configure a BGP EVPN Peer</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001130623226"></a><a name="EN-US_TASK_0000001130623226"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configure a BGP EVPN Peer</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001130623226__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring a BGP EVPN peer on an RR, create a route-policy to change the next-hop address of the EVPN routes (reflected by the RR to a CPE) to the RR's IP address so that the route-policy can be applied to the outbound direction during BGP EVPN peer configuration.</p>
+<pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">route-policy</span></b><strong> </strong><i><span class="varname">route-policy-name</span></i><em> </em><i><span class="varname">matchMode</span></i> <strong><span>node</span></strong> <i><span class="varname">node</span></i>
+<b><span class="cmdqueryname">apply ip-address next-hop</span></b> <i><span class="varname">address</span></i></pre>
+<p>In an SD-WAN EVPN scenario, no direct public network routes exist between CPEs. If the RR directly reflects an EVPN route to a CPE, the route will be inactive because no reachable next hop is available. To prevent this, configure a route-policy on the RR to change the next-hop address of the EVPN route to the RR's address. In this case, there are public network static routes between the CPE and RR (meeting the prerequisite for configuring a BGP SD-WAN peer), and the EVPN route is active after reaching the CPE.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001130623226__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>As shown in <a href="#EN-US_TASK_0000001130623226__fig135155645018">Figure 1</a>, after the CPE at each site obtains TNP information of the peer end, you need to configure a BGP EVPN peer relationship between the CPE and RR. In this way, the local IP prefix routes (VPN routes of user services) of each CPE are reflected by the RR to other CPEs, which triggers the establishment of an SD-WAN tunnel for forwarding service data between CPEs and establishes the data channel of the underlay network. In addition, the IP prefix routes finally recurse to the SD-WAN tunnel, establishing service paths on the overlay network.</p>
+<div class="fignone" id="EN-US_TASK_0000001130623226__fig135155645018"><a name="EN-US_TASK_0000001130623226__fig135155645018"></a><a name="fig135155645018"></a><span class="figcap"><b>Figure 1 </b>Establishing a BGP EVPN peer relationship</span><br><span><img class="vsd" src="figure/en-us_image_0000001176662803.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001130623226__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li><span>Enable the BGP EVPN address family and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">l2vpn-family evpn</span></b></pre>
+</p></li><li><span>Enable the capability of exchanging routing information with a specified peer in the BGP EVPN address family view.</span><p><pre class="screen"><b><span class="peer enable">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>enable</span></strong></pre>
+<p>In this example, you need to enable the capability of exchanging BGP EVPN routes with the peer end in the BGP EVPN address family view of the CPE and RR.</p>
+<p>By default, the ability to exchange EVPN routes with a peer or peer group is automatically enabled only in the BGP-IPv4 unicast address family.</p>
+</p></li><li><span>Set the encapsulation attribute carried in the IP prefix routes advertised to a BGP EVPN peer to SD-WAN.</span><p><pre class="screen"><b><span class="peer advertise encap-type">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>advertise encap-type</span></strong> { <strong><span>sd-wan</span></strong> }</pre>
+<p>By default, the EVPN routes advertised by the local device to a peer carry the VXLAN encapsulation attribute.</p>
+<p>Set the encapsulation attribute carried in the IP prefix routes advertised to a BGP EVPN peer to SD-WAN in the BGP-EVPN address family on both the CPE and RR.</p>
+</p></li><li><span>Configure the local device as an RR and specify the CPE as the RR client.</span><p><pre class="screen"><b><span class="peer reflect-client">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>reflect-client</span></strong></pre>
+<p>Perform this step on the RR. This step is not required on the CPE.</p>
+<p>By default, the RR and its clients are not configured.</p>
+</p></li><li><span>Disable VPN target filtering for EVPN routes on the RR.</span><p><pre class="screen"><b><span class="policy vpn-target">undo policy vpn-target</span></b></pre>
+<p>The RR does not need to be configured with VPN instances for user services. To prevent the RR from discarding EVPN routes due to RT mismatch, you need to perform this step on the RR.</p>
+<p>By default, VPN target-based filtering is enabled for VPN routes.</p>
+</p></li><li><span>Configure an export policy on the RR.</span><p><pre class="screen"><b><span class="peer route-policy export">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">policy-name</span></i> <strong><span>export</span></strong></pre>
+<p>Configure the route-policy created in the prerequisites as the export policy, and change the next-hop address of the EVPN routes reflected by the RR to the CPE to the RR's IP address. For details about how to use an export policy to modify other route attributes, see the optional functions in <a href="#EN-US_TASK_0000001130623226__step18767943122512">Step 10</a>.</p>
+<p>By default, no route-policy is specified for a peer. That is, no route-policy is applied to the routes to be advertised to a peer.</p>
+</p></li><li><span>Enable the RR to modify the path attributes of BGP routes using an export policy.</span><p><pre class="screen"><b><span class="reflect change-path-attribute">reflect change-path-attribute</span></b></pre>
+<p>By default, an RR cannot modify path attributes of BGP routes using an export policy. To enable the RR to change the next-hop address of the EVPN routes reflected to the CPE to the RR's IP address using an export policy, perform this step on the RR.</p>
+</p></li><li id="EN-US_TASK_0000001130623226__step18767943122512"><span id="EN-US_TASK_0000001130623226__">Configure optional functions in the BGP EVPN address family as required.</span><p>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Optional functions supported by the BGP EVPN address family</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.3.10.2.1.2.4.1.1" liSelected="liSelected"><p>Function</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.3033303330333%" id="mcps1.3.3.10.2.1.2.4.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.36333633363336%" id="mcps1.3.3.10.2.1.2.4.1.3" liSelected="liSelected"><p>Remarks</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Enable next hop recursion of EVPN routes to default routes.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="cmdqueryname">nexthop recursive-lookup default-route</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>This function is applicable only to CPEs.</p>
+<p>Due to a fault or configuration error, EVPN routes may fail to recurse to SD-WAN tunnels because the routes are unreachable, resulting in service interruptions. To prevent this, configure this function on the local CPE and configure the remote CPE to send a default route to the local CPE. In this way, if the next hop of a specific route on the local CPE is unreachable, services can recurse to the default route and then to an SD-WAN path for forwarding, ensuring service continuity.</p>
+<p>By default, next hop-based recursion to the default route is disabled.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Add a specified BGP EVPN peer to a peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer group">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>group</span></strong> <i><span class="varname">group-name</span></i></p>
+<p><b><span class="peer enable">peer</span></b> <i><span class="varname">group-name</span></i> <strong><span>enable</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>To improve configuration efficiency, you can add multiple BGP EVPN peers that have the same policy applied to a peer group. Then, you only need to configure BGP EVPN peers based on the peer group.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the encapsulation attribute carried in the IP prefix routes advertised to a BGP EVPN peer group to SD-WAN.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer advertise encap-type (group)">peer</span></b> <i><span class="varname">group-name</span></i> <strong><span>advertise encap-type</span></strong> { <strong><span>sd-wan</span></strong> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Configure a specified BGP EVPN peer group as an RR client.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer reflect-client">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>reflect-client</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>This function is applicable only to RRs.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Apply a specified route-policy to the routes to be advertised to a BGP EVPN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer route-policy export">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> <strong><span>export</span></strong></p>
+<p><b><span class="peer route-policy export">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> <strong><span>export</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>Before configuring this function, you need to create a route-policy using <i><span class="varname">policy-name</span></i> and modify route attributes in the route-policy.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Apply a specified route-policy to the routes received from a BGP EVPN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer route-policy import">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> <strong><span>import</span></strong></p>
+<p><b><span class="peer route-policy import">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> <strong><span>import</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>Before configuring this function, you need to create a route-policy using <i><span class="varname">policy-name</span></i> and modify route attributes in the route-policy.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Allow advertising community attributes to a BGP EVPN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer advertise-community">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>advertise-community</span></strong></p>
+<p><b><span class="peer advertise-community">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>advertise-community</span></strong></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>Before configuring this function, you need to create a route-policy, set the community attributes of routes, and apply the route-policy when configuring route advertisement.</p>
+<p>By default, a device does not advertise community attributes to any peer or peer group.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the preferred value for a BGP EVPN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer preferred-value">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>preferred-value</span></strong> <i><span class="varname">preferredvalue</span></i></p>
+<p><b><span class="peer preferred-value">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>preferred-value</span></strong> <i><span class="varname">preferredvalue</span></i></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set a cluster ID for the RR.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="reflector cluster-id">reflector cluster-id</span></b> { <i><span class="varname">cluster-id-value</span></i> | <i><span class="varname">cluster-id-ipv4</span></i> }</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>This function is applicable only to RRs.</p>
+<p>When multiple RRs are configured in a cluster, you need to set the same cluster ID for all of the RRs to identify the cluster and prevent routing loops.</p>
+<p>By default, each RR uses its own router ID as the cluster ID.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the maximum hold-off time for the local device to wait for GR recovery on the peer end.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer graceful-restart static-timer">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>graceful-restart static-timer</span></strong> <i><span class="varname">restart-time</span></i></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><div class="p">Two methods are available to set the hold-off time for re-establishing BGP EVPN peer relationships:<ul><li><p>Run the <b><span class="cmdqueryname">graceful-restart timer restart</span></b> command in the BGP view. The maximum hold-off time supported by this command is 3600s.</p>
+</li><li><p>Run the <b><span class="cmdqueryname">peer graceful-restart static-timer</span></b> command in the BGP EVPN address family view. This command allows you to set a hold-off time greater than 3600s.</p>
+</li></ul>
+</div>
+<p>By default, the maximum duration from the time when the local end detects the restart of the peer end to the time when the local end reestablishes the BGP EVPN session is 150 seconds.</p>
+<p>If both methods are used, the latter takes precedence.</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p>This function can be configured only after GR has been enabled in the BGP view.</p>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Configure the device to lower the priorities of routes received from a peer in GR state.</p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="cmdqueryname">route-lowest-priority graceful-restart</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>When GR is enabled on the local device and the peer from which the optimal route is received restarts, the peer enters the GR state and the local device retains the routes received from that peer. In this situation, by default, the traffic steering rules remain unchanged and the retained routes continue to be preferred. As a result, traffic is not switched to other paths, leading to packet loss. To solve this problem, you can run the <b><span class="cmdqueryname">route-lowest-priority graceful-restart</span></b> command on the local device to lower the priorities of routes received from a peer in GR state. When this command is configured and routes are imported from the EVPN address family into a BGP VPN instance, the priorities of those imported routes are also reduced accordingly.</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p>This function takes effect only when GR is enabled on the local device and the peer is in the GR state. For details about how to enable GR, see <a href="../vrp_bgp_cfg_0119.html">Enabling GR for BGP Peers</a>.</p>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the maximum number of routes that can be accepted from a BGP EVPN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer route-limit">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>route-limit</span></strong> <em>limit</em> [ <em>percentage</em> ] [ <strong>alert-only</strong> | <strong>idle-forever</strong> | <strong>idle-timeout</strong><em> times</em> ]</p>
+<p><b><span class="peer route-limit">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>route-limit</span></strong> <em>limit</em> [ <em>percentage</em> ] [ <strong>alert-only</strong> | <strong>idle-forever</strong> | <strong>idle-timeout</strong><em> times</em> ]</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>By default, there is no limit on the number of routes that can be received from a peer or peer group.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the interval for sending Update packets with the same route prefix to a BGP EVPN peer or peer group.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer route-update-interval">peer</span></b> <i><span class="varname">peerIpv4Addr</span></i> <strong><span>route-update-interval</span></strong> <i><span class="varname">interval</span></i></p>
+<p><b><span class="peer route-update-interval">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>route-update-interval</span></strong> <i><span class="varname">interval</span></i></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>By default, a device sends Update messages to IBGP peers at an interval of 15s and to EBGP peers at an interval of 30s.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Disable BGP EVPN slow peer detection.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="slow-peer absolute-detection threshold">slow-peer absolute-detection disable</span></b></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>By default, BGP EVPN slow peer detection is enabled.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the BGP EVPN slow peer detection threshold.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="slow-peer absolute-detection threshold">slow-peer absolute-detection threshold</span></b> <i><span class="varname">absolute-threshold-value</span></i></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>By default, the BGP EVPN slow peer detection threshold is 60s.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Set the delay in responding to next hop recursion changes of BGP EVPN routes.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="nexthop recursive-lookup delay">nexthop recursive-lookup delay</span></b><strong> </strong>[ <em><i><span class="varname">delay-time</span></i></em> ]</p>
+<p><b><span class="nexthop recursive-lookup delay">nexthop recursive-lookup non-critical-event delay</span></b><strong> </strong>[ <em><i><span class="varname">nonCrit-delay-time</span></i></em> ]</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>If the next hop recursion of BGP EVPN routes changes frequently, you can set the delay in responding to the change, which reduces unnecessary route re-selection and re-advertisement.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.3.10.2.1.2.4.1.1 "><p>Allow the local AS number to be contained in the AS_Path attribute of the route sent by a BGP EVPN peer or peer group. You can also set the number of times that the local AS number can be repeated in the AS_Path attribute.</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.3033303330333%" headers="mcps1.3.3.10.2.1.2.4.1.2 "><p><b><span class="peer route-update-interval">peer</span></b> <i><span class="varname">ipv4-address</span></i> <strong><span>allow-as-loop</span></strong> <i><span class="varname">[ number ]</span></i></p>
+<p><b><span class="peer route-update-interval">peer</span></b> <i><span class="varname">peerGroupName</span></i> <strong><span>allow-as-loop</span></strong> <i><span class="varname">[ number ]</span></i></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.36333633363336%" headers="mcps1.3.3.10.2.1.2.4.1.3 "><p>By default, local AS number repetition is not allowed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0007.html">Configuring SD-WAN EVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0123.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/vrp_sd-wan_evpn_cfg_0131.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

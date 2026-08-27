@@ -1,0 +1,71 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding Association Between VRRP6 and a Route Monitoring Group">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_vrrp6_cfg_0154.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_vrrp6_cfg_0156.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="VRRP6">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="VRRP6">
+<meta name="featuretype" content="High Availability">
+<meta name="featurename" content="VRRP6">
+<meta name="featuretype" content="High Availability">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002037342309">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding Association Between VRRP6 and a Route Monitoring Group</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002037342309"></a><a name="EN-US_CONCEPT_0000002037342309"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding Association Between VRRP6 and a Route Monitoring Group</h1>
+<div id="conbody0000002037342309"><div class="section" id="EN-US_CONCEPT_0000002037342309__section224606293214008"><h4 class="sectiontitle">Application Scenarios</h4><p id="EN-US_CONCEPT_0000002037342309__p132734265914">To prevent the loss of service traffic resulting from the withdrawal or deactivation of an uplink IPv6 route, configure a VRRP6 group to track the uplink route so that a master/backup switchover can be triggered in a timely manner. Note that a VRRP6 group can track only one VRRP-disabled route. This means that the configuration workload is very heavy if there are many such routes to track. To reduce the configuration workload, you can add multiple VRRP-disabled routes to a route monitoring group, and then enable a VRRP6 group to track the route monitoring group. When the rate of IPv6 route failures within the route monitoring group reaches a specified threshold, the VRRP6 group performs a master/backup switchover to ensure reliable service transmission.</p>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000002037342309__section1082949565214008"><h4 class="sectiontitle">Fundamentals</h4><p id="EN-US_CONCEPT_0000002037342309__p198164301539">A VRRP6 group can be configured to track a route monitoring group to determine whether the uplink routes in a batch are reachable. If the uplink route is withdrawn or becomes inactive after the uplink fails or the network topology changes, hosts on the LAN cannot access the external network through gateways. Then, DeviceA calculates the IPv6 route failure rate within the route monitoring group according to the preset weight. Once the rate of route failures within the route monitoring group reaches the configured fault threshold, the master device in the VRRP6 group reduces its priority to allow a backup device with a higher priority to preempt the master role. This process ensures uninterrupted communication between the hosts and external network. After the fault on the uplink is rectified, the reduced VRRP6 priority is restored and the master/backup status is renegotiated.</p>
+<p id="EN-US_CONCEPT_0000002037342309__p3780394214008">As the network shown in <a href="#EN-US_CONCEPT_0000002037342309__fig1077233935817">Figure 1</a>, a VRRP6 group is configured on DeviceA and DeviceB. DeviceA is the master and forwards user-to-network traffic, and DeviceB is the backup. On DeviceA, the VRRP6 group is configured to track route monitoring group G1. G1 contains routes to 2001:DB8:1::1/64 and 2001:DB8:2::1/64, and the weights of these routes are set to 100. The threshold for the route failure rate is set to 45.</p>
+<p id="EN-US_CONCEPT_0000002037342309__p196564251455">When the uplink of DeviceA fails, the route to 2001:DB8:1::1/64 becomes unreachable, and the failure rate of G1 reaches the threshold configured for the VRRP6 group on DeviceA. As such, DeviceA reduces its VRRP6 priority so that its new priority is lower than the priority of DeviceB. User traffic is then forwarded to the Layer 3 network through DeviceB, thereby preventing user traffic loss.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002037342309__fig1077233935817"><a name="EN-US_CONCEPT_0000002037342309__fig1077233935817"></a><a name="fig1077233935817"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring association between VRRP6 and a route monitoring group</span><br><span><img class="vsd" id="EN-US_CONCEPT_0000002037342309__image377233917587" src="figure/en-us_image_0000002037552205.png" width="NaN" height="NaN"></span></div>
+<p id="EN-US_CONCEPT_0000002037342309__p1159630827214008">The following example illustrates how a route affects the status of a VRRP group when the link goes down and after the link recovers.</p>
+<ul id="EN-US_CONCEPT_0000002037342309__ul99236645214008"><li id="EN-US_CONCEPT_0000002037342309__li1688026509214008">DeviceA functions as the master device in the VRRP6 group with a priority of 120.</li><li id="EN-US_CONCEPT_0000002037342309__li92620015214008">DeviceB works in immediate preemption mode and functions as the backup device in the VRRP6 group with a priority of 100.</li><li id="EN-US_CONCEPT_0000002037342309__li211531116214008">On DeviceA, the VRRP6 group is configured to track route monitoring group G1. G1 contains routes to 2001:DB8:1::1/64 and 2001:DB8:2::1/64, and the weights of these routes are set to 100. The threshold for the route failure rate is set to 45. If the network segment 2001:DB8:1::1/64 is unreachable, the failure rate is 50. As a result, the priority of DeviceA decreases by 40.</li></ul>
+<p id="EN-US_CONCEPT_0000002037342309__p91123945214008">The implementation is as follows:</p>
+<ol id="EN-US_CONCEPT_0000002037342309__ol369752731214008"><li id="EN-US_CONCEPT_0000002037342309__li849619987214008">Normally, DeviceA periodically sends VRRP Advertisement packets to inform DeviceB that it is working properly.</li><li id="EN-US_CONCEPT_0000002037342309__li465084166214008">When the uplink of DeviceA fails, the route to 2001:DB8:1::1/64 becomes unreachable. G1 then notifies the VRRP6 group of the route status change. After receiving this notification, DeviceA reduces its VRRP6 priority to 80 (120 – 40 = 80). Because the VRRP6 priority of DeviceB, which is working in immediate preemption mode, is now higher than the priority of DeviceA, DeviceB immediately preempts the master role and sends gratuitous ARP packets to allow DeviceE to update address entries.</li><li id="EN-US_CONCEPT_0000002037342309__li2086432544214008"><p id="EN-US_CONCEPT_0000002037342309__p13571611880"><a name="EN-US_CONCEPT_0000002037342309__li2086432544214008"></a><a name="li2086432544214008"></a>When the faulty link recovers, the route to 2001:DB8:1::1/64 becomes reachable again. DeviceA then restores its VRRP6 priority to 120 (80 + 40 = 120), preempts the master role, and sends VRRP6 Advertisement and gratuitous ARP packets. After DeviceB receives the Advertisement packet carrying a priority higher than its own, it switches to the backup state.</p>
+</li><li id="EN-US_CONCEPT_0000002037342309__li531301246214008">Both DeviceA and DeviceB are restored to their original statuses. As such, DeviceA forwards user-to-network traffic again.</li></ol>
+<p id="EN-US_CONCEPT_0000002037342309__p1770200236214008">The preceding process shows that by configuring VRRP6 tracking a route monitoring group, the reachability of uplink routes can be monitored in batches. If the failure rate of routes in the route monitoring group reaches a specified threshold, the VRRP6 priority is adjusted to trigger a master/backup switchover. This allows uplink traffic to be switched to the original backup device, preventing traffic loss.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_vrrp6_cfg_0154.html">Configuring a VRRP6 Group to Track a Route Monitoring Group
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_vrrp6_cfg_0156.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

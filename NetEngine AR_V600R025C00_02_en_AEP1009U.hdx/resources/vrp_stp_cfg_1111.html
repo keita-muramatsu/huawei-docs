@@ -1,0 +1,93 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring BPDU Protection">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_stp_cfg_1109.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_stp_cfg_1110.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_stp_cfg_1112.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MSTP">
+<meta name="featurename" content="RSTP">
+<meta name="featurename" content="STP">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MSTP">
+<meta name="featurename" content="RSTP">
+<meta name="featurename" content="STP">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="featurename" content="MSTP">
+<meta name="featurename" content="RSTP">
+<meta name="featurename" content="STP">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001292238732">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring BPDU Protection</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001292238732"></a><a name="EN-US_TASK_0000001292238732"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring BPDU Protection</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001292238732__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In most cases, edge ports are connected directly to user terminals and do not receive BPDUs. If edge ports on a device receive forged BPDUs, the device will change the edge ports to non-edge ports and recalculate the spanning tree, causing network flapping. To prevent this problem, BPDU protection can be enabled on the device to prevent malicious spoofed BPDU attacks. For details about edge port configuration, see <a href="vrp_stp_cfg_1096.html">Configuring Edge Ports and BPDU Filtering Ports (for RSTP/MSTP)</a>.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>BPDU protection only takes effect on edge ports that are configured using the <b><span class="cmdqueryname">stp edged-port</span></b> or <b><span class="cmdqueryname">stp edged-port default</span></b> command, and not for those configured through automatic edge port detection.</p>
+</div></div>
+<p>The following procedure applies only to devices with edge ports.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001292238732__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>(Optional) Enter the MSTP process view.</span><p><p id="EN-US_TASK_0000001292238732__en-us_task_0000001130783134_p16533457112820">Perform this step to set system parameters only when the MSTP process ID is not 0. Skip this step if the MSTP process ID is 0.</p>
+<pre class="screen" id="EN-US_TASK_0000001292238732__en-us_task_0000001130783134_screen1136151023420"><b><span class="cmdqueryname" id="EN-US_TASK_0000001292238732__en-us_task_0000001130783134_cmdname12422107345">stp process</span></b> <i><span class="varname" id="EN-US_TASK_0000001292238732__en-us_task_0000001130783134_varname7421210123412">process-id</span></i></pre>
+</p></li><li><span>Enable BPDU protection.</span><p><pre class="screen"><b><span class="cmdqueryname">stp bpdu-protection</span></b></pre>
+<p>By default, BPDU protection is disabled.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If an edge port for which BPDU protection is enabled receives BPDUs, the edge port will enter the error-down state with its attributes unchanged. To restore an error-down edge port to the up state, use one of the following methods:</p>
+<ul><li>In the interface view, run the <b><span class="cmdqueryname">restart</span></b> command.</li><li>In the interface view, run the <b><span class="cmdqueryname">shutdown</span></b> and <b><span class="cmdqueryname">undo shutdown</span></b> commands in sequence.</li><li>In the system view, run the <b><span class="cmdqueryname">error-down auto-recovery</span></b> <strong><span>cause</span></strong> <strong><span>bpdu-protection</span></strong> <strong><span>interval</span></strong> <i><span class="varname">Interval-value</span></i> command to enable the port to recover to the up state and set a recovery delay. <i><span class="varname">interval-value</span></i> specifies a recovery delay after which the error-down port will go up automatically. Pay attention to the following points:<ul><li>By default, the function of enabling a port in the error-down state to automatically go up is disabled. Therefore, there is no default recovery delay. When configuring this command, you must specify a recovery delay.</li><li>A smaller value indicates a shorter delay for the port to automatically go up and a higher frequency at which the port alternates between up and down states.</li><li>A larger value indicates a longer delay for the port to automatically go up and a longer traffic interruption duration.</li><li>The automatic recovery function takes effect only for ports that enter the error-down state after the <strong>error-down auto-recovery</strong> command is configured, but does not take effect for ports that have entered the error-down state before the command is configured.</li></ul>
+</li></ul>
+</div></div>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001292238732__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the following commands and check the BPDU-Protection field to verify the BPDU protection configuration.</p>
+<ul><li><b><span class="cmdqueryname">display stp</span></b> [ <strong><span>process</span></strong> <i><span class="varname">process-id</span></i> ] [ <strong><span>instance</span></strong> <i><span class="varname">instance-id</span></i> ] [ <strong><span>interface</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> | <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> ]</li><li><b><span class="cmdqueryname">display stp active</span></b></li><li><b><span class="cmdqueryname">display stp global</span></b></li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_stp_cfg_1109.html">Configuring RSTP/MSTP Protection
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_stp_cfg_1110.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_stp_cfg_1112.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

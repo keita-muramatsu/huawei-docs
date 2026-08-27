@@ -1,0 +1,66 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding BFD for Perlink">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_bfd_cfg_0042.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bfd_cfg_0044.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BFD">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BFD">
+<meta name="featuretype" content="High Availability">
+<meta name="featurename" content="BFD">
+<meta name="featuretype" content="High Availability">
+<meta name="featuretype" content="High Availability">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001130782126">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding BFD for Perlink</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001130782126"></a><a name="EN-US_CONCEPT_0000001130782126"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding BFD for Perlink</h1>
+<div><p>BFD for Perlink is used to detect inter-board Eth-Trunk member link faults in a VLAN. Two devices are directly connected through Eth-Trunk interfaces that are added to the same VLAN, and a VLANIF interface is created for the VLAN on each device. If a single-hop BFD for IP session is bound to the VLANIF interface to detect Eth-Trunk link faults, BFD selects one of the Eth-Trunk member links as the detection path and monitors this member link only. Once BFD detects that the selected member link is down, it assumes that the Eth-Trunk link is down even if the other Eth-Trunk member links are up.</p>
+<p>To resolve this problem, configure a BFD for Perlink session to monitor Eth-Trunk member links. After a BFD for Perlink session is bound to a VLANIF interface, BFD creates a dynamic unicast BFD sub-session for each Eth-Trunk member interface as well as a management session. The BFD sub-sessions perform negotiation and detection independently and report their statuses to the management session, which does not perform negotiation or detection and instead only manages the reported sub-session status. The management session goes down only when all sub-sessions are down.</p>
+<p>Currently, BFD sub-sessions can be configured to detect link faults in one-arm BFD Echo mode. The following describes how BFD for Perlink works on the network shown in <a href="#EN-US_CONCEPT_0000001130782126__fig832612477477">Figure 1</a>.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001130782126__fig832612477477"><a name="EN-US_CONCEPT_0000001130782126__fig832612477477"></a><a name="fig832612477477"></a><span class="figcap"><b>Figure 1 </b>Network diagram of BFD for Perlink</span><br><span><img class="vsd" src="figure/en-us_image_0000001130782152.png"></span></div>
+<div class="section"><div class="p">RB1 is connected to RB2 through Device1. GW1 and RB1 as well as GW2 and RB2 are directly connected through Eth-Trunk interfaces. The Eth-Trunk interfaces on GW1 and GW2 are added to the same VLAN, and a VLANIF interface is created for that VLAN. BFD is deployed to detect faults on the link between GW1 and GW2. After a BFD for Perlink session is configured on GW1, the following occurs:<ol><li>GW1 creates a BFD sub-session for each Eth-Trunk member interface, and these sub-sessions send BFD Echo packets. Each BFD Echo packet carries the IP address of the local VLANIF interface as the destination IP address, GW2's MAC address as the destination MAC address, and dynamically created local and remote discriminators. In addition, each BFD Echo packet is sent out through a specified member interface.</li><li>After receiving a BFD Echo packet, RB1 forwards it through Device1.</li><li>Upon receipt, RB2 uses a hash algorithm to select a member link to forward the BFD Echo packet.</li><li>After receiving the BFD Echo packet, GW2 finds that the destination IP address of the packet is the IP address of the VLANIF interface on GW1, and immediately loops back the packet on the forwarding plane.</li><li>Upon receipt, RB2 forwards the packet through Device1.</li><li>When the BFD Echo packet arrives at RB1, RB1 also uses a hash algorithm to select an Eth-Trunk member link and forwards the packet to GW1.</li></ol>
+</div>
+<p>If Eth-Trunk member link 1 between GW1 and RB1 fails, sub-session 1 of the BFD for Perlink session goes down. However, as sub-session 2 remains up, the management session is also up, preventing BFD from incorrectly reporting link faults.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_bfd_cfg_0042.html">Configuring BFD for Perlink
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bfd_cfg_0044.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

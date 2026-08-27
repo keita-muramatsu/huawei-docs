@@ -1,0 +1,111 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="RU Onboarding Exception">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0032.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0034.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001568714120">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>RU Onboarding Exception</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001568714120"></a><a name="EN-US_TOPIC_0000001568714120"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">RU Onboarding Exception</h1>
+<div><div class="section"><h4 class="sectiontitle">Symptom</h4><p>Connect an RU to the central device, power on the RU, and run the <strong>display remote-unit</strong> command in the user view on the central device to check RU information. The following situations are considered abnormal:</p>
+<ol><li>The RU status is not <strong>Normal</strong>, <strong>Upgrading</strong>, or <strong>Configuring</strong>.</li><li>Information about the RU is not displayed.</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Possible Causes</h4><ul><li>The upstream link of the RU is incorrectly connected.</li><li>XLDP is not enabled on the central device.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li><span>Check whether the uplink is correctly connected.</span><p><ol type="a"><li>Check whether the uplink interfaces of the RU are directly connected to the central device. Check the cable connection between devices and ensure that the uplink interfaces of the RU are directly connected to the central device.</li><li>Check whether the two uplink interfaces of the RU connect to the same central device. Check the cable connection between devices and ensure that the two uplink interfaces of the RU are connected to the same central device.</li><li>Check whether the two interfaces connecting the central device to the RU are added to the same Eth-Trunk. Check the cable connection between devices, record the two interfaces connecting the central device and the RU, enter the views of the two interfaces on the central device, and run the <strong>display this</strong> command to check the Eth-Trunk to which the interfaces are added. Ensure that the two downlink interfaces connecting the central device and the RU are added to the same Eth-Trunk.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[HUAWEI-<span>10GE</span><span>0/0/1</span>] <strong>display this</strong>
+ eth-trunk 111
+return
+[HUAWEI-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[HUAWEI] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[HUAWEI-<span>10GE</span><span>0/0/1</span>] <strong>display this</strong>
+ eth-trunk 111
+return
+[HUAWEI-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</li></ol>
+<p>If the preceding links are correctly connected, go to Step 2.</p>
+</p></li><li><span>Check whether XLDP is enabled on the central device.</span><p><ol type="a"><li>Check whether XLDP is enabled globally.<div class="p"># Run the <strong>display current-configuration | include xldp</strong> command to check global XLDP configurations. If the command output contains <strong>xldp disable</strong>, XLDP is disabled globally. In this case, run the <strong>xldp enable</strong> command to enable XLDP. If no information is displayed, XLDP is enabled globally.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>display current-configuration | include xldp</strong>
+ xldp disable
+[HUAWEI] <strong>xldp enable</strong>
+[HUAWEI] <strong>display current-configuration | include xldp</strong></pre>
+</div>
+</li><li>Check whether XLDP is enabled on the interface connecting the central device and RU.<div class="p"># Run the <strong>display this include-default | include xldp</strong> command on the interface to check the XLDP configuration. If the command output contains <strong>xldp disable</strong>, XLDP is disabled globally. In this case, run the <strong>xldp enable</strong> command to enable XLDP. If no information is displayed, XLDP is enabled globally.<pre class="screen">[HUAWEI] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[HUAWEI-<span>10GE</span><span>0/0/1</span>] <strong>display this include-default | include xldp</strong>
+ xldp disable
+[HUAWEI-<span>10GE</span><span>0/0/1</span>] <strong>xldp enable</strong>
+[HUAWEI-<span>10GE</span><span>0/0/1</span>] <strong>display this include-default | include xldp</strong>
+[HUAWEI-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</div>
+</li></ol>
+</p></li><li><span>Check statistics about sent and received XLDP packets on the interface connecting the central device and RU.</span><p><pre class="screen">[HUAWEI] <strong>display</strong> <strong>xldp statistics interface <span>10GE</span><span>0/0/1</span></strong> 
+Statistics for <span>10GE</span><span>0/0/1</span>: 
+Transmitted frames total      : 13 
+  Hello frames                : 13 
+  Channel frames              : 0 
+Received frames total         : 13 
+  Hello frames                : 13 
+  Channel ACK frames          : 0 
+[HUAWEI] <strong>quit</strong></pre>
+<p>In the command output, <strong>Transmitted frames total</strong> indicates the number of XLDP packets sent by the central device interface, and <strong>Received frames total</strong> indicates the number of XLDP packets received by the central device interface. If there are no statistics about sent and received XLDP packets on the interface, perform Step 4.</p>
+</p></li><li><span>Enable debugging on the central device and collect debugging information for maintenance personnel to preliminarily determine the fault.</span><p><div class="p"># Before running this command, run the <strong>terminal debugging</strong> and <strong>terminal monitor</strong> commands to enable system debugging.<pre class="screen">&lt;HUAWEI&gt; <strong>terminal debugging</strong> 
+&lt;HUAWEI&gt; <strong>terminal monitor</strong>
+&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>info-center enable</strong>
+[HUAWEI] <strong>diagnose</strong> 
+[HUAWEI-diagnose] <strong>debugging remote-unit manage all</strong></pre>
+</div>
+</p></li><li><span><span class="keyword">Collect log and configuration information and contact technical support personnel. </span><span><span>You can run the <strong>display diagnostic-information</strong> command to collect diagnostic information.</span></span></span></li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">Common Configuration Errors for Intelligent Simplified Campus Networks
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0032.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0034.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

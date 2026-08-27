@@ -1,0 +1,91 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Enabling GR for BGP Peers">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0117.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_bgp_cfg_0121.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="BGP">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001551559721">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Enabling GR for BGP Peers</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001551559721"></a><a name="EN-US_TASK_0000001551559721"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Enabling GR for BGP Peers</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001551559721__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>A BGP restart causes re-establishment of all the involved peer relationships, resulting in traffic interruption. Enabling GR globally can prevent traffic interruption. However, this will disconnect all the BGP peer relationships on a device and cause the device to re-negotiate the GR capability with these peers, which affects all the BGP-dependent services running on the live network. To prevent this problem, you can enable GR on a BGP speaker for specified BGP peers so that the BGP speaker can establish GR-capable BGP sessions with the specified peers through negotiation.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001551559721__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="system-view">system-view</span></b></pre>
+</p></li><li><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="bgp">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</p></li><li><span>Enable GR and configure the device to advertise the GR capability to the specified BGP peer or peer group.</span><p><pre class="screen"><b><span class="peer capability-advertise graceful-restart">peer</span></b> { <i><span class="varname">ipv4-address </span></i>| <i><span class="varname">group-name</span></i> }<strong><span> capability-advertise graceful-restart</span></strong></pre>
+<p>By default, GR is not enabled for a specified peer.</p>
+</p><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If a specified peer group has peers that do not support GR, you can run both the <b><span class="peer capability-advertise graceful-restart">peer</span></b> <i><span class="varname">group-name</span></i><strong><span> capability-advertise graceful-restart</span></strong> and <b><span class="peer local-graceful-restart enable">peer</span></b> <i><span class="varname">group-name</span></i><strong><span> local-graceful-restart enable</span></strong> commands.</p>
+</div></div>
+</p></li><li><span>Set the maximum duration for a specified peer or peer group to wait for the local BGP peer relationship to be re-established and configure the device to advertise the duration to the peer or peer group.</span><p><pre class="screen"><b><span class="peer graceful-restart timer restart">peer</span></b> { <i><span class="varname">ipv4-address </span></i>| <i><span class="varname">group-name</span></i> }<strong><span></span></strong> <strong><span>graceful-restart timer restart</span></strong> <i><span class="varname">time-value</span></i></pre>
+<p>By default, the maximum duration for a specified peer or peer group to wait for the local BGP peer relationship to be re-established is 150s.</p>
+</p><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the specified peer does not support GR, you can run the <b><span class="peer local-graceful-restart timer restart">peer</span></b> <i><span class="varname">ipv4-address</span></i><strong><span> local-graceful-restart timer restart</span></strong> <i><span class="varname">restart-time</span></i> command to set the maximum duration for the device to wait for its BGP peer relationship to be reestablished with the specified peer.</p>
+<p>If the specified peer group has peers that do not support GR, you can run both the <b><span class="peer graceful-restart timer restart">peer</span></b> <i><span class="varname">group-name</span></i> <strong><span>graceful-restart timer restart</span></strong> <i><span class="varname">time-value</span></i> and <b><span class="peer local-graceful-restart timer restart">peer</span></b> <i><span class="varname">group-name</span></i> <strong><span>local-graceful-restart timer restart</span></strong> <i><span class="varname">restart-time</span></i> commands.</p>
+</div></div>
+</p></li><li><span>(Optional) Enable the device to use the GR mode to reset BGP connections with a specified peer or peer group.</span><p><pre class="screen"><b><span class="peer graceful-restart peer-reset">peer</span></b> { <i><span class="varname">ipv4-address </span></i>| <i><span class="varname">group-name</span></i> } <strong><span>graceful-restart peer-reset</span></strong></pre>
+<p>Currently, BGP does not support dynamic capability negotiation. Therefore, a change in a BGP capability causes peer relationship re-establishment. If a BGP capability changes when BGP IPv4 unicast peer relationships have been established and IPv4 services are running properly, the BGP IPv4 unicast peer relationships will be reestablished, affecting the ongoing IPv4 services. To solve this problem, run the <b><span class="peer">peer</span></b> { <i><span class="varname">ipv4-address </span></i>|<strong><span> </span></strong><i><span class="varname">group-name</span></i> } <b><span class="graceful-restart peer-reset">graceful-restart peer-reset</span></b> command in advance.</p>
+</p></li><li><span>(Optional) Set the duration for the local end to wait for the End-of-RIB flag from the specified peer or peer group.</span><p><pre class="screen"><b><span class="peer graceful-restart timer wait-for-rib">peer</span></b> { <i><span class="varname">ipv4-address </span></i>| <i><span class="varname">group-name</span></i> } <strong><span>graceful-restart timer wait-for-rib</span></strong> <i><span class="varname">time-value</span></i></pre>
+</p><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the specified peer does not support GR, you can run the <b><span class="peer local-graceful-restart timer wait-for-rib">peer</span></b><i><span class="varname"> ipv4-address</span></i><strong><span> local-graceful-restart</span></strong> <strong><span>timer wait-for-rib</span></strong> <i><span class="varname">wfrtime</span></i> command to set the duration for the local end to wait for the End-of-RIB flag from the specified peer.</p>
+<p>If the specified peer group has peers that do not support GR, you can run both the <b><span class="peer local-graceful-restart timer wait-for-rib">peer</span></b> <i><span class="varname">group-name</span></i> <b><span class="graceful-restart timer wait-for-rib peer local-graceful-restart">graceful-restart timer wait-for-rib</span></b> <i><span class="varname">time-value</span></i> and <b><span class="peer local-graceful-restart timer wait-for-rib">peer</span></b> <i><span class="varname">group-name</span></i> <strong><span>local-graceful-restart</span></strong> <strong><span>timer wait-for-rib</span></strong> <i><span class="varname">wfrtime</span></i> commands.</p>
+</div></div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001551559721__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After configuring GR for BGP peers, run the following commands to check the configuration.</p>
+<ul><li>Run the <b><span class="cmdqueryname">display bgp peer</span></b> <strong><span>verbose</span></strong> command to check the BGP GR status.</li><li>Run the <b><span class="cmdqueryname">display bgp</span></b> <strong><span>graceful-restart status</span></strong> command to check GR information on the BGP speaker.</li><li>Run the <b><span class="cmdqueryname">display bgp</span></b> <strong><span>local-graceful-restart status</span></strong> command to check information about local GR on the BGP speaker.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_bgp_cfg_0001.html">BGP Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_bgp_cfg_0117.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_bgp_cfg_0121.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

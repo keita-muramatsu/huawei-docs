@@ -1,0 +1,261 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring the EoGRE Primary/Backup Solution">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_00082.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_0034_ar.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001689150061">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring the EoGRE Primary/Backup Solution</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001689150061"></a><a name="EN-US_TASK_0000001689150061"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring the EoGRE Primary/Backup Solution</h1>
+<div class="taskbody" id="taskbody0000001689150061"><div class="context"><a name="EN-US_TASK_0000001689150061__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001689150061__network"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001689150061__p8255838112617">As shown in <a href="#EN-US_TASK_0000001689150061__fig2468652173113">Figure 1</a>, an enterprise has two DCNs working in active/standby mode. STAs connect to the active and standby DCNs through two EoGRE tunnels. When the connection to the active DCN is faulty, services need to be switched to the standby DCN securely and reliably. In this case, the EoGRE primary/backup solution can be deployed on DeviceA to implement secure and reliable gateway switching and provide remote disaster recovery.</p>
+<div class="fignone" id="EN-US_TASK_0000001689150061__fig2468652173113"><a name="EN-US_TASK_0000001689150061__fig2468652173113"></a><a name="fig2468652173113"></a><span class="figcap"><b>Figure 1 </b>EoGRE primary/backup solution networking</span><div class="note" id="EN-US_TASK_0000001689150061__note195491349135714"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001689150061__p10549104916574">In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001689150061__image746820528312" src="figure/en-us_image_0000001640671014.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001689150061__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001689150061__roadmap"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001689150061__p169856951190934">To meet the preceding requirements, deploy the EoGRE primary/backup solution between DeviceA and the two gateways.</p>
+<p id="EN-US_TASK_0000001689150061__p1364258070190934">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001689150061__ol2113692694190934"><li id="EN-US_TASK_0000001689150061__li1681759539190934"><p id="EN-US_TASK_0000001689150061__p152810159190934"><a name="EN-US_TASK_0000001689150061__li1681759539190934"></a><a name="li1681759539190934"></a>Deploy IGP between all devices for communication on the public network.</p>
+</li><li id="EN-US_TASK_0000001689150061__li914547264190934"><p id="EN-US_TASK_0000001689150061__p1255404469190934"><a name="EN-US_TASK_0000001689150061__li914547264190934"></a><a name="li914547264190934"></a>Create tunnel interfaces on DeviceA and deploy GRE tunnels. The source address of a tunnel interface is the IP address of the physical interface that sends packets, and the destination address is the IP address of the physical interface that receives packets.</p>
+</li><li id="EN-US_TASK_0000001689150061__li609519431190934"><p id="EN-US_TASK_0000001689150061__p696080627190934"><a name="EN-US_TASK_0000001689150061__li609519431190934"></a><a name="li609519431190934"></a>Create a VE interface on DeviceA and add this interface to the corresponding VLAN.</p>
+</li><li id="EN-US_TASK_0000001689150061__li940717549190934"><p id="EN-US_TASK_0000001689150061__p865236829190934"><a name="EN-US_TASK_0000001689150061__li940717549190934"></a><a name="li940717549190934"></a>On DeviceA, bind the VE interface to GRE tunnel interfaces, and configure the priorities of the two tunnel interfaces to specify the primary and backup EoGRE tunnels.</p>
+</li><li id="EN-US_TASK_0000001689150061__li114561498">Configure heartbeat detection on DeviceA to prevent the VPN from selecting an unreachable GRE tunnel and subsequent data loss.</li><li id="EN-US_TASK_0000001689150061__li0696134015434">Configure preemption as well as the preemption delay for the primary and backup EoGRE tunnels on DeviceA so that the primary tunnel switches back to the forwarding state after recovering from a fault.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001689150061__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001689150061__steps794967251214049"><li id="EN-US_TASK_0000001689150061__step1809884748214049"><span id="EN-US_TASK_0000001689150061__cmd1774583528214049">Configure IP addresses for interfaces.</span><p><p id="EN-US_TASK_0000001689150061__p486147481214049">Configure an IP address for each interface according to <a href="#EN-US_TASK_0000001689150061__fig2468652173113">Figure 1</a>. For detailed configurations, see <a href="#EN-US_TASK_0000001689150061__postreq9126101612412">Configuration Scripts</a>.</p>
+</p></li><li id="EN-US_TASK_0000001689150061__step1879500800214049"><span id="EN-US_TASK_0000001689150061__cmd1432981877214049">Configure tunnel interfaces and deploy GRE tunnels.</span><p><p id="EN-US_TASK_0000001689150061__p2081364409190934"># This example assumes that IGP runs between all devices for communication on the public network, the source and destination addresses of EoGRE Tunnel_1 on DeviceA are 10.1.1.1 and 10.3.1.1 (Gateway1), respectively, and the source and destination addresses of EoGRE Tunnel_2 on DeviceA are 10.2.1.1 and 10.4.1.1 (Gateway2), respectively.</p>
+<pre class="screen" id="EN-US_TASK_0000001689150061__screen444609114214049">[DeviceA] <strong id="EN-US_TASK_0000001689150061__b959681769190934">interface tunnel 1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001689150061__b579701293190934">tunnel-protocol gre</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001689150061__b588716235190934">ip address 10.10.1.1 255.255.255.0</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001689150061__b920458515190934">source 10.1.1.1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001689150061__b1704536851190934">destination 10.3.1.1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001689150061__b1032821920353">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001689150061__b16504155793517">interface tunnel 2</strong>
+[DeviceA-Tunnel2] <strong id="EN-US_TASK_0000001689150061__b17505257113520">tunnel-protocol gre</strong>
+[DeviceA-Tunnel2] <strong id="EN-US_TASK_0000001689150061__b1050525723520">ip address 10.20.1.1 255.255.255.0</strong>
+[DeviceA-Tunnel2] <strong id="EN-US_TASK_0000001689150061__b1850515575357">source 10.2.1.1</strong>
+[DeviceA-Tunnel2] <strong id="EN-US_TASK_0000001689150061__b150516579354">destination 10.4.1.1</strong>
+[DeviceA-Tunnel2] <strong id="EN-US_TASK_0000001689150061__b1450516575356">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001689150061__step256525016214049"><span id="EN-US_TASK_0000001689150061__cmd1416264383214049">Create a VE interface and add it to the corresponding VLAN. Ensure that the VE interface and the inbound interface of STA packets are added to the same VLAN.</span><p><pre class="screen" id="EN-US_TASK_0000001689150061__screen1337761177214049">[DeviceA]<strong id="EN-US_TASK_0000001689150061__b1261736688214049"> interface virtual-ethernet 0/0/1</strong>
+[DeviceA-Virtual-Ethernet0/0/1]<strong id="EN-US_TASK_0000001689150061__b538367326214049"> port link-type trunk</strong>
+[DeviceA-Virtual-Ethernet0/0/1]<strong id="EN-US_TASK_0000001689150061__b502702596214049"> undo port trunk allow-pass vlan 1</strong>
+[DeviceA-Virtual-Ethernet0/0/1]<strong id="EN-US_TASK_0000001689150061__b1500760074214049"> port trunk allow-pass vlan 101</strong>
+[DeviceA-Virtual-Ethernet0/0/1]<strong id="EN-US_TASK_0000001689150061__b329701487214049"> quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001689150061__step1802307151214049"><span id="EN-US_TASK_0000001689150061__cmd1119445922214049">Bind the VE interface to tunnel interfaces so that Ethernet packets can be forwarded over GRE tunnels. Configure the priorities of the two tunnel interfaces bound to the VE interface to specify the primary and secondary EoGRE tunnels.</span><p><p id="EN-US_TASK_0000001689150061__p1731875383214049"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001689150061__screen1906802830214049">[DeviceA]<strong id="EN-US_TASK_0000001689150061__b61860728214049"> interface tunnel 1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001689150061__b1204919872190934">map interface virtual-ethernet 0/0/1</strong> <strong id="EN-US_TASK_0000001689150061__b16271861363">priority</strong><strong id="EN-US_TASK_0000001689150061__b220213214214"> 255</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001689150061__b25518586398">quit</strong>
+[DeviceA]<strong id="EN-US_TASK_0000001689150061__b4698191154012"> interface tunnel 2</strong>
+[DeviceA-Tunnel2] <strong id="EN-US_TASK_0000001689150061__b669820112409">map interface virtual-ethernet 0/0/1</strong>
+[DeviceA-Tunnel2] <strong id="EN-US_TASK_0000001689150061__b186981511184017">quit</strong></pre>
+<p id="EN-US_TASK_0000001689150061__p414112754214049"># Check the mapping between the VE interface and tunnel interfaces on DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001689150061__screen17972171518414">[DeviceA]<strong id="EN-US_TASK_0000001689150061__b497291513413"> </strong><strong id="EN-US_TASK_0000001689150061__b9529121419811">display tunnel mapping interface Virtual-Ethernet 0/0/1</strong>
+-------------------------------------------------------------------
+Virtual-Ethernet port     Tunnel port   Priority    Status  Role
+-------------------------------------------------------------------
+Virtual-Ethernet0/0/1     Tunnel0/0/1   255         UP      Active
+Virtual-Ethernet0/0/1     Tunnel0/0/2   128         UP      Standby
+-------------------------------------------------------------------
+Total:2</pre>
+</p></li><li id="EN-US_TASK_0000001689150061__step12522337426"><span id="EN-US_TASK_0000001689150061__cmd145227313429">Configure heartbeat detection.</span><p><p id="EN-US_TASK_0000001689150061__p8403146114220"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001689150061__screen167333084310">[DeviceA] <strong id="EN-US_TASK_0000001689150061__b7731131111162">interface tunnel 1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001689150061__b1545315011312">keepalive</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001689150061__b13731151161611">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001689150061__b1731101120166">interface tunnel 2</strong>
+[DeviceA-Tunnel2] <strong id="EN-US_TASK_0000001689150061__b8765311114712">keepalive</strong>
+[DeviceA-Tunnel2] <strong id="EN-US_TASK_0000001689150061__b1731611111611">quit</strong></pre>
+<p id="EN-US_TASK_0000001689150061__p42651616144312"># Configure heartbeat detection on Gateway1 and Gateway2. The configuration procedure is not mentioned here.</p>
+</p></li><li id="EN-US_TASK_0000001689150061__step529624442190934"><span id="EN-US_TASK_0000001689150061__cmd78279879190934">Configure preemption for the primary and backup EoGRE tunnels and set the preemption delay.</span><p><p id="EN-US_TASK_0000001689150061__p162421258411"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001689150061__screen444102492011">[DeviceA] <strong id="EN-US_TASK_0000001689150061__b17369192892016">interface virtual-ethernet 0/0/1</strong>
+[DeviceA-Virtual-Ethernet0/0/1] <strong id="EN-US_TASK_0000001689150061__b97647156289">gre preempt enable</strong>
+[DeviceA-Virtual-Ethernet0/0/1] <strong id="EN-US_TASK_0000001689150061__b1156311127160">gre preempt delay 70</strong>
+[DeviceA-Virtual-Ethernet0/0/1] <strong id="EN-US_TASK_0000001689150061__b9743824172111">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001689150061__example840183686214049"><a name="EN-US_TASK_0000001689150061__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001689150061__p799125093214049">After the configurations are complete, run the <strong id="EN-US_TASK_0000001689150061__b17454173854113">display tunnel mapping configuration</strong> command on DeviceA to check configurations in the EoGRE primary/backup scenario, including information about the tunnel interfaces bound to the VE interface, whether preemption is enabled for the primary and backup EoGRE tunnels, and the preemption delay.</p>
+<pre class="screen" id="EN-US_TASK_0000001689150061__screen560664527214049">[DeviceA] <strong id="EN-US_TASK_0000001689150061__b18623151512316">display tunnel mapping configuration</strong>
+Interface                             : Virtual-Ethernet0/0/1
+Preempt                               : enable
+Preempt delay(sec)                    : 70
+--------------------------------------------------------------------------------
+Tunnel port   Priority  Icmp-detect Period(sec) Retry times
+--------------------------------------------------------------------------------
+Tunnel1       255       disable      15           3
+Tunnel2       128       disable      15           3
+--------------------------------------------------------------------------------</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001689150061__postreq9126101612412"></a><a name="postreq9126101612412"></a><a name="EN-US_TASK_0000001689150061__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001689150061__ul1638617270214049"><li id="EN-US_TASK_0000001689150061__li663558353214049"><p id="EN-US_TASK_0000001689150061__p542660000214049"><a name="EN-US_TASK_0000001689150061__li663558353214049"></a><a name="li663558353214049"></a>DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001689150061__screen305708752214049">#
+sysname DeviceA
+#
+vlan batch 10 20 101
+#
+interface Vlanif10
+ ip address 10.1.1.1 255.255.255.0
+ #
+interface Vlanif20
+ ip address 10.2.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch 
+ port link-type trunk
+ port trunk allow-pass vlan 20
+ #
+interface <span>10GE</span><span>0/0/3</span>
+ portswitch 
+ port link-type trunk
+ port trunk allow-pass vlan 101
+#
+interface Virtual-Ethernet0/0/1
+ port link-type trunk
+ undo port trunk allow-pass vlan 1
+ port trunk allow-pass vlan 101
+ gre preempt enable
+ gre preempt delay 70
+#
+interface Tunnel1
+ ip address 10.10.1.1 255.255.255.0
+ tunnel-protocol gre
+ source 10.1.1.1
+ destination 10.3.1.1
+ map interface Virtual-Ethernet0/0/1 priority 255
+ keepalive
+#
+interface Tunnel2
+ ip address 10.20.1.1 255.255.255.0
+ tunnel-protocol gre
+ source 10.2.1.1
+ destination 10.4.1.1
+ map interface Virtual-Ethernet0/0/1
+ keepalive
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001689150061__li316023143410">Gateway1<pre class="screen" id="EN-US_TASK_0000001689150061__screen998124213341"># 
+sysname Gateway1 
+#
+vlan batch 10 101
+#
+interface Vlanif10
+ ip address 10.3.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type trunk
+ port trunk pvid vlan 101
+ port trunk allow-pass vlan 101
+#
+interface Virtual-Ethernet0/0/1
+ port link-type trunk
+ undo port trunk allow-pass vlan 1
+ port trunk allow-pass vlan 101
+#
+interface Tunnel1
+ ip address 10.30.1.1 255.255.255.0
+ tunnel-protocol gre
+ source 10.3.1.1
+ destination 10.1.1.1
+ map interface Virtual-Ethernet0/0/1
+ keepalive
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001689150061__li564144919346">Gateway2<pre class="screen" id="EN-US_TASK_0000001689150061__screen8527354193410"># 
+sysname Gateway2 
+#
+vlan batch 20 101
+#
+interface Vlanif20
+ ip address 10.4.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch 
+ port link-type trunk
+ port trunk allow-pass vlan 20
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type trunk
+ port trunk pvid vlan 101
+ port trunk allow-pass vlan 101
+#
+interface Virtual-Ethernet0/0/1
+ port link-type trunk
+ undo port trunk allow-pass vlan 1
+ port trunk allow-pass vlan 101
+#
+interface Tunnel1
+ ip address 10.40.1.1 255.255.255.0
+ tunnel-protocol gre
+ source 10.4.1.1
+ destination 10.1.1.1
+ map interface Virtual-Ethernet0/0/1
+ keepalive
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_gre_cfg_00082.html">Configuration Examples for GRE
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_gre_cfg_0034_ar.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,165 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Preparing Deployment Files">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0095.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0098.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ztp01_cfg_0100.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebMerge" content="ys_sec@security_web_deployment.ditamap">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featurename" content="ZTP">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001811717113">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Preparing Deployment Files</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001811717113"></a><a name="EN-US_TASK_0000001811717113"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Preparing Deployment Files</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001811717113__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">MASTERKEY File</h4><p>Deployment files need to be prepared before SZTP. The device supports the following types of deployment files: system software, configuration file, patch file, and master key file. Among the deployment files, a configuration file can be manually compiled or copied from other devices, while other deployment files such as the system software package need to be downloaded from Huawei technical support website.</p>
+<p>The configuration file name is a string of 5 to 64 characters and suffixed with .zip or .cfg. The configuration file is used for the next startup.</p>
+<p>You can obtain a configuration file from other devices in either of the following ways:</p>
+<ul><li>Saving the configuration file: Run the <strong>save shareable-configuration</strong> command on the device that provides the configuration file to save the configuration file, and then export the configuration file using SFTP or other methods.</li><li>Changing the system master key: Run the <strong>set <b><span class="cmdqueryname">master-key</span></b></strong> command to change the system master key, save the configuration file, and export the configuration file using SFTP or other methods.</li></ul>
+<p>All passwords in the configuration file obtained are encrypted to ensure security. In addition, to enable the device to decrypt the ciphertext in the configuration file during deployment, you need to provide a MASTERKEY file in which corresponding passwords are provided.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>To ensure security, you are advised to export a configuration file from another device instead of compiling it manually. You are advised to use the method of saving a configuration file. If you use the method of changing the system master key, the system master key of the device that provides the configuration file may be disclosed.</p>
+<p>Ensure that the configuration file for deployment contains the console port password or an AAA user name that can be used to log in to the device remotely. Otherwise, the configuration file cannot be successfully set, causing a deployment to fail.</p>
+</div></div>
+<p>The MASTERKEY file name contains 5 to 64 characters and is suffixed with <strong>.ini</strong>. The password in the MASTERKEY file is used to decrypt the ciphertext in the configuration file so that the device can identify the ciphertext at next startup.</p>
+<p>The following is a format example of such a file. For details about the fields included in this file, see <a href="#EN-US_TASK_0000001811717113__table32751495310">Table 1</a>.</p>
+<pre class="screen">[BEGIN]
+EXPORTCFG=
+SET_MASTER= 
+[END] </pre>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000001811717113__table32751495310"></a><a name="table32751495310"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001811717113__table32751495310" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Fields in the MASTERKEY file</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="16.2016201620162%" id="mcps1.3.1.11.2.5.1.1" liSelected="liSelected"><p>Field</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25.892589258925895%" id="mcps1.3.1.11.2.5.1.2" liSelected="liSelected"><p>Mandatory or Not</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="22.022202220222024%" id="mcps1.3.1.11.2.5.1.3" liSelected="liSelected"><p>Description</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="35.88358835883588%" id="mcps1.3.1.11.2.5.1.4" liSelected="liSelected"><p>Value Range</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="16.2016201620162%" headers="mcps1.3.1.11.2.5.1.1 "><p>[BEGIN]</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.892589258925895%" headers="mcps1.3.1.11.2.5.1.2 "><p>Yes</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.022202220222024%" headers="mcps1.3.1.11.2.5.1.3 "><p>Start field of the MASTERKEY file.</p>
+</td>
+<td class="cellrowborder" valign="top" width="35.88358835883588%" headers="mcps1.3.1.11.2.5.1.4 "><p>-</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16.2016201620162%" headers="mcps1.3.1.11.2.5.1.1 "><p>EXPORTCFG</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.892589258925895%" headers="mcps1.3.1.11.2.5.1.2 "><p>Depending on the configuration file obtaining method:</p>
+<ul><li>This field is mandatory when the configuration file is obtained by saving the configuration file on another device.</li><li>The field is optional when the configuration file is obtained by changing the system master key.</li></ul>
+</td>
+<td class="cellrowborder" valign="top" width="22.022202220222024%" headers="mcps1.3.1.11.2.5.1.3 "><p>Password used for saving the configuration file.</p>
+</td>
+<td class="cellrowborder" valign="top" width="35.88358835883588%" headers="mcps1.3.1.11.2.5.1.4 "><ul><li>If the <strong>password</strong> parameter is not specified when the <strong>save shareable-configuration</strong> command is executed to save the configuration file, leave the <strong>EXPORTCFG</strong> field empty.</li><li>If the <strong>password</strong> parameter is specified when the <strong>save shareable-configuration</strong> command is executed to save the configuration file, set the <strong>EXPORTCFG</strong> field to a value that is the same as the password entered in interactive mode.</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16.2016201620162%" headers="mcps1.3.1.11.2.5.1.1 "><p>SET_MASTER</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.892589258925895%" headers="mcps1.3.1.11.2.5.1.2 "><ul><li>This field is optional when the configuration file is obtained by saving the configuration file on another device.</li><li>The field is mandatory when the configuration file is obtained by changing the system master key.</li></ul>
+</td>
+<td class="cellrowborder" valign="top" width="22.022202220222024%" headers="mcps1.3.1.11.2.5.1.3 "><p>System master key.</p>
+</td>
+<td class="cellrowborder" valign="top" width="35.88358835883588%" headers="mcps1.3.1.11.2.5.1.4 "><p>The value must be the same as the master key of the device that provides the configuration file.</p>
+<div class="note" id="EN-US_TASK_0000001811717113__note11210713169"><span class="notetitle"> NOTE: </span><div class="notebody"><p id="EN-US_TASK_0000001811717113__p1096711216194">For security purposes, after the deployment is complete, the device uses the random master key instead of the master key specified by the <strong id="EN-US_TASK_0000001811717113__b16435815154720">SET_MASTER</strong> field. You are advised to clear the file containing this field immediately after the deployment is complete. Otherwise, the system master key of the device that provides the configuration file may be disclosed.</p>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16.2016201620162%" headers="mcps1.3.1.11.2.5.1.1 "><p>[END]</p>
+</td>
+<td class="cellrowborder" valign="top" width="25.892589258925895%" headers="mcps1.3.1.11.2.5.1.2 "><p>Yes</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.022202220222024%" headers="mcps1.3.1.11.2.5.1.3 "><p>End field of the MASTERKEY file.</p>
+</td>
+<td class="cellrowborder" valign="top" width="35.88358835883588%" headers="mcps1.3.1.11.2.5.1.4 "><p>-</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001811717113__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Obtain the configuration file from another device.</span><ul><li>Obtaining a configuration file through saving the configuration file on another device</li></ul>
+<ol type="a"><li class="substepexpand"><span>Save the configuration file on another device that has been deployed.</span><p><pre class="screen"><b><span class="cmdqueryname">save shareable-configuration</span></b> <i><span class="varname">configuration-file</span></i><em> </em>[<em> </em><strong><span>password</span></strong> ]</pre>
+<p>If the <strong><span>password</span></strong> parameter is not specified, the configuration file uses the default key information. If the <strong><span>password</span></strong> parameter is specified, the device generates key information in the configuration file based on the password entered in interactive mode.</p>
+</p></li><li class="substepexpand"><span>Export the configuration file using SFTP.</span><p><p>For details, see "Backing Up the Configuration File to an SFTP Server or Client" in the <span>CLI Configuration Guide</span> &gt; <em>Basic Configuration</em> &gt; <em>Configuration File Management</em>.</p>
+</p></li><li class="substepexpand"><span>Create a .txt file and change the file name to ***.ini, for example, <strong>masterkey.ini</strong>.</span><p><pre class="screen">[BEGIN]
+EXPORTCFG= 
+[END]          </pre>
+</p></li><li class="substepexpand"><span>Set the <strong>EXPORTCFG</strong> field in the <strong>masterkey.ini</strong> file.</span><p><ul><li>If the <strong>password</strong> parameter is not specified for saving the configuration file, leave the <strong>EXPORTCFG</strong> field empty.</li><li>If the <strong>password</strong> parameter is specified for saving the configuration file, set the <strong>EXPORTCFG</strong> field to a value that is the same as that of <strong>password</strong>.</li></ul>
+</p></li></ol>
+<ul><li>Obtaining the configuration file through changing the system master key</li></ul>
+<ol type="a"><li class="substepexpand"><span>Change the system master key.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>set <b><span class="cmdqueryname">master-key</span></b></strong>
+Enter the user password:       //Enter the current user password instead of the current system master key.
+Warning: This operation will automatically save configurations. Are you sure you want to perform it? [Y/N]:y 
+Do you want to enter the master key? (If you enter Y, you need to manually enter the master key and automatic key update stops. If you enter N, the system  automatically generates a master key. If you enter D, the system will change the current master key to the default master key.) [Y/N/D]:y 
+Info: Enter a new master key:   // Enter the system master key.
+Info: Confirm the new master key:
+Warning: Keep the new master key well.</pre>
+<p>For details, see "System Master Key Configuration" in <span>CLI Configuration Guide</span> &gt; User Access and Authentication Configuration.</p>
+</p></li><li class="substepexpand"><span>Export the configuration file using SFTP.</span><p><p>For details, see "Backing Up the Configuration File to an SFTP Server or Client" in the <span>CLI Configuration Guide</span> &gt; <em>Basic Configuration</em> &gt; <em>Configuration File Management</em>.</p>
+</p></li><li class="substepexpand"><span>Create a .txt file and change the file name to ***.ini, for example, <strong>masterkey.ini</strong>.</span><p><pre class="screen">[BEGIN]
+SET_MASTER= 
+[END] </pre>
+</p></li><li class="substepexpand"><span>Set the <strong>SET_MASTER</strong> field in the <strong>masterkey.ini</strong> file.</span><p><p>The value of the <strong>SET_MASTER</strong> field must be the same as the master key of the device that provides the configuration file.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001811717113__en-us_task_0000001811717113_p1096711216194">For security purposes, after the deployment is complete, the device uses the random master key instead of the master key specified by the <strong id="EN-US_TASK_0000001811717113__en-us_task_0000001811717113_b16435815154720">SET_MASTER</strong> field. You are advised to clear the file containing this field immediately after the deployment is complete. Otherwise, the system master key of the device that provides the configuration file may be disclosed.</p>
+</div></div>
+</p></li></ol>
+</li><li><span>Download other deployment files.</span></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ztp01_cfg_0095.html">Configuring SZTP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ztp01_cfg_0098.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ztp01_cfg_0100.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

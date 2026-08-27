@@ -1,0 +1,88 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="URPF Security">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0042.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0077.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512852262">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>URPF Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512852262"></a><a name="EN-US_TASK_0000001512852262"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">URPF Security</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001512852262__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>Unicast Reverse Path Forwarding (URPF) defends against network attacks that are based on source IP address spoofing.</p>
+<p>URPF searches the FIB table for the route to the source IP address of a packet and checks whether the inbound interface of the packet is the same as the outbound interface of the route. If no route to the source IP address exists in the FIB table or the inbound interface of the packet is different from the outbound interface of the matching route, the packet is discarded. This effectively protects the device against malicious attacks that change source IP addresses of packets.</p>
+<p>The device supports the following URPF check modes:</p>
+<ul><li><strong>Strict mode</strong><p>In strict mode, the device allows a packet to pass through only when there is a route to the source IP address of the packet in its FIB table and the inbound interface of the packet is the same as the outbound interface of the route.</p>
+<p>You are advised to use the strict mode when the routing paths recorded on the local and remote devices are the same. For example, if there is only one path between two network edge devices, the strict mode can help ensure network security.</p>
+</li><li><strong>Loose mode</strong><p>In loose mode, the device allows a packet to pass through as long as there is a route to the source IP address of the packet in its FIB table. In contrast to strict mode, the inbound interface of the packet does not need to be the same as the outbound interface of the route.</p>
+<p>You are advised to use the loose mode when the routing paths recorded on the local and remote devices may be different. For example, if there are multiple paths between two network edge devices, the loose mode can help defend against network attacks and prevent valid packets from being discarded.</p>
+</li></ul>
+<h4 class="sectiontitle">Impact on the System</h4><p>If BFD and URPF are used together, URPF checks the source IP addresses of received BFD packets. You must manually specify source IP addresses bound to BFD sessions when configuring BFD for IP, so as to prevent BFD packets from being discarded incorrectly.</p>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512852262__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Change the interface working mode from Layer 2 to Layer 3.</span><p><pre class="screen"><strong>undo portswitch</strong></pre>
+<p>Determine whether to perform this step based on the actual interface working mode.</p>
+</p></li><li><span>Configure URPF check for packets on the interface. A basic or advanced ACL (numbered from 2000 to 3999) can be specified.</span><p><p>IPv4 network:</p>
+<pre class="screen"><b><span class="cmdqueryname">ip urpf</span></b> { <strong><span>loose</span></strong> | <strong><span>strict</span></strong> } [ <strong><span>allow-default-route</span></strong> ] [ <b><span class="cmdqueryname">acl</span></b> <i><span class="varname">acl-number</span></i> ]</pre>
+<p>IPv6 network:</p>
+<pre class="screen"><b><span class="cmdqueryname">ipv6 urpf</span></b> { <strong><span>loose</span></strong> | <strong><span>strict</span></strong> } [ <strong><span>allow-default-route</span></strong> ] [ <strong><span>acl6</span></strong> <i><span class="varname">acl-number</span></i> ]</pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>To configure the URPF check for IPv6 packets on an interface, enable the IPv6 function on the interface first. To do so, run the <strong>ipv6 enable</strong> command in the interface view.</p>
+</div></div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001512852262__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <strong><b><span class="cmdqueryname">display this</span></b></strong> command to check the URPF configuration.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0042.html">Forwarding Plane Security (Level-2)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0077.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

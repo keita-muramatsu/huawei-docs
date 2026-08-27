@@ -1,0 +1,92 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring PKI Certificate Whitelist Check">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0070.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0071.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0073.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512834386">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring PKI Certificate Whitelist Check</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512834386"></a><a name="EN-US_TASK_0000001512834386"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring PKI Certificate Whitelist Check</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001512834386__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><ul><li>PKI certificate whitelist check takes effect only for RSA-based digital signature certificate authentication.</li><li>PKI certificate whitelist check takes effect only for the following IPsec types:<ul><li>ACL-based IPsec (involving ISAKMP IPsec policies and template IPsec policies)</li><li>Route-based IPsec (involving IPsec profiles)</li></ul>
+</li><li>Ensure that the certificate whitelist file exists in the device storage medium and has been imported to the device memory. For details, see "Configuring a Certificate Whitelist to Implement Access Control" in <i><cite><span>CLI Configuration Guide</span> &gt; Security Configuration &gt; PKI Configuration &gt; Authenticating The Peer Entity's Certificate</cite></i>.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001512834386__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>In LTE scenarios, when the device uses RSA signature authentication to establish IPsec tunnels with multiple base stations, you can configure a certificate whitelist and enable PKI certificate whitelist check to centrally manage the certificates of base stations. That is, you can specify which base stations are allowed to establish IPsec tunnels with the device.</p>
+<p>A certificate whitelist contains a set of common names (CNs) in the certificate subject of base stations. The certificate whitelist file is in XML format and uses 7-bit ASCII encoding. The following example is a certificate whitelist file, which contains two CNs:</p>
+<pre class="screen">&lt;SerialnumberList&gt; 
+&lt;Serialnumber&gt;CN-on-Certificate_of-RBS-1&lt;/Serialnumber&gt; 
+&lt;Serialnumber&gt;CN-on-Certificate_of-RBS-2&lt;/Serialnumber&gt; 
+&lt;/SerialnumberList&gt;</pre>
+<p>After PKI certificate whitelist check is enabled, the local device checks whether the CN in the certificate subject of the remote device carried in the received certificate authentication packet is the same as that in the local certificate whitelist. If not, authentication fails and no IPsec tunnel can be established between the two devices.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512834386__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li><span>Enable PKI certificate whitelist check.</span><p><pre class="screen"><b><span class="cmdqueryname">pki validate-certificate whitelist enable</span></b></pre>
+<p>By default, PKI certificate whitelist check is disabled.</p>
+</p></li><li><strong>Optional: </strong><span>Enable fuzzy match for the PKI certificate whitelist.</span><p><pre class="screen"><b><span class="cmdqueryname">pki whitelist-fuzzy-match enable</span></b></pre>
+<p>By default, the PKI certificate whitelist supports exact match. That is, the local device checks whether the CN in the certificate subject of the remote device carried in the received certificate authentication packet is the same as that in the local certificate whitelist. If not, authentication fails.</p>
+<p>In some scenarios, however, the CN in a certificate subject contains dots (.), such as 123.huawei.com, but the CN in the certificate whitelist does not, such as 123. In this case, the CN in the certificate subject of the remote device does not exactly match that in the local certificate whitelist, leading to an authentication failure. To prevent this problem, run this command to enable fuzzy match for the PKI certificate whitelist. The local device then matches the content before the first dot in the received CN against that in the local certificate whitelist. If they match, authentication is successful.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0070.html">IPsec Certificate Management
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0071.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0073.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring IS-IS Interface Authentication">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000123.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000126.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_isis_ipv4_cfg_000128.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IS-IS">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IS-IS">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001750921142">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring IS-IS Interface Authentication</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001750921142"></a><a name="EN-US_TASK_0000001750921142"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring IS-IS Interface Authentication</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001750921142__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring IS-IS interface authentication, you have completed the following task:</p>
+<ul><li><a href="vrp_isis_ipv4_cfg_000026.html">Configure basic IS-IS functions</a>.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001750921142__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Interface authentication ensures the validity and correctness of neighbor relationships by allowing interfaces to authenticate the IS-IS Hello packets they receive based on the authentication information carried in the packets. A neighbor relationship can be established between two ends only after the IS-IS Hello packets exchanged between them are authenticated by each other.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>For security purposes, you are advised not to use the weak security algorithms in IS-IS. If you need to use such an algorithm, run the <b><span class="cmdqueryname">install feature-software WEAKEA</span></b> command first to install the weak security algorithm/protocol feature package WEAKEA.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001750921142__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li><span>Switch the working mode of the interface from Layer 2 to Layer 3.</span><p><pre class="screen"><b><span class="cmdqueryname">undo portswitch</span></b></pre>
+<p> Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li><span>Configure an authentication mode as required.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>It is recommended that the password be at least eight characters long and contain at least two of the following character types: uppercase letters, lowercase letters, digits, and special characters.</p>
+</div></div>
+</p><p><ul><li>Configure simple authentication.<pre class="screen"><b><span class="cmdqueryname">isis authentication-mode</span></b> <span><strong><span>simple</span></strong> { <span><strong><span>plain</span></strong> <i><span class="varname">plain</span></i> | </span>[ <strong><span>cipher</span></strong> ] <i><span class="varname">cipher</span></i> }</span> [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> ] [ <strong><span>ip</span></strong> | <strong><span>osi</span></strong> ] [ <strong><span>send-only</span></strong> ]</pre>
+</li><li>Configure HMAC-MD5 authentication.<pre class="screen"><b><span class="cmdqueryname">isis authentication-mode</span></b> <span><strong><span>md5</span></strong> { [ <strong><span>cipher</span></strong> ] <i><span class="varname">cipher</span></i><span> | <strong><span>plain</span></strong>  <i><span class="varname">plain</span></i></span> }</span> [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> ] [ <strong><span>ip</span></strong> | <strong><span>osi</span></strong> ] [ <strong><span>send-only</span></strong> ]</pre>
+</li><li>Configure keychain authentication.<pre class="screen"><b><span class="cmdqueryname">isis authentication-mode</span></b> <strong><span>keychain</span></strong> <i><span class="varname">keychain-name</span></i> [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> ] [ <strong><span>send-only</span></strong> ]</pre>
+</li><li>Configure HMAC-SHA256 authentication.<pre class="screen"><b><span class="cmdqueryname">isis authentication-mode</span></b> <strong><span>hmac-sha256</span></strong> <strong><span>key-id</span></strong> <i><span class="varname">key-id</span></i> { <span><strong><span>plain</span></strong> <i><span class="varname">plain</span></i> | </span>[ <strong><span>cipher</span></strong> ] <i><span class="varname">cipher</span></i> } [ <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> ] [ <strong><span>send-only</span></strong> ]</pre>
+</li></ul>
+</p><p><div class="p">When you select parameters, note the following:<ul><li><p>If <strong><span>send-only</span></strong> is specified, the interface encapsulates authentication information into the Hello packets to be sent, but does not authenticate received Hello packets. Neighbor relationships can be established only if authentication is not performed or IIHs are authenticated.</p>
+</li><li><p>If <strong><span>send-only</span></strong> is not specified, ensure that all interfaces on the same network maintain the same password for IIHs of the same level.</p>
+</li><li><p>The <strong><span>level-1</span></strong> and <strong><span>level-2</span></strong> parameters can be set only on Ethernet interfaces.</p>
+</li><li><div class="p">If the IS-IS interface is a Level-1-2 interface, and neither <strong><span>level-1</span></strong> nor <strong><span>level-2</span></strong> is specified, the authentication mode and password are configured for both Level-1 and Level-2 Hello packets.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The simple or HMAC-MD5 algorithm is not recommended if high security is required. To prevent routing information from being tampered with and thereby improve security, you are advised to enable authentication and use the keychain or HMAC-SHA256 algorithm.</p>
+</div></div>
+</div>
+</li></ul>
+</div>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><span>(Optional) Configure a compatible value for an IS-IS authentication type.</span><p><pre class="screen"><b><span class="cmdqueryname">isis</span></b> <i><span class="varname">process-id</span></i>
+<strong><b><span class="cmdqueryname">authentication-type-compatible</span></b> hmac-sm3 </strong><em>auth-type-value</em></pre>
+<p>In a scenario where a Huawei device interworks with a non-Huawei device, if the default values of the authentication type corresponding to the same authentication encryption algorithm on the two devices are different, IS-IS authentication fails. As a result, the two devices fail to establish a neighbor relationship or exchange packets. To prevent this problem, you can perform this step to ensure that the authentication type values of the two devices are the same so that the two devices can implement IS-IS authentication normally and communicate with each other. Currently, a compatible value can be configured only for the HMAC-SM3 encryption algorithm, which is supported only by the keychain authentication.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_isis_ipv4_cfg_000123.html">Configuring IS-IS Authentication
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_isis_ipv4_cfg_000126.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_isis_ipv4_cfg_000128.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

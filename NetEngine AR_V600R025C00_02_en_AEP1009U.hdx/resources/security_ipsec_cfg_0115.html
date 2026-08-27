@@ -1,0 +1,406 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Establishing a GRE over IPsec Tunnel Using ISAKMP">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002255822477.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0116.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513153878">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Establishing a GRE over IPsec Tunnel Using ISAKMP</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513153878"></a><a name="EN-US_TASK_0000001513153878"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Establishing a GRE over IPsec Tunnel Using ISAKMP</h1>
+<div class="taskbody" id="taskbody1572055044453"><div class="context"><a name="EN-US_TASK_0000001513153878__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001513153878__context479162314493"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001513153878__p803143804180218">As shown in <a href="#EN-US_TASK_0000001513153878__fig1">Figure 1</a>, Network A and Network B are connected through DeviceA and DeviceB. Users on Network A need to securely access resources on Network B through a GRE tunnel. GRE cannot authenticate or encrypt packets. Therefore, IPsec needs to be configured to protect traffic from Network A to Network B.</p>
+<div class="p" id="EN-US_TASK_0000001513153878__p1778733377180218">The networking requirements are as follows:<ul id="EN-US_TASK_0000001513153878__ul2609113918125"><li id="EN-US_TASK_0000001513153878__li37994260180218"><p id="EN-US_TASK_0000001513153878__p766884661180218"><a name="EN-US_TASK_0000001513153878__li37994260180218"></a><a name="li37994260180218"></a>Network A is in the network segment 10.1.1.0/24 and connects to DeviceA through interface 2.</p>
+</li><li id="EN-US_TASK_0000001513153878__li1478771420180218"><p id="EN-US_TASK_0000001513153878__p883009209180218"><a name="EN-US_TASK_0000001513153878__li1478771420180218"></a><a name="li1478771420180218"></a>Network B is in the network segment 10.1.2.0/24 and connects to DeviceB through interface 2.</p>
+</li><li id="EN-US_TASK_0000001513153878__li202244658180218"><p id="EN-US_TASK_0000001513153878__p1806837452180218"><a name="EN-US_TASK_0000001513153878__li202244658180218"></a><a name="li202244658180218"></a>DeviceA and DeviceB have reachable routes to each other.</p>
+</li></ul>
+</div>
+<div class="fignone" id="EN-US_TASK_0000001513153878__fig1"><a name="EN-US_TASK_0000001513153878__fig1"></a><a name="fig1"></a><span class="figcap"><b>Figure 1 </b>GRE over IPsec networking</span><div class="note" id="EN-US_TASK_0000001513153878__note121061134113619"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513153878__p1010615347360">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<p id="EN-US_TASK_0000001513153878__p1214804313207"><span><img class="vsd" id="EN-US_TASK_0000001513153878__image51481043182018" src="figure/en-us_image_0000001564114065.png"></span></p>
+<div class="p" id="EN-US_TASK_0000001513153878__p2044614451712">
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001513153878__table568302773180218" frame="border" border="1" rules="all"><thead align="left"><tr id="EN-US_TASK_0000001513153878__row189248147180218"><th align="left" class="cellrowborder" valign="top" width="17.72%" id="mcps1.3.1.4.4.1.1.3.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000001513153878__p190584902180218">Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="82.28%" id="mcps1.3.1.4.4.1.1.3.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000001513153878__p955453386180218">Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000001513153878__row1836530745180218"><td class="cellrowborder" rowspan="4" valign="top" width="17.72%" headers="mcps1.3.1.4.4.1.1.3.1.1 "><p id="EN-US_TASK_0000001513153878__p637393350180218">DeviceA</p>
+</td>
+<td class="cellrowborder" valign="top" width="82.28%" headers="mcps1.3.1.4.4.1.1.3.1.2 "><p id="EN-US_TASK_0000001513153878__p481869282180218">Interface: <span>10GE</span> <span>0/0/2</span></p>
+<p id="EN-US_TASK_0000001513153878__p938965723180218">IP address: 10.1.1.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001513153878__row1499044666180218"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.4.1.1.3.1.1 "><p id="EN-US_TASK_0000001513153878__p1798895449180218">Interface: <span>10GE</span> <span>0/0/1</span></p>
+<p id="EN-US_TASK_0000001513153878__p17589394180218">IP address: 1.1.3.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001513153878__row855222895180218"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.4.1.1.3.1.1 "><p id="EN-US_TASK_0000001513153878__p268530098180218"><strong id="EN-US_TASK_0000001513153878__b1284686806180300">GRE tunnel interface configuration</strong></p>
+<p id="EN-US_TASK_0000001513153878__p468911317180218">Source IP address: 1.1.3.1</p>
+<p id="EN-US_TASK_0000001513153878__p1016788554180218">Destination IP address: 1.1.5.1</p>
+<p id="EN-US_TASK_0000001513153878__p864251247180218">IP address: any address that does not conflict with other IP addresses</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001513153878__row969708170180218"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.4.1.1.3.1.1 "><p id="EN-US_TASK_0000001513153878__p489639272180218"><strong id="EN-US_TASK_0000001513153878__b537307754180300">IPsec policy configuration</strong></p>
+<p id="EN-US_TASK_0000001513153878__p1887426623180218">Authentication type: Pre-shared key</p>
+<p id="EN-US_TASK_0000001513153878__p583998946180218">PSK: YsHsjx_202206</p>
+<p id="EN-US_TASK_0000001513153878__p1363180491180218">Local ID type: IP address</p>
+<p id="EN-US_TASK_0000001513153878__p1344443597180218">Remote ID: IP address</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001513153878__row274205075180218"><td class="cellrowborder" rowspan="4" valign="top" width="17.72%" headers="mcps1.3.1.4.4.1.1.3.1.1 "><p id="EN-US_TASK_0000001513153878__p92101817180218">DeviceB</p>
+</td>
+<td class="cellrowborder" valign="top" width="82.28%" headers="mcps1.3.1.4.4.1.1.3.1.2 "><p id="EN-US_TASK_0000001513153878__p1296502800180218">Interface: <span>10GE</span> <span>0/0/1</span></p>
+<p id="EN-US_TASK_0000001513153878__p1389436228180218">IP address: 1.1.5.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001513153878__row2013590241180218"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.4.1.1.3.1.1 "><p id="EN-US_TASK_0000001513153878__p1760033799180218">Interface: <span>10GE</span> <span>0/0/2</span></p>
+<p id="EN-US_TASK_0000001513153878__p1285223898180218">IP address: 10.1.2.1/24</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001513153878__row2051913290180218"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.4.1.1.3.1.1 "><p id="EN-US_TASK_0000001513153878__p1302922676180218"><strong id="EN-US_TASK_0000001513153878__b1972680070180300">GRE tunnel interface configuration</strong></p>
+<p id="EN-US_TASK_0000001513153878__p846527072180218">Source IP address: 1.1.5.1</p>
+<p id="EN-US_TASK_0000001513153878__p1404864122180218">Destination IP address: 1.1.3.1</p>
+<p id="EN-US_TASK_0000001513153878__p535950185180218">IP address: any address that does not conflict with other IP addresses</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001513153878__row117353649180218"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.4.1.1.3.1.1 "><p id="EN-US_TASK_0000001513153878__p1639405850180218"><strong id="EN-US_TASK_0000001513153878__b75229595236">IPsec policy configuration</strong></p>
+<p id="EN-US_TASK_0000001513153878__p1068743155180218">Authentication type: Pre-shared key</p>
+<p id="EN-US_TASK_0000001513153878__p1507209425180218">PSK: YsHsjx_202206</p>
+<p id="EN-US_TASK_0000001513153878__p70938707180218">Local ID type: IP address</p>
+<p id="EN-US_TASK_0000001513153878__p1315368403180218">Remote ID: IP address</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513153878__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001513153878__context1677625172748"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="note" id="EN-US_TASK_0000001513153878__note124108775311"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513153878__p1354162310165">This example uses default security algorithms of IPsec.</p>
+<p id="EN-US_TASK_0000001513153878__p162371991502">For security purposes, you are advised not to use the weak security algorithm or weak security protocol of this feature. If you must use such a weak security algorithm or protocol, run the <strong id="EN-US_TASK_0000001513153878__en-us_task_0000001564113977_b17693740143715">install feature-software WEAKEA</strong> command to install the weak security algorithm or protocol feature package WEAKEA.</p>
+</div></div>
+<div class="p" id="EN-US_TASK_0000001513153878__p1432258236180218">The roadmap for configuring DeviceA is the same as that for configuring DeviceB.<ol id="EN-US_TASK_0000001513153878__ol7903161619139"><li id="EN-US_TASK_0000001513153878__li2090314163135">Perform basic interface configurations.</li><li id="EN-US_TASK_0000001513153878__li2084316424139">Configure static routes to ensure that there are reachable routes between both ends.</li><li id="EN-US_TASK_0000001513153878__li16526141991917">Configure a GRE tunnel interface and a forwarding route for the tunnel interface.</li><li id="EN-US_TASK_0000001513153878__li10526540131919">Configure ACL-based IPsec policies. In GRE over IPsec, the source and destination of the data flow to be protected by IPsec are the GRE tunnel source and destination addresses, respectively. Therefore, the source and destination IP addresses in the ACL on DeviceA are 1.1.3.1 and 1.1.5.1, respectively. The source and destination IP addresses in the ACL on DeviceB are 1.1.5.1 and 1.1.3.1, respectively.</li></ol>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513153878__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001513153878__steps10132325172748"><li id="EN-US_TASK_0000001513153878__step5253145172748"><span id="EN-US_TASK_0000001513153878__cmd7907968172748">Perform basic interface configurations on DeviceA.</span><p><pre class="screen" id="EN-US_TASK_0000001513153878__screen090073012251">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001513153878__b1890043014257">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001513153878__b490083011256">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513153878__b390112301250">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513153878__b79012307256">ip address 10.1.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513153878__b19901103011257">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513153878__b1690153010256">interface <span>10ge</span> <span>0/0/1</span></strong> 
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513153878__b3901143018250">ip address 1.1.3.1 24</strong> 
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513153878__b1690183072514">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001513153878__step671884415561"><span id="EN-US_TASK_0000001513153878__cmd117181844155610">Configure a GRE tunnel interface on DeviceA.</span><p><pre class="screen" id="EN-US_TASK_0000001513153878__screen410286452180218">[DeviceA] <strong id="EN-US_TASK_0000001513153878__b721992471180218">interface tunnel 1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b1216472188180218">tunnel-protocol gre</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b233215829180218">ip address 2.1.1.1 24</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b1793376799180218">source 1.1.3.1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b144453375180218">destination 1.1.5.1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b1145927575180218">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001513153878__note1077010576111"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513153878__p10770135715112">The IP address of the tunnel interface can be any idle IP address. When routes with the tunnel interface as the next hop need to be generated through dynamic routing protocols, the IP addresses of the interfaces at both ends of the GRE tunnel must belong to the same network segment.</p>
+</div></div>
+</p></li><li id="EN-US_TASK_0000001513153878__step1541144313219"><span id="EN-US_TASK_0000001513153878__cmd94116431226">Configure a static route from DeviceA to Network B with the next hop Tunnel 1 and outbound interface <span>10GE</span> <span>0/0/1</span>. The following assumes that the next hop of the route with the outbound interface <span>10GE</span> <span>0/0/1</span> is 1.1.3.2.</span><p><pre class="screen" id="EN-US_TASK_0000001513153878__screen1711343898180218">[DeviceA] <strong id="EN-US_TASK_0000001513153878__b1254323596180218">ip route-static 10.1.2.0 255.255.255.0 tunnel 1</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513153878__b132752781180218">ip route-static 1.1.5.0 255.255.255.0 <span>10ge</span> <span>0/0/1</span> 1.1.3.2</strong></pre>
+</p></li><li id="EN-US_TASK_0000001513153878__step657250991180218"><span id="EN-US_TASK_0000001513153878__cmd1909009216180218">Configure an IPsec policy and apply it to an interface on DeviceA.</span><p><ol type="a" id="EN-US_TASK_0000001513153878__ol1349018464180218"><li id="EN-US_TASK_0000001513153878__li1973218648180218"><p id="EN-US_TASK_0000001513153878__p295856315180218"><a name="EN-US_TASK_0000001513153878__li1973218648180218"></a><a name="li1973218648180218"></a>Create advanced ACL 3000, and configure a rule for packets whose source IP address is 1.1.3.1 and destination IP address is 1.1.5.1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen608356040180218">[DeviceA] <strong id="EN-US_TASK_0000001513153878__b5212354180218">acl 3000</strong>
+[DeviceA-acl4-advance-3000] <strong id="EN-US_TASK_0000001513153878__b947027983180218">rule 5 permit ip source 1.1.3.1 0 destination 1.1.5.1 0</strong>
+[DeviceA-acl4-advance-3000] <strong id="EN-US_TASK_0000001513153878__b547455336180218">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001513153878__note1171817773180218"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513153878__p168784174180218">The source and destination IP addresses are those of Tunnel 1.</p>
+</div></div>
+</li><li id="EN-US_TASK_0000001513153878__li379444362180218"><p id="EN-US_TASK_0000001513153878__p1442444191180218"><a name="EN-US_TASK_0000001513153878__li379444362180218"></a><a name="li379444362180218"></a>Configure the IPsec proposal <strong id="EN-US_TASK_0000001513153878__b582398762180300">tran1</strong> and use the default parameter settings.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen867795613180218">[DeviceA] <strong id="EN-US_TASK_0000001513153878__b826868270180218">ipsec proposal tran1</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001513153878__b1461658827180218">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001513153878__li1963979735180218"><p id="EN-US_TASK_0000001513153878__p1783751755180218"><a name="EN-US_TASK_0000001513153878__li1963979735180218"></a><a name="li1963979735180218"></a>Configure an IKE proposal and use the default parameter settings.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen964630275180218">[DeviceA] <strong id="EN-US_TASK_0000001513153878__b1902892056180218">ike proposal 10</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000001513153878__b1650733759180218">authentication-method pre-share</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000001513153878__b1955408643180218">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001513153878__li1539676420180218"><p id="EN-US_TASK_0000001513153878__p163644590180218"><a name="EN-US_TASK_0000001513153878__li1539676420180218"></a><a name="li1539676420180218"></a>Configure an IKE peer.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen880887701180218">[DeviceA] <strong id="EN-US_TASK_0000001513153878__b587109038180218">ike peer b</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000001513153878__b504607720180218">ike-proposal 10</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000001513153878__b2064275980180218">remote-address 1.1.5.1</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000001513153878__b259627083180218">pre-shared-key YsHsjx_202206</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000001513153878__b1647742649180218">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001513153878__li412622972180218"><p id="EN-US_TASK_0000001513153878__p729594241180218"><a name="EN-US_TASK_0000001513153878__li412622972180218"></a><a name="li412622972180218"></a>Configure an IPsec policy using the IKE negotiation mode.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen1509964845180218">[DeviceA] <strong id="EN-US_TASK_0000001513153878__b770990985180218">ipsec policy map1 10 isakmp</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b318122211180218">security acl 3000</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b1103637353180218">proposal tran1</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b1423113809180218">ike-peer b</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b1645542225919">sa trigger-mode auto</strong>
+[DeviceA-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b1168315806180218">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001513153878__note7328142818414"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513153878__en-us_task_0000001564113977_p751115311401">By default, the negotiation for IPsec tunnel establishment is triggered by traffic. To enable automatic negotiation for IPsec tunnel establishment, run the <strong id="EN-US_TASK_0000001513153878__en-us_task_0000001564113977_b12265647152215"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513153878__en-us_task_0000001564113977_cmdname12472649317">sa trigger-mode auto</span></b></strong> command.</p>
+</div></div>
+</li><li id="EN-US_TASK_0000001513153878__li39041111180218"><p id="EN-US_TASK_0000001513153878__p1181440242180218"><a name="EN-US_TASK_0000001513153878__li39041111180218"></a><a name="li39041111180218"></a>Apply the IPsec policy <strong id="EN-US_TASK_0000001513153878__b1488857375180300">map1</strong> to <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen820700011180218">[DeviceA] <strong id="EN-US_TASK_0000001513153878__b675869542180218">interface </strong><strong id="EN-US_TASK_0000001513153878__b1948058370180218"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513153878__b1782127612180218">ipsec policy map1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513153878__b1189796553180218">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001513153878__b1441453103019">quit</strong></pre>
+</li></ol>
+</p></li><li id="EN-US_TASK_0000001513153878__step548715318102"><span id="EN-US_TASK_0000001513153878__cmd14487331161013">Perform basic interface configurations on DeviceB.</span><p><pre class="screen" id="EN-US_TASK_0000001513153878__screen2991116124714">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001513153878__b1499111624715">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001513153878__b2991176164714">sysname DeviceB</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001513153878__b1999113654719">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513153878__b179911263471">ip address 10.1.2.1 24</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001513153878__b169918684716">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001513153878__b13991176194712">interface <span>10ge</span> <span>0/0/1</span></strong> 
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513153878__b159911962472">ip address 1.1.5.1 24</strong> 
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513153878__b4991126134713">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001513153878__step137834149154"><span id="EN-US_TASK_0000001513153878__cmd178331414159">Configure a GRE tunnel interface on DeviceB.</span><p><pre class="screen" id="EN-US_TASK_0000001513153878__screen177831514151517">[DeviceB] <strong id="EN-US_TASK_0000001513153878__b207832140153">interface tunnel 1</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b97832014201517">tunnel-protocol gre</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b578314146155">ip address 2.1.1.2 24</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b078317141159">source 1.1.5.1</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b87831614121513">destination 1.1.3.1</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001513153878__b16783151441516">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001513153878__note2783121491519"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513153878__en-us_task_0000001513153878_p10770135715112">The IP address of the tunnel interface can be any idle IP address. When routes with the tunnel interface as the next hop need to be generated through dynamic routing protocols, the IP addresses of the interfaces at both ends of the GRE tunnel must belong to the same network segment.</p>
+</div></div>
+</p></li><li id="EN-US_TASK_0000001513153878__step1523110242313"><span id="EN-US_TASK_0000001513153878__cmd177833146156">Configure a static route from DeviceB to Network A with the next hop Tunnel 1 and outbound interface <span>10GE</span> <span>0/0/1</span>. The following assumes that the next hop of the route with the outbound interface <span>10GE</span> <span>0/0/1</span> is 1.1.5.2.</span><p><pre class="screen" id="EN-US_TASK_0000001513153878__screen15783191417152">[DeviceB] <strong id="EN-US_TASK_0000001513153878__b167844146152">ip route-static 1.1.3.0 255.255.255.0 <span>10ge</span> <span>0/0/1</span> 1.1.5.2</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001513153878__b1078431413152">ip route-static 10.1.1.0 255.255.255.0 tunnel 1</strong></pre>
+</p></li><li id="EN-US_TASK_0000001513153878__step1736615251157"><span id="EN-US_TASK_0000001513153878__cmd16366132501512">Configure an IPsec policy and apply it to an interface on DeviceB.</span><p><ol type="a" id="EN-US_TASK_0000001513153878__ol2366132571513"><li id="EN-US_TASK_0000001513153878__li143667251154"><p id="EN-US_TASK_0000001513153878__p93661725151520"><a name="EN-US_TASK_0000001513153878__li143667251154"></a><a name="li143667251154"></a>Create advanced ACL 3000, and configure a rule for packets whose source IP address is 1.1.5.1 and destination IP address is 1.1.3.1.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen1136632518152">[DeviceB] <strong id="EN-US_TASK_0000001513153878__b1936632519155">acl 3000</strong>
+[DeviceB-acl4-advance-3000] <strong id="EN-US_TASK_0000001513153878__b13366182561517">rule 5 permit ip source 1.1.5.1 0 destination 1.1.3.1 0</strong>
+[DeviceB-acl4-advance-3000] <strong id="EN-US_TASK_0000001513153878__b18366102571516">quit</strong> </pre>
+<div class="note" id="EN-US_TASK_0000001513153878__note436632512159"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513153878__en-us_task_0000001513153878_p168784174180218">The source and destination IP addresses are those of Tunnel 1.</p>
+</div></div>
+</li><li id="EN-US_TASK_0000001513153878__li133661255158"><p id="EN-US_TASK_0000001513153878__p13367152518152"><a name="EN-US_TASK_0000001513153878__li133661255158"></a><a name="li133661255158"></a>Configure the IPsec proposal <strong id="EN-US_TASK_0000001513153878__b18149618141714">tran1</strong> and use the default parameter settings.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen113678257151">[DeviceB] <strong id="EN-US_TASK_0000001513153878__b7367112514159">ipsec proposal tran1</strong>
+[DeviceB-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000001513153878__b7367525191511">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001513153878__li1036772517158"><p id="EN-US_TASK_0000001513153878__p1336742517158"><a name="EN-US_TASK_0000001513153878__li1036772517158"></a><a name="li1036772517158"></a>Configure an IKE proposal and use the default parameter settings.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen3367125171515">[DeviceB] <strong id="EN-US_TASK_0000001513153878__b1336732511519">ike proposal 10</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000001513153878__b936722510152">authentication-method pre-share</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000001513153878__b53678258151">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001513153878__li93671325151514"><p id="EN-US_TASK_0000001513153878__p536752571514"><a name="EN-US_TASK_0000001513153878__li93671325151514"></a><a name="li93671325151514"></a>Configure an IKE peer.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen436712513155">[DeviceB] <strong id="EN-US_TASK_0000001513153878__b1236717257153">ike peer a</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000001513153878__b193670257155">ike-proposal 10</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000001513153878__b1236719259151">remote-address 1.1.3.1</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000001513153878__b4367325191517">pre-shared-key YsHsjx_202206</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000001513153878__b3367182531520">quit</strong></pre>
+</li><li id="EN-US_TASK_0000001513153878__li1536710251152"><p id="EN-US_TASK_0000001513153878__p03671725171514"><a name="EN-US_TASK_0000001513153878__li1536710251152"></a><a name="li1536710251152"></a>Configure an IPsec policy using the IKE negotiation mode.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen73671325131516">[DeviceB] <strong id="EN-US_TASK_0000001513153878__b20368925171511">ipsec policy map1 10 isakmp</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b536810251151">security acl 3000</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b123681325191516">proposal tran1</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b1336892511156">ike-peer a</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b343916572910">sa trigger-mode auto</strong>
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000001513153878__b53681425121512">quit</strong></pre>
+<div class="note" id="EN-US_TASK_0000001513153878__note12541517142911"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001513153878__en-us_task_0000001564113977_p751115311401_1">By default, the negotiation for IPsec tunnel establishment is triggered by traffic. To enable automatic negotiation for IPsec tunnel establishment, run the <strong id="EN-US_TASK_0000001513153878__en-us_task_0000001564113977_b12265647152215_1"><b><span class="cmdqueryname" id="EN-US_TASK_0000001513153878__en-us_task_0000001564113977_cmdname12472649317_1">sa trigger-mode auto</span></b></strong> command.</p>
+</div></div>
+</li><li id="EN-US_TASK_0000001513153878__li11368172571513"><p id="EN-US_TASK_0000001513153878__p1836832512151"><a name="EN-US_TASK_0000001513153878__li11368172571513"></a><a name="li11368172571513"></a>Apply the IPsec policy <strong id="EN-US_TASK_0000001513153878__b960012117180">map1</strong> to <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen1136822561511">[DeviceB] <strong id="EN-US_TASK_0000001513153878__b236842510158">interface </strong><strong id="EN-US_TASK_0000001513153878__b1036842510151"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513153878__b3368192511155">ipsec policy map1</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001513153878__b17368112511156">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001513153878__b1091013973019">quit</strong></pre>
+</li></ol>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001513153878__example121226172748"><a name="EN-US_TASK_0000001513153878__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><div class="p" id="EN-US_TASK_0000001513153878__p174405181478">Users on Network A can successfully access Network B. Run the <strong id="EN-US_TASK_0000001513153878__b86481721771">display ike sa</strong> and <strong id="EN-US_TASK_0000001513153878__b264852119719">display ipsec sa</strong> commands on DeviceA and DeviceB to check the establishment of IKE SAs and IPsec SAs. The following shows the command output of DeviceA. If information similar to the following is displayed, IKE SAs and IPsec SAs have been established.<pre class="screen" id="EN-US_TASK_0000001513153878__screen499283210912">&lt;DeviceA&gt; <strong id="EN-US_TASK_0000001513153878__b1439215241872">display ike sa</strong> 
+Total number of IKE SA in all CPU : 2                                           
+Total number of phase 1 SA in all CPU : 1                                       
+Total number of phase 2 SA in all CPU : 1                                       
+
+Flag Description:                                                               
+ RD--READY   ST--STAYALIVE   RL--REPLACED   FD--FADING   TO--TIMEOUT            
+ HRT--HEARTBEAT   LKG--LAST KNOWN GOOD SEQ NO.   BCK--BACKED UP                 
+ M--ACTIVE   S--STANDBY   A--ALONE  NEG--NEGOTIATING                            
+
+Slot 0, cpu 1 IKE SA information :                                              
+  Number of IKE SA : 2,  number of IKE SA1: 1,  number of IKE SA2: 1            
+---------------------------------------------------------------------------------------                           
+ Conn-ID    Peer              VPN         Flag(s)        Phase  RemoteType  RemoteID                                    
+---------------------------------------------------------------------------------------                           
+ 33554442   1.1.5.1/500                    RD|A          v2:2   IP          1.1.5.1                                     
+ 33554440   1.1.5.1/500                    RD|ST|A       v2:1   IP          1.1.5.1                                     
+--------------------------------------------------------------------------------------- </pre>
+<pre class="screen" id="EN-US_TASK_0000001513153878__screen142231222112612">&lt;DeviceA&gt; <strong id="EN-US_TASK_0000001513153878__b879392217263">display ipsec sa</strong>
+Slot 0, cpu 1 ipsec sa information:                                             
+
+===============================                                                 
+Interface: <span>10GE</span><span>0/0/1</span>                                                           
+===============================                                                 
+
+  -----------------------------                                                 
+  IPSec policy name: "map1"                                                     
+  Sequence number  : 10                                                         
+  Acl group        : 3000/IPv4                                                  
+  Acl rule         : 5                                                          
+  Mode             : ISAKMP                                                     
+  ---------------------------                                                   
+    Connection ID     : 33554456                                                
+    Encapsulation mode: Tunnel                                                  
+    Holding time      : 0d 13h 30m 13s                                          
+    Tunnel local      : 1.1.3.1/500                                             
+    Tunnel remote     : 1.1.5.1/500                                             
+    Flow source       : 1.1.3.1/255.255.255.255 0/0-65535                       
+    Flow destination  : 1.1.5.1/255.255.255.255 0/0-65535                       
+
+    [Outbound ESP SAs]                                                          
+      SPI: 10914757 (0xa68bc5)                                                  
+      Proposal: ESP-ENCRYPT-AES-GCM-256                                         
+      SA remaining soft duration (kilobytes/sec): 0/512054                      
+      SA remaining hard duration (kilobytes/sec): 0/602772                      
+      Max sent sequence-number: 5                                               
+      UDP encapsulation used for NAT traversal: N                               
+      SA encrypted packets (number/bytes): 5/540                                
+
+    [Inbound ESP SAs]                                                           
+      SPI: 276363621 (0x1078f965)                                               
+      Proposal: ESP-ENCRYPT-AES-GCM-256                                         
+      SA remaining soft duration (kilobytes/sec): 0/530198                      
+      SA remaining hard duration (kilobytes/sec): 0/602772                      
+      Max received sequence-number: 5                                           
+      UDP encapsulation used for NAT traversal: N                               
+      SA decrypted packets (number/bytes): 5/540                                
+      Anti-replay : Enable                                                      
+      Anti-replay window size: 1024</pre>
+</div>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001513153878__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001513153878__ul254814784120"><li id="EN-US_TASK_0000001513153878__li30411524180218"><div class="p" id="EN-US_TASK_0000001513153878__p25375882180218"><a name="EN-US_TASK_0000001513153878__li30411524180218"></a><a name="li30411524180218"></a>DeviceA<pre class="screen" id="EN-US_TASK_0000001513153878__screen1418716227">#
+ sysname DeviceA
+#
+acl number 3000
+ rule 5 permit ip source 1.1.3.1 0 destination 1.1.5.1 0
+#
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128
+#
+ike proposal 10
+  encryption-algorithm aes-gcm-256                                                   
+  dh group14                                                                      
+  authentication-algorithm sha2-256                                              
+  authentication-method pre-share                                                
+  integrity-algorithm hmac-sha2-256                                              
+  prf hmac-sha2-256
+#
+ike peer b
+  pre-shared-key <span class="keyword" id="EN-US_TASK_0000001513153878__keyword1138413171210">%^%#</span>o3Z7,b[Ox7Sc#r-f+WDC:D=s<span class="keyword" id="EN-US_TASK_0000001513153878__keyword53841517021">%^%#</span>
+  ike-proposal 10
+  remote-address 1.1.5.1
+#                                                                               
+ipsec policy map1 10 isakmp
+ security acl 3000
+ ike-peer b
+ proposal tran1
+ sa trigger-mode auto
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.3.1 255.255.255.0
+ ipsec policy map1
+#
+interface Tunnel1
+ ip address 2.1.1.1 255.255.255.0
+ tunnel-protocol gre
+ source 1.1.3.1
+ destination 1.1.5.1
+#
+ ip route-static 10.1.2.0 255.255.255.0 tunnel 1
+ ip route-static 1.1.5.0 255.255.255.0 <span>10GE</span> <span>0/0/1</span> 1.1.3.2
+#
+return</pre>
+</div>
+</li><li id="EN-US_TASK_0000001513153878__li263119292812"><div class="p" id="EN-US_TASK_0000001513153878__p763142911814"><a name="EN-US_TASK_0000001513153878__li263119292812"></a><a name="li263119292812"></a>DeviceB<pre class="screen" id="EN-US_TASK_0000001513153878__screen22224340816">#
+ sysname DeviceB
+#
+acl number 3000
+ rule 5 permit ip source 1.1.5.1 0 destination 1.1.3.1 0
+#
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128
+#
+ike proposal 10
+  encryption-algorithm aes-gcm-256                                                   
+  dh group14                                                                      
+  authentication-algorithm sha2-256                                              
+  authentication-method pre-share                                                
+  integrity-algorithm hmac-sha2-256                                              
+  prf hmac-sha2-256 
+#
+ike peer a
+ pre-shared-key <span class="keyword" id="EN-US_TASK_0000001513153878__keyword1692810430812">%^%#</span>2@@y<font style="font-size:8pt" Face="Courier New" >~</font>:)7dX56AoVG1S@&amp;0)Xf<span class="keyword" id="EN-US_TASK_0000001513153878__keyword1692844313816">%^%#</span>
+ ike-proposal 10
+ remote-address 1.1.3.1
+#                                                                               
+ipsec policy map1 10 isakmp 
+ security acl 3000
+ ike-peer a
+ proposal tran1
+ sa trigger-mode auto
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.5.1 255.255.255.0
+ ipsec policy map1
+#
+interface Tunnel1
+ ip address 2.1.1.2 255.255.255.0
+ tunnel-protocol gre
+ source 1.1.5.1
+ destination 1.1.3.1
+#
+ ip route-static 10.1.1.0 255.255.255.0 tunnel 1
+ ip route-static 1.1.3.0 255.255.255.0 <span>10GE</span> <span>0/0/1</span> 1.1.5.2
+#
+return</pre>
+</div>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002255822477.html">Applications of IPsec with Other Types of Tunnels
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0116.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

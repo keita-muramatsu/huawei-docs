@@ -1,0 +1,99 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring IPsec Route Injection">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0038.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0044.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0048.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512834374">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring IPsec Route Injection</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512834374"></a><a name="EN-US_TASK_0000001512834374"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring IPsec Route Injection</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001512834374__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><ul><li>IPsec route injection takes effect only for the following IPsec policies:<ul><li>ISAKMP IPsec policies</li><li>Template IPsec policies</li></ul>
+</li><li>The device does not support IPsec route injection when an IPsec policy group is applied to a Layer 2 interface.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001512834374__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>When an enterprise headquarters and its branch establish an IPsec tunnel, a route to the branch subnet needs to be configured at the headquarters. If there are a large number of branch subnets, a lot of routes need to be configured at the headquarters. When a branch subnet changes, the route configuration needs to be manually modified at the headquarters, complicating network maintenance. After the IPsec route injection function is configured, the device injects the route to the branch subnet into the routing table based on the destination network segment in the flow information of the IPsec SA established by the local end. The next hop of the route defaults to the IP address of the local interface to which an IPsec policy is applied. The IPsec route injection function reduces the costs of configuring and maintaining routing information at the headquarters and improves configuration accuracy. This function can also be configured in branches to inject routes to the headquarters gateway.</p>
+<p>In <a href="#EN-US_TASK_0000001512834374__fig112184498310">Figure 1</a>, the branch establishes an IPsec tunnel with the headquarters. Hosta<sub>1</sub> resides on the branch subnet, and Hostb<sub>1</sub> resides on the headquarters subnet. An ACL rule is configured on the headquarters and branch to define IPsec-protected data flows from Hostb<sub>1</sub> to Hosta<sub>1</sub> and data flows from Hosta<sub>1</sub> to Hostb<sub>1</sub>. Before the IPsec route injection function is enabled, a route to the branch subnet needs to be configured at the headquarters. After this function is enabled on a headquarters device, the device automatically generates a routing entry with the destination IP address on the destination network segment in the flow information of the IPsec SA established by the local end and the next hop being the IP address of the local interface to which an IPsec policy is applied.</p>
+<div class="fignone" id="EN-US_TASK_0000001512834374__fig112184498310"><a name="EN-US_TASK_0000001512834374__fig112184498310"></a><a name="fig112184498310"></a><span class="figcap"><b>Figure 1 </b>Configuring IPsec route injection</span><br><span><img class="vsd" src="figure/en-us_image_0000001513034038.png" width="NaN" height="NaN"></span></div>
+<p>IPsec route injection includes static route injection and dynamic route injection.</p>
+<ul><li>Static route injection: The automatically generated route is immediately added to the routing table of the local device, and is independent of IPsec tunnel status changes.</li><li><p>Dynamic route injection: If the IPsec tunnel is Up, the automatically generated route is immediately added to the routing table of the local device. If the IPsec tunnel is Down, the automatically generated route is immediately removed from the routing table of the local device. In dynamic route injection, the automatically generated route is associated with the IPsec tunnel status to prevent IPsec peers from sending IPsec packets over the IPsec tunnel in Down state, reducing packet loss.</p>
+</li></ul>
+<p>In addition, the device supports the configuration of priorities for the routes injected by the IPsec route injection function to flexibly control routes. For example, if routes to the same destination are configured on the device and the same priority is specified for these routes, load balancing can be implemented among these routes. If different priorities are specified for these routes, route backup can be implemented among these routes.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512834374__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the ISAKMP or template IPsec policy view.</span><p><p># Enter the ISAKMP IPsec policy view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec policy</span></b> <i><span class="varname">policy-name</span></i> <i><span class="varname">seq-number</span></i> <strong><span>isakmp</span></strong></pre>
+<p># Enter the template IPsec policy view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec policy-template</span></b> <i><span class="varname">template-name</span></i> <i><span class="varname">seq-number</span></i></pre>
+</p></li><li><span>Configure IPsec route injection.</span><p><pre class="screen"><b><span class="cmdqueryname">route inject</span></b> { <strong><span>static</span></strong> | <strong><span>dynamic</span></strong> } [ <strong><span>preference</span></strong> <i><span class="varname">preference</span></i> ]</pre>
+<p>By default, IPsec route injection is not configured.</p>
+</p></li><li><strong>Optional: </strong><span>Configure the next-hop address of the route to be injected by the IPsec route injection function.</span><p><pre class="screen"><b><span class="cmdqueryname">route inject</span></b> <strong><span>nexthop</span></strong> { { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> } | <strong><span>auto</span></strong> }</pre>
+<p>The specified next-hop address will replace the automatically generated next-hop address.</p>
+<p>This command applies to the following situations:</p>
+<p>If the destination address of an IPsec-protected data flow is the same as the remote address of the IPsec tunnel (for example, the IPsec-protected data flow from the web system to the device), you need to run the <b><span class="cmdqueryname">route inject</span></b> <strong><span>nexthop</span></strong> <i><span class="varname">ip-address</span></i> command to specify the next-hop address to the remote end. Only one next-hop address can be specified in this command. As such, if an IPsec interface has multiple next hops, you need to manually modify the configuration when the next hop changes. This method cannot well adapt to network changes. To address this, you can run the <b><span class="cmdqueryname">route inject</span></b> <strong><span>nexthop</span></strong> <strong><span>auto</span></strong> command to configure the device to search its IP routing table for routes of packets based on packets' destination addresses and specify the next-hop address of the optimal route as the next-hop address to the remote end.</p>
+</p></li><li><strong>Optional: </strong><span>Enable route injection protection.</span><p><pre class="screen"><b><span class="cmdqueryname">route inject protection enable</span></b></pre>
+<p>By default, route injection protection is disabled.</p>
+<p>After IPsec route injection is enabled, the device injects the route to the branch subnet into the routing table based on the destination network segment in the flow information of the IPsec SA established by the local end. If the destination network segment is 0.0.0.0, the automatically generated route may affect other services. In this case, you are advised to enable route injection protection to prevent the device from generating a default route with 0.0.0.0 as the destination address.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0038.html">IPsec Reliability
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0044.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0048.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

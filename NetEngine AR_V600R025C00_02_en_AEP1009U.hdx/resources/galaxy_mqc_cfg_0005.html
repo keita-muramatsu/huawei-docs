@@ -1,0 +1,252 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring a Traffic Classifier">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_mqc_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="spec/MQC_limitation_all.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_mqc_cfg_0006.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MQC">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MQC">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513167026">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring a Traffic Classifier</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513167026"></a><a name="EN-US_TASK_0000001513167026"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring a Traffic Classifier</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001513167026__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><div class="p">Before configuring a traffic classifier, complete the following task:<ul><li><p>Configure an ACL if it is required to classify packets.</p>
+</li></ul>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513167026__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Multiple rules can be configured in a traffic classifier as long as they do not conflict with each other. You can configure rules based on your requirements.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>A traffic classifier in which matching rules are ANDed cannot define duplicate matching rules. For example, a traffic classifier cannot define both <strong>if-match source-mac</strong> and an ACL rule that matches the same source MAC address.</li></ul>
+<ul><li>To match multiple fields of packets of the same type (such as IPv6/IPv4 packets) in a view, apply one traffic policy in the view, and specify multiple traffic classifiers and associated traffic behaviors in the traffic policy. If both IPv4 and IPv6 packets need to be matched, create one traffic policy for each type of packet.</li><li>Before defining a matching rule based on an application or application group, load the signature database or configure a user-defined application or application group, and ensure that the <b><span class="cmdqueryname">sa enable</span></b> command has been run to enable the application identification function on an interface.</li></ul>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513167026__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create a traffic classifier and enter the traffic classifier view, or enter the view of an existing traffic classifier.</span><p><pre class="screen"><b><span class="cmdqueryname">traffic classifier</span></b> <i><span class="varname">classifier-name</span></i> [ <strong><span>type</span></strong> { <strong><span>and</span></strong> | <strong><span>or</span></strong> } ]</pre>
+<div class="p"><strong><span>and</span></strong> is the logical operator between the rules in a traffic classifier, which means that:<ul><li><p>If the traffic classifier contains ACL rules, packets must match one ACL rule and all the non-ACL rules in order to match the traffic classifier.</p>
+</li><li><p>If the traffic classifier does not contain any ACL rules, packets must match all rules in order to match the traffic classifier.</p>
+</li></ul>
+The logical operator <strong><span>or</span></strong> means that packets match a traffic classifier if they match one or more rules in the traffic classifier.</div>
+<p>By default, the relationship between rules in a traffic classifier is <strong><span>OR</span></strong>.</p>
+<p>The device supports a maximum of 1024 traffic classifiers.</p>
+</p></li><li><span>Configure matching rules according to the following table.</span><p><ul><li>Link-layer rule (Layer 2 rule)
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="29.520000000000003%" id="mcps1.3.3.3.2.1.1.1.1.3.1.1" liSelected="liSelected"><p>Matching Rule</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="70.48%" id="mcps1.3.3.3.2.1.1.1.1.3.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.1 "><p>Destination MAC address</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match destination-mac</span></b> <i><span class="varname">mac-address</span></i> [ <i><span class="varname">mac-address-mask</span></i> ]</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.1 "><p>Source MAC address</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match source-mac</span></b> <i><span class="varname">mac-address</span></i> [ <i><span class="varname">mac-address-mask</span></i> ]</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.1 "><p>Protocol type in the Ethernet frame header</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match l2-protocol</span></b> { <strong><span>arp</span></strong> | <strong><span>ip</span></strong> | <strong><span>rarp</span></strong> | <i><span class="varname">protocol-value</span></i> }</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.1 "><p>VLAN ID</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match vlan</span></b> <i><span class="varname">start-vlan-value</span></i> [ <strong><span>to</span></strong> <i><span class="varname">end-vlan-value</span></i> ]</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.1 "><p>802.1p value in the outer tag of VLAN packets</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.1.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match 8021p</span></b> <i><span class="varname">8021p-value</span></i> &amp;&lt;1-8&gt;</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li><li>Network-layer rule (Layer 3 rule)
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="29.520000000000003%" id="mcps1.3.3.3.2.1.2.1.1.3.1.1" liSelected="liSelected"><p>Matching Rule</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="70.48%" id="mcps1.3.3.3.2.1.2.1.1.3.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.2.1.1.3.1.1 "><p>DSCP value in IP packets</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.2.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match dscp</span></b> <i><span class="varname">dscp-value</span></i> &amp;&lt;1-8&gt;</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.2.1.1.3.1.1 "><p>DSCP value in IPv6 packets</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.2.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match ipv6 dscp</span></b> <i><span class="varname">dscp-value</span></i> &amp;&lt;1-8&gt;</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.2.1.1.3.1.1 "><p>IP precedence in IP packets</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.2.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match ip-precedence</span></b> <i><span class="varname">ip-precedence</span></i> &amp;&lt;1-8&gt;</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li><li>Transport-layer rule (Layer 4 rule)
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="29.520000000000003%" id="mcps1.3.3.3.2.1.3.1.1.3.1.1" liSelected="liSelected"><p>Matching Rule</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="70.48%" id="mcps1.3.3.3.2.1.3.1.1.3.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.3.1.1.3.1.1 "><p>TCP flag in the TCP packet header</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.3.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match tcp-flag</span></b> { <i><span class="varname">tcp-flag-value</span></i> | { <strong><span>ack</span></strong> | <strong><span>fin</span></strong> | <strong><span>psh</span></strong> | <strong><span>rst</span></strong> | <strong><span>syn</span></strong> | <strong><span>urg</span></strong> } <sup>*</sup> }</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li><li>ACL rule
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="29.520000000000003%" id="mcps1.3.3.3.2.1.4.1.1.3.1.1" liSelected="liSelected"><p>Matching Rule</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="70.48%" id="mcps1.3.3.3.2.1.4.1.1.3.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.4.1.1.3.1.1 "><p>ACL rule</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.4.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match acl</span></b> { <i><span class="varname">acl-number</span></i> | <i><span class="varname">acl-name</span></i> }</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p>In the following scenarios, you need to run the <b><span class="cmdqueryname">qos pre-classify</span></b> command to configure the pre-extraction function before configuring an ACL-based traffic classifier.</p>
+<ul><li>For tunnel packets such as GRE packets, traffic classification cannot be performed based on original IP packets because the device cannot obtain QoS fields in original IP packets that are encapsulated. You can run the <b><span class="cmdqueryname">qos pre-classify</span></b> command in the tunnel interface view to pre-extract 5-tuple information from encapsulated IP packets to implement traffic classification based on original packets.</li><li>After NAT is configured on the device and private IP addresses of IP packets are translated into public IP addresses, the NAT-enabled device cannot identify the private IP addresses before translation on the outbound interface. As a result, traffic classification cannot be performed based on private IP addresses. You can run the <b><span class="cmdqueryname">qos pre-classify</span></b> command on the outbound interface to allow packets to carry the private IP addresses before NAT to the outbound interface. Traffic classification then can be performed based on private IP addresses.</li></ul>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.4.1.1.3.1.1 "><p>ACL6 rule</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.4.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match ipv6 acl</span></b> { <i><span class="varname">acl-number</span></i> | <i><span class="varname">acl6-name</span></i> }<span></span> </p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li><li>Forwarding rule
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="29.520000000000003%" id="mcps1.3.3.3.2.1.5.1.1.3.1.1" liSelected="liSelected"><p>Matching Rule</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="70.48%" id="mcps1.3.3.3.2.1.5.1.1.3.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.5.1.1.3.1.1 "><p>All packets</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.5.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match any</span></b></p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.5.1.1.3.1.1 "><p>Inbound interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.5.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match inbound-interface</span></b> { { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number1</span></i> | <i><span class="varname">interface-name1</span></i> } [ <strong><span>to</span></strong> { <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number2</span></i> | <i><span class="varname">interface-name2 </span></i>} ] } &amp;&lt;1-8&gt;</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li><li>Application/Application group rule
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="29.520000000000003%" id="mcps1.3.3.3.2.1.6.1.1.3.1.1" liSelected="liSelected"><p>Matching Rule</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="70.48%" id="mcps1.3.3.3.2.1.6.1.1.3.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.6.1.1.3.1.1 "><p>Application</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.6.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match application</span></b> <i><span class="varname">application-name</span></i> [ <strong><span>time-range</span></strong> <i><span class="varname">time-name</span></i> ]</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p><i><span class="varname">application-name</span></i> specifies the name of an application. You can run the <b><span class="cmdqueryname">display application</span></b> command to view application names.</p>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.520000000000003%" headers="mcps1.3.3.3.2.1.6.1.1.3.1.1 "><p>Application group</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.48%" headers="mcps1.3.3.3.2.1.6.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match app-group</span></b> <i><span class="varname">app-group-name</span></i> [ <strong><span>time-range</span></strong> <i><span class="varname">time-name</span></i> ]</p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><p><i><span class="varname">app-group-name</span></i> specifies the name of an application group. You need to run the <b><span class="cmdqueryname">application-group name</span></b> command to create an application group, and then run the <b><span class="cmdqueryname">add application</span></b> command in the application group view to add applications to the application group.</p>
+</div></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li><li>Other rules
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="29.57%" id="mcps1.3.3.3.2.1.7.1.1.3.1.1" liSelected="liSelected"><p>Matching Rule</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="70.43%" id="mcps1.3.3.3.2.1.7.1.1.3.1.2" liSelected="liSelected"><p>Command</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="29.57%" headers="mcps1.3.3.3.2.1.7.1.1.3.1.1 "><p>QoS local ID</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.3.3.3.2.1.7.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match qos-local-id</span></b> <i><span class="varname">qos-local-id</span></i></p>
+<div class="note"><span class="notetitle"> NOTE: </span><div class="notebody"><ul><li>Before configuring traffic classification based on the QoS local ID, you need to run the <b><span class="cmdqueryname">qos-local-id</span></b> <i><span class="varname">qos-local-id</span></i> command to specify the QoS local ID for packets. Packets with the same QoS local ID are considered to belong to the same QoS group. In this way, traffic policies can be applied to different QoS groups.</li><li>Currently, the QoS local ID can be specified only for packets on the tunnel interface.</li></ul>
+</div></div>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="29.57%" headers="mcps1.3.3.3.2.1.7.1.1.3.1.1 "><p>EXP value of MPLS packets</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.3.3.3.2.1.7.1.1.3.1.2 "><p><b><span class="cmdqueryname">if-match mpls-exp</span></b> <i><span class="varname">mpls-exp-value</span></i> &amp;&lt;1-8&gt;</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li></ul>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_mqc_cfg_0001.html">MQC Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="spec/MQC_limitation_all.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_mqc_cfg_0006.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

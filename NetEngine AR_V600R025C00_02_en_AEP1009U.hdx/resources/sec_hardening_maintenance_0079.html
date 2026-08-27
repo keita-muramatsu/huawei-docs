@@ -1,0 +1,139 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="IPsec Security">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0073.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0041.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0130.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513171766">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>IPsec Security</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513171766"></a><a name="EN-US_TASK_0000001513171766"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">IPsec Security</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001513171766__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>IPsec is protocol suite that is used to secure IP networks by allowing two devices to establish an IPsec tunnel to securely transmit data. IPsec takes the following measures to enhance security:</p>
+<ul><li>Anti-spoofing<p>In IPsec VPN access scenarios, a device uses the IKE negotiation-based authentication mechanism to prevent peer spoofing. This is because IKE provides the pre-shared key authentication function, which means that IKE negotiation is only successful if the pre-shared key used for peer access is the same as the pre-shared key configured on the local device.</p>
+<p>IKE supports RSA digital certificate authentication. In case of peer access, the local device verifies the legitimacy and validity of the certificate through the CA server and uses the certificate private key to sign IKE packets, preventing peer spoofing.</p>
+</li><li>Anti-repudiation<p>The device records details about the VPN tunnel up and down time and the statistics about sent and received packets for future auditing and fault locating.</p>
+</li><li>DLP and anti-tampering<p>IPsec is an open security protocol suite defined by the IETF to secure data transmission using source authentication, data encryption, and data integrity protection at the network layer. When deploying IPsec, you can select the integrity and encryption algorithms for data transmission based on the service requirements and use Encapsulating Security Payload (ESP), Authentication Header (AH), or both to prevent data tampering and data leaks. In the case of IPsec VPN access, the device regularly updates keys based on time and packet count to minimize the possibility of key leaks.</p>
+</li><li>Defense against DoS attacks<p>In the case of IPsec peer access, an attacker can send a large number of VPN establishment requests with varying IP addresses to the gateway. These half-open IKE sessions occupy a large number of system resources on the device. And as a result, the device cannot provide access services for normal users. IKEv2 supports control over half-open connections, so that when the number of half-open connections reaches a specified value, the device rejects access requests from new peers and instructs peers to use specified cookies for tunnel negotiation, preventing access attacks.</p>
+</li></ul>
+<h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513171766__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an IKE proposal.</span><p><p>A default IKE proposal named <strong>Default</strong> has the lowest priority and default parameter settings. For the default settings of the default IKE proposal and a new IKE proposal, see "Default Settings for IPsec" in <span>CLI Configuration Guide</span> &gt; VPN Configuration &gt; IPsec Configuration. If the default parameter settings cannot meet the security requirements, set the parameters based on actual requirements.</p>
+<p>The following configurations are performed in the IKE proposal view.</p>
+</p><ul><li>Configure an authentication method.<pre class="screen"><b><span class="cmdqueryname">authentication-method</span></b> { <strong><span>pre-share</span></strong> | <strong><span>rsa-signature</span></strong> | <strong><span>sm2 digital-envelope</span></strong> }</pre>
+<p>By default, an IKE proposal uses pre-shared key authentication.</p>
+<p>In IKE negotiation, the authentication methods in the IKE proposals used by the IKE peers on both ends must be the same. Otherwise, IKE negotiation fails.</p>
+<ul><li><p>If <strong>pre-share</strong> is configured, the authentication method is pre-shared key authentication. In this case, you need to run the <strong><b><span class="cmdqueryname">pre-shared-key</span></b></strong> command to specify the pre-shared key.</p>
+</li><li><p>If <strong>rsa-signature</strong> is configured, the authentication method is RSA digital signature certificate authentication.</p>
+</li><li><p>If <strong><span>sm2 digital-envelope</span></strong> is configured, the authentication method is SM2 digital envelope authentication.</p>
+<p>SM digital envelope authentication is supported only in IKEv1 negotiation scenarios. The <strong><span id="EN-US_TASK_0000001513171766__en-us_task_0000001564113969_cmdparmname191191214453">sm2 digital-envelope</span></strong> parameter can be configured only after the IKEv1 feature package is installed.</p>
+</li></ul>
+</li><li>Configure the authentication algorithm used in IKEv1 negotiation.<pre class="screen"><b><span class="cmdqueryname">authentication-algorithm</span></b> { <strong><span>md5</span></strong> | <strong><span>sha1</span></strong> | <strong><span>sha2-256</span></strong> | <strong><span>sha2-384</span></strong> | <strong><span>sha2-512</span></strong> | <strong><span>sm3</span></strong> }<sup>*</sup></pre>
+<p>By default, the SHA2-256 authentication algorithm is used for IKEv1 negotiation.</p>
+<p>An authentication algorithm must be configured for IKEv1 negotiation. The following authentication algorithms are listed in descending order of security level: SM3 &gt; SHA2-512 &gt; SHA2-384 &gt; SHA2-256 &gt; SHA1 &gt; MD5.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>SM3 can meet high confidentiality and security requirements, but it takes a relatively long processing time. For common security requirements, the SHA2 authentication algorithms are recommended. Currently, three SHA2 algorithms with different digest lengths are supported: SHA2-256, SHA2-384, and SHA2-512 (also called SHA-256, SHA-384, and SHA-512). MD5 and SHA1 are less secure and therefore not recommended.</p>
+</div></div>
+</li><li>Configure the encryption algorithm used in IKE negotiation.<pre class="screen"><b><span class="cmdqueryname">encryption-algorithm</span></b> { <strong><span>des</span></strong> | <strong><span>3des</span></strong> | <strong><span>aes-128</span></strong> | <strong><span>aes-192</span></strong> | <strong><span>aes-256</span></strong> | <strong><span>sm4</span></strong> | <strong><span>aes-gcm-128</span></strong> | <strong><span>aes-gcm-192</span></strong> | <strong><span>aes-gcm-256</span></strong> }<sup>*</sup></pre>
+<p>By default, the AES-GCM-256 encryption algorithm is used for IKE negotiation.</p>
+<p>The following encryption algorithms are listed in descending order of security level: SM4 &gt; AES-GCM-256 &gt; AES-GCM-192 &gt; AES-GCM-128 &gt; AES-256 &gt; AES-192 &gt; AES-128 &gt; 3DES &gt; DES. DES, 3DES, and AES in CBC mode are not recommended because they cannot meet security requirements.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>SM4 can meet high confidentiality and security requirements, but it takes a relatively long processing time. 3DES, DES, and AES-CBC are less secure and therefore not recommended.</p>
+</div></div>
+</li><li>Configure the DH group used in IKE negotiation.<pre class="screen"><b><span class="cmdqueryname">dh</span></b> { <strong><span>group1</span></strong> | <strong><span>group2</span></strong> | <strong><span>group5</span></strong> | <strong><span>group14</span></strong> | <strong><span>group15</span></strong> | <strong><span>group16</span></strong> | <strong><span>group18</span></strong> | <strong><span>group19</span></strong> | <strong><span>group20</span></strong> | <strong><span>group21</span></strong> | <strong><span>group24</span></strong> }<sup>*</sup></pre>
+<p>By default, the DH group used in IKE negotiation is Group 14.</p>
+<p>The following DH groups are listed in descending order of security level: Group 24 &gt; Group 21 &gt; Group 20 &gt; Group 19 &gt; Group 18 &gt; Group 16 &gt; Group 15 &gt; Group 14 &gt; Group 5 &gt; Group 2 &gt; Group 1.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Among these DH groups, Group 1, Group 2, and Group 5 have security risks and are not recommended for use.</p>
+</div></div>
+</li><li>Configure the pseudo-random function (PRF) algorithm used in IKEv2 negotiation.<pre class="screen"><b><span class="cmdqueryname">prf</span></b> { <strong><span>aes-xcbc-128</span></strong> | <strong><span>hmac-md5</span></strong> | <strong><span>hmac-sha1</span></strong> | <strong><span>hmac-sha2-256</span></strong> | <strong><span>hmac-sha2-384</span></strong> | <strong><span>hmac-sha2-512</span></strong> }<sup>*</sup></pre>
+<p>By default, the HMAC-SHA2-256 PRF algorithm is used for IKEv2 negotiation.</p>
+<p>HMAC-MD5, HMAC-SHA1, and AES-XCBC-128 are not recommended because they cannot meet security requirements.</p>
+<p>The authentication algorithms for IKE proposals are listed in descending order of security level as follows: HMAC-SHA2-512 &gt; HMAC-SHA2-384 &gt; HMAC-SHA2-256 &gt; AES-XCBC-128 &gt; HMAC-SHA1 &gt; HMAC-MD5.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>HMAC-MD5, HMAC-SHA1, and AES-XCBC-128 are less secure and therefore not recommended.</p>
+</div></div>
+</li><li>Configure the integrity algorithm used in IKEv2 negotiation.<pre class="screen"><b><span class="cmdqueryname">integrity-algorithm</span></b> { <strong><span>aes-xcbc-96</span></strong> | <strong><span>hmac-md5-96</span></strong> | <strong><span>hmac-sha1-96</span></strong> | <strong><span>hmac-sha2-256</span></strong> | <strong><span>hmac-sha2-384</span></strong> | <strong><span>hmac-sha2-512</span></strong> }<sup>*</sup></pre>
+<p>By default, the HMAC-SHA2-256 integrity algorithm is used for IKEv2 negotiation.</p>
+<p>The following integrity algorithms are listed in descending order of security level: HMAC-SHA2-512 &gt; HMAC-SHA2-384 &gt; HMAC-SHA2-256 &gt; AES-XCBC-96 &gt; HMAC-SHA1-96 &gt; HMAC-MD5-96.</p>
+</li></ul>
+</li><li><span>Configure an IPsec proposal.</span><p><p>An IPsec proposal, as part of an IPsec policy or an IPsec profile's IPsec SA, defines security parameters for IPsec SA negotiation, including the security protocol, encryption and authentication algorithms, and data encapsulation mode. Devices on both ends of an IPsec tunnel need to have the same security parameters configured.</p>
+<p>If the default parameter settings cannot meet security or other requirements, set the parameters based on actual requirements.</p>
+<p>The following configurations are performed in the IPsec proposal view.</p>
+</p><ul><li><p>Configure an IPsec security protocol.</p>
+<pre class="screen"><b><span class="cmdqueryname">transform</span></b> { <strong><span>ah</span></strong> | <strong><span>esp</span></strong> | <strong><span>ah-esp</span></strong> }</pre>
+<p>By default, IPsec uses ESP as its security protocol.</p>
+<p><strong><strong><span>ah-esp</span></strong></strong> indicates that both AH and ESP are used. By default, AH is used for authentication and ESP is used for encryption. In this case, transmitted packets are first encapsulated using ESP and then AH.</p>
+</li><li>Configure the authentication algorithm for AH.<p>When IPsec uses AH, you can configure only the authentication algorithm used by AH, because AH supports only authentication, not encryption.</p>
+<pre class="screen"><b><span class="cmdqueryname">ah authentication-algorithm</span></b> { <strong><span>md5</span></strong> | <strong><span>sha1</span></strong> | <strong><span>sha2-256</span></strong> | <strong><span>sha2-384</span></strong> | <strong><span>sha2-512</span></strong> | <strong><span>sm3</span></strong> }<sup>*</sup></pre>
+<p>By default, AH uses the SHA2-256 authentication algorithm.</p>
+<p>SM3 can meet high confidentiality and security requirements, but it takes a relatively long processing time. For general security requirements, authentication algorithms SHA2-256, SHA2-384, and SHA2-512 are recommended, and authentication algorithms MD5 and SHA1 are not recommended.</p>
+</li><li>Configure the authentication algorithm for ESP.<p id="EN-US_TASK_0000001513171766__p16553171212214">When IPsec uses ESP, you can configure the encryption and authentication algorithms for ESP as required, because ESP supports both authentication and encryption.</p>
+<pre class="screen"><b><span class="cmdqueryname">esp authentication-algorithm</span></b> { <strong><span>md5</span></strong> | <strong><span>sha1</span></strong> | <strong><span>sha2-256</span></strong> | <strong><span>sha2-384</span></strong> | <strong><span>sha2-512</span></strong> | <strong><span>sm3</span></strong> }<sup>*</sup></pre>
+<p>By default, ESP uses the SHA2-256 authentication algorithm.</p>
+<p>SM3 can meet high confidentiality and security requirements, but it takes a relatively long processing time. For general security requirements, authentication algorithms SHA2-256, SHA2-384, and SHA2-512 are recommended, and authentication algorithms MD5 and SHA1 are not recommended.</p>
+</li><li>Configure the encryption algorithm for ESP.<p>When IPsec uses ESP, you can configure the encryption and authentication algorithms for ESP as required, because ESP supports both authentication and encryption.</p>
+<pre class="screen"><b><span class="cmdqueryname">esp encryption-algorithm</span></b> { <strong><span>des</span></strong> | <strong><span>3des</span></strong> | <strong><span>aes-128</span></strong> | <strong><span>aes-192</span></strong> | <strong><span>aes-256</span></strong> | <strong><span>aes-128-gcm-128</span></strong> | <strong><span>aes-192-gcm-128</span></strong> | <strong><span>aes-256-gcm-128</span></strong> | <strong><span>aes-128-gmac</span></strong> | <strong><span>aes-192-gmac</span></strong> | <strong><span>aes-256-gmac</span></strong> | <strong><span>sm4</span></strong> }<sup>*</sup></pre>
+<p>SM4 can meet high confidentiality and security requirements, but it takes a relatively long processing time. For general security requirements, encryption algorithms AES-256, AES-192, AES-128, AES-256-GCM-128, AES-192-GCM-128, AES-128-GCM-128, AES-256-GMAC, AES-192-GMAC, and AES-128-GMAC are recommended, and 3DES and DES are not recommended.</p>
+<p>By default, ESP uses the AES-256-GCM-128 encryption algorithm.</p>
+<p>SM4 can meet high confidentiality and security requirements, but it takes a relatively long processing time. For general security requirements, encryption algorithms AES-256-GCM-128, AES-192-GCM-128, AES-128-GCM-128, AES-256-GMAC, AES-192-GMAC, and AES-128-GMAC are recommended, and 3DES, DES, and AES in CBC mode are not recommended.</p>
+</li><li>Disable ESP encryption.<pre class="screen"><strong><b><span class="cmdqueryname">undo esp encryption-algorithm</span></b></strong></pre>
+<p>You can configure ESP to perform either encryption or authentication, or both on packets.</p>
+</li></ul>
+</li><li><span>Set identity authentication parameters.</span><ul><li>In pre-shared key authentication mode, configure a pre-shared key.<pre class="screen"><b><span class="cmdqueryname">pre-shared-key</span></b> [ <i><span class="varname">key</span></i> ]</pre>
+</li><li>In RSA digital signature authentication mode, specify the local certificate used by the local device.<pre class="screen"><b><span class="cmdqueryname">certificate local-filename</span></b> <i><span class="varname">filename</span></i></pre>
+</li><li>In digital envelope authentication mode, configure a PKI-encrypted domain and a PKI-signed domain for IKE peers.<pre class="screen"><b><span class="cmdqueryname">encryption-certificate pki realm</span></b> <i><span class="varname">realm-name</span></i>
+<strong>signature</strong><b><span class="cmdqueryname">-certificate pki realm</span></b> <i><span class="varname">realm-name</span></i></pre>
+</li></ul>
+</li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001513171766__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><ul><li>Run the <b><span class="cmdqueryname">display ike proposal</span></b> [ <strong><span>number</span></strong> <i><span class="varname">proposal-number</span></i> | <strong><span>default</span></strong> ] [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] command in the user view to check the IKE proposal configuration.</li><li>Run the <b><span class="cmdqueryname">display ipsec proposal</span></b> [ <strong><span>brief</span></strong> | <strong><span>name</span></strong> <i><span class="varname">proposal-name</span></i> ] [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] command in the user view to check the IPsec proposal configuration.</li><li>Run the <b><span class="cmdqueryname">display ike peer</span></b> [ <strong><span>brief</span></strong>  | <strong><span>name</span></strong> <i><span class="varname">peer-name</span></i> ] [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] command in the user view to check the IKE peer configuration.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0073.html">VPN Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0041.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="sec_hardening_maintenance_0130.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

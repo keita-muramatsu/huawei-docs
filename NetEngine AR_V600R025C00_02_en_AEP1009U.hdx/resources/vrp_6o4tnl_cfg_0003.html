@@ -1,0 +1,77 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding IPv6 over IPv4 Tunnels">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_6o4tnl_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_6o4tnl_cfg_0002.html">
+<meta name="DC.Relation" scheme="URI" content="spec/IPv6_over_IPv4_Tunnel_limitation_all.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv6 over IPv4 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv6 over IPv4 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001130623052">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding IPv6 over IPv4 Tunnels</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001130623052"></a><a name="EN-US_CONCEPT_0000001130623052"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding IPv6 over IPv4 Tunnels</h1>
+<div><div class="section"><h4 class="sectiontitle">Fundamentals</h4><p>IPv4 address exhaustion fuels the urgency to transition to IPv6, but this requires existing IPv4 devices to be replaced as these devices are incompatible with IPv6 networks. The main issue is that replacing a large number of IPv4 devices will incur huge costs and interrupt services on the live networks. Therefore, the transition from IPv4 to IPv6 must be a gradual process. During the early stage of IPv4-to-IPv6 transition, IPv6 networks are scattered across a large number of IPv4 networks. Connecting these isolated IPv6 networks using private lines is costly, so a general method is to leverage a tunneling technique, just as IPv6 over IPv4 tunneling does. With this technique, IPv6 over IPv4 tunnels can be created to enable interconnection between isolated IPv6 networks over an IPv4 network.</p>
+<p>An IPv6 over IPv4 tunnel is established between border devices connecting two IPv6 networks to an IPv4 network. Therefore, the border devices must support IPv4/IPv6 dual stack, whereas other devices only need to support IPv4 or IPv6 single stack. <a href="#EN-US_CONCEPT_0000001130623052__fig162516348205">Figure 1</a> shows how an IPv6 over IPv4 tunnel works.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001130623052__fig162516348205"><a name="EN-US_CONCEPT_0000001130623052__fig162516348205"></a><a name="fig162516348205"></a><span class="figcap"><b>Figure 1 </b>Schematic diagram of an IPv6 over IPv4 tunnel</span><br><span><img src="figure/en-us_image_0000001723886345.png"></span></div>
+<p>The process of transmitting IPv6 packets through an IPv6 over IPv4 tunnel is as follows:</p>
+<ol><li><p>IPv4/IPv6 dual stack is enabled on border devices (DeviceA and DeviceB), and an IPv6 over IPv4 tunnel is configured between them.</p>
+</li><li><p>When receiving an IPv6 packet from the connected IPv6 network, DeviceA encapsulates it into an IPv4 packet by attaching an IPv4 header to the IPv6 packet. This is done only if the IPv6 packet is not destined for DeviceA and has a tunnel interface as the next hop.</p>
+</li><li><p>DeviceA transmits the resulting IPv4 packet to DeviceB over the IPv4 network.</p>
+</li><li><p>DeviceB decapsulates the IPv4 packet by removing the IPv4 header, and sends the resulting IPv6 packet to the destination IPv6 network.</p>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Tunnel Configuration</h4><p>A tunnel is determined by a source and a destination. The source and destination of an IPv6 over IPv4 tunnel need to be manually configured. A manual tunnel is a point-to-point tunnel. When a tunnel is created manually, the tunnel destination IPv4 address must be manually specified so that packets can be correctly sent to the destination, as border devices cannot automatically obtain the tunnel destination IPv4 address in this case.</p>
+<p>A manual IPv6 over IPv4 tunnel is manually configured between two border devices, with the source and destination IPv4 addresses statically specified.</p>
+<p>A manual tunnel provides a point-to-point connection. If a border device needs to establish tunnels with several devices, manually configuring multiple tunnels on the device is complex. Therefore, manual tunnels apply when two border devices connect only two IPv6 networks.</p>
+<p><a href="#EN-US_CONCEPT_0000001130623052__fig567166143918">Figure 2</a> shows how an IPv6 over IPv4 tunnel works.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001130623052__fig567166143918"><a name="EN-US_CONCEPT_0000001130623052__fig567166143918"></a><a name="fig567166143918"></a><span class="figcap"><b>Figure 2 </b>Schematic diagram of an IPv6 over IPv4 tunnel</span><br><span><img src="figure/en-us_image_0000001723833249.png"></span></div>
+<p>The following describes how HostA accesses HostB:</p>
+<ol><li>An IPv6 packet sent from HostA arrives at DeviceA.</li><li>DeviceA searches its IPv6 routing table for an entry matching the destination address of the IPv6 packet, and discovers that the outbound interface is a tunnel interface.</li><li>DeviceA encapsulates the IPv6 packet into an IPv4 packet. In the IPv4 packet header, the destination address is the source IPv4 address configured for the tunnel on the remote end (that is, DeviceB), and the source address is the source IPv4 address configured for the tunnel on the local end (that is, DeviceA). Then, DeviceA forwards the IPv4 packet from its tunnel interface to DeviceB over the IPv4 network.</li><li>DeviceB decapsulates the received IPv4 packet, searches for a routing entry based on the destination address of the resulting IPv6 packet, and forwards the IPv6 packet to HostB.</li><li>HostB responds to the received IPv6 packet. The response packet is processed in a similar way as the IPv6 packet sent from HostA.</li></ol>
+<ul><li>Automatic tunnel: provides point-to-multipoint connections. When a tunnel is created automatically, special IPv6 addresses containing IPv4 addresses need to be configured for tunnel interfaces on both ends of the tunnel, so that border devices can automatically obtain the tunnel destination IPv4 address.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_6o4tnl_cfg_0001.html">IPv6 over IPv4 Tunnel Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_6o4tnl_cfg_0002.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="spec/IPv6_over_IPv4_Tunnel_limitation_all.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

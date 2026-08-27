@@ -1,0 +1,95 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an SRv6 TE Policy">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0102.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0105.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0401.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001188016945">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an SRv6 TE Policy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001188016945"></a><a name="EN-US_TASK_0000001188016945"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an SRv6 TE Policy</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001188016945__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>SRv6 TE Policies are used to guide traffic over an SRv6 TE network. Each SRv6 TE Policy can have multiple candidate paths with different preferences. From the valid candidate paths, the one with the highest preference is selected as the primary path, and the one with the second highest preference is selected as the backup path.</p>
+<p>An SRv6 TE Policy can either be configured manually or be delivered by a controller. This section describes how to configure an SRv6 TE Policy manually.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001188016945__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure a segment list.</span><ol type="a"><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable SRv6 and enter the SRv6 view.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6</span></b></pre>
+</p></li><li class="substepexpand"><span>Create a segment list for the SRv6 TE Policy candidate path and enter the segment list view.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-list</span></b> <i><span class="varname">list-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Specify the next-hop SID in the segment list.</span><p><pre class="screen"><b><span class="cmdqueryname">index</span></b> <i><span class="varname">index</span></i> <strong><span>sid</span></strong> <strong><span>ipv6</span></strong> <em>ipv6address</em></pre>
+<p>You can run the command multiple times to specify multiple SIDs. According to <b><span class="cmdqueryname">index</span></b> <i><span class="varname">index</span></i>, the system generates a SID stack in ascending order. If a candidate path in the SRv6 TE Policy is preferentially selected, traffic is forwarded using the segment list of the candidate path. A maximum of 10 SIDs can be configured for each segment list.</p>
+</p></li></ol>
+</li><li><span>Configure an SRv6 TE Policy.</span><ol type="a"><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable SRv6 and enter the SRv6 view.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6</span></b></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure switching and deletion delays for all SRv6 TE Policies.</span><p><pre class="screen"><b><span class="cmdqueryname">srv6-te-policy switch-delay </span></b><i><span class="varname">switchDelay</span></i> <strong><span>delete-delay</span></strong> <i><span class="varname">deleteDelay</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure a locator to specify a binding SID for the SRv6 TE Policy to be created.</span><p><pre class="screen"><b><span class="cmdqueryname">srv6-te-policy locator </span></b><i><span class="varname">locator-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Create an SRv6 TE Policy and enter the SRv6 TE Policy view.</span><p><pre class="screen"><b><span class="cmdqueryname">srv6-te policy</span></b> <i><span class="varname">name-value</span></i> <strong><span>endpoint</span></strong> <i><span class="varname">endpoint-ip</span></i> <strong><span>color</span></strong> <i><span class="varname">color-value</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Specify a binding SID for the SRv6 TE Policy.</span><p><pre class="screen"><b><span class="cmdqueryname">binding-sid </span></b><i><span class="varname">binding-sid</span></i></pre>
+<p>The value of <i><span class="varname">binding-sid</span></i> must be within the static range defined using the <span><b><span class="cmdqueryname">locator</span></b> <i><span class="varname">locator-name</span></i> [ <strong><span>ipv6-prefix</span></strong> <i><span class="varname">ipv6-address</span></i> <i><span class="varname">mask-length</span></i> [ <strong><span>static</span></strong> <i><span class="varname">static-length</span></i> | <strong><span>args</span></strong> <i><span class="varname">args-length</span></i> ] <sup>*</sup> ]</span> command.</p>
+</p></li><li class="substepexpand"><span>Configure a candidate path and its preference for the SRv6 TE Policy.</span><p><pre class="screen"><b><span class="cmdqueryname">candidate-path preference</span></b> <em>pref-value</em></pre>
+<p>Each SRv6 TE Policy supports multiple candidate paths. A larger <i><span class="varname">preference</span></i> value indicates a higher candidate path preference. If multiple candidate paths are configured, the one with the highest preference takes effect.</p>
+</p></li><li class="substepexpand"><span>Configure a segment list for the candidate path of the SRv6 TE Policy.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-list</span></b> <i><span class="varname">list-name</span></i> [ <strong><span>weight</span></strong> <i><span class="varname">weight-value</span></i> | <strong><span>path-mtu</span></strong> <i><span class="varname">mtu-value</span></i><span> | <strong>binding-sid </strong><em>binding-sid-value</em> | <strong>reverse-binding-sid</strong><em> reverse-binding-sid-value</em></span> ] *</pre>
+<p>The segment list must have been created using the <b><span class="cmdqueryname">segment-list (Segment-routing IPv6 view)</span></b> command.</p>
+<p>In unaffiliated BFD (U-BFD) for SRv6 TE Policy scenarios, return packets are forwarded through IPv6 routes by default, which may cause the U-BFD status to be incorrect. To enable U-BFD return packets to be forwarded through an SRv6 TE Policy, use the <span><strong>reverse-binding-sid</strong><em> reverse-binding-sid-value</em></span> parameter to specify a binding SID (BSID) for the reverse segment list. Alternatively, use the <span><strong>binding-sid </strong><em>binding-sid-value</em></span> parameter to specify a BSID for the local segment list so that the peer end can reference this BSID.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure the switching delay for the reverse binding SID of an SRv6 TE Policy's segment list and the deletion delay for the forward binding SID of the SRv6 TE Policy's segment list.</span><p><pre class="screen"><b><span class="cmdqueryname">srv6-te-policy segment-list reverse-binding-sid switch-delay</span></b> <i><span class="varname">switchDelay</span></i> <strong><span>binding-sid delete-delay</span></strong> <i><span class="varname">deleteDelay</span></i></pre>
+</p></li></ol>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0102.html">Configuring an SRv6 TE Policy (Manual Configuration)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0105.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_srv6_cfg_0401.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

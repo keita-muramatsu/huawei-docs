@@ -1,0 +1,319 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an IKE Peer">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0014.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0018.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564113921">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an IKE Peer</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564113921"></a><a name="EN-US_TASK_0000001564113921"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an IKE Peer</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001564113921__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><ul><li>An IKE proposal has been configured, which will be referenced by the IKE peer to be configured.</li><li>If Rivest-Shamir-Adleman (RSA) signature authentication is used, determine the public key infrastructure (PKI) realm to which the IKE peer belongs, and ensure that the local certificate and CA root certificate have been imported to the authenticated device and the CA root certificate has been imported to the authenticating device.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564113921__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><div class="p">An IKE peer needs to be referenced when an IPsec tunnel is established in IKE negotiation mode. When configuring an IKE peer, pay attention to the following points:<ul><li>IKE peers on both ends must use the same IKE version.</li><li>The IKE peers that use IKEv1 must use the same negotiation mode.</li><li>Identity authentication parameters of the two IKE peers must match.</li></ul>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564113921__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an IKE peer and enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+<p>By default, no IKE peer is created in the system.</p>
+</p></li><li><span>Configure the IKE protocol version used by IKE peers.</span><p><pre class="screen"><b><span class="cmdqueryname">version</span></b> { <strong><span>1</span></strong> | <strong><span>2</span></strong> }</pre>
+<p>By default, the device does not support this command, that is, SA negotiation through IKEv1 is not supported. To use this command, install the IKEv1 feature package.</p>
+<p>Before running this command, load the IKEv1 feature package. By default, the IKEv1 feature package is not installed on the device. As such, only IKEv2 is enabled for IKE peers and SA negotiation through IKEv1 is not supported. After the IKEv1 feature package is loaded, both IKEv1 and IKEv2 are enabled for IKE peers by default.</p>
+</p></li><li><strong>Optional: </strong><span>Configure the negotiation mode in IKEv1 phase 1.</span><p><pre class="screen"><b><span class="cmdqueryname">exchange-mode</span></b> { <strong><span>main</span></strong> | <strong><span>aggressive</span></strong> | <strong><span>auto</span></strong> }</pre>
+<p>By default, the main mode is used in IKEv1 phase 1.</p>
+<p><strong><span>auto</span></strong> indicates that the negotiation mode of IKEv1 phase 1 is auto-sensing mode. In auto-sensing mode, the device uses the main mode if it serves as the IKE negotiation initiator. If it serves as the responder, it can use either the main or aggressive mode.</p>
+</p></li><li><span>Configure the IKE peer to reference the configured IKE proposal.</span><p><pre class="screen"><b><span class="cmdqueryname">ike-proposal</span></b> <i><span class="varname">proposal-number</span></i></pre>
+<p>By default, an IKE peer does not reference an IKE proposal.</p>
+<p><i><span class="varname">proposal-number</span></i> specifies the number of a created IKE proposal.</p>
+</p></li><li><span>Configure the local ID type.</span><p><pre class="screen"><b><span class="cmdqueryname">local-id-type</span></b> { <strong><span>dn</span></strong> | <strong><span>ip</span></strong> [ <strong><span>ip-configurable ]</span></strong> | <strong><span>user-fqdn</span></strong> | <strong><span>fqdn</span></strong> | <strong><span>esn</span></strong> }</pre>
+<p>By default, the local ID type is an IP address.</p>
+<p>In PSK authentication mode, the local ID type cannot be set to <strong><span>dn</span></strong> and must be the same as that displayed in the <b><span class="cmdqueryname">display pki certificate</span></b> command output.</p>
+<p><a href="#EN-US_TASK_0000001564113921__table176501132274">Table 1</a> shows the relationship between the local ID type and local ID in different authentication modes.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000001564113921__table176501132274"></a><a name="table176501132274"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001564113921__table176501132274" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Relationship between local ID types and local IDs in PSK authentication and RSA signature authentication modes</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="15%" id="mcps1.3.3.6.2.5.2.7.1.1" liSelected="liSelected"><p>Authentication Mode</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="15%" id="mcps1.3.3.6.2.5.2.7.1.2" liSelected="liSelected"><p>IP</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="15%" id="mcps1.3.3.6.2.5.2.7.1.3" liSelected="liSelected"><p>DN</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="15%" id="mcps1.3.3.6.2.5.2.7.1.4" liSelected="liSelected"><p>ESN</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="20%" id="mcps1.3.3.6.2.5.2.7.1.5" liSelected="liSelected"><p>FQDN</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="20%" id="mcps1.3.3.6.2.5.2.7.1.6" liSelected="liSelected"><p>User FQDN</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.1 "><p>PSK authentication</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.2 "><p>Supported</p>
+<p>By default, the device uses the IP address of the interface used to establish an IPsec tunnel as the local ID. If the interface used to establish an IPsec tunnel has multiple IP addresses (for example, primary and secondary IP addresses), the device uses the IP address configured using the <b><span class="cmdqueryname">tunnel local</span></b> command as the local ID.</p>
+<p>After <strong><span>ip-configurable</span></strong> is specified, you can run the <b><span class="cmdqueryname">local-id</span></b> command to configure another IP address as the local ID as needed.</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.3 "><p>Not supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.4 "><p>Supported</p>
+<p id="EN-US_TASK_0000001564113921__p09682213219">The local ID does not need to be configured. The local ESN is used as the local ID and the <b><span class="cmdqueryname" id="EN-US_TASK_0000001564113921__cmdname17972115110587">local-id</span></b> configuration does not take effect.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.6.2.5.2.7.1.5 "><p>Supported</p>
+<p>To set a fully qualified domain name (FQDN) as the local ID for a specific IKE peer, run the <b><span class="cmdqueryname">local-id</span></b> command in the IKE peer view. Then the IKE peer uses this ID for identity authentication.</p>
+<p>To set a local ID for all IKE peers on the device, run the <b><span class="cmdqueryname">ike local-name</span></b> command in the system view. Then all the IKE peers use this ID for identity authentication.</p>
+<p>The local ID configured using the <b><span class="cmdqueryname">local-id</span></b> command takes precedence over that configured using the <b><span class="cmdqueryname">ike local-name</span></b> command.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.6.2.5.2.7.1.6 "><p>Supported</p>
+<p>To set a user FQDN as the local ID for a specific IKE peer, run the <b><span class="cmdqueryname">local-id</span></b> command in the IKE peer view. Then the IKE peer uses this ID for identity authentication.</p>
+<p>To set a local ID for all IKE peers on the device, run the <b><span class="cmdqueryname">ike local-name</span></b> command in the system view. Then all the IKE peers use this ID for identity authentication.</p>
+<p>The local ID configured using the <b><span class="cmdqueryname">local-id</span></b> command takes precedence over that configured using the <b><span class="cmdqueryname">ike local-name</span></b> command.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.1 "><p>RSA signature authentication</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.2 "><p>Supported</p>
+<p>By default, when IKE uses certificate negotiation, the local ID is preferentially obtained from the corresponding field in the certificate (corresponding to the <strong>local-id-preference certificate enable</strong> command). If the local ID fails to be obtained, the device uses the IP address of the interface used to establish an IPsec tunnel as the local ID.</p>
+<p>After a device is disabled from preferentially obtaining the local ID from a field in a certificate when IKE uses certificate negotiation (that is, the <strong>undo local-id-preference certificate enable</strong> command is run), it preferentially uses the IP address of the interface used to establish an IPsec tunnel as the local ID. The <b><span class="cmdqueryname">local-id</span></b> configuration does not take effect.</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.3 "><p>Supported</p>
+<p>By default, the ID specified by the corresponding field in a certificate is used as the local ID.</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.4 "><p>Supported</p>
+<p>The local ID does not need to be configured. The local ESN is used as the local ID and the <b><span class="cmdqueryname" id="EN-US_TASK_0000001564113921__en-us_task_0000001564113921_cmdname17972115110587">local-id</span></b> configuration does not take effect.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.6.2.5.2.7.1.5 "><p>Supported</p>
+<p>By default, the ID specified by the corresponding field in a certificate is used as the local ID.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.6.2.5.2.7.1.6 "><p>Supported</p>
+<p>By default, the ID specified by the corresponding field in a certificate is used as the local ID.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.1 "><p>SM digital envelope authentication</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.2 "><p>Not supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.3 "><p>Supported</p>
+<p>By default, the ID specified by the corresponding field in a certificate is used as the local ID.</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.6.2.5.2.7.1.4 "><p>Not supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.6.2.5.2.7.1.5 "><p>Not supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.6.2.5.2.7.1.6 "><p>Not supported</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</p></li><li><strong>Optional: </strong><span>Configure a local ID.</span><p><pre class="screen"><b><span class="cmdqueryname">local-id</span></b> <i><span class="varname">id</span></i></pre>
+<p>You need to configure a local ID when the local ID type of an IKE peer is an FQDN or a user FQDN. The local ID configured on the local end must be the same as the remote ID configured on the remote end.</p>
+<ul><li>In a PSK authentication scenario, if the local ID type is an IP address, by default, the device uses the IP address of the interface on which the device establishes an IPsec tunnel as the local ID. If multiple IP addresses are configured for the interface, the device uses the IP address configured using the <b><span class="cmdqueryname">tunnel local </span></b>{ <i><span class="varname">ip-address</span></i> | <strong><span>applied-interface</span></strong> } command as the local ID.<p>If the local ID type is an IP address, you can also specify the <strong><span>ip-configurable</span></strong> parameter and then run the <b><span class="cmdqueryname">local-id</span></b> command to configure another IP address as the local ID as needed.</p>
+</li><li>If the local ID type is a DN, FQDN, or user FQDN, you can run the <b><span class="cmdqueryname">ike local-name</span></b> <i><span class="varname">local-name</span></i> command in the system view to configure a global local ID for IKE negotiation. After the configuration, all IKE peers on the device use this ID as the local ID for identity authentication. The local ID configured using the <b><span class="cmdqueryname">local-id</span></b> <i><span class="varname">id</span></i> command takes precedence over that configured using the <b><span class="cmdqueryname">ike local-name</span></b> <i><span class="varname">local-name</span></i> command.</li><li>If the local ID type is an ESN, the device uses its own ESN as the local ID, and the <b><span class="cmdqueryname">local-id</span></b> configuration does not take effect.</li></ul>
+</p></li><li><span>Configure the authentication mode and authentication parameters.</span><p><p>The device supports the following identity authentication modes: PSK authentication, RSA digital signature certificate authentication, and SM digital envelope authentication.</p>
+<p><strong>PSK authentication</strong></p>
+<p>In PSK authentication mode, the same ID and PSK can be configured for one or more peers (in single key mode), and different IDs and PSKs can be configured for multiple peers using an IKE user table (in multi-key mode). An IKE user table is used in a template IPsec policy to configure different IDs and PSKs for different peers. This table effectively prevents the disclosure of the ID and PSK of a specific peer from posing security risks to other peers. When both the single key mode and multi-key mode are configured, the PSK configured using the IKE user table is preferred.</p>
+<ul><li>In single key mode, you can directly configure authentication parameters such as a PSK and a remote ID.<ol type="a"><li>Configure a PSK.<pre class="screen"><b><span class="cmdqueryname">pre-shared-key</span></b> [ <i><span class="varname">key</span></i> ]</pre>
+<p>The PSKs of IKE peers on both ends must be the same.</p>
+<p id="EN-US_TASK_0000001564113921__p2470656990">If the <i><span class="varname" id="EN-US_TASK_0000001564113921__varname1497134118341">key</span></i> parameter is not specified in the command, the command is used to enter the PSK in interactive mode.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>For security purposes, you are advised to periodically change the key on both ends.</p>
+</div></div>
+</li><li>Configure the remote ID type.<pre class="screen"><b><span class="cmdqueryname">remote-id-type</span></b> { <strong><span>any</span></strong> | <strong><span>dn</span></strong> | <strong><span>esn</span></strong> | <strong><span>fqdn</span></strong> | <strong><span>ip</span></strong> | <strong><span>user-fqdn</span></strong> | <strong><span>none</span></strong> }</pre>
+<p>By default, no remote ID type is configured.</p>
+<p>The remote ID type configured on the local end must be the same as the local ID type configured on the remote end. <a href="#EN-US_TASK_0000001564113921__table11604757171913">Table 2</a> describes the relationship between the remote ID types and remote IDs in PSK authentication mode.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000001564113921__table11604757171913"></a><a name="table11604757171913"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001564113921__table11604757171913" frame="border" border="1" rules="all"><caption><b>Table 2 </b>Relationship between the remote ID types and remote IDs in PSK authentication mode</caption><tbody><tr><th class="firstcol" valign="top" width="15%" id="mcps1.3.3.8.2.4.1.1.2.4.2.7.1.1"><p>Remote ID Type</p>
+</th>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.1.1 "><p>IP</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.1.1 "><p>DN</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.1.1 "><p>ESN</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.1.1 "><p>FQDN</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.1.1 "><p>User FQDN</p>
+</td>
+</tr>
+<tr><th class="firstcol" valign="top" width="15%" id="mcps1.3.3.8.2.4.1.1.2.4.2.7.2.1"><p>Remote ID</p>
+</th>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.2.1 "><p>Supported</p>
+<p>By default, the device uses the IP address configured using the <b><span class="cmdqueryname">remote-address</span></b> command as the peer ID. To specify an IP address as the peer ID, run the <b><span class="cmdqueryname">remote-id</span></b> command.</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.2.1 "><p>Not supported</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.2.1 "><p>Supported</p>
+<p>To set an FQDN as the remote ID for a specific IKE peer, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001564113921__en-us_task_0000001564113921_cmdname1780095118219">remote-id</span></b> command in the IKE peer view. Then the remote end uses this ID for identity authentication.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.2.1 "><p>Supported</p>
+<p id="EN-US_TASK_0000001564113921__p58456181216">To set an FQDN as the remote ID for a specific IKE peer, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001564113921__cmdname1780095118219">remote-id</span></b> command in the IKE peer view. Then the remote end uses this ID for identity authentication.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.8.2.4.1.1.2.4.2.7.2.1 "><p>Supported</p>
+<p>To set an FQDN as the remote ID for a specific IKE peer, run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001564113921__en-us_task_0000001564113921_cmdname1780095118219_1">remote-id</span></b> command in the IKE peer view. Then the remote end uses this ID for identity authentication.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li><li>Configure a remote ID.<pre class="screen"><b><span class="cmdqueryname">remote-id</span></b> <i><span class="varname">id</span></i></pre>
+<p>In PSK authentication, if both the local ID type and the remote ID type are IP addresses, the local ID configured on the local end does not need to be the same as the remote ID configured on the peer end.</p>
+</li></ol>
+</li><li>In multi-key mode, you need to create an IKE user table, create an IKE user in the IKE user table, and configure authentication parameters for the IKE user.<ol type="a"><li>In the system view, create an IKE user table and enter the IKE user table view.<pre class="screen"><b><span class="cmdqueryname">ike user-table</span></b> <i><span class="varname">user-table-id</span></i></pre>
+</li><li>Create an IKE user and enter the IKE user view.<pre class="screen"><b><span class="cmdqueryname">user</span></b> <i><span class="varname">user-name</span></i></pre>
+</li><li>Configure a description for the IKE user.<pre class="screen"><b><span class="cmdqueryname">description</span></b> <i><span class="varname">description</span></i></pre>
+<p>By default, no description is configured for an IKE user.</p>
+</li><li>Configure a PSK for the IKE user.<pre class="screen"><b><span class="cmdqueryname">pre-shared-key</span></b> [ <i><span class="varname">key</span></i> ]</pre>
+<p>By default, no PSK is configured for an IKE user.</p>
+<p>If the <i><span class="varname" id="EN-US_TASK_0000001564113921__en-us_task_0000001564113921_varname1497134118341">key</span></i> parameter is not specified in the command, the command is used to enter the PSK in interactive mode.</p>
+</li><li>Configure the ID type and ID for the IKE user.<pre class="screen"><b><span class="cmdqueryname">id-type</span></b> { <strong><span>any</span></strong> <i><span class="varname">any-id</span></i> | <strong><span>esn</span></strong> <i><span class="varname">esn-number</span></i> | <strong><span>fqdn</span></strong> <i><span class="varname">remote-fqdn</span></i> | <strong><span>ip</span></strong> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">ipv6-address</span></i> } | <strong><span>user-fqdn</span></strong> <i><span class="varname">remote-user-fqdn</span></i> }
+<b><span class="cmdqueryname">quit</span></b></pre>
+<p>By default, no ID type or ID is configured for an IKE user.</p>
+<p>In IKEv1 main mode, the ID type of an IKE user can only be set to <strong><span>ip</span></strong>; in NAT traversal scenarios, <em>ip-address</em> must be set to a post-NAT address.</p>
+</li><li>Return to the system view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Enter the IKE peer view.<pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</li><li>Configure the IKE peer to reference a specified IKE user table.<pre class="screen"><b><span class="cmdqueryname">user-table</span></b> <i><span class="varname">user-table-id</span></i></pre>
+</li></ol>
+</li></ul>
+<div class="p"><strong>RSA signature authentication</strong><ol type="a"><li>Configure the remote ID type.<pre class="screen"><b><span class="cmdqueryname">remote-id-type</span></b> { <strong><span>any</span></strong> | <strong><span>dn</span></strong> | <strong><span>esn</span></strong> | <strong><span>fqdn</span></strong> | <strong><span>ip</span></strong> | <strong><span>user-fqdn</span></strong> | <strong><span>none</span></strong> }</pre>
+<p>By default, no remote ID type is configured.</p>
+<p>The remote ID type configured on the local end must be the same as the local ID type configured on the remote end. <a href="#EN-US_TASK_0000001564113921__table10895308232">Table 3</a> describes the relationship between the remote ID types and remote IDs in RSA signature authentication mode.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000001564113921__table10895308232"></a><a name="table10895308232"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001564113921__table10895308232" frame="border" border="1" rules="all"><caption><b>Table 3 </b>Relationship between the remote ID types and remote IDs in RSA signature authentication mode</caption><tbody><tr><th class="firstcol" valign="top" width="15%" id="mcps1.3.3.8.2.5.2.1.4.2.7.1.1"><p>Remote ID Type</p>
+</th>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.1.1 "><p>IP</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.1.1 "><p>DN</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.1.1 "><p>ESN</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.1.1 "><p>FQDN</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.1.1 "><p>User FQDN</p>
+</td>
+</tr>
+<tr><th class="firstcol" valign="top" width="15%" id="mcps1.3.3.8.2.5.2.1.4.2.7.2.1"><p>Remote ID</p>
+</th>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.2.1 "><p>Supported</p>
+<p>To set an IP address as the remote ID, run the <b><span class="cmdqueryname">remote-address</span></b> command.</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.2.1 "><p>Supported</p>
+<p>To set a DN as the remote ID for a specific IKE peer, run the <b><span class="cmdqueryname">remote-id</span></b> command. Then the remote end uses the ID specified in the corresponding field in a certificate for identity authentication.</p>
+</td>
+<td class="cellrowborder" valign="top" width="15%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.2.1 "><p>Supported</p>
+<p>To set an ESN as the remote ID, run the <b><span class="cmdqueryname">remote-id</span></b> command.</p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.2.1 "><p>Supported</p>
+<p>To set an FQDN as the remote ID for a specific IKE peer, run the <b><span class="cmdqueryname">remote-id</span></b> command. Then the remote end uses the ID specified in the corresponding field in a certificate for identity authentication.</p>
+</td>
+<td class="cellrowborder" valign="top" width="20%" headers="mcps1.3.3.8.2.5.2.1.4.2.7.2.1 "><p>Supported</p>
+<p>To set a user FQDN as the remote ID for a specific IKE peer, run the <b><span class="cmdqueryname">remote-id</span></b> command. Then the remote end uses the ID specified in the corresponding field in a certificate for identity authentication.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li><li><strong>Optional: </strong>Configure a remote ID.<pre class="screen"><b><span class="cmdqueryname">remote-id</span></b> <i><span class="varname">id</span></i></pre>
+<p>The remote ID configured on the local end must be the same as the local ID configured on the remote end.</p>
+<p>If the local ID type is set to FQDN or user FQDN, the remote ID specified in this command will be used for IKEv1 negotiation. In IKEv2 negotiation, the value of the DNS field (if the local ID type is FQDN) or E-mail field (if the local ID type is user FQDN) in the certificate is preferred as the remote ID. If the value of the DNS or E-mail field is blank, the remote ID specified in this command will be used for IKEv2 negotiation.</p>
+</li><li>Set the padding mode for an RSA signature.<pre class="screen"><b><span class="cmdqueryname">rsa signature-padding</span></b> { <strong><span>pkcs1</span></strong> | <strong><span>pss</span></strong> [ <strong><span>sha2-256</span></strong> ] }</pre>
+<p>If you run the <b><span class="cmdqueryname">rsa signature-padding pss</span></b> command to set the padding mode of an RSA signature to <strong><span>pss</span></strong>, the PSS mode of the SHA2-256 algorithm is used if the <strong>sha2-256</strong> parameter is specified, and the PSS mode of the Huawei algorithm is used if the <strong>sha2-256</strong> parameter is not specified. When the device functions as the tunnel initiator, the PSS padding hash algorithm used by the device must be compatible with that used by the peer end. Otherwise, tunnel negotiation may fail.</p>
+</li><li>Specify a digital certificate for the local end.<p>In RSA signature authentication, the local ID indicated by an IP address, a DN, a common name (CN), or a user FQDN, is contained in a local certificate. The digital certificate used by the local end can be specified offline. Alternatively, the PKI realm to which the digital certificate belongs can be specified so that the digital certificate of the local end can be obtained based on the configuration of the PKI realm.</p>
+<ul><li>Specify the digital certificate for the local end offline.<pre class="screen"><b><span class="cmdqueryname">certificate local-filename</span></b> <i><span class="varname">filename</span></i></pre>
+</li><li>Specify the PKI realm to which the digital certificate belongs.<pre class="screen"><b><span class="cmdqueryname">pki realm</span></b> <i><span class="varname">realm-name</span></i></pre>
+<p>A PKI realm is a set of identity information required by a PKI entity to enroll a certificate.</p>
+<p>The specified PKI realm must exist, and the CA certificate and local certificate have been imported to the PKI realm. IKE peers can obtain the local CA certificate and local certificate based on the configuration of the PKI realm.</p>
+</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If the digital certificate used by the local end is specified using both the preceding methods and a CA certificate has been imported to the PKI realm, the device uses the digital certificate specified offline during certificate negotiation, and uses the CA certificate in the PKI realm to verify the peer certificate. You are advised to use only one method to specify the digital certificate used by the local end.</p>
+</div></div>
+</li><li><strong>Optional: </strong>Configure the certificate signature algorithm used by IKEv2.<pre class="screen"><b><span class="cmdqueryname">ikev2 authentication sign-hash</span></b> { <strong><span>md5</span></strong> | <strong><span>sha1</span></strong> | <strong><span>sha2-256</span></strong> | <strong><span>sha2-384</span></strong> | <strong><span>sha2-512</span></strong> }</pre>
+<p>By default, the certificate signature algorithm used by IKEv2 is SHA2-256.</p>
+</li><li><strong>Optional: </strong>Configure the device to preferentially use the local ID specified by a specific field in the local certificate during IKE certificate negotiation.<pre class="screen"><b><span class="cmdqueryname">local-id-preference certificate enable</span></b></pre>
+<p>By default, the device preferentially uses the local ID specified by a specific field in the local certificate during IKE certificate negotiation. If no local ID is obtained in the local certificate, the device uses the local ID configured locally.</p>
+<p>In IKE certificate negotiation, the device can use the local ID specified by a specific field in the local certificate, removing the need to configure the local ID for the device.</p>
+</li><li><strong>Optional: </strong>Configure the remote ID contained in the IKE packets sent by the initiator as the local ID of the responder in IKEv2 negotiation.<pre class="screen"><b><span class="cmdqueryname">local-id-reflect enable</span></b></pre>
+<p>By default, the remote ID contained in the IKE packets sent by the initiator is used as the local ID of the responder in IKEv2 negotiation.</p>
+<p>When the device functions as the responder to perform IKEv2 negotiation, run this command if the device does not know the remote ID configured on the initiator. This command takes effect only when the ID type is IP, ESN, FQDN, or user FQDN. When the responder receives an IKE packet from the initiator, the responder uses the IDr payload (indicating a remote ID) in the packet as its local ID. If the responder does not obtain the IDr payload, it uses the local ID configured locally. If both the <b><span class="cmdqueryname">local-id-reflect enable</span></b> and <b><span class="cmdqueryname">local-id-preference certificate enable</span></b> commands are run, the <b><span class="cmdqueryname">local-id-reflect enable</span></b> command takes precedence over the <b><span class="cmdqueryname">local-id-preference certificate enable</span></b> command.</p>
+</li></ol>
+</div>
+<p><strong></strong></p>
+<div class="p"><strong>SM digital envelope authentication</strong><ol type="a"><li><p>Configure a PKI encryption realm for an IKE peer.</p>
+<pre class="screen"><b><span class="cmdqueryname">encryption-certificate pki realm</span></b> <i><span class="varname">realm-name</span></i></pre>
+<p>The encryption certificate used for SM digital envelope authentication needs to be imported to the device using the <b><span class="cmdqueryname">pki import-certificate local realm</span></b><em> </em><i><span class="varname">realm-name</span></i> { <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> } <strong><span>filename</span></strong><em> filename</em> <strong><span>no-check-same-name</span></strong> command. The <strong><span>no-check-same-name</span></strong> parameter can be specified to allow the device to import the encryption certificate and signature certificate with the same issuer and subject names.</p>
+</li><li><p>Configure a PKI signature realm for the IKE peer.</p>
+<pre class="screen"><strong>signature</strong><b><span class="cmdqueryname">-certificate pki realm</span></b> <i><span class="varname">realm-name</span></i></pre>
+<p>The signature certificate used for SM digital envelope authentication needs to be imported to the device using the <b><span class="cmdqueryname">pki import-certificate local realm</span></b><em> </em><i><span class="varname">realm-name</span></i> { <strong><span>der</span></strong> | <strong><span>pkcs12</span></strong> | <strong><span>pem</span></strong> } <strong><span>filename</span></strong><em> filename</em> <strong><span>no-check-same-name</span></strong> command. The <strong><span>no-check-same-name</span></strong> parameter can be specified to allow the device to import the encryption certificate and signature certificate with the same issuer and subject names.</p>
+</li></ol>
+</div>
+</p></li><li><strong>Optional: </strong><span>Configure the responder to accept the IKE proposal of the initiator.</span><p><pre class="screen"><b><span class="cmdqueryname">ike negotiate compatible</span></b></pre>
+<p>By default, the responder does not accept the IKE proposal of the initiator.</p>
+</p><p><p>During IPsec negotiation between IKE peers, if the responder does not know the initiator's negotiation parameters (such as the IKE negotiation mode, algorithm in an IKE proposal, or security protocol, algorithm, and encapsulation mode in an IPsec proposal), perform this step to enable the responder to use the IPsec proposal of the initiator for IPsec negotiation. This configuration ensures successful IPsec negotiation.</p>
+<p>After this command is executed, the default IPsec SA aging time is 604,800 seconds and no traffic is aged by default (that is, the traffic timeout function is disabled) on the responder. In this case, the responder cannot initiate IPsec SA renegotiation.</p>
+</p></li><li><strong>Optional: </strong><span>Configure the remote IP address, an address segment, or a domain name used in IKE negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">remote-address</span></b> { [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ] { { <i><span class="varname">start-ip-address</span></i> [ <i><span class="varname">end-ip-address</span></i> ] | <i><span class="varname">start-ipv6-address</span></i> [ <i><span class="varname">end-ipv6-address</span></i> ] } | <strong><span>host-name</span></strong> <i><span class="varname">host-name</span></i> } | <strong><span>authentication-address</span></strong> <i><span class="varname">start-ip-address</span></i> [ <i><span class="varname">end-ip-address</span></i> ] }</pre>
+<p>By default, no remote IP address, address segment, or domain name used in IKE negotiation is configured.</p>
+<div class="p">The following describes the parameters in this command:<ul><li><i><span class="varname">start-ip-address</span></i> [ <i><span class="varname">end-ip-address</span></i> ]: If the remote device uses a fixed IP address, the remote address can be set to this fixed IP address. Otherwise, the remote address needs to be set to an IP address segment.</li><li><strong><span>host-name</span></strong> <i><span class="varname">host-name</span></i>: specifies the domain name of the remote device if the remote device does not have a fixed IP address but has a fixed domain name. In this case, Dynamic Domain Name Service (DDNS) needs to be configured on the remote device to bind the domain name to the dynamic IP address, and DNS needs to be configured on the local device for domain name resolution.</li><li><strong><span>authentication-address</span></strong> <i><span class="varname">start-ip-address</span></i> [ <i><span class="varname">end-ip-address</span></i> ]: In IPsec NAT traversal scenarios, if both ends use IKEv2 and IP addresses need to be used for authentication, you need to specify the pre-NAT IP address or address segment as the remote authentication address. The IP address of the remote device needs to be set to a post-NAT IP address.</li></ul>
+</div>
+</p></li><li><strong>Optional: </strong><span>Set the IKEv2 re-authentication interval.</span><p><pre class="screen"><b><span class="cmdqueryname">re-authentication</span></b> <strong><span>interval</span></strong> <i><span class="varname">interval</span></i></pre>
+<p>By default, IKEv2 does not perform re-authentication.</p>
+<p>In remote access scenarios, IKEv2 peers periodically perform re-authentication with each other, which reduces potential risks of attacks and improves IPsec tunnel security.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564113921__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>In the user view, run the <b><span class="cmdqueryname">display ike peer</span></b> [ <strong><span>brief</span></strong> | <strong><span>name</span></strong> <i><span class="varname">peer-name</span></i> ] [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] command to check the IKE peer configuration.</li><li>If an IKE user table is configured, run the <b><span class="cmdqueryname">display ike</span></b> [ <strong><span>slot</span></strong> <i><span class="varname">slot-id</span></i> <strong><span>cpu</span></strong> <i><span class="varname">cpu-id</span></i> ] <strong><span>user-table</span></strong> [ <strong><span>number</span></strong> <i><span class="varname">user-table-id</span></i> [ <strong><span>user-name</span></strong> <i><span class="varname">user-name</span></i> ] ] command in the user view to check the IKE user table configuration.</li></ul>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001564113921__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>A configured IKE peer can be referenced in an IPsec policy or IPsec profile. For details, see <a href="security_ipsec_cfg_0022.html">Configuring an IPsec Policy</a> or <a href="security_ipsec_cfg_0034.html">Configuring an IPsec Profile</a>.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0014.html">Configuring IKE Negotiation
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0018.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

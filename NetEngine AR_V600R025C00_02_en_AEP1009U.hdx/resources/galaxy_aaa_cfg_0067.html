@@ -1,0 +1,215 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring LDAP Authentication and Authorization">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_aaa_cfg_0056.html">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_task_0000001945219498.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_aaa_cfg_0068.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="LDAP">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featurename" content="HWTACACS">
+<meta name="featurename" content="LDAP">
+<meta name="featurename" content="RADIUS">
+<meta name="featurename" content="Local User">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featurename" content="HWTACACS">
+<meta name="featurename" content="LDAP">
+<meta name="featurename" content="RADIUS">
+<meta name="featurename" content="Local User">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564115677">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring LDAP Authentication and Authorization</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564115677"></a><a name="EN-US_TASK_0000001564115677"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring LDAP Authentication and Authorization</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001564115677__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000001564115677__fig_dc_ar_cfg_004001">Figure 1</a>, an LDAP server is deployed on the network, and user information as well as group information are stored on the LDAP server. The enterprise requires that the administrator can log in to the device through STelnet only after passing LDAP authentication.</p>
+<div class="fignone" id="EN-US_TASK_0000001564115677__fig_dc_ar_cfg_004001"><a name="EN-US_TASK_0000001564115677__fig_dc_ar_cfg_004001"></a><a name="fig_dc_ar_cfg_004001"></a><span class="figcap"><b>Figure 1 </b>Configuring LDAP authentication and authorization</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001563756009.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564115677__1.4.2"></a><a name="1.4.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure STelnet login on DeviceA: Set the authentication mode for accessing VTY user interfaces to AAA, enable the STelnet service, and configure the authentication mode and service type for SSH users.</li><li>Configure LDAP authentication on DeviceA: Configure an LDAP server template, configure an AAA authentication scheme, set the administrator privilege level in the service scheme, and apply the LDAP server template and AAA authentication scheme to a domain.</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564115677__1.4.3"></a><a name="1.4.3"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><ul><li id="EN-US_TASK_0000001564115677__li5529197174012">Ensure that there are reachable routes between devices before the configuration.</li><li id="EN-US_TASK_0000001564115677__li88197714410">After the domain is set as the global default administrative domain and the user name of the administrator contains the domain name or does not contain any domain name, the administrator uses AAA configuration in the global default administrative domain.</li><li id="EN-US_TASK_0000001564115677__li5734123519585">The device does not allow changing the user password on the AD or LDAP server. Therefore, when creating a user on the server, deselect <strong id="EN-US_TASK_0000001564115677__b256010123119">Change password on next login</strong> to ensure that the user can log in successfully.</li></ul>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001564115677__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IP addresses for interfaces.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[<span class="keyword">DeviceA</span>] <strong>vlan batch 10 20</strong>
+[DeviceA] <strong>interface </strong><strong><span>10ge</span> </strong><strong><span>0/0/1</span></strong> 
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 10</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface </strong><strong><span>10ge</span></strong><strong> <span>0/0/2</span></strong> 
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port trunk allow-pass vlan 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>] <strong>interface vlanif 10</strong>
+[<span class="keyword">DeviceA-Vlanif10</span>] <strong>ip address </strong><strong>10.1.1.2 255.255.255.0</strong>
+[<span class="keyword">DeviceA-Vlanif10</span>] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>]<strong> interface vlanif 20</strong>
+[<span class="keyword">DeviceA</span>-Vlanif20]<strong> ip address</strong> <strong>10.1.6.2 255.255.255.0</strong>
+[<span class="keyword">DeviceA</span>-Vlanif20] <strong>quit</strong></pre>
+</p></li><li><span>Configure STelnet login.</span><p><p># Configure DeviceA to generate a local key pair.</p>
+<pre class="screen">[DeviceA] <strong>rsa local-key-pair create</strong>
+The key name will be:Host
+The range of public key size is (2048, 4096).
+NOTE: Key pair generation will take a short while.
+Please input the modulus [default = 3072]:<strong>3072</strong> </pre>
+<p># Set the authentication mode and protocol for accessing VTY user interfaces 0 to 4 to AAA and SSH, respectively.</p>
+<pre class="screen">[DeviceA] <strong>user-interface vty 0 4</strong> 
+[DeviceA-ui-vty0-4] <strong>authentication-mode aaa</strong> 
+[DeviceA-ui-vty0-4] <strong>protocol inbound ssh</strong>
+[DeviceA-ui-vty0-4] <strong>quit</strong></pre>
+<p># Enable the SSH server function on DeviceA.</p>
+<pre class="screen">[<span class="keyword"></span>DeviceA] <strong>stelnet server enable</strong> 
+[DeviceA] <strong>ssh server-source -i </strong><strong>vlanif 10</strong></pre>
+<p># Set the authentication mode of all SSH users to password authentication.</p>
+<pre class="screen">[DeviceA] <strong>ssh authentication-type default password</strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001564115677__en-us_task_0000001512836118_p13568138164810">If only the authentication mode and service type of a few SSH users need to be set to password authentication and STelnet, you can specify the SSH user name to set the authentication mode and service type of a single SSH user. For example, set the authentication mode and service type of an SSH user named <strong id="EN-US_TASK_0000001564115677__en-us_task_0000001512836118_b109551148172614">admin</strong> to password authentication and STelnet, respectively.</p>
+<p id="EN-US_TASK_0000001564115677__en-us_task_0000001512836118_p155681781488">[<span class="keyword" id="EN-US_TASK_0000001564115677__en-us_task_0000001512836118_keyword2069313224815">DeviceA</span>] <strong id="EN-US_TASK_0000001564115677__en-us_task_0000001512836118_b1856815854819">ssh user admin authentication-type password</strong></p>
+<p id="EN-US_TASK_0000001564115677__en-us_task_0000001512836118_p12568108194815">[<span class="keyword" id="EN-US_TASK_0000001564115677__en-us_task_0000001512836118_keyword13425133415489">DeviceA</span>] <strong id="EN-US_TASK_0000001564115677__en-us_task_0000001512836118_b16568158164817">ssh user admin service-type stelnet</strong></p>
+</div></div>
+</p></li><li><span>Configure LDAP authentication and authorization.</span><p><p># Configure an LDAP server template, and configure the IP address, port number, Base DN, administrator DN, and administrator password in the template.</p>
+<pre class="screen">[DeviceA] <strong>ldap-server template template1</strong>
+[DeviceA-ldap-template1] <strong>ldap-server authentication 10.1.6.6 389 no-ssl</strong>
+[DeviceA-ldap-template1] <strong>ldap-server authentication base-dn dc=esaptest,dc=com</strong>
+[DeviceA-ldap-template1] <strong>ldap-server authentication manager cn=Administrator,cn=users Admin@123</strong>
+[DeviceA-ldap-template1] <strong>quit</strong></pre>
+<p># Configure an authentication scheme named <strong>auth1</strong> and set the authentication mode to LDAP authentication.</p>
+<pre class="screen">[DeviceA] <strong>aaa</strong>
+[DeviceA-aaa] <strong>authentication-scheme auth1</strong>
+[DeviceA-aaa-authen-auth1] <strong>authentication-mode ldap</strong>
+[DeviceA-aaa-authen-auth1] <strong>quit</strong></pre>
+<p># Configure an authorization scheme named <strong>acc1</strong> and set the authorization mode to LDAP authorization.</p>
+<pre class="screen">[DeviceA-aaa] <strong>authorization-scheme acc1</strong>
+[DeviceA-aaa-author-acc1] <strong>authorization-mode ldap</strong>
+[DeviceA-aaa-author-acc1] <strong>quit</strong></pre>
+<p># Configure the service scheme <strong>s1</strong> and set the administrator privilege level to 3 in the service scheme.</p>
+<pre class="screen">[DeviceA-aaa] <strong>service-scheme s1</strong>
+[DeviceA-aaa-service-s1] <strong>admin-user privilege level 3</strong>
+[DeviceA-aaa-service-s1] <strong>quit</strong></pre>
+<p># Apply the created AAA schemes and LDAP server template to a specific domain.</p>
+<pre class="screen">[DeviceA-aaa] <strong>domain huawei.com</strong>
+[DeviceA-aaa-domain-huawei.com] <strong>authentication-scheme auth1</strong>
+[DeviceA-aaa-domain-huawei.com] <strong>authorization-scheme acc1</strong>
+[DeviceA-aaa-domain-huawei.com] <strong>ldap-server template1</strong>
+[DeviceA-aaa-domain-huawei.com] <strong>service-scheme s1</strong>
+[DeviceA-aaa-domain-huawei.com] <strong>quit</strong>
+[DeviceA-aaa] <strong>quit</strong></pre>
+</p></li><li><span>Configure the domain to which the administrator belongs as the global default administrative domain so that the administrator does not need to enter the domain name during an STelnet login to DeviceA.</span><p><pre class="screen">[DeviceA] <strong>domain huawei.com admin</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001564115677__1.4.5"></a><a name="1.4.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>The administrator can log in to DeviceA through the STelnet client after entering the correct user name and password.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001564115677__1.4.6"></a><a name="1.4.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+ldap-server template template1
+ ldap-server authentication 10.1.6.6 389 no-ssl
+ ldap-server authentication manager cn=Administrator,cn=users %+%##!!!!!!!!!"!!!!"!!!!*!!!!SKvr${[Fs.nt[%K)u50(_zvw*/=MzISB3'K!!!!!2jp5!!!!!!:!!!!h$%%+PY@9GDRjBP8bVj/vDf{Cr}&amp;[Sc`Kf)!!!!!%+%#
+ ldap-server authentication base-dn dc=esaptest,dc=com
+#
+aaa
+ authentication-scheme auth1    
+  authentication-mode ldap  
+ authorization-scheme acc1    
+  authorization-mode ldap  
+ service-scheme s1
+  admin-user privilege level 3 
+ domain huawei.com            
+  authentication-scheme auth1     
+  authorization-scheme acc1
+  service-scheme s1 
+  ldap-server template1 
+#  
+domain huawei.com admin 
+#
+vlan batch 10 20
+#
+interface Vlanif10
+ ip address 10.1.1.2 255.255.255.0
+#
+interface Vlanif20
+ ip address 10.1.6.2 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 20
+#
+stelnet server enable 
+ssh server-source -i Vlanif10
+#
+user-interface vty 0 4           
+ authentication-mode aaa           
+ protocol inbound ssh
+# 
+return </pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_aaa_cfg_0056.html">Configuration Examples for AAA
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="toctopics/en-us_task_0000001945219498.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_aaa_cfg_0068.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

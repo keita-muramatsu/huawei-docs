@@ -1,0 +1,150 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Exception in the PoE Power Supply of a PD Connected to an RU">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0034.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0036.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001619034185">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Exception in the PoE Power Supply of a PD Connected to an RU</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001619034185"></a><a name="EN-US_TOPIC_0000001619034185"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Exception in the PoE Power Supply of a PD Connected to an RU</h1>
+<div><div class="section"><h4 class="sectiontitle">Symptom</h4><p>A powered device (PD), such as an AP, phone, or camera connected to an RU cannot be powered on.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Possible Causes</h4><ul><li>The power of the RU is insufficient.</li><li>The PoE configuration of the RU is incorrect.</li><li>XLDP is not enabled on the central device.</li><li>The PD is a non-standard PD.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li><span>Check the PoE information about RUs and check whether the power is sufficient.</span><p><p># Run the <strong>display remote-unit poe</strong> command to check RU PoE information. Check whether the power is sufficient and whether the voltage is normal. For example, if the total power is 60 W and the voltage is about 50 V, the power is normal.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>display remote-unit poe connect-interface <span>10GE</span><span>0/0/1</span></strong> 
+ESN                :21980117760123xxxxxxxx  
+Name               :-  
+Device type        :S5731-L4P2HW-RUA 
+Connect interface  :<span>10GE</span><span>0/0/1</span> 
+------------------------------------------------------  
+PSE information    :   
+<strong> PoE power supply(mW)                                  :60000 </strong>
+<strong> Total available power(mW)                             :60000 </strong>
+ Total power consumption(mW)                           :0   
+ Power peak value(mW)                                  :0   
+<strong> Power voltage(V)                                      :54 </strong>
+ PSE reset times                                       :0   
+ PoE failure                                           :NO  
+------------------------------------------------------ </pre>
+</p></li><li><span>Check the PoE information about the RU's downlink interface and check whether the power supply level, power, and power supply mode are correct.</span><p><p># Run the <strong>display remote-unit port poe</strong> command to check the PoE information about the RU interface and check whether the power supply level, reference power, power supply mode, and interface status match the connected PD.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>display remote-unit port poe </strong>
+ESN                :219801177601xxxxxxxx  
+Name               :-  
+Device type        :-
+Connect interface  :<span>10GE</span><span>0/0/1</span>
+------------------------------------------------------
+GE1 PoE information:
+<strong>  PD class                     :4</strong>
+<strong>  PD reference power(mW)       :30000</strong>
+<strong>  PD current power(mW)         :4200</strong>
+<strong>  PD peak power(mW)            :4200</strong>
+<strong>  PD average power(mW)         :4200</strong>
+  Power-up mode                :at
+  Force power                  :Disable
+  Power ON/OFF                 :On
+  Power-on delay(s)            :0
+  Power status                 :Powered
+  Current(mA)                  :78
+  Voltage(V)                   :53
+
+GE2 PoE information:
+  PD class                     :0
+  PD reference power(mW)       :0
+  PD current power(mW)         :2900
+  PD peak power(mW)            :2900
+  PD average power(mW)         :2900
+  Power-up mode                :af
+  Force power                  :Disable
+  Power ON/OFF                 :On
+  Power-on delay(s)            :0
+  Power status                 :Powered
+  Current(mA)                  :53
+  Voltage(V)                   :54
+... ...</pre>
+</p></li><li><span>If an RU is the PD of a central device, check the PoE information about the interconnection interface and whether the power supply level and power are correct.</span><p><p># Run the <strong>display poe power</strong> command to check whether the PoE function on the interconnection interface is normal.</p>
+<pre class="screen">[HUAWEI] <strong>display poe power</strong> 
+Codes: REFPW(Reference power), USMPW(User set max power), 
+       CURPW(Current power), PKPW(Peak power), AVGPW(Average power)
+
+PortName               Class  REFPW(mW) USMPW(mW) CURPW(mW) PKPW(mW)  AVGPW(mW)
+--------------------------------------------------------------------------------
+10GE1/0/1   -      -         90000     0         0         0 
+10GE1/0/2   4      30000     90000     4200      4400      4133 
+10GE1/0/3   -      -         90000     0         0         0 
+10GE1/0/4   -      -         90000     0         0         0 
+10GE1/0/5   -      -         90000     0         0         0 
+10GE1/0/6   -      -         90000     0         0         0 
+10GE1/0/7   -      -         90000     0         0         0 
+10GE1/0/8   -      -         90000     0         0         0 
+10GE1/0/9   -      -         90000     0         0         0  
+10GE1/0/10  -      -         90000     0         0         0 
+10GE1/0/11  -      -         90000     0         0         0 
+10GE1/0/12  -      -         90000     0         0         0 
+10GE1/0/13  -      -         90000     0         0         0 
+10GE1/0/14  -      -         90000     0         0         0 
+10GE1/0/15  -      -         90000     0         0         0 
+10GE1/0/16  -      -         90000     0         0         0 
+10GE1/0/17  -      -         90000     0         0         0 
+10GE1/0/18  -      -         90000     0         0         0 
+10GE1/0/19  -      -         90000     0         0         0 
+10GE1/0/20  -      -         90000     0         0         0 </pre>
+</p></li><li><span>For non-standard PDs, configure forcible power supply or change the power supply mode.</span><p><p># If a non-standard PD cannot be powered on, run the <b><span class="cmdqueryname">poe force-power port</span></b> <em>number</em> command to enable forcible power supply for the interface or run the <b><span class="cmdqueryname">poe af-inrush enable port</span></b> <em>number</em> command to configure the power supply mode for the interface. Then, perform steps 2 and 3 to check whether the power supply of RU's interfaces is normal.</p>
+<pre class="screen">[HUAWEI] <strong>remote-unit 3</strong>
+[HUAWEI-remote-unit-3] <strong>poe force-power port 1</strong>
+[HUAWEI-remote-unit-3] <strong>poe af-inrush enable port 2</strong>
+[HUAWEI-remote-unit-3] <strong>commit</strong>
+[HUAWEI-remote-unit-3] <strong>quit</strong></pre>
+</p></li><li><span><span class="keyword">Collect log and configuration information and contact technical support personnel. </span><span><span>You can run the <strong>display diagnostic-information</strong> command to collect diagnostic information.</span></span></span></li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">Common Configuration Errors for Intelligent Simplified Campus Networks
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0034.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0036.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

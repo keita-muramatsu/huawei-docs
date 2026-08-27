@@ -1,0 +1,97 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring the IKE SA Lifetime">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0058.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0062.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0064.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513033930">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring the IKE SA Lifetime</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513033930"></a><a name="EN-US_TASK_0000001513033930"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring the IKE SA Lifetime</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001513033930__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>The IKE SA lifetime takes effect only for the following IPsec types:</p>
+<ul><li>ACL-based IPsec (involving ISAKMP IPsec policies and template IPsec policies)</li><li>Route-based IPsec (involving IPsec profiles)</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513033930__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>You can configure the IKE SA lifetime to update IKE SAs in real time, reducing the risk of cracking IKE SAs and improving security.</p>
+<p>The configured IKE SA lifetime applies only to new IKE SAs. Before an IKE SA is about to expire, IKE negotiates a new IKE SA for the remote end. The remote end uses the new IKE SA to protect IPsec communication immediately after the new IKE SA has been negotiated. The original IKE SA is cleared after 10s or the hard lifetime expires.</p>
+<p>The IKE SA lifetime is classified into hard lifetime and soft lifetime.</p>
+<ul><li>Hard lifetime (hard timeout period): indicates the lifetime of an IKE SA. When two devices negotiate an IKE SA, the actual IKE SA hard lifetime is the smaller of the two hard lifetime values configured on the two devices.</li><li>Soft lifetime (soft timeout period): indicates the time after which a new IKE SA is negotiated to replace the existing IKE SA before the hard lifetime of the existing IKE SA is about to expire.</li></ul>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001513033930__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Set the IKE SA hard lifetime.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE proposal view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike proposal</span></b> { <i><span class="varname">proposal-number</span></i> | <strong><span>default</span></strong> }</pre>
+</p></li><li class="substepexpand"><span>Set the IKE SA hard lifetime.</span><p><pre class="screen"><b><span class="cmdqueryname">sa duration</span></b> <i><span class="varname">seconds</span></i></pre>
+</p><p><p>For the default settings, see <a href="security_ipsec_cfg_0007.html#EN-US_CONCEPT_0000001564113961__table19794619101811">Table 4</a>.</p>
+<p>If the hard lifetime of an IKE SA expires, the IKE SA will be updated automatically. IKE negotiation involves Diffie-Hellman (DH) calculation, which takes a long period of time. To ensure that IKE SA update does not affect secure communication, you are advised to set the IKE SA lifetime to a value greater than 600s.</p>
+</p></li></ol>
+</li><li><span>Set the IKE SA soft lifetime.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IKE peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">ike peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Set the IKE SA soft timeout buffer time.</span><p><pre class="screen"><b><span class="cmdqueryname">sa soft-duration time-based buffer</span></b> <i><span class="varname">seconds</span></i></pre>
+</p><p><p>By default, no IKE SA soft timeout buffer time is configured.</p>
+<p>If the value that equals the IKE SA hard lifetime minus the configured IKE SA soft timeout buffer time is larger than 10s, this value is used as the actual IKE SA soft lifetime. Otherwise, the default IKE SA soft lifetime is used.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Enable the local device to send IKE SA lifetime notification messages to the peer end.</span><p><pre class="screen"><b><span class="cmdqueryname">lifetime-notification-message enable</span></b></pre>
+<p>By default, the device does not send IKE SA lifetime notification messages.</p>
+<p>IKEv1 peers negotiate the lifetime, and a smaller SA lifetime at the two ends is used. When a Huawei device and a non-Huawei device establish an IPsec tunnel and they use different IKE SA lifetimes, run this command to enable the local device to send IKE SA lifetime notification messages to the peer end. By doing this, two ends can successfully perform IKE negotiation.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0058.html">IPsec Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0062.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0064.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

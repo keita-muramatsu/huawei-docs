@@ -1,0 +1,132 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Sending Session Logs in Syslog Format to Third-Party Log Servers">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_log_cfg_0070_AR.html">
+<meta name="DC.Relation" scheme="URI" content="security_log_cfg_0014_AR.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Logs">
+<meta name="featuretype" content="System Monitoring">
+<meta name="featuretype" content="System Monitoring">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002085156273">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Sending Session Logs in Syslog Format to Third-Party Log Servers</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002085156273"></a><a name="EN-US_TASK_0000002085156273"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Sending Session Logs in Syslog Format to Third-Party Log Servers</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002085156273__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="security_log_cfg_0034_AR.html">Example for Sending Session Logs in Syslog Format to Third-Party Log Servers</a>, DeviceA is deployed on the network border. The network environment is as follows:</p>
+<ul><li>A NAT policy in PAT mode is configured on DeviceA to perform the address and port translation for packets that access the Internet from the internal network.</li><li>There are two third-party log servers on the network.</li></ul>
+<p>DeviceA is required to send session information generated when intranet users access the Internet to the log servers in syslog format. Therefore, the administrator can view and analyze session information on a log server. The log concurrent function is required, so that each log can be sent to both log servers.</p>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Networking diagram for sending session logs in syslog format to log servers</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 represents <span>10GE</span><span>0/0/1</span>.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000002049352728.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002085156273__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This example provides only the configuration on DeviceA. For details about how to configure a third-party log server, see the product document of the server.</p>
+<p>The system time must be set correctly during the initial configuration. Changing the system time during device running will result in incorrect timestamps in historical logs. The time zone of a log server must be the same as that of the device.</p>
+</div></div>
+<ol><li>Configure an IP address for an interface.</li><li>Configure a NAT policy.</li><li>Configure log hosts.</li><li>Enable session logging.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002085156273__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an IP address for an interface. The following uses the interface connecting the device to <span>SecoManager</span> as an example.</span><p><p># Configure an IP address for <span>10GE</span><span>0/0/1</span>.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[DeviceA] <strong>interface <span><span><span>10ge</span> <span>0/0/1</span></span></span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ip address 172.16.0.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure a NAT policy.</span><p><p># Configure NAT address pool 1 and set the mode to PAT. In this example, the public IP address ranges from 192.0.2.10 to 192.0.2.15.</p>
+<pre class="screen">[DeviceA] <strong>nat address-group add1</strong>
+[DeviceA-address-group-add1] <strong>mode pat</strong>
+[DeviceA-address-group-add1] <strong>section 0 192.0.2.10 192.0.2.15</strong>
+[DeviceA-address-group-add1] <strong>route enable</strong>
+[DeviceA-address-group-add1] <strong>quit</strong></pre>
+<p># Configure a NAT policy.</p>
+<pre class="screen">[DeviceA] <strong>nat-policy</strong>
+[DeviceA-policy-nat] <strong>rule name policy1</strong>
+[DeviceA-policy-nat-rule-policy1] <strong>source-address 192.168.0.0 24</strong>
+[DeviceA-policy-nat-rule-policy1] <strong>action source-nat address-group add1</strong>
+[DeviceA-policy-nat-rule-policy1] <strong>quit</strong>
+[DeviceA-policy-nat] <strong>quit</strong></pre>
+</p></li><li><span>Configure log hosts.</span><p><pre class="screen">[DeviceA] <strong>firewall log host 1 172.16.0.2 514</strong>
+[DeviceA] <strong>firewall log host 2 172.16.0.3 514</strong></pre>
+</p></li><li><span>Enable the log concurrent function and set the source IP address and port number for sending logs.</span><p><pre class="screen">[DeviceA] <strong>firewall log session multi-host-mode concurrent</strong>
+[DeviceA] <strong>firewall log source 172.16.0.1 6000</strong></pre>
+</p></li><li><span>Set the output format of session logs to syslog.</span><p><pre class="screen">[DeviceA] <strong>firewall log session log-type syslog</strong></pre>
+</p></li><li><span>Enable session logging.</span><p><p># Enable session aging logging.</p>
+<pre class="screen">[DeviceA] <strong>firewall log session aging enable</strong></pre>
+<p># Enable NAT session logging.</p>
+<pre class="screen">[DeviceA] <strong>firewall log session nat enable</strong></pre>
+</p></li><li><span>Configure third-party log servers and view logs on them.</span></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002085156273__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Logs can be viewed on the third-party log servers.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002085156273__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#
+sysname DeviceA
+#
+firewall log source 172.16.0.1 6000
+firewall log host 1 172.16.0.2 514
+firewall log host 2 172.16.0.3 514
+firewall log session multi-host-mode concurrent
+firewall log session log-type syslog
+firewall log session aging enable
+firewall log session nat enable
+#                                                                                                                                    
+nat address-group add1 0
+ mode pat
+ route enable
+ section 0 192.0.2.10 192.0.2.15
+#                                                                      
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 172.16.0.1 255.255.255.0
+#
+nat-policy
+ rule name policy1
+  source-address 192.168.0.0 mask 255.255.255.0
+  action source-nat address-group add1
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_log_cfg_0070_AR.html">Configuration Examples for Logs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_log_cfg_0014_AR.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

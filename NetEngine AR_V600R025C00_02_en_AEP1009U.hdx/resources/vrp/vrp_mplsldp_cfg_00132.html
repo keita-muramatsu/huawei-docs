@@ -1,0 +1,82 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding LDP Sessions">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_00131.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0015.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001602915765">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Understanding LDP Sessions</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001602915765"></a><a name="EN-US_CONCEPT_0000001602915765"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding LDP Sessions</h1>
+<div><div class="section"><h4 class="sectiontitle">LDP Discovery Mechanism</h4><p>An LDP discovery mechanism is used by LSRs to discover potential LDP peers. There are two types of LDP discovery mechanisms</p>
+<ul><li><p>Basic discovery mechanism: used to discover directly connected LDP peers on a link.</p>
+<p>An LSR periodically sends LDP Hello messages to discover LDP peers and establish local LDP sessions with the peers.</p>
+<p>LDP Hello messages are encapsulated in UDP packets with a specific multicast destination address and are sent over the LDP port 646. An LDP Hello message carries an LDP identifier and other information, such as the Hello hold time and transport address. If an LSR receives an LDP Hello message on an interface, it can be determined that an LDP peer exists.</p>
+</li><li><p>Extended discovery mechanism: used to discover indirectly connected LDP peers on a link.</p>
+<p>An LSR periodically sends Targeted Hello messages to a destination address to implement the extended discovery mechanism and to establish a remote LDP session.</p>
+<p>Targeted Hello messages are encapsulated in UDP packets, carry unicast destination addresses, and are sent over the LDP port 646. A Targeted Hello message carries an LDP identifier and other information, such as the Hello hold time and transport address. If an LSR receives a Targeted Hello message, it can be determined that the LSR has a potential LDP peer.</p>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Process of Establishing an LDP Session</h4><p>Two LSRs exchange Hello messages to establish an LDP session.</p>
+<p><a href="#EN-US_CONCEPT_0000001602915765__fig_dc_vrp_ldp-p2p_feature_000501">Figure 1</a> demonstrates the process of establishing an LDP session.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001602915765__fig_dc_vrp_ldp-p2p_feature_000501"><a name="EN-US_CONCEPT_0000001602915765__fig_dc_vrp_ldp-p2p_feature_000501"></a><a name="fig_dc_vrp_ldp-p2p_feature_000501"></a><span class="figcap"><b>Figure 1 </b>Process of establishing an LDP session</span><br><span><img class="vsd" src="figure/en-us_image_0000001602636033.png"></span></div>
+<ol><li><p>Two LSRs send Hello messages to each other. A Hello message contains a transport address used to establish an LDP session. The LSR with the larger transport address serves as the active peer and initiates a TCP connection request. In <a href="#EN-US_CONCEPT_0000001602915765__fig_dc_vrp_ldp-p2p_feature_000501">Figure 1</a>, LSR-A functioning as the active peer initiates a TCP connection request to LSR-B functioning as the passive peer.</p>
+</li><li><p>After the TCP connection is successfully established, LSR-A sends an Initialization message to negotiate parameters used to establish an LDP session with LSR-B. The main parameters include the LDP version, label distribution mode, Keepalive hold timer value, maximum PDU length, and label space.</p>
+</li><li><p>Upon receipt of the Initialization message, LSR-B performs operations as follows: If LSR-B rejects some parameters, it sends a Notification message to terminate LDP session establishment. If LSR-B accepts all parameters, it sends an Initialization message and a Keepalive message to LSR-A.</p>
+</li><li><p>Upon receipt of the Initialization message, LSR-A performs operations as follows: If LSR-A rejects some parameters, it sends a Notification message to terminate LDP session establishment. If LSR-A accepts all parameters, it sends a Keepalive message to LSR-B.</p>
+</li></ol>
+<p>After each LSR receives the Keepalive messages from the other, the LDP session is successfully established.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Dynamic LDP Capability Advertisement</h4><div class="p">Without dynamic LDP capability advertisement, after an LDP session is configured and an LDP LSP is established, services will be interrupted when features that require session teardown are configured. As such, you are advised to configure dynamic LDP capability advertisement. After this function is deployed, the device dynamically enables or disables the LDP features that support dynamic LDP capability advertisement, thereby ensuring LSP stability. <span>Currently, the following features support dynamic LDP capability advertisement:</span><ul><li>Global mLDP</li><li>mLDP MBB</li></ul>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Automatic Remote LDP Session Establishment</h4><p>A common remote LDP session is manually configured on a device at each end of the session. In some scenarios, a local device needs to automatically establish remote LDP sessions with its peers. For example, in a remote LFA FRR scenario, after an ingress uses the remote LFA algorithm to calculate a PQ node, the ingress needs to run LDP to automatically establish a remote LDP session that has the PQ node's IP address as the destination IP address.</p>
+<p>After a remote LFA-enabled LSR receives a Targeted Hello message with the R bit of 1, the LSR automatically establishes a remote LDP peer relationship with its peer and replies with a Targeted Hello message with the R bit of 0, which triggers the establishment of a remote LDP session. The R bit in the Targeted Hello message indicates whether the receive end needs to periodically reply with a Targeted Hello message: a value of 1 indicates it does; a value of 0 indicates it does not. If the LSR does not receive a Targeted Hello message with the R bit of 1, the LSR deletes the established remote LDP session.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_00131.html">Configuring LDP Sessions
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0015.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

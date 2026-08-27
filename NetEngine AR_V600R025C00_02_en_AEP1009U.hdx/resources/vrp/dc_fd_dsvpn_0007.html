@@ -1,0 +1,75 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding Dual-Hub DSVPN">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_vrp_dsvpn_cfg_0006.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_vrp_dsvpn_cfg_0007.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001850913810">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Understanding Dual-Hub DSVPN</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001850913810"></a><a name="EN-US_CONCEPT_0000001850913810"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding Dual-Hub DSVPN</h1>
+<div><p>On a typical DSVPN network, all spokes connect to a hub. If the hub fails, spokes cannot establish tunnels for direct communication. To improve DSVPN reliability, two hubs can be deployed for active/standby backup.</p>
+<p>As shown in <a href="#EN-US_CONCEPT_0000001850913810__fig_dc_fd_dsvpn_000701">Figure 1</a>, Hub1 and Hub2 are deployed at the HQ. Routing policies are deployed on spokes so that routes to Hub1 have a higher priority than those to Hub2. In this way, Hub1 serves as the active hub and Hub2 as the standby hub.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Dual-hub redundancy is applicable to DSVPN only in a shortcut scenario.</p>
+</div></div>
+<div class="fignone" id="EN-US_CONCEPT_0000001850913810__fig_dc_fd_dsvpn_000701"><a name="EN-US_CONCEPT_0000001850913810__fig_dc_fd_dsvpn_000701"></a><a name="fig_dc_fd_dsvpn_000701"></a><span class="figcap"><b>Figure 1 </b>Dual-hub DSVPN</span><br><span><img class="imgResize" src="figure/en-us_image_0000002142707312.png" width="NaN" height="NaN" title="Click to enlarge"></span></div>
+<div class="p">The two hubs deployed for redundancy on a DSVPN network work as follows:<ol><li>All spokes simultaneously send NHRP Registration Request messages to Hub1 (active) and Hub2 (standby), and establish active and standby static mGRE tunnels with Hub1 and Hub2, respectively.</li><li>When a spoke wants to set up an mGRE tunnel with another spoke, it sends an NHRP Resolution Request message to one of the hubs:<ul><li>When both Hub1 and Hub2 are functioning properly, the NHRP Resolution Request message is sent to Hub1 over the active static mGRE tunnel because the route from the source spoke to Hub1 has a higher preference. Hub1 then forwards the NHRP Resolution Request message to the destination spoke.</li><li>If Hub1 fails, the preference of the route to Hub1 becomes lower than that to Hub2. As such, the source spoke sends the NHRP Resolution Request message to Hub2 over the standby static mGRE tunnel. Hub2 then forwards the NHRP Resolution Request message to the destination spoke.</li><li>After Hub1 recovers, the route to Hub1 once again has a higher preference than that to Hub2, and so the source spoke reverts to transmitting the NHRP Resolution Request message to Hub1.</li></ul>
+</li><li>The destination spoke sends an NHRP Resolution Reply message to the source spoke. After that, they set up a dynamic mGRE tunnel.</li><li>When connected with a dynamic mGRE tunnel, spokes can directly communicate, and whether the hubs are functioning properly has no impact on service flows between the spokes. If the dynamic mGRE tunnel between two spokes is torn down because it has had no traffic to forward for a long period of time, the spokes need to re-establish a dynamic mGRE tunnel when they want to communicate. In this case, they determine the hub to which NHRP Resolution Request messages are sent based on the route preference.</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/dc_vrp_dsvpn_cfg_0006.html">Configuring Dual-Hub DSVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/dc_vrp_dsvpn_cfg_0007.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

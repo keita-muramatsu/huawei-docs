@@ -1,0 +1,331 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Intrusion Prevention Profile">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ips_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="security_ips_cfg_0005.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563754097">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Intrusion Prevention Profile</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563754097"></a><a name="EN-US_CONCEPT_0000001563754097"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Intrusion Prevention Profile</h1>
+<div><p>The core of the intrusion prevention function is an intrusion prevention profile, which can be used to determine the attacks to be defended against and how to defend against the attacks.</p>
+<div class="section"><h4 class="sectiontitle">Elements of an Intrusion Prevention Profile</h4><p><strong>Signature Filter</strong></p>
+<p>An intrusion prevention signature database contains a large number of signatures for various attacks. However, in the actual network environment, service types may be centralized, and not all signatures are required. If the device defends against all signatures, a large number of logs will be generated, affecting processing of key attack events and device commissioning. In this case, you need to configure a signature filter to filter out the signatures that need to be concerned and configure the attack response action. The device defends against only the filtered signatures.</p>
+<p>A signature filter is a set of conditions for filtering signatures, such as the threat type, target, protocol, severity, and operating system of a signature. The device defends against only the signatures that meet all the filtering conditions. Multiple values can be configured for a filtering condition and these values are ORed. That is, a signature matches a condition as long as the signature matches any value of this condition.</p>
+<p>In most cases, the default actions for signatures are used for the filtered signatures in the signature filter. You can also set actions for all signatures in the filter. The action of a signature filter has a higher priority than the default actions of signatures in the filter.</p>
+<p>Signature filters configured earlier have higher priorities. If multiple signature filters in one security profile contain the same signature, packets matching the signature are processed according to the signature filter configured earlier.</p>
+<p>As shown in <a href="#EN-US_CONCEPT_0000001563754097__fig20902134782014">Figure 1</a>, if the protected target is a web server running the Windows operating system, you can configure the signature filter to filter out the signatures whose operating system is Windows and protocol is HTTP.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001563754097__fig20902134782014"><a name="EN-US_CONCEPT_0000001563754097__fig20902134782014"></a><a name="fig20902134782014"></a><span class="figcap"><b>Figure 1 </b><strong>Signature f</strong><strong>ilter</strong></span><br><span><img class="vsd" src="figure/en-us_image_0000001564114061.png"></span></div>
+<p></p>
+<p><strong>Exception Signature</strong></p>
+<p>A unified action is configured for signatures in a signature filter and you are not allowed to modify the action for a single signature, which cannot fulfill the requirements in some exceptions. To address this issue, the device provides the exception signature function, enabling you to specify a specific signature as an exception signature in an intrusion prevention profile and set an action for the signature. If a log indicates that an application running properly matches a signature in the signature filter and is incorrectly blocked, you can specify the signature as an exception signature and set the action to <strong>allow</strong>.</p>
+<p>The action set for an exception signature can be <strong>block</strong>, <strong>alert</strong>, <strong>allow</strong>, or <strong>blacklist</strong>. <strong>blacklist</strong> means adding the source or destination address of related packets to the blacklist when traffic is blocked.</p>
+<p>The action for an exception signature has a higher priority than that for a signature filter. If a signature matches both an exception signature and a signature filter, the action for the exception signature prevails.</p>
+<p><strong>Determining the Final Response Action for a Signature</strong></p>
+<p>In an intrusion prevention profile, multiple signature filters and exception signatures can be configured, which together determine the final response action for a signature. The action for an exception signature, action for a signature filter, and the default action for a signature are listed in descending order of priority.</p>
+<p>In <a href="#EN-US_CONCEPT_0000001563754097__fig01">Figure 2</a>, two signature filters and an exception signature are configured in an intrusion prevention profile. The final response actions for signatures a01, a02, and a03 are as follows:</p>
+<ul><li>a01: When multiple signature filters are configured in an intrusion prevention profile, the signature filters are listed in descending order of priority. The signature matches the signature filters based on the descending order of priority. Once a signature filter is matched, the matching process stops. Therefore, in <a href="#EN-US_CONCEPT_0000001563754097__fig01">Figure 2</a>, a01 matches only signature filter 1 and the action for a01 is alert.</li><li>a02: The priority of the exception signature is higher than that of signature filter 1. Therefore, the action for a02 is alert.</li><li>a03: The signature matches signature filter 2 and the action for a03 is block. The action for the signature filter takes precedence over the default action for the signature.</li></ul>
+<div class="fignone" id="EN-US_CONCEPT_0000001563754097__fig01"><a name="EN-US_CONCEPT_0000001563754097__fig01"></a><a name="fig01"></a><span class="figcap"><b>Figure 2 </b>Response action for a signature</span><br><span><img class="vsd" src="figure/en-us_image_0000001563873949.png"></span></div>
+<p></p>
+<p>When a packet matches multiple signatures, the actual action for the packet is as follows:</p>
+<ul><li><p>If the actions for all the matched signatures are <strong>alert</strong>, the action for the packet is <strong>alert</strong>.</p>
+</li><li><p>If the action for any matched signature is <strong>block</strong>, the action for the packet is <strong>block</strong>.</p>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Default Intrusion Prevention Profiles</h4><p>It is difficult to configure a signature filter because you must be familiar with networks and services. The device provides intrusion prevention profiles for common scenarios by default. <a href="#EN-US_CONCEPT_0000001563754097__tab1">Table 1</a> lists the filtering conditions and actions for each default intrusion prevention profile.</p>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001563754097__tab1"></a><a name="tab1"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001563754097__tab1" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Default intrusion prevention profiles</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="11.600000000000001%" id="mcps1.3.3.3.2.9.1.1" liSelected="liSelected"><p>Name</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="10.57%" id="mcps1.3.3.3.2.9.1.2" liSelected="liSelected"><p>Target</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="13.919999999999998%" id="mcps1.3.3.3.2.9.1.3" liSelected="liSelected"><p>Severity</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="17.01%" id="mcps1.3.3.3.2.9.1.4" liSelected="liSelected"><p>Operating System</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="14.69%" id="mcps1.3.3.3.2.9.1.5" liSelected="liSelected"><p>Protocol</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="12.11%" id="mcps1.3.3.3.2.9.1.6" liSelected="liSelected"><p>Category</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="9.790000000000001%" id="mcps1.3.3.3.2.9.1.7" liSelected="liSelected"><p>Action</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="10.31%" id="mcps1.3.3.3.2.9.1.8" liSelected="liSelected"><p>Application Scenario</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>video_surveillance</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>DNS, HTTP, FTP, TELNET, SSH, RTSP, SSL, UDP, TCP</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies when the device is deployed in video surveillance scenarios.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>strict</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Block</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is required to block all matched packets.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>web_server</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>DNS, HTTP, FTP</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is deployed in front of a web server.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>file_server</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>DNS, SMB, NETBIOS, NFS, SUNRPC, MSRPC, FILE, TELNET</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is deployed in front of a file server.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>dns_server</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>DNS</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is deployed in front of a DNS server.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>mail_server</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>DNS, IMAP4, SMTP, POP3</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is deployed in front of a mail server.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>inside_firewall</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>Except TELNET and TFTP</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is deployed behind a firewall.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>dmz</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>Except NETBIOS, NFS, SMB, TELNET and TFTP</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is deployed in front of a <span>DMZ</span>.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>outside_firewall</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>Except Scanner</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is deployed in front of a firewall.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>ids</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Alert</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is deployed off-line as an IDS.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="11.600000000000001%" headers="mcps1.3.3.3.2.9.1.1 "><p>default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.57%" headers="mcps1.3.3.3.2.9.1.2 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.919999999999998%" headers="mcps1.3.3.3.2.9.1.3 "><p>Low, Medium, High</p>
+</td>
+<td class="cellrowborder" valign="top" width="17.01%" headers="mcps1.3.3.3.2.9.1.4 "><p>Unix-like, Windows, Android, iOS, Other</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.69%" headers="mcps1.3.3.3.2.9.1.5 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.11%" headers="mcps1.3.3.3.2.9.1.6 "><p>All</p>
+</td>
+<td class="cellrowborder" valign="top" width="9.790000000000001%" headers="mcps1.3.3.3.2.9.1.7 "><p>Default</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.31%" headers="mcps1.3.3.3.2.9.1.8 "><p>The intrusion prevention profile applies to the scenarios in which the device is deployed in-line as an IPS.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Applying an Intrusion Prevention Profile</h4><p>The intrusion prevention function takes effect only after an intrusion prevention profile is referenced in a security policy. That is, the device performs intrusion prevention on the traffic that matches the security policy.</p>
+<p>If a <span>security policy</span> references an intrusion prevention <span>profile</span>, the direction in the <span>security policy</span> is determined by the node that initiates the access, not the node that sends attack packets. For example, to protect intranet PCs against malicious attacks when accessing external servers, the intrusion prevention profile must be applied to the security policy for accessing the external network from intranet, which is consistent with the direction in which access is initiated, even though the attack is initiated from the external network to intranet. For details, see <a href="#EN-US_CONCEPT_0000001563754097__table72186591096">Table 2</a>.</p>
+
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000001563754097__table72186591096"></a><a name="table72186591096"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000001563754097__table72186591096" frame="border" border="1" rules="all"><caption><b>Table 2 </b>Security policy for protecting intranet PCs</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="18.988101189881014%" id="mcps1.3.4.4.2.7.1.1" liSelected="liSelected"><p>Source Zone</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="13.808619138086192%" id="mcps1.3.4.4.2.7.1.2" liSelected="liSelected"><p>Source IP Address</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="18.42815718428157%" id="mcps1.3.4.4.2.7.1.3" liSelected="liSelected"><p>Destination Zone</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="14.888511148885112%" id="mcps1.3.4.4.2.7.1.4" liSelected="liSelected"><p>Destination IP Address</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="7.519248075192481%" id="mcps1.3.4.4.2.7.1.5" liSelected="liSelected"><p>Action</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="26.36736326367363%" id="mcps1.3.4.4.2.7.1.6" liSelected="liSelected"><p>Intrusion Prevention Profile</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="18.988101189881014%" headers="mcps1.3.4.4.2.7.1.1 "><p>Trust zone on the intranet</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.808619138086192%" headers="mcps1.3.4.4.2.7.1.2 "><p>Internal network segment</p>
+</td>
+<td class="cellrowborder" valign="top" width="18.42815718428157%" headers="mcps1.3.4.4.2.7.1.3 "><p>Untrust zone on the external network</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.888511148885112%" headers="mcps1.3.4.4.2.7.1.4 "><p>any</p>
+</td>
+<td class="cellrowborder" valign="top" width="7.519248075192481%" headers="mcps1.3.4.4.2.7.1.5 "><p>Permit</p>
+</td>
+<td class="cellrowborder" valign="top" width="26.36736326367363%" headers="mcps1.3.4.4.2.7.1.6 "><p>Existing intrusion prevention profile</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ips_cfg_0003.html">Understanding Intrusion Prevention
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ips_cfg_0005.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

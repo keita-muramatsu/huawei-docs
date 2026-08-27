@@ -1,0 +1,599 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Intelligent Traffic Policing Based on Hierarchical CAR HQoS">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002242287233.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0033.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_hqos_cfg_0044.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="HQoS">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002281737913">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Intelligent Traffic Policing Based on Hierarchical CAR HQoS</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002281737913"></a><a name="EN-US_TASK_0000002281737913"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Intelligent Traffic Policing Based on Hierarchical CAR HQoS</h1>
+<div class="taskbody" id="taskbody0000002281737913"><div class="context"><a name="EN-US_TASK_0000002281737913__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000002281737913__context1677625172748"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000002281737913__p1578143216412">On an SD-WAN EVPN network shown in <a href="#EN-US_TASK_0000002281737913__fig934819104294">Figure 1</a>, an enterprise has the headquarters (HQ) and multiple branches, subscribes to 100 Mbit/s bandwidth, and has the following QoS requirements:</p>
+<ul id="EN-US_TASK_0000002281737913__ul1725511919210"><li id="EN-US_TASK_0000002281737913__li1925518972115">When multiple branch sites access the HQ site (RR), the traffic rate may exceed the bandwidth of the HQ site. In this case, inbound intelligent traffic policing needs to be implemented on the HQ site to dynamically adjust the bandwidth of low-priority services.</li><li id="EN-US_TASK_0000002281737913__li115491829131412">A branch site (CPE1) has two departments: finance department and production department. It is required that the two departments have independent bandwidth.</li><li id="EN-US_TASK_0000002281737913__li12562962117">The finance department, production department, and other departments have multiple services, including voice, video conference, and data services. It is required that the bandwidth of key voice and video conference services be guaranteed.</li></ul>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000002281737913__table775312215342"></a><a name="table775312215342"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000002281737913__table775312215342" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Enterprise user and service bandwidth requirements</caption><thead align="left"><tr id="EN-US_TASK_0000002281737913__row6753192111344"><th align="left" class="cellrowborder" rowspan="2" valign="top" id="mcps1.3.1.4.2.7.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000002281737913__p1275332110342">Department</p>
+<p id="EN-US_TASK_0000002281737913__p71222571538"></p>
+</th>
+<th align="left" class="cellrowborder" colspan="2" valign="top" id="mcps1.3.1.4.2.7.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000002281737913__p1875392117342">Total Bandwidth Requirement</p>
+</th>
+<th align="left" class="cellrowborder" colspan="3" valign="top" id="mcps1.3.1.4.2.7.1.3" liSelected="liSelected"><p id="EN-US_TASK_0000002281737913__p18820184815388">Service Bandwidth Percentage Requirement</p>
+</th>
+</tr>
+<tr id="EN-US_TASK_0000002281737913__row2121357145318"><th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.2.7.2.1" liSelected="liSelected"><p id="EN-US_TASK_0000002281737913__p12935194818014">CIR</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.2.7.2.2" liSelected="liSelected"><p id="EN-US_TASK_0000002281737913__p1762818515">PIR</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.2.7.2.3" liSelected="liSelected"><p id="EN-US_TASK_0000002281737913__p1712210573534">Service Type</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.2.7.2.4" liSelected="liSelected"><p id="EN-US_TASK_0000002281737913__p212218570537">CIR</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" id="mcps1.3.1.4.2.7.2.5" liSelected="liSelected"><p id="EN-US_TASK_0000002281737913__p181997290542">PIR</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000002281737913__row1754182117348"><td class="cellrowborder" rowspan="3" valign="top" width="12.17%" headers="mcps1.3.1.4.2.7.1.1 mcps1.3.1.4.2.7.2.1 "><p id="EN-US_TASK_0000002281737913__p47541217342">Finance department (VPN1)</p>
+<p id="EN-US_TASK_0000002281737913__p10263181045518"></p>
+</td>
+<td class="cellrowborder" rowspan="3" valign="top" width="15.939999999999998%" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.2 "><p id="EN-US_TASK_0000002281737913__p17541121153412">40 Mbit/s (40%)</p>
+<p id="EN-US_TASK_0000002281737913__p1826401020556"></p>
+</td>
+<td class="cellrowborder" rowspan="3" valign="top" width="12.870000000000001%" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.3 "><p id="EN-US_TASK_0000002281737913__p510813226117">100 Mbit/s (100%)</p>
+</td>
+<td class="cellrowborder" valign="top" width="18.09%" headers="mcps1.3.1.4.2.7.1.3 mcps1.3.1.4.2.7.2.4 "><p id="EN-US_TASK_0000002281737913__p19820104813381">Voice</p>
+</td>
+<td class="cellrowborder" valign="top" width="18.9%" headers="mcps1.3.1.4.2.7.1.3 mcps1.3.1.4.2.7.2.5 "><p id="EN-US_TASK_0000002281737913__p0305172211397">10%</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.03%" headers="mcps1.3.1.4.2.7.1.3 "><p id="EN-US_TASK_0000002281737913__p61991229175412">50%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002281737913__row1834871743917"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.1 mcps1.3.1.4.2.7.2.1 "><p id="EN-US_TASK_0000002281737913__p834871710394">Video conference</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.2 "><p id="EN-US_TASK_0000002281737913__p430520228392">50%</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.3 "><p id="EN-US_TASK_0000002281737913__p619952965416">100%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002281737913__row16263161014554"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.1 mcps1.3.1.4.2.7.2.1 "><p id="EN-US_TASK_0000002281737913__p142641510135513">Others</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.2 "><p id="EN-US_TASK_0000002281737913__p3264161013551">40%</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.3 "><p id="EN-US_TASK_0000002281737913__p52647102556">100%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002281737913__row775422119343"><td class="cellrowborder" rowspan="3" valign="top" width="12.17%" headers="mcps1.3.1.4.2.7.1.1 mcps1.3.1.4.2.7.2.1 "><p id="EN-US_TASK_0000002281737913__p17754821133415">Production department (VPN2)</p>
+<p id="EN-US_TASK_0000002281737913__p17901413135519"></p>
+</td>
+<td class="cellrowborder" rowspan="3" valign="top" width="15.939999999999998%" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.2 "><p id="EN-US_TASK_0000002281737913__p102116653519">20 Mbit/s (20%)</p>
+<p id="EN-US_TASK_0000002281737913__p1879019136555"></p>
+</td>
+<td class="cellrowborder" rowspan="3" valign="top" width="12.870000000000001%" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.3 "><p id="EN-US_TASK_0000002281737913__p1389619245117">50 Mbit/s (50%)</p>
+</td>
+<td class="cellrowborder" valign="top" width="18.09%" headers="mcps1.3.1.4.2.7.1.3 mcps1.3.1.4.2.7.2.4 "><p id="EN-US_TASK_0000002281737913__p531111497446">Voice</p>
+</td>
+<td class="cellrowborder" valign="top" width="18.9%" headers="mcps1.3.1.4.2.7.1.3 mcps1.3.1.4.2.7.2.5 "><p id="EN-US_TASK_0000002281737913__p113051622123914">10%</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.03%" headers="mcps1.3.1.4.2.7.1.3 "><p id="EN-US_TASK_0000002281737913__p1566135112566">50%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002281737913__row78831843134417"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.1 mcps1.3.1.4.2.7.2.1 "><p id="EN-US_TASK_0000002281737913__p14311174964415">Video conference</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.2 "><p id="EN-US_TASK_0000002281737913__p11884643114413">50%</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.3 "><p id="EN-US_TASK_0000002281737913__p36614512565">100%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002281737913__row13789213175514"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.1 mcps1.3.1.4.2.7.2.1 "><p id="EN-US_TASK_0000002281737913__p1379031345510">Others</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.2 "><p id="EN-US_TASK_0000002281737913__p14790141325517">40%</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.3 "><p id="EN-US_TASK_0000002281737913__p186617518563">100%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002281737913__row3247131644515"><td class="cellrowborder" rowspan="3" valign="top" width="12.17%" headers="mcps1.3.1.4.2.7.1.1 mcps1.3.1.4.2.7.2.1 "><p id="EN-US_TASK_0000002281737913__p1096054104618">Other departments</p>
+<p id="EN-US_TASK_0000002281737913__p20248716174510">(other-VPN)</p>
+<p id="EN-US_TASK_0000002281737913__p12726132221216"></p>
+<p id="EN-US_TASK_0000002281737913__p1224019203121"></p>
+</td>
+<td class="cellrowborder" rowspan="3" valign="top" width="15.939999999999998%" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.2 "><p id="EN-US_TASK_0000002281737913__p4248191684515">40 Mbit/s (40%)</p>
+<p id="EN-US_TASK_0000002281737913__p15727112213121"></p>
+<p id="EN-US_TASK_0000002281737913__p12240112071215"></p>
+</td>
+<td class="cellrowborder" rowspan="3" valign="top" width="12.870000000000001%" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.3 "><p id="EN-US_TASK_0000002281737913__p9248191610455">100 Mbit/s (100%)</p>
+<p id="EN-US_TASK_0000002281737913__p5727112271219"></p>
+<p id="EN-US_TASK_0000002281737913__p3240112016125"></p>
+</td>
+<td class="cellrowborder" valign="top" width="18.09%" headers="mcps1.3.1.4.2.7.1.3 mcps1.3.1.4.2.7.2.4 "><p id="EN-US_TASK_0000002281737913__p15112101216165">Voice</p>
+</td>
+<td class="cellrowborder" valign="top" width="18.9%" headers="mcps1.3.1.4.2.7.1.3 mcps1.3.1.4.2.7.2.5 "><p id="EN-US_TASK_0000002281737913__p12112512161611">10%</p>
+</td>
+<td class="cellrowborder" valign="top" width="22.03%" headers="mcps1.3.1.4.2.7.1.3 "><p id="EN-US_TASK_0000002281737913__p1112161219165">50%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002281737913__row6726192217122"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.1 mcps1.3.1.4.2.7.2.1 "><p id="EN-US_TASK_0000002281737913__p41121212191615">Video conference</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.2 "><p id="EN-US_TASK_0000002281737913__p14112612161620">50%</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.3 "><p id="EN-US_TASK_0000002281737913__p11112161261618">100%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000002281737913__row22391820191219"><td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.1 mcps1.3.1.4.2.7.2.1 "><p id="EN-US_TASK_0000002281737913__p81121812151616">Others</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.2 "><p id="EN-US_TASK_0000002281737913__p2112111216165">40%</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.1.4.2.7.1.2 mcps1.3.1.4.2.7.2.3 "><p id="EN-US_TASK_0000002281737913__p111211120163">100%</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fignone" id="EN-US_TASK_0000002281737913__fig934819104294"><a name="EN-US_TASK_0000002281737913__fig934819104294"></a><a name="fig934819104294"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring intelligent traffic policing based on hierarchical CAR HQoS</span><div class="note" id="EN-US_TASK_0000002281737913__note163690483552"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002281737913__p113691482557">In this example, interface 1 represents <span>10GE</span> <span>0/0/1</span>.</p>
+</div></div>
+<p id="EN-US_TASK_0000002281737913__p1393715502089"><span><img id="EN-US_TASK_0000002281737913__image1630094511220" src="figure/en-us_image_0000002423684468.png"></span></p>
+</div>
+<p id="EN-US_TASK_0000002281737913__p2300124511125"></p>
+<p id="EN-US_TASK_0000002281737913__p116051523342"></p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002281737913__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000002281737913__context1696554961910"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000002281737913__p154259113357">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000002281737913__ol25772058195712"><li id="EN-US_TASK_0000002281737913__li25771586572">Configure parent and child traffic policies for hierarchical CAR on DeviceA. The parent traffic policy is used to differentiate departments (VPN1, VPN2, and other-VPN), and the child traffic policy is used to differentiate services (service1 to service3) in the departments.<ol type="a" id="EN-US_TASK_0000002281737913__ol13612196475"><li id="EN-US_TASK_0000002281737913__li54781292019">Configure a child traffic policy to differentiate services through application identification. (The application identification function needs to be enabled on the interface where the traffic policy is executed.) The enterprise uses WeLink to carry office applications. <a href="#EN-US_TASK_0000002281737913__table775312215342">Table 1</a> lists the bandwidth allocated to the voice service (WeLink_VideoCall), video conference service (WeLink_Meeting), and other services. It is required that the financial department, production department, and other departments be allocated with the same service bandwidth.</li><li id="EN-US_TASK_0000002281737913__li4756437717">Configure a parent traffic policy and specify QoS local IDs for packets on the tunnel interface to differentiate departments. <a href="#EN-US_TASK_0000002281737913__table775312215342">Table 1</a> lists bandwidth allocation for each department.</li><li id="EN-US_TASK_0000002281737913__li17277145891512">Create an intelligent traffic policing policy and apply the policy to the traffic behavior of the parent traffic policy.</li></ol>
+</li><li id="EN-US_TASK_0000002281737913__li109011111421">On DeviceA, enable the function of executing a traffic policy after decapsulation on the SD-WAN tunnel interface.</li><li id="EN-US_TASK_0000002281737913__li1306123912314">Configure a global CAR profile on DeviceA to limit the total bandwidth in the inbound direction of DeviceA.</li><li id="EN-US_TASK_0000002281737913__li843711161357">On the inbound interface of DeviceA, configure a global CAR profile and a parent traffic policy for hierarchical CAR to be applied after decapsulation.</li></ol>
+<div class="note" id="EN-US_TASK_0000002281737913__note279231071611"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000002281737913__ul19676191981616"><li id="EN-US_TASK_0000002281737913__li06761519131618">This example describes only the configuration roadmap and procedure for configuring intelligent traffic policing based on hierarchical CAR HQoS. Assume that SD-WAN EVPN configurations have been completed. You need to ensure that the SD-WAN tunnel encapsulation protocol of the tunnel interface has been set to <strong id="EN-US_TASK_0000002281737913__b1991943542112">sd-wan</strong>. For details about SD-WAN EVPN configurations, see "SD-WAN EVPN Configuration" in CLI Configuration Guide &gt; VPN Configuration.</li><li id="EN-US_TASK_0000002281737913__li11503539181816">In practice, if the application identification function is used to differentiate service traffic, you can query the names of related applications in <a href="https://isecurity.huawei.com/sec/web/queryApplication.do" target="_blank" rel="noopener noreferrer">Huawei security center</a> or by running the <strong id="EN-US_TASK_0000002281737913__b15543415162213">display application</strong> command.</li></ul>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002281737913__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000002281737913__steps10132325172748"><li id="EN-US_TASK_0000002281737913__step183261436152315"><span id="EN-US_TASK_0000002281737913__cmd1432663662319">Configure a child traffic policy for hierarchical CAR on DeviceA.</span><p><p id="EN-US_TASK_0000002281737913__p141557258329"># Configure traffic classifiers of the child traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen94126331104">&lt;<span class="keyword" id="EN-US_TASK_0000002281737913__keyword770015130404">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000002281737913__b1370071312404">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000002281737913__keyword15700111318407">HUAWEI</span>] <strong id="EN-US_TASK_0000002281737913__b07001213104018">sysname </strong><strong id="EN-US_TASK_0000002281737913__b177018137403">DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b102041339141012">traffic classifier service1</strong>
+[DeviceA-classifier-service1] <strong id="EN-US_TASK_0000002281737913__b3298135994419">if-match application WeLink_VideoCall</strong>
+[DeviceA-classifier-service1] <strong id="EN-US_TASK_0000002281737913__b46113371338">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b1161123713336">traffic classifier service2</strong>
+[DeviceA-classifier-service2]<strong id="EN-US_TASK_0000002281737913__b2061163743319"> if-match</strong> <strong id="EN-US_TASK_0000002281737913__b17611137103317">application WeLink_Meeting</strong>
+[DeviceA-classifier-service2] <strong id="EN-US_TASK_0000002281737913__b26120377331">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b78889201138">traffic classifier service3</strong>
+[DeviceA-classifier-service3]<strong id="EN-US_TASK_0000002281737913__b158882207317"> if-match</strong> <strong id="EN-US_TASK_0000002281737913__b118652817314">any</strong>
+[DeviceA-classifier-service3] <strong id="EN-US_TASK_0000002281737913__b108881920336">quit</strong></pre>
+<p id="EN-US_TASK_0000002281737913__p890113559412"># Configure traffic behaviors of the child traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen1347714482105">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b9770452164219">traffic behavior</strong> <strong id="EN-US_TASK_0000002281737913__b1350513225019">service1</strong>
+[DeviceA-behavior-service1] <strong id="EN-US_TASK_0000002281737913__b18327179165412">car cir pct 10 pir pct 50 hierarchical-car</strong> <strong id="EN-US_TASK_0000002281737913__b20463318594">share mode color-aware</strong> 
+[DeviceA-behavior-service1] <strong id="EN-US_TASK_0000002281737913__b177015525424">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b77704528424">traffic behavior</strong> <strong id="EN-US_TASK_0000002281737913__b15297181116501">service2</strong>
+[DeviceA-behavior-service2] <strong id="EN-US_TASK_0000002281737913__b134769121571">car cir pct 50 pir pct 100 hierarchical-car </strong><strong id="EN-US_TASK_0000002281737913__b4931391593">share mode color-aware</strong>
+[DeviceA-behavior-service2] <strong id="EN-US_TASK_0000002281737913__b14771205244215">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b161921431241">traffic behavior</strong> <strong id="EN-US_TASK_0000002281737913__b10192103941">service3</strong>
+[DeviceA-behavior-service3] <strong id="EN-US_TASK_0000002281737913__b71921039411">car cir pct 40 pir pct 100 hierarchical-car </strong><strong id="EN-US_TASK_0000002281737913__b1519212315417">share mode color-aware</strong>
+[DeviceA-behavior-service3] <strong id="EN-US_TASK_0000002281737913__b41921438413">quit</strong></pre>
+<p id="EN-US_TASK_0000002281737913__p71918398455"># Configure the child traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen42917454148">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b1491155819459">traffic policy</strong> <strong id="EN-US_TASK_0000002281737913__b991195864519">sub-</strong><strong id="EN-US_TASK_0000002281737913__b209115854516">policy</strong><strong id="EN-US_TASK_0000002281737913__b18366121991618">1</strong>
+[DeviceA-trafficpolicy-sub-policy1] <strong id="EN-US_TASK_0000002281737913__b1491195854519">classifier service1 behavior service1</strong>
+[DeviceA-trafficpolicy-sub-policy1] <strong id="EN-US_TASK_0000002281737913__b14910582457">classifier service2 behavior service2</strong>
+[DeviceA-trafficpolicy-sub-policy1] <strong id="EN-US_TASK_0000002281737913__b180112218614">classifier service3 behavior service3</strong>
+[DeviceA-trafficpolicy-sub-policy1] <strong id="EN-US_TASK_0000002281737913__b384874184813">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002281737913__step122282013223"><span id="EN-US_TASK_0000002281737913__cmd1222192052212">Configure an intelligent traffic policing policy on DeviceA.</span><p><p id="EN-US_TASK_0000002281737913__p16321668237"># Configure an intelligent traffic policing policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen1069317114236">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b3224133472318">itp policy test</strong>
+[DeviceA -ItpPolicy-test1] <strong id="EN-US_TASK_0000002281737913__b122242347236">bandwidth-threshold pct 90</strong>
+[DeviceA -ItpPolicy-test1] <strong id="EN-US_TASK_0000002281737913__b1522413432317">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002281737913__step17998153824315"><span id="EN-US_TASK_0000002281737913__cmd5998193810435">Configure a parent traffic policy for hierarchical CAR on DeviceA.</span><p><div class="p" id="EN-US_TASK_0000002281737913__p529894435011"># Specify QoS local IDs for packets on tunnel interfaces. (Tunnel100 and Tunnel200 have been bound to VPN1 and VPN2, respectively.)<pre class="screen" id="EN-US_TASK_0000002281737913__screen0796354154911">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b10974551195117">interface </strong><strong id="EN-US_TASK_0000002281737913__b1822914813511">tunnel100</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000002281737913__b6795172212526">qos-local-id 10</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000002281737913__b11587183295217">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b152661638155213">interface </strong><strong id="EN-US_TASK_0000002281737913__b2266153895210">tunnel200</strong>
+[DeviceA-Tunnel200] <strong id="EN-US_TASK_0000002281737913__b626713819522">qos-local-id 20</strong>
+[DeviceA-Tunnel200] <strong id="EN-US_TASK_0000002281737913__b72671338155219">quit</strong></pre>
+</div>
+<div class="p" id="EN-US_TASK_0000002281737913__p1699613120477"># Configure traffic classifiers of the parent traffic policy.<pre class="screen" id="EN-US_TASK_0000002281737913__screen1183933116485">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b3476171911585">traffic classifier vpn1</strong>
+[DeviceA-classifier-vpn1] <strong id="EN-US_TASK_0000002281737913__b7476151918586">if-match qos-local-id 1</strong><strong id="EN-US_TASK_0000002281737913__b16382285570">0</strong>
+[DeviceA-classifier-vpn1] <strong id="EN-US_TASK_0000002281737913__b164768195581">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b184761019195816">traffic classifier vpn2</strong>
+[DeviceA-classifier-vpn2]<strong id="EN-US_TASK_0000002281737913__b1347611925815"> if-match</strong> <strong id="EN-US_TASK_0000002281737913__b204731611053">qos-local-id 2</strong><strong id="EN-US_TASK_0000002281737913__b2085953312579">0</strong>
+[DeviceA-classifier-vpn2] <strong id="EN-US_TASK_0000002281737913__b7476101918583">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b126438415419">traffic classifier other-VPN</strong>
+[DeviceA-classifier-other-VPN]<strong id="EN-US_TASK_0000002281737913__b5643440418"> if-match</strong> <strong id="EN-US_TASK_0000002281737913__b15461173019815">any</strong>
+[DeviceA-classifier-other-VPN] <strong id="EN-US_TASK_0000002281737913__b1664314146">quit</strong></pre>
+</div>
+</p><p><p id="EN-US_TASK_0000002281737913__p132961458243"># Configure traffic behaviors of the parent traffic policy and apply the intelligent traffic policing policy to the traffic behaviors.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen547631918587">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b13476141912586">traffic behavior</strong> <strong id="EN-US_TASK_0000002281737913__b10956723864">vpn1</strong>
+[DeviceA-behavior-vpn1] <strong id="EN-US_TASK_0000002281737913__b19476161915586">car cir pct 40 pir pct 100 hierarchical-car share mode color-aware</strong>
+[DeviceA-behavior-vpn1]<strong id="EN-US_TASK_0000002281737913__b1816844720819"> traffic-policy </strong><strong id="EN-US_TASK_0000002281737913__b1620810449814">sub-</strong><strong id="EN-US_TASK_0000002281737913__b1720810441082">policy</strong><strong id="EN-US_TASK_0000002281737913__b122081944586">1</strong>
+[DeviceA-behavior-vpn1]<strong id="EN-US_TASK_0000002281737913__b1620642842518"> </strong><strong id="EN-US_TASK_0000002281737913__b37534353254">itp-policy test</strong>
+[DeviceA-behavior-vpn1] <strong id="EN-US_TASK_0000002281737913__b94761919185811">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b15476719125815">traffic behavior</strong> <strong id="EN-US_TASK_0000002281737913__b398602511617">vpn2</strong>
+[DeviceA-behavior-vpn2] <strong id="EN-US_TASK_0000002281737913__b35361919178">car cir pct 20 pir pct 50 hierarchical-car</strong> <strong id="EN-US_TASK_0000002281737913__b02501452155917">share mode color-aware</strong>
+[DeviceA-behavior-vpn2]<strong id="EN-US_TASK_0000002281737913__b153410717914"> traffic-policy </strong><strong id="EN-US_TASK_0000002281737913__b15534371195">sub-</strong><strong id="EN-US_TASK_0000002281737913__b3534207691">policy</strong><strong id="EN-US_TASK_0000002281737913__b20534127093">1</strong>
+[DeviceA-behavior-vpn1]<strong id="EN-US_TASK_0000002281737913__b999020652714"> </strong><strong id="EN-US_TASK_0000002281737913__b5990146122715">itp-policy test</strong>
+[DeviceA-behavior-vpn2] <strong id="EN-US_TASK_0000002281737913__b1747681911587">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b1581147698">traffic behavior</strong> <strong id="EN-US_TASK_0000002281737913__b11474964358">other-VPN</strong>
+[DeviceA-behavior-other-VPN] <strong id="EN-US_TASK_0000002281737913__b65812715913">car cir pct 40 pir pct 100 hierarchical-car</strong> <strong id="EN-US_TASK_0000002281737913__b958157892">share mode color-aware</strong>
+[DeviceA-behavior-other-VPN]<strong id="EN-US_TASK_0000002281737913__b13581879911"> traffic-policy </strong><strong id="EN-US_TASK_0000002281737913__b16581157994">sub-</strong><strong id="EN-US_TASK_0000002281737913__b185811771490">policy</strong><strong id="EN-US_TASK_0000002281737913__b75812077915">1</strong>
+[DeviceA-behavior-vpn1]<strong id="EN-US_TASK_0000002281737913__b1574517172274"> </strong><strong id="EN-US_TASK_0000002281737913__b37451217142716">itp-policy test</strong>
+[DeviceA-behavior-other-VPN] <strong id="EN-US_TASK_0000002281737913__b16581671692">quit</strong></pre>
+<p id="EN-US_TASK_0000002281737913__p2993607318"># Configure the parent traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen15476171919581">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b347611965816">traffic policy</strong> <strong id="EN-US_TASK_0000002281737913__b4100201210107">h</strong><strong id="EN-US_TASK_0000002281737913__b19543691105">car</strong>
+[DeviceA-trafficpolicy-hcar] <strong id="EN-US_TASK_0000002281737913__b18476819185810">classifier vpn1 behavior vpn1</strong>
+[DeviceA-trafficpolicy-hcar] <strong id="EN-US_TASK_0000002281737913__b24761419165811">classifier vpn2 behavior vpn2</strong>
+[DeviceA-trafficpolicy-hcar] <strong id="EN-US_TASK_0000002281737913__b166529541111">classifier other-VPN behavior other-VPN</strong>
+[DeviceA-trafficpolicy-hcar] <strong id="EN-US_TASK_0000002281737913__b07550531310">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002281737913__step121315248019"><span id="EN-US_TASK_0000002281737913__cmd1021314243020">On DeviceA, enable the function of executing a traffic policy after decapsulation on the SD-WAN tunnel interface. Ensure that the <strong id="EN-US_TASK_0000002281737913__b191991531162816">tunnel-protocol sd-wan</strong> command has been run. Otherwise, the traffic policy cannot be executed after decapsulation.</span><p><pre class="screen" id="EN-US_TASK_0000002281737913__screen78281658636">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b1982819581439">interface </strong><strong id="EN-US_TASK_0000002281737913__b148281581033">tunnel100</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000002281737913__b214072972910">tunnel-protocol sd-wan</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000002281737913__b187179101594">sd-wan service enable</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000002281737913__b193773129916">ip binding vpn-instance vpn1</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000002281737913__b278194475515">traffic-policy decap-process enable</strong>
+[DeviceA-Tunnel100] <strong id="EN-US_TASK_0000002281737913__b182825818319">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002281737913__b1828358736">interface </strong><strong id="EN-US_TASK_0000002281737913__b5828115810312">tunnel200</strong>
+[DeviceA-Tunnel200] <strong id="EN-US_TASK_0000002281737913__b26410357296">tunnel-protocol sd-wan</strong>
+[DeviceA-Tunnel200] <strong id="EN-US_TASK_0000002281737913__b51671734133117">sd-wan service enable</strong>
+[DeviceA-Tunnel200] <strong id="EN-US_TASK_0000002281737913__b116703463116">ip binding vpn-instance vpn2</strong>
+[DeviceA-Tunnel200] <strong id="EN-US_TASK_0000002281737913__b1186616550414">traffic-policy decap-process enable</strong>
+[DeviceA-Tunnel200] <strong id="EN-US_TASK_0000002281737913__b138284588319">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002281737913__step157801222174115"><span id="EN-US_TASK_0000002281737913__cmd10780122211417">On DeviceA, configure a global CAR profile named <strong id="EN-US_TASK_0000002281737913__b1284473718285">hcar_temp</strong> to limit the total bandwidth in the inbound direction of DeviceA to 100 Mbit/s.</span><p><pre class="screen" id="EN-US_TASK_0000002281737913__screen69241146164115">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b91805310590">q</strong><strong id="EN-US_TASK_0000002281737913__b49062049175914">os car hcar_temp cir 100000</strong>  </pre>
+</p></li><li id="EN-US_TASK_0000002281737913__step19595434917"><span id="EN-US_TASK_0000002281737913__cmd18959134104911">Enable the application identification function on the inbound interface of DeviceA.</span><p><pre class="screen" id="EN-US_TASK_0000002281737913__screen297364704911">[DeviceA]<strong id="EN-US_TASK_0000002281737913__b1867313419561"> interface </strong><strong id="EN-US_TASK_0000002281737913__b12511113145116"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002281737913__b2065811011397">sa enable</strong></pre>
+</p></li><li id="EN-US_TASK_0000002281737913__step599184516409"><span id="EN-US_TASK_0000002281737913__cmd149924594016">On the inbound interface of DeviceA, configure a global CAR profile and a parent traffic policy for hierarchical CAR to be applied after decapsulation.</span><p><pre class="screen" id="EN-US_TASK_0000002281737913__screen148311124114114">[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002281737913__b28314244413">qos car inbound hcar_temp decap-process</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002281737913__b78311324104115">traffic-policy hcar inbound decap-process</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002281737913__b138311024164119">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000002281737913__example121226172748"><a name="EN-US_TASK_0000002281737913__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000002281737913__p13719228145818"># Check the configured traffic classifiers.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen666420172915">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b61402318434">display traffic classifier</strong>
+  Traffic Classifier Information:                                               
+    Classifier: <strong id="EN-US_TASK_0000002281737913__b1489514275476">other-VPN</strong>                                                        
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match any
+
+    Classifier: <strong id="EN-US_TASK_0000002281737913__b1383313524222">service1</strong>                                                        
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match application WeLink_VideoCall                                   
+
+    Classifier: <strong id="EN-US_TASK_0000002281737913__b67275513222">service2</strong>                                                        
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match application WeLink_Meeting                                     
+
+    Classifier: <strong id="EN-US_TASK_0000002281737913__b165361457142210">service3</strong>                                                        
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match any                                                            
+
+    Classifier: <strong id="EN-US_TASK_0000002281737913__b1555512019231">vpn1</strong>                                                            
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match qos-local-id 10                                                
+
+    Classifier: <strong id="EN-US_TASK_0000002281737913__b17321428233">vpn2</strong>                                                            
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match qos-local-id 20
+                                                
+Total classifier number is 6   </pre>
+<p id="EN-US_TASK_0000002281737913__p5512115243316"># Check the configured traffic behaviors. The command output shows the bandwidth allocation of VPN users and services in traffic behaviors.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen1469011171343">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b86812916188">display traffic behavior</strong> 
+  Traffic Behavior Information:                                                 
+    Behavior: <strong id="EN-US_TASK_0000002281737913__b042410195353">other-VPN</strong>                                                              
+      Committed Access Rate:                                                    
+        CIRPCT 40 (Percent), PIRPCT 100 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes)      
+        Car Base: car                                                           
+        Color Mode: color aware                                                 
+        Conform Action: pass                                                    
+        Yellow  Action: pass                                                    
+        Exceed  Action: discard                                                 
+      Traffic Policy:                                                           
+       Traffic-policy sub-policy1
+
+    Behavior: <strong id="EN-US_TASK_0000002281737913__b171749309239">service1</strong>                                                          
+      Committed Access Rate:                                                    
+        CIRPCT 10 (Percent), PIRPCT 50 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes)
+        Car Base: car                                                           
+        Color Mode: color aware                                                 
+        Conform Action: pass                                                    
+        Yellow  Action: pass                                                    
+        Exceed  Action: discard                                                 
+
+    Behavior: <strong id="EN-US_TASK_0000002281737913__b7994143218232">service2</strong>                                                          
+      Committed Access Rate:                                                    
+        CIRPCT 50 (Percent), PIRPCT 100 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes)
+        Car Base: car                                                           
+        Color Mode: color aware                                                 
+        Conform Action: pass                                                    
+        Yellow  Action: pass                                                    
+        Exceed  Action: discard                                                 
+
+    Behavior: <strong id="EN-US_TASK_0000002281737913__b1194173462312">service3</strong>                                                          
+      Committed Access Rate:                                                    
+        CIRPCT 40 (Percent), PIRPCT 100 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes)
+        Car Base: car                                                           
+        Color Mode: color aware                                                 
+        Conform Action: pass                                                    
+        Yellow  Action: pass                                                    
+        Exceed  Action: discard                                                 
+
+    Behavior: <strong id="EN-US_TASK_0000002281737913__b347519390237">vpn1</strong>                                                              
+      Committed Access Rate:                                                    
+        CIRPCT 40 (Percent), PIRPCT 100 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes) 
+        Car Base: car                                                           
+        Color Mode: color aware                                                 
+        Conform Action: pass                                                    
+        Yellow  Action: pass                                                    
+        Exceed  Action: discard                                                 
+      Traffic Policy:                                                           
+       Traffic-policy sub-policy1                                               
+
+    Behavior: <strong id="EN-US_TASK_0000002281737913__b2104114222314">vpn2</strong>                                                              
+      Committed Access Rate:                                                    
+        CIRPCT 20 (Percent), PIRPCT 50 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes)
+        Car Base: car                                                           
+        Color Mode: color aware                                                 
+        Conform Action: pass                                                    
+        Yellow  Action: pass                                                    
+        Exceed  Action: discard                                                 
+      Traffic Policy:                                                           
+       Traffic-policy sub-policy1  
+                                             
+Total behavior number is 6 </pre>
+<p id="EN-US_TASK_0000002281737913__p2080065185116"># Check the configured traffic policies. The command output shows that there are two traffic policies: a parent traffic policy and a child traffic policy. The child traffic policy is bound to traffic behaviors of the parent traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen16760142175210">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b194861031192117">display traffic policy</strong>
+  Traffic Policy Information:                                                   
+    Policy: <strong id="EN-US_TASK_0000002281737913__b23602589233">hcar</strong>                                                                
+      Classifier: vpn1                                                          
+        Type: OR                                                                
+      Behavior: vpn1                                                            
+        Committed Access Rate:                                                  
+          CIRPCT 40 (Percent), PIRPCT 100 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes)
+          Car Base: car                                                         
+          Color Mode: color aware                                               
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard                                               
+        Traffic Policy:                                                         
+         <strong id="EN-US_TASK_0000002281737913__b347214618248">Traffic-policy sub-policy1</strong>                                             
+
+      Classifier: vpn2                                                          
+        Type: OR                                                                
+      Behavior: vpn2                                                            
+        Committed Access Rate:                                                  
+          CIRPCT 20 (Percent), PIRPCT 50 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes) 
+          Car Base: car                                                         
+          Color Mode: color aware                                               
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard                                               
+        Traffic Policy:                                                         
+         <strong id="EN-US_TASK_0000002281737913__b8642192916233">Traffic-policy sub-policy1 </strong>
+                                            
+      Classifier: other-VPN                                                          
+        Type: OR                                                                
+      Behavior: other-VPN                                                            
+        Committed Access Rate:                                                  
+          CIRPCT 40 (Percent), PIRPCT 100 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes)
+          Car Base: car                                                         
+          Color Mode: color aware                                               
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard                                               
+        Traffic Policy:                                                         
+         <strong id="EN-US_TASK_0000002281737913__b18725153102318">Traffic-policy sub-policy1</strong>
+
+    Policy: <strong id="EN-US_TASK_0000002281737913__b13655740245">sub-policy1</strong>                                                         
+      Classifier: service1                                                      
+        Type: OR                                                                
+      Behavior: service1                                                        
+        Committed Access Rate:                                                  
+          CIRPCT 10 (Percent), PIRPCT 50 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes) 
+          Car Base: car                                                         
+          Color Mode: color aware                                               
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard                                               
+
+      Classifier: service2                                                      
+        Type: OR                                                                
+      Behavior: service2                                                        
+        Committed Access Rate:                                                  
+          CIRPCT 50 (Percent), PIRPCT 100 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes) 
+          Car Base: car                                                         
+          Color Mode: color aware                                               
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard                                               
+
+      Classifier: service3                                                      
+        Type: OR                                                                
+      Behavior: service3                                                        
+        Committed Access Rate:                                                  
+          CIRPCT 40 (Percent), PIRPCT 100 (Percent), CBS 10000 (Bytes), PBS 10000 (Bytes)
+          Car Base: car                                                         
+          Color Mode: color aware                                               
+          Conform Action: pass                                                  
+          Yellow  Action: pass                                                  
+          Exceed  Action: discard                                               
+
+Total policy number is 2 </pre>
+<p id="EN-US_TASK_0000002281737913__p135551685920"># Check the application records of the traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen1884184804">[DeviceA] <strong id="EN-US_TASK_0000002281737913__b10403161643420">display traffic-policy applied-record</strong> 
+Total records : 1                                                                
+-------------------------------------------------------------------------------- 
+Policy Type/Name                 Apply Parameter                 Slot  State     
+-------------------------------------------------------------------------------- 
+hcar                             <span>10GE</span><span>0/0/1</span>(IN)(DEC)              0     success    
+--------------------------------------------------------------------------------</pre>
+<p id="EN-US_TASK_0000002281737913__p16202116122918"># Check statistics about the traffic rate of an interface, CAR of the parent traffic policy, and CAR of the child traffic policy for high-priority services during each detection, and the number of lost packets for CAR of the child traffic policy for high-priority services and CAR of the child traffic policy for low-priority services.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen135601428172913">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000002281737913__b367235132914">display itp statistics interface </strong><strong id="EN-US_TASK_0000002281737913__en-us_task_0000001130783108_b1310227496183240"><span>10ge</span></strong> <strong id="EN-US_TASK_0000002281737913__b942646201716"><span>0/0/1</span></strong>
+Behavior: vpn1 
+-----------------------------------------------------------------------------  
+Time                  Status         Interface rate(Kbps)   Behavior rate(Kbps)        High rate(Kbps)      High drop(Packets)      Low drop(Packets) 
+ ----------------------------------------------------------------------------- 
+2024-01-01 08:01:00     ACTIVE             90000                  50000                     2000                    20                  500 
+2024-01-01 08:01:05     SUPPRESS           83500                  40000                     000                     0                  1600 
+Behavior: vpn2
+-----------------------------------------------------------------------------  
+Time                 Status         Interface rate(Kbps)    Behavior rate(Kbps)        High rate(Kbps)       High drop(Packets)     Low drop(Packets)  
+----------------------------------------------------------------------------- 
+2024-01-01 08:01:00   INACTIVE              90000                  50000                     2000                    20                  500 
+2024-01-01 08:01:05   ACTIVE                96000                  50000                     2000                    11                  600 
+Behavior: other-VPN
+-----------------------------------------------------------------------------  
+Time                 Status          Interface rate(Kbps)    Behavior rate(Kbps)       High rate(Kbps)    High drop(Packets)    Low drop(Packets)        
+  
+----------------------------------------------------------------------------- 
+2024-01-01 08:01:00   INACTIVE              90000                  50000                      2000                    20                  500 
+2024-01-01 08:01:05   ACTIVE                96000                  50000                      2000                    11                  600 
+-----------------------------------------------------------------------------</pre>
+<p id="EN-US_TASK_0000002281737913__p18675155418567"># Check the dynamic rate limiting adjustment history of the intelligent traffic policing policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen177831021185711">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000002281737913__b1552112815715">display itp adjustment-history interface </strong><strong id="EN-US_TASK_0000002281737913__b386252313581"><span>10ge</span></strong> <strong id="EN-US_TASK_0000002281737913__b48616564179"><span>0/0/1</span></strong>
+Behavior: vpn1
+---------------------------------------------------------------------------------------
+Time                    Status             Low cir(Kbps)        Low pir(Kbps) 
+---------------------------------------------------------------------------------------
+2024-01-01 08:01:00     INACTIVE                   10000                45000 
+2024-01-01 08:01:15     SUPPRESS                   10000                35000         
+Behavior: vpn2
+----------------------------------------------------------------------------------------
+Time                    Status              Low cir(Kbps)       Low pir(Kbps) 
+---------------------------------------------------------------------------------------
+2024-01-01 08:01:00     ACTIVE                       10000              45000
+2024-01-01 08:01:15     INACTIVE                     30000              50000
+Behavior: other-VPN
+---------------------------------------------------------------------------------------
+Time                     Status              Low cir(Kbps)       Low pir(Kbps) 
+---------------------------------------------------------------------------------------
+2024-01-01 08:01:00      ACTIVE                       10000             40000          
+2024-01-01 08:01:15      SUPPRESS                     10000             35000
+---------------------------------------------------------------------------------------- </pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002281737913__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p id="EN-US_TASK_0000002281737913__p17311035135016">The following configuration scripts provide only the configuration information related to this example.</p>
+<p id="EN-US_TASK_0000002281737913__p3678121633">DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000002281737913__screen654919151545">#
+sysname DeviceA  
+#
+qos car hcar_temp cir 100000 kbps
+#                                                                               
+traffic classifier other-VPN type or                                                 
+ if-match any
+#
+traffic classifier service1 type or                                             
+ if-match application WeLink_VideoCall                                          
+#                                                                               
+traffic classifier service2 type or                                             
+ if-match application WeLink_Meeting                                            
+#                                                                               
+traffic classifier service3 type or                                             
+ if-match any                                                                   
+#                                                                               
+traffic classifier vpn1 type or                                                 
+ if-match qos-local-id 10                                                       
+#                                                                               
+traffic classifier vpn2 type or                                                 
+ if-match qos-local-id 20 
+#                                                                               
+traffic policy sub-policy1                                                      
+ classifier service1 behavior service1 precedence 5                             
+ classifier service2 behavior service2 precedence 10                            
+ classifier service3 behavior service3 precedence 15   
+#  
+itp policy test
+<strong id="EN-US_TASK_0000002281737913__b17228191618187"> </strong>bandwidth-threshold pct 90
+#                                                                               
+traffic behavior other-VPN                                                           
+ car cir pct 40 pir pct 100 hierarchical-car share mode color-aware             
+ traffic-policy sub-policy1
+ itp-policy test   
+#                                                                               
+traffic behavior service1                                                       
+ car cir pct 10 pir pct 50 hierarchical-car share mode color-aware              
+#                                                                               
+traffic behavior service2                                                       
+ car cir pct 50 pir pct 100 hierarchical-car share mode color-aware             
+#                                                                               
+traffic behavior service3                                                       
+ car cir pct 40 pir pct 100 hierarchical-car share mode color-aware             
+#                                                                               
+traffic behavior vpn1                                                           
+ car cir pct 40 pir pct 100 hierarchical-car share mode color-aware             
+ traffic-policy sub-policy1    
+ itp-policy test                                                 
+#                                                                               
+traffic behavior vpn2                                                           
+ car cir pct 20 pir pct 50 hierarchical-car share mode color-aware              
+ traffic-policy sub-policy1    
+ itp-policy test   
+#                                                                               
+traffic policy hcar                                                             
+ classifier vpn1 behavior vpn1 precedence 5                                     
+ classifier vpn2 behavior vpn2 precedence 10
+ classifier other-VPN behavior other-VPN precedence 15                                                            
+#
+interface <span>10GE</span><span>0/0/1</span>
+ qos car inbound hcar_temp decap-process
+ traffic-policy hcar inbound decap-process
+ sa enable
+#
+interface Tunnel100
+ ip binding vpn-instance vpn1
+ tunnel-protocol sd-wan
+ qos-local-id 10
+ traffic-policy decap-process enable
+ sd-wan service enable
+#
+interface Tunnel200
+ ip binding vpn-instance vpn2
+ tunnel-protocol sd-wan                                                         
+ qos-local-id 20                                                                
+ traffic-policy decap-process enable
+ sd-wan service enable
+#</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002242287233.html">Configuration Examples for HQoS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_hqos_cfg_0033.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_hqos_cfg_0044.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

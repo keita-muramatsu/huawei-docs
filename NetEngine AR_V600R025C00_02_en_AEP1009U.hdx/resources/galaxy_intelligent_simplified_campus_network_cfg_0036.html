@@ -1,0 +1,179 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="RU Firmware Upgrade Exception">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_Intelligent_simplified_campus_network_cfg_0035.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001568554520">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>RU Firmware Upgrade Exception</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001568554520"></a><a name="EN-US_TOPIC_0000001568554520"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">RU Firmware Upgrade Exception</h1>
+<div><div class="section"><h4 class="sectiontitle">Symptom</h4><p>The RU firmware fails to be upgraded.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Possible Causes</h4><ul><li>The RU firmware version and status are abnormal, and the authentication fails.</li><li>The RU fails to be upgraded and is in the cooldown period waiting for restart.</li><li>The upgrade function is disabled on the RU.</li><li>The PoE firmware of the RU does not need to be upgraded.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li><span>Check RU-related alarms on the central device to see whether there are alarms related to RU upgrade failures.</span><p><p>RUMNG/2/RUUPGFWFAIL:OID [oid] The remote-unit firmware upgrade failed. (RemoteUnitEsn=[INTEGER], InterfaceName=[INTEGER], Firmware=[INTEGER], Reason=[STRING])</p>
+<p>In the preceding information, <strong>Reason=[STRING]</strong> indicates the failure information. For the meaning of the alarm, see hwRuMngFirmwareUpdateFail. Make a preliminary judgment based on the failure information.</p>
+</p></li><li><span>Check the RU status and available firmware versions.</span><p><p>Run the <strong>display remote-unit upgrade information</strong> command to query the available firmware version of the central device. Then, run the <strong>display remote-unit verbose</strong> command to query the RU firmware version and status, and check whether the authentication is normal.</p>
+<p># Run the <strong>display remote-unit upgrade information</strong> command to query the available firmware version of the central device.</p>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>display remote-unit upgrade information</strong> 
+Firmware information:  
+--------------------------------------------------------------------------------
+Device Series      Type       Name           Version            From
+--------------------------------------------------------------------------------
+S5731              APP        APP            240327011          Startup software
+S5731              POE        POE            7812               Startup software
+S5731              BIOS       BIOS           231214011          Startup software
+
+Remote-unit during cooling down:
+--------------------------------------------------------------------------------
+Type                 ConnectInterface          FailCnt    CoolDownInSeconds  
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Waiting for restart to apply new firmware's remote-unit information:
+--------------------------------------------------------------------------------
+Type                 ConnectInterface          NextVersion(APP/POE/BIOS)     
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Upgrading remote-unit information:
+--------------------------------------------------------------------------------
+Type                 ConnectInterface          Firmware   Percent            
+--------------------------------------------------------------------------------
+S5731-L8T2ST-RUA       <span>10GE</span><span>0/0/1</span>                 APP        3%
+--------------------------------------------------------------------------------</pre>
+<p># Run the <strong>display remote-unit verbose</strong> command to check the authentication result of an RU. If the value of <strong>Authen result</strong> is <strong>Success</strong>, the authentication is successful. Otherwise, the authentication fails. In this case, contact maintenance personnel.</p>
+<pre class="screen">[HUAWEI] <strong>display remote-unit verbose</strong> 
+Total number: 1
+------------------------------------------------------------------------
+ESN                :219801176801XXXXXXXX 
+Name               :-
+ID                 :1
+Device MAC         :XXXX-XXXX-XXXX
+Device type        :-
+Item               :-
+Manufacture date   :-
+Up time            :0 day, 2 hours, 29 minutes, 52 seconds
+APP version        :220410000
+POE version        :-
+BIOS version       :220225001
+Connect interface  :<span>10GE</span><span>0/0/1</span>
+Disk usage         :44%
+Memory usage       :30%
+Temperature        :28(&deg;C)
+Mac usage          :0%
+Disk space(MB)     :16
+Status             :Normal
+Authen result      :Success
+------------------------------------------------------------------------</pre>
+</p></li><li><span>Check the current upgrade mode and status.</span><p><p>Run the <strong>display remote-unit upgrade information</strong> command to query the upgrade status of RUs and check whether any RU fails to be upgraded or is waiting to be restarted. If so, run the <strong>display remote-unit upgrade record</strong> command to query RU upgrade records.</p>
+<p># Run the <strong>display remote-unit upgrade information</strong> command to check the RU upgrade status. Information below <strong>Remote-unit during cooling down</strong> indicates whether there are RUs that fail to be upgraded and are in the cooling period.</p>
+<pre class="screen">[HUAWEI] <strong>display remote-unit upgrade information</strong> 
+Firmware information:  
+--------------------------------------------------------------------------------
+Device Series      Type       Name           Version            From
+--------------------------------------------------------------------------------
+S5731              APP        APP            240327011          Startup software
+S5731              POE        POE            7812               Startup software
+S5731              BIOS       BIOS           231214011          Startup software
+
+Remote-unit during cooling down:
+--------------------------------------------------------------------------------
+Type                 ConnectInterface          FailCnt    CoolDownInSeconds  
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Waiting for restart to apply new firmware's remote-unit information:
+--------------------------------------------------------------------------------
+Type                 ConnectInterface          NextVersion(APP/POE/BIOS)     
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Upgrading remote-unit information:
+--------------------------------------------------------------------------------
+Type                 ConnectInterface          Firmware   Percent            
+--------------------------------------------------------------------------------
+S5731-L8T2ST-RUA       <span>10GE</span><span>0/0/1</span>                 APP        3%
+--------------------------------------------------------------------------------</pre>
+<p># Run the <strong>display remote-unit upgrade record</strong> command to query an RU's upgrade records. If the APP firmware and BIOS firmware of the RU connected to the interconnection interface have been upgraded successfully and <strong>No Need Upgrade</strong> is displayed in the PoE firmware upgrade result, you can ignore <strong>Version Match: No</strong> in the <strong>display remote-unit verbose</strong> command output.</p>
+<pre class="screen">[HUAWEI]<strong> display remote-unit upgrade record</strong> 
+-------------------------------------------------------------------------------
+StartTime             ConnectInterface        Firmware   UpdateResult
+-------------------------------------------------------------------------------
+2022/04/14 20:36:39   <span>10GE</span><span>0/0/1</span>                APP        Success
+2022/04/14 20:36:57   <span>10GE</span><span>0/0/1</span>                BIOS       Success
+2022/04/14 20:36:39   <span>10GE</span><span>0/0/1</span>                POE        No Need Upgrade
+-------------------------------------------------------------------------------</pre>
+<p># Run the <strong>display this</strong> command in the RU view to check whether the upgrade function is disabled. If "upgrade disable" is displayed in the command output, the upgrade function is disabled globally. In this case, enable the upgrade function.</p>
+<pre class="screen">[HUAWEI] <strong>remote-unit</strong>
+[HUAWEI-remote-unit]<strong> display this </strong>
+#
+remote-unit
+ upgrade disable
+#
+return
+[HUAWEI] <strong>remote-unit</strong> <strong>1</strong>
+[HUAWEI-remote-unit-1] <strong>display this</strong>
+#
+remote-unit 1
+ upgrade disable
+ bind interface <span>10GE</span><span>0/0/1</span>
+#
+return
+[HUAWEI-remote-unit-1]<strong> upgrade enable</strong></pre>
+</p></li><li><span>Perform forcible manual upgrade as the last resort.</span><p><p>Run the <strong>upgrade </strong>{<strong> app </strong>|<strong> bios </strong>|<strong> poe</strong> }<strong> force</strong> command in the RU view to forcibly upgrade the firmware.</p>
+<pre class="screen">[HUAWEI-remote-unit]<strong> </strong><strong>remote-unit 1</strong>
+[HUAWEI-remote-unit-1]<strong> upgrade app force </strong>
+Info: Successfully added to the upgrade list.</pre>
+</p></li><li><span><span class="keyword">Collect log and configuration information and contact technical support personnel. </span><span><span>You can run the <strong>display diagnostic-information</strong> command to collect diagnostic information.</span></span></span></li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0031.html">Common Configuration Errors for Intelligent Simplified Campus Networks
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_Intelligent_simplified_campus_network_cfg_0035.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

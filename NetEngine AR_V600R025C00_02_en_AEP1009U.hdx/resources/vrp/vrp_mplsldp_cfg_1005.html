@@ -1,0 +1,100 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding LDP Label Advertisement and Management Modes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_1004.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0020.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001552196070">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Understanding LDP Label Advertisement and Management Modes</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001552196070"></a><a name="EN-US_CONCEPT_0000001552196070"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding LDP Label Advertisement and Management Modes</h1>
+<div><p>After an LDP session is established, LDP starts to exchange messages, such as Label Mapping messages, to establish LSPs. Related standards have defined label advertisement, distribution control, and retention modes to determine how LSRs advertise and manage labels.</p>
+<p>The device currently supports the following combinations of modes:</p>
+<ul><li>Downstream unsolicited (DU) label advertisement + ordered label distribution control + liberal label retention</li><li>Downstream on demand (DoD) label advertisement + ordered label distribution control + conservative label retention</li></ul>
+<p>The default label advertisement and management modes are DU label advertisement + ordered label distribution control + liberal label retention.</p>
+<div class="section"><h4 class="sectiontitle">Label Advertisement Modes</h4><p>In MPLS, downstream LSRs distribute labels to specific FECs and notify their upstream LSRs of the mappings between labels and FECs. That is, labels are designated by downstream LSRs and advertised in the downstream-to-upstream direction.</p>
+<p>The label advertisement modes on the upstream and downstream LSRs of an adjacency must be the same. There are two label advertisement modes:</p>
+<ul><li>DU mode: An LSR does not wait for a Label Request message from the upstream LSR before advertising the label of a specific FEC.<p>In <a href="#EN-US_CONCEPT_0000001552196070__fig144124113415">Figure 1</a>, the downstream node (egress) triggers the establishment of an LSP destined for FEC 192.168.1.1/32 in host mode by advertising the label of the host route 192.168.1.1/32 over a Label Mapping message.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001552196070__fig144124113415"><a name="EN-US_CONCEPT_0000001552196070__fig144124113415"></a><a name="fig144124113415"></a><span class="figcap"><b>Figure 1 </b>DU mode</span><br><span><img class="vsd" src="figure/en-us_image_0000001551877906.png"></span></div>
+</li><li>DoD mode: An LSR waits for a Label Request message before advertising the label of a specific FEC.<p>In <a href="#EN-US_CONCEPT_0000001552196070__fig1846161118561">Figure 2</a>, the downstream egress triggers the establishment of an LSP destined for FEC 192.168.1.1/32 in host mode. The upstream node (ingress) sends a Label Request message to the downstream node (egress). The downstream egress sends a Label Mapping message to the upstream LSR only after receiving the Label Request message.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001552196070__fig1846161118561"><a name="EN-US_CONCEPT_0000001552196070__fig1846161118561"></a><a name="fig1846161118561"></a><span class="figcap"><b>Figure 2 </b>DoD mode</span><br><span><img class="vsd" src="figure/en-us_image_0000001552037650.png"></span></div>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Label Distribution Control Modes</h4><p>A label distribution control mode defines how an LSR distributes labels during the establishment of an LSP. There are two label distribution control modes:</p>
+<ul><li>Independent mode: A local LSR distributes a label to a FEC and notifies the upstream LSR of the FEC-label binding without waiting to receive a label from a downstream LSR.<ul><li>In <a href="#EN-US_CONCEPT_0000001552196070__fig144124113415">Figure 1</a>, if the label advertisement mode is DU and the label distribution control mode is independent, the transit LSR distributes labels to the upstream ingress without waiting to receive a label from the downstream egress.</li><li>In <a href="#EN-US_CONCEPT_0000001552196070__fig1846161118561">Figure 2</a>, if the label advertisement mode is DoD and the label distribution control mode is independent, the downstream transit LSR directly connected to the ingress LSR that sends a Label Request message replies with labels without waiting to receive a label from the downstream egress.</li></ul>
+</li><li>Ordered mode: An LSR advertises the mapping between a label and an FEC to its upstream LSR only when this LSR has received a Label Mapping message from the next hop of the FEC or the LSR is the egress of the FEC.<ul><li>In <a href="#EN-US_CONCEPT_0000001552196070__fig144124113415">Figure 1</a>, if the label advertisement mode is DU and the label distribution control mode is ordered, the transit LSR distributes a label to the upstream ingress only after receiving a Label Mapping message from the downstream egress.</li><li>In <a href="#EN-US_CONCEPT_0000001552196070__fig1846161118561">Figure 2</a>, if the label advertisement mode is DoD and the label distribution control mode is ordered, the transit LSR directly connected to the ingress LSR that sends a Label Request message distributes a label to the upstream ingress only after receiving a Label Mapping message from the downstream egress.</li></ul>
+</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Label Retention Modes</h4><p>A label retention mode defines how an LSR processes label mappings from non-preferred next hops. The label mappings that an LSR receives may or may not originate from the next hop. There are two label retention modes:</p>
+<ul><li>Liberal mode: An LSR retains the label mappings received from a neighbor LSR, regardless of whether the neighbor LSR is its next hop.</li><li>Conservative mode: An LSR retains the label mappings received from a neighbor LSR only when the neighbor LSR is its next hop.</li></ul>
+<p>When the next hop of an LSR changes due to a network topology change:</p>
+<ul><li>In liberal mode, the LSR can use the labels advertised by a non-next hop LSR to quickly reestablish an LSP. This mode, however requires more memory and label space than the conservative mode. An LSP that has been assigned a label but fails to be established is called a liberal LSP.</li><li>In conservative mode, the LSR retains the labels advertised by the next hop only. This mode saves memory and label space but takes more time to reestablish an LSP. The conservative label retention mode is usually used together with DoD on the LSRs that have limited label space.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">Outbound and Inbound LDP Policies</h4><p>Generally, LSRs do not have specific requirements for receiving or sending Label Mapping messages. As a result, a large number of LSPs may be established. When excessive amounts of system resources are consumed on an LSR, the system fails to run stably. To address this issue, an outbound or inbound LDP policy can be configured to limit the number of Label Mapping messages to be sent or received, reducing the number of LSPs to be established and memory consumption.</p>
+<ul><li><strong>Outbound LDP policy</strong><p>An outbound LDP policy filters Label Mapping messages to be sent. The outbound LDP policy does not take effect for Label Mapping messages of an L2VPN, which means that all Label Mapping messages of the L2VPN can be sent. In addition, the ranges of FECs to which routes are mapped can be configured.</p>
+<p>If FECs in the Label Mapping messages to be sent to an LDP peer group or all LDP peers are in the same range, the same outbound policy applies to the LDP peer group or all LDP peers.</p>
+<p>In addition, the outbound LDP policy supports split horizon. After split horizon is configured, an LSR distributes labels only to its upstream LDP peer.</p>
+<div class="p">An LSR checks whether an outbound policy mapped to the route type (labeled BGP route or non-BGP route) is configured before sending a Label Mapping message for a FEC.<ul><li><p>If no outbound policy is configured, the LSR sends the Label Mapping message.</p>
+</li><li><p>If an outbound policy is configured, the LSR checks whether the FEC in the Label Mapping message is within the range defined in the outbound policy. If it is within the FEC range, the LSR sends the Label Mapping message for the FEC; if it is outside the FEC range, the LSR does not send the Label Mapping message.</p>
+</li></ul>
+</div>
+</li><li><strong>Inbound LDP policy</strong><p>An inbound LDP policy filters Label Mapping messages to be received. The inbound LDP policy does not take effect for Label Mapping messages of an L2VPN, which means that all Label Mapping messages of the L2VPN can be received. In addition, the range of FECs to which non-BGP routes are mapped can be configured.</p>
+<p>If FECs in the Label Mapping messages to be received by an LDP peer group or all LDP peers are in the same range, the same inbound policy applies to the LDP peer group or all LDP peers.</p>
+<div class="p">An LSR checks whether an inbound policy mapped to a FEC is configured before receiving a Label Mapping message for the FEC.<ul><li><p>If no inbound policy is configured, the LSR receives the Label Mapping message.</p>
+</li><li><p>If an inbound policy is configured, the LSR checks whether the FEC in the Label Mapping message is within the range defined in the inbound policy. If it is within the FEC range, the LSR receives the Label Mapping message for the FEC; if it is outside the FEC range, the LSR does not receive the Label Mapping message.</p>
+</li></ul>
+</div>
+<p>If the FEC fails to pass an inbound policy on an LSR, the LSR receives no Label Mapping message for the FEC.</p>
+<div class="p">One of the following results may occur:<ul><li><p>If a DU LDP session is established between an LSR and its peer, a liberal LSP is established. This liberal LSP cannot function as a backup LSP after LDP FRR is enabled.</p>
+</li><li><p>If a DoD LDP session is established between an LSR and its peer, the LSR sends a Label Release message to tear down the label binding.</p>
+</li></ul>
+</div>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_1004.html">Configuring LDP Label Advertisement and Management Modes
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0020.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Basic Concepts of DSVPN">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_fd_dsvpn_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_fd_dsvpn_0005.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001850913806">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Basic Concepts of DSVPN</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001850913806"></a><a name="EN-US_CONCEPT_0000001850913806"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Basic Concepts of DSVPN</h1>
+<div><p>In <a href="#EN-US_CONCEPT_0000001850913806__fig_dc_fd_dsvpn_000401">Figure 1</a>, an enterprise connects its HQ (hub) and multiple sparsely distributed branches (spokes) over a public network.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001850913806__fig_dc_fd_dsvpn_000401"><a name="EN-US_CONCEPT_0000001850913806__fig_dc_fd_dsvpn_000401"></a><a name="fig_dc_fd_dsvpn_000401"></a><span class="figcap"><b>Figure 1 </b>Typical enterprise networking</span><br><span><img class="vsd" src="figure/en-us_image_0000002141035404.png" width="NaN" height="NaN"></span></div>
+<p>In <a href="#EN-US_CONCEPT_0000001850913806__fig_dc_fd_dsvpn_000401">Figure 1</a>, public addresses refer to Non-Broadcast Multiple Access (NBMA) addresses and tunnel addresses refer to protocol addresses.</p>
+<div class="section"><h4 class="sectiontitle">DSVPN Node</h4><div class="p">A DSVPN node is a DSVPN-deployed device, which can be a hub or spoke.<ul><li><p><strong>Spoke</strong></p>
+<p>A spoke is usually a gateway of an enterprise branch. Generally, a spoke uses a dynamic public address.</p>
+</li><li><p><strong>Hub</strong></p>
+<p>A hub is typically located at an enterprise's HQ and serves as a central device on a DSVPN network, receiving registration messages from spokes. On a DSVPN network, it can use either a fixed or dynamic public address. A fixed public address is recommended. If a hub uses a dynamic public address, spokes must update the destination address for registration whenever the hub's IP changes.</p>
+</li></ul>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">mGRE and mGRE Tunnel Interface</h4><p>mGRE is a technology developed from GRE and extends point-to-point (P2P) GRE tunnel interfaces to point-to-multipoint (P2MP) mGRE tunnel interfaces. By using a single mGRE tunnel interface, a hub or spoke can connect to multiple remote devices, greatly reducing the configuration workload for GRE tunnels.</p>
+<div class="p">An mGRE tunnel interface has the following attributes:<ul><li>Tunnel source address: the source address of a GRE-encapsulated packet. In <a href="#EN-US_CONCEPT_0000001850913806__fig_dc_fd_dsvpn_000401">Figure 1</a>, this is the public address of one tunnel end.</li><li>Tunnel destination address: the destination address of a GRE-encapsulated packet. In <a href="#EN-US_CONCEPT_0000001850913806__fig_dc_fd_dsvpn_000401">Figure 1</a>, this is the public address of the other end of a tunnel. Unlike the destination address of a GRE tunnel, which is manually specified, the destination address of an mGRE tunnel is determined by <a href="#EN-US_CONCEPT_0000001850913806__section924526888214012">NHRP</a>.</li><li>Tunnel interface IP address: Similar to an IP address of a physical interface, it is used for communication between devices, for example, obtaining routing information. In <a href="#EN-US_CONCEPT_0000001850913806__fig_dc_fd_dsvpn_000401">Figure 1</a>, these addresses are the tunnel addresses (protocol addresses).</li></ul>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>mGRE tunnel interfaces do not support keepalive detection provided by GRE tunnels.</li></ul>
+</div></div>
+</div>
+<div class="p">A GRE tunnel established using mGRE tunnel interfaces is called mGRE tunnel. mGRE tunnels can be classified as static or dynamic:<ul><li>Static mGRE tunnel: connects a hub and spoke and is permanent.</li><li>Dynamic mGRE tunnel: connects spokes. If a dynamic tunnel has no traffic to forward within a certain period, it is automatically torn down.</li></ul>
+</div>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001850913806__section924526888214012"><a name="EN-US_CONCEPT_0000001850913806__section924526888214012"></a><a name="section924526888214012"></a><h4 class="sectiontitle">NHRP and NHRP Mapping Table</h4><p>On a DSVPN network, NHRP associates a protocol address (tunnel or subnet address in <a href="#EN-US_CONCEPT_0000001850913806__fig_dc_fd_dsvpn_000401">Figure 1</a>) with an NBMA address (public address in <a href="#EN-US_CONCEPT_0000001850913806__fig_dc_fd_dsvpn_000401">Figure 1</a>). By doing so, it helps a spoke obtain the dynamic public address of another spoke.</p>
+<div class="p">An NHRP mapping table contains entries that associate protocol addresses with NBMA addresses. These entries can be classified as static or dynamic:<ul><li>Static entry: manually configured by an administrator. When a spoke needs to establish a static mGRE tunnel with the hub, an administrator needs to specify the hub's tunnel and public addresses on that spoke. This association forms a static NHRP mapping entry.</li><li>Dynamic entry: dynamically generated by NHRP. After receiving an NHRP Registration Request message from a spoke, the hub extracts the spoke's tunnel and public address from the message and then generates a dynamic NHRP mapping entry for that spoke. Similarly, each spoke generates dynamic NHRP mapping entries for other spokes after receiving NHRP Resolution Request messages from them.</li></ul>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/dc_fd_dsvpn_0003.html">Understanding DSVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/dc_fd_dsvpn_0005.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

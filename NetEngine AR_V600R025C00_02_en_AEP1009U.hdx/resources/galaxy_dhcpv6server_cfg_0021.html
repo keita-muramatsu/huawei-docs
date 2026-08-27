@@ -1,0 +1,139 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a DHCPv6 Server">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_concept_0000002242192005.html">
+<meta name="DC.Relation" scheme="URI" content="dc/dc_cfg_dhcpv6_0063.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DHCPv6">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002076229381">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a DHCPv6 Server</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002076229381"></a><a name="EN-US_TASK_0000002076229381"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a DHCPv6 Server</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002076229381__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>If a large number of enterprise user IPv6 addresses are manually configured, the configuration workload of the administrator is heavy and the addresses are difficult to manage. The administrator requires that IPv6 addresses and network configuration parameters be automatically obtained to facilitate unified management and implement hierarchical IPv6 deployment.</p>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Network diagram of configuring the DHCPv6 server</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, Interface1 represents <span>10GE</span><span>0/0/1</span>.</p>
+</div></div>
+<br><span><img src="figure/en-us_image_0000002444581629.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002076229381__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><div class="p">The configuration roadmap is as follows:<ol><li><p>Enable IPv6 on the interface to implement IPv6 communication.</p>
+</li><li><p>Enable the DHCPv6 server function so that the device can assign an IPv6 address through DHCPv6.</p>
+</li></ol>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002076229381__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Precautions</h4><p>To enable a device to process STA IPv6 services in wireless scenarios, run the <strong>sta-ipv6-service enable</strong> command in the WLAN view.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002076229381__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enable DHCP.</span><p><pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>dhcp enable</strong></pre>
+</p></li><li><span>Configure a DHCPv6 server.</span><p><pre class="screen">[DeviceA] <strong>dhcpv6 pool pool1 </strong>
+[DeviceA-dhcpv6-pool-pool1] <strong>address prefix fc00:3::/64  </strong>
+[DeviceA-dhcpv6-pool-pool1] <strong>dns-server fc00:4::1 </strong>
+[DeviceA-dhcpv6-pool-pool1] <strong>quit</strong></pre>
+</p></li><li><span>Configure the IPv6 function on the interface.</span><p><pre class="screen">[DeviceA] <strong>interface </strong><strong><span>10ge</span> <span>0/0/1</span></strong>
+<span>[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitch</strong></span>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 enable</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 address fc00:3::1/64</strong></pre>
+</p></li><li><span>Enable the DHCPv6 server function on the interface.</span><p><pre class="screen">[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>dhcpv6 server pool1 </strong></pre>
+</p></li><li><span>Configure the device to advertise RA messages so that the DHCPv6 client can learn the default route to the IPv6 gateway through RA messages, and configure the M and O flags in RA messages so that the DHCPv6 client can obtain an IPv6 address and other network parameters through DHCPv6.</span><p><pre class="screen">[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 nd ra halt disable</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 nd autoconfig managed-address-flag</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 nd autoconfig other-flag</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 nd ra prefix default no-advertise</strong>       //Configure RA messages not to carry the default prefix generated based on the interface IPv6 address.
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><p># Run the <b><span class="cmdqueryname">display dhcpv6 pool</span></b> command on DeviceA to check information about the DHCPv6 address pool.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>display dhcpv6 pool pool1</strong>
+DHCPv6 pool: pool1
+-------------------------------------------------------------------------------
+  Address prefix:
+    FC00:3::/64
+    Lifetime valid 172800 seconds, preferred 86400 seconds
+    0 in use, 0 conflicts
+-------------------------------------------------------------------------------
+  DNS server address       : FC00:4::1
+  Information refresh time    : 86400(s)
+  Conflict-address expire-time: 172800(s)
+  Renew-time-percent          : 50
+  Rebind-time-percent         : 80
+  Active normal clients       : 0
+  Active pd clients           : 0
+  Logging                     : Disable
+  VPN instance                : _public_
+  VPN match                   : Enable </pre>
+<p># Run the <b><span class="cmdqueryname">display dhcpv6 server</span></b> command on DeviceA to check information about the DHCPv6 server.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>display dhcpv6 server</strong>
+  Interface                                DHCPv6 pool                           
+  <span>10GE</span><span>0/0/1</span>                                pool1   </pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002076229381__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p>DeviceA</p>
+<pre class="screen">#
+ sysname DeviceA
+#                                                                               
+dhcp enable   
+#                       
+dhcpv6 pool pool1                                                               
+ address prefix FC00:3::/64
+ dns-server FC00:4::1                                                             
+#                       
+interface <span>10GE</span><span>0/0/1</span>                                                  
+ ipv6 enable                                                                    
+ ipv6 address FC00:3::1/64                                                    
+ ipv6 nd ra halt disable
+ <span>ipv6 nd ra prefix default no-advertise</span>
+ ipv6 nd autoconfig managed-address-flag
+ ipv6 nd autoconfig other-flag
+ dhcpv6 server pool1
+#  
+return</pre>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_concept_0000002242192005.html">Configuration Examples for DHCPv6
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="dc/dc_cfg_dhcpv6_0063.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding GRE over IPsec">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002255822469.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0085.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0118.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001564114009">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding GRE over IPsec</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001564114009"></a><a name="EN-US_CONCEPT_0000001564114009"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding GRE over IPsec</h1>
+<div><p>Generic Routing Encapsulation (GRE) is a tunneling protocol that encapsulates multicast, broadcast, and non-IP packets. GRE provides only simple password authentication but not data encryption, and so cannot ensure data transmission security. IPsec provides high data transmission security but cannot encapsulate multicast, broadcast, or non-IP packets.</p>
+<p>GRE over IPsec can be used to transmit multicast, broadcast, and non-IP packets (such as video conferencing messages or dynamic routing protocol messages) over IPsec tunnels. Leveraging advantages of GRE and IPsec, GRE over IPsec encapsulates multicast, broadcast, and non-IP packets into ordinary IP packets and then securely transmits these IP packets through IPsec. <a href="#EN-US_CONCEPT_0000001564114009__fig134324333284">Figure 1</a> shows the typical networking of GRE over IPsec.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001564114009__fig134324333284"><a name="EN-US_CONCEPT_0000001564114009__fig134324333284"></a><a name="fig134324333284"></a><span class="figcap"><b>Figure 1 </b>GRE over IPsec</span><br><span><img class="vsd" src="figure/en-us_image_0000001513154014.png"></span></div>
+<p>In <a href="#EN-US_CONCEPT_0000001564114009__fig1222181961311">Figure 2</a>, before traffic enters a GRE over IPsec tunnel, it is encapsulated using GRE and then encapsulated using IPsec, ensuring secure and reliable data transmission. GRE over IPsec supports encapsulation in both tunnel and transport modes. A public IP header is added to packets during GRE encapsulation, and another public IP header needs to be added to packets if GRE over IPsec in tunnel mode is used, resulting in longer packets. In this case, packets are more likely to be fragmented. Therefore, GRE over IPsec in transport mode is recommended.</p>
+<p>In the IP header added during GRE encapsulation, the source and destination addresses are the source and destination addresses of a GRE tunnel. In the IP header added during IPsec encapsulation in tunnel mode, the source address is the IP address of the local interface to which an IPsec policy is applied and the destination address is the IP address of the remote interface to which an IPsec policy is applied. IPsec protects data flows from the GRE tunnel source to the GRE tunnel destination.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001564114009__fig1222181961311"><a name="EN-US_CONCEPT_0000001564114009__fig1222181961311"></a><a name="fig1222181961311"></a><span class="figcap"><b>Figure 2 </b>Packet encapsulation and tunnel negotiation in GRE over IPsec</span><br><span><img class="vsd" src="figure/en-us_image_0000001512834470.png"></span></div>
+<p>Before configuring GRE over IPsec, you need to perform the following operations:</p>
+<ul><li>Run the <b><span class="cmdqueryname">interface tunnel</span></b> and <b><span class="cmdqueryname">tunnel-protocol</span></b> <strong><span>gre</span></strong> commands to create a tunnel interface and set the encapsulation type of the interface to GRE.</li><li>When running the <b><span class="cmdqueryname">source</span></b> { <i><span class="varname">source-ip-address</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> } command to encapsulate IP packets on a tunnel interface, set the source IP address in the header added during GRE encapsulation to the IP address of the outbound interface on the local IPsec gateway.</li><li>When running the <b><span class="cmdqueryname">destination</span></b> <i><span class="varname">dest-ip-address</span></i> command to encapsulate IP packets on a tunnel interface, set the destination IP address in the header added during GRE encapsulation to the IP address of the outbound interface on the remote IPsec gateway.</li><li>Configure an IP address for the tunnel interface. The IP address of the tunnel interface can be any idle IP address. When routes with the tunnel interface as the next hop need to be generated through dynamic routing protocols, the IP addresses of the interfaces at both ends of the GRE tunnel must belong to the same network segment.</li></ul>
+<p>When a GRE over IPsec tunnel is established based on ACLs, only an ISAKMP IPsec policy can be configured on the gateways at both ends, and the IPsec policy group can be applied only to physical interfaces. IPsec-protected data flows are GRE-encapsulated data flows. The source and destination network segments in ACLs are the source and destination addresses of a GRE tunnel, that is, the interface IP addresses of the IPsec gateways at both ends of the tunnel.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In GRE over IPsec scenarios, if NAT needs to be configured on the device, you need to configure an ACL rule in which the source IP address is the IP address before NAT and the action is permit.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002255822469.html">IPsec Enhancements
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0085.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0118.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

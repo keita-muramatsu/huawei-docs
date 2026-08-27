@@ -1,0 +1,98 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring DNS Relay/Proxy">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_dns_cfg_0055.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_dns_cfg_0056.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_dns_cfg_server0057.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DNS">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DNS">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featurename" content="DNS">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563750893">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring DNS Relay/Proxy</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563750893"></a><a name="EN-US_TASK_0000001563750893"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring DNS Relay/Proxy</h1>
+<div class="taskbody"><p></p>
+<div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001563750893__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring DNS relay/proxy, you have configured the IP address of the DNS server or the local domain name resolution table on the DNS relay agent/proxy agent. For configuration details, see <a href="galaxy_dns_cfg_0025.html">Configuring Dynamic Domain Name Resolution</a> and <a href="galaxy_dns_cfg_0024.html">Configuring Static Domain Name Resolution</a>.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563750893__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enable DNS relay.</span><p><ul><li>Enable IPv4 DNS relay.<pre class="screen"><b><span class="cmdqueryname">dns relay enable</span></b> </pre>
+</li><li>Enable IPv4 DNS proxy.<pre class="screen"><strong><b><span class="cmdqueryname">dns proxy enable</span></b></strong> </pre>
+</li><li>Enable IPv6 DNS relay.<pre class="screen"><b><span class="cmdqueryname">dns relay ipv6 enable</span></b> </pre>
+</li><li>Enable IPv6 DNS proxy.<pre class="screen"><b><span class="cmdqueryname">dns proxy ipv6 enable</span></b> </pre>
+</li></ul>
+</p></li><li><span>(Optional) Configure an IP address for the DNS relay agent to communicate with a DNS client. The DNS relay agent processes only DNS request packets destined for this IP address and uses it as the source IP address in DNS reply packets.</span><p><ul><li>Configure an IPv4 address for the DNS relay agent to communicate with a DNS client.<pre class="screen"><strong><b><span class="cmdqueryname">dns server bind local-ip</span></b></strong> <em>ip-address</em> [ <strong>vpn-instance</strong> <em>vpn-instance-name</em> ]</pre>
+</li><li>Configure an IPv6 address for the DNS relay agent to communicate with a DNS client.<pre class="screen"><b><span class="cmdqueryname">dns server bind local-ip ipv6</span></b><strong> </strong><em>ipv6-address</em> [ <strong>vpn-instance</strong> <em>vpn-instance-name</em> ]</pre>
+</li></ul>
+<p>By default, no IP address is configured for a DNS relay agent to communicate with a DNS client.</p>
+</p></li><li><span>(Optional) Configure the DNS resolution policy function.</span><p><p>After the DNS resolution policy function is configured, an administrator can allow users to access only specified domain names or websites.</p>
+<ol type="a"><li><p>Enable the DNS resolution policy function for class A or AAAA query requests.</p>
+<pre class="screen"><b><span class="cmdqueryname">dns resolve policy</span></b> { <strong><span>a</span></strong> | <strong><span>aaaa</span></strong> } <b><span class="cmdqueryname">enable</span></b></pre>
+<p>By default, the DNS resolution policy function is disabled for class A or AAAA query requests.</p>
+</li><li><p>Enter the DNS resolution policy view.</p>
+<pre class="screen"><b><span class="cmdqueryname">dns resolve policy</span></b></pre>
+</li><li><p>Configure a DNS resolution rule.</p>
+<pre class="screen"><b><span class="cmdqueryname">rule</span></b> <i><span class="varname">rule-id</span></i> [ <strong><span>if-match name</span></strong> <i><span class="varname">name</span></i> ] { <strong><span>deny</span></strong> | <strong><span>permit</span></strong> | <strong><span>spoofing</span></strong> <span>{ <i><span class="varname">ip-address</span></i> | <i><span class="varname">ipv6-address</span></i> }</span><sup>*</sup> }</pre>
+<p>By default, no DNS resolution rule is configured.</p>
+</li></ol>
+</p></li><li><span>(Optional) Configure the DNS proxy agent to forward all reply packets from the DNS server to a DNS client.</span><p><pre class="screen"><strong><b><span class="dns proxy forward-any-response">dns proxy</span></b> </strong>[<strong> ipv6 </strong>]<strong> </strong><strong><b><span class="dns proxy forward-any-response">forward-any-response</span></b></strong></pre>
+<p>By default, the DNS proxy agent forwards only the reply packets that are successfully resolved by the DNS server to a DNS client.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_dns_cfg_0055.html">Configuring a Device as a DNS Relay/Proxy Agent to Simplify DNS Network Management
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_dns_cfg_0056.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_dns_cfg_server0057.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

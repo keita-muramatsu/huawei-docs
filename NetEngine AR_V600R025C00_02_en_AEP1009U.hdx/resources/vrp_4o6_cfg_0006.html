@@ -1,0 +1,104 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an IPv4 over IPv6 Tunnel">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_4o6_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_4o6_cfg_0005.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_4o6_cfg_0007.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 over IPv6 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 over IPv6 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001176662011">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an IPv4 over IPv6 Tunnel</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001176662011"></a><a name="EN-US_TASK_0000001176662011"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an IPv4 over IPv6 Tunnel</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001176662011__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><div class="p">An IPv4 over IPv6 tunnel is established between tunnel interfaces on two devices, and as a result, you need to configure tunnel interfaces on both devices. A tunnel interface is a logical interface and goes down in the following situations:<ul><li><p>The destination address configured for the tunnel interface is unreachable or is its own IP address.</p>
+</li><li><p>The source interface configured for the tunnel interface is down.</p>
+</li><li><p>The IP address configured for the tunnel interface is invalid.</p>
+</li></ul>
+</div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001176662011__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Procedure</h4><ol><li>Configure a source interface for an IPv4 over IPv6 tunnel.<ol type="a"><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Create a loopback interface.<pre class="screen"><b><span class="cmdqueryname">interface loopback</span></b> <i><span class="varname">loopback-number</span></i></pre>
+<p>In device implementation, you can specify a Layer 3 interface or a loopback interface as the source interface of a tunnel. Similarly, you can specify a Layer 3 interface address or a loopback interface address as the source address of a tunnel.</p>
+</li><li>(Optional) Bind the loopback interface to a VPN instance.<pre class="screen"><b><span class="cmdqueryname">ip binding vpn-instance</span></b> <i><span class="varname">vpn-instance-name</span></i></pre>
+</li><li>Enable IPv6 on the loopback interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 enable</span></b></pre>
+</li><li>Configure an IPv6 address for the loopback interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 address</span></b> { <i><span class="varname">ipv6-address</span></i> <i><span class="varname">prefix-length</span></i> | <i><span class="varname">ipv6-address/prefix-length</span></i> }</pre>
+</li><li>Exit the loopback interface view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li></ol>
+</li><li>Configure a tunnel interface.<ol type="a"><li>Create a tunnel interface.<pre class="screen"><b><span class="cmdqueryname">interface tunnel</span></b> <i><span class="varname">interface-number</span></i></pre>
+</li><li>Set the tunnel type to IPv4 over IPv6.<pre class="screen"><b><span class="cmdqueryname">tunnel-protocol</span></b> <strong><span>ipv4-ipv6</span></strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Changing or deleting the tunnel mode of a tunnel interface will delete all tunnel-related configurations on the interface, such as the MTU. Exercise caution when performing this operation.</p>
+</div></div>
+</li><li>Configure a source IPv6 address or source interface for the tunnel.<pre class="screen"><b><span class="cmdqueryname">source</span></b> { <i><span class="varname">ipv6-address</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> }</pre>
+<p>In device implementation, you can specify a Layer 3 interface or a loopback interface as the source interface of a tunnel. Similarly, you can specify a Layer 3 interface address or a loopback interface address as the source address of a tunnel.</p>
+</li><li>Configure a destination IPv6 address for the tunnel.<pre class="screen"><b><span class="cmdqueryname">destination</span></b> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> ] <i><span class="varname">ipv6-address</span></i></pre>
+<p>The destination address of the tunnel is the IP address of the destination interface, which can be a Layer 3 interface address or a loopback interface address.</p>
+</li><li>Configure an IPv4 address for the tunnel interface.<pre class="screen"><b><span class="cmdqueryname">ip address</span></b> <i><span class="varname">ip-address</span></i> { <i><span class="varname">mask</span></i> | <i><span class="varname">mask-length</span></i> } [ <strong><span>sub</span></strong> ]</pre>
+<p>By default, no IPv4 address is configured for a tunnel interface.</p>
+</li><li>Exit the tunnel interface view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li></ol>
+</li><li>Configure routing to forward packets along the tunnel.<ul><li>Configure a static route.<pre class="screen"><b><span class="cmdqueryname">ip route-static</span></b> <i><span class="varname">ip-address</span></i> { <i><span class="varname">mask</span></i> } <b><span class="cmdqueryname">tunnel</span></b> <i><span class="varname">interface-number</span></i></pre>
+<p>Static routes must be configured on both ends of a tunnel. For each static route, the destination address is the destination IPv4 address of the original packet before being encapsulated, and the next hop is a tunnel interface on the remote device. In a VPN scenario, you also need to specify the VPN instance to which the next-hop address belongs.</p>
+</li><li><p>Configure a dynamic routing protocol.</p>
+<p>You need to enable the dynamic routing protocol on the tunnel interface and the IPv4 network interfaces at both ends of the tunnel. For details, see the <em>IP Routing Configuration Guide</em>.</p>
+</li></ul>
+</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001176662011__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname">display tunnel-interface</span></b> [ <i><span class="varname">interface-name</span></i>] command to check the working status of a tunnel interface.</li><li>Run the <b><span class="cmdqueryname">display ip routing-table</span></b> command to check IP routing information.</li><li>Run the <b><span class="cmdqueryname">ping</span></b> { <strong><span>-a</span></strong> <i><span class="varname">source-ip-address</span></i> | <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i> } command to check connectivity between the two ends of the tunnel.</li></ul>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_4o6_cfg_0001.html">IPv4 over IPv6 Tunnel Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_4o6_cfg_0005.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_4o6_cfg_0007.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,240 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for IPv4 over IPv6 Tunnel">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_4o6_cfg_0009.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 over IPv6 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 over IPv6 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featurename" content="IPv4 over IPv6 Tunnel">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="featuretype" content="NAT and IPv6 Transition Technologies">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001130622464">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for IPv4 over IPv6 Tunnel</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001130622464"></a><a name="EN-US_TASK_0000001130622464"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for IPv4 over IPv6 Tunnel</h1>
+<div class="taskbody" id="taskbody1589164622856"><div class="context"><a name="EN-US_TASK_0000001130622464__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001130622464__context733347720214035"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001130622464__p540291880214035">As shown in <a href="#EN-US_TASK_0000001130622464__fig_dc_vrp_4o6tnl_cfg_0002">Figure 1</a>, PC1 and PC2 on two IPv4 networks connect to an IPv6 network through DeviceA and DeviceB, respectively. An IPv4 over IPv6 tunnel needs to be established between DeviceA and DeviceB to enable PC1 and PC2 to communicate with each other.</p>
+<div class="fignone" id="EN-US_TASK_0000001130622464__fig_dc_vrp_4o6tnl_cfg_0002"><a name="EN-US_TASK_0000001130622464__fig_dc_vrp_4o6tnl_cfg_0002"></a><a name="fig_dc_vrp_4o6tnl_cfg_0002"></a><span class="figcap"><b>Figure 1 </b>Networking diagram of an IPv4 over IPv6 tunnel</span><div class="note" id="EN-US_TASK_0000001130622464__note1039243146214035"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001130622464__p1075053771214035">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001130622464__image143089100214035" src="figure/en-us_image_0000001130782250.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001130622464__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001130622464__context1091130705214035"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001130622464__p1705050963214035">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001130622464__ol739583883214035"><li id="EN-US_TASK_0000001130622464__li3463141754118">Configure IP addresses for physical interfaces.</li><li id="EN-US_TASK_0000001130622464__li1310212954218">Configure loopback interfaces.</li><li id="EN-US_TASK_0000001130622464__li249439351214035">Create tunnel interfaces for the IPv4 over IPv6 tunnel, configure IP addresses for the tunnel interfaces, and configure the source interface and destination address of the tunnel.</li><li id="EN-US_TASK_0000001130622464__li1087500499214035">Configure static routes for the tunnel.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001130622464__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001130622464__steps1408130386214035"><li id="EN-US_TASK_0000001130622464__step841003782214035"><span id="EN-US_TASK_0000001130622464__cmd13199520214035">Configure IPv6 addresses for the interfaces connected to the IPv6 network.</span><p><p id="EN-US_TASK_0000001130622464__p1265568393214035"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen875309424214035">&lt;<span class="keyword" id="EN-US_TASK_0000001130622464__keyword1232288121214035">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001130622464__b1514656919214035">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001130622464__keyword779231116214035">HUAWEI</span>] <strong id="EN-US_TASK_0000001130622464__b968452845214035">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001130622464__b499264662214035">interface</strong><strong id="EN-US_TASK_0000001130622464__b17869111661215"> <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001130622464__b1644324954214035">ipv6 enable</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001130622464__b600549485214035">ipv6 address 2001:db8:100::1 64</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001130622464__b1680477866214035">quit</strong></pre>
+<p id="EN-US_TASK_0000001130622464__p1110653007214035"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen390252850214035">&lt;<span class="keyword" id="EN-US_TASK_0000001130622464__keyword1515193238214035">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001130622464__b1689480496214035">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001130622464__keyword1107374448214035">HUAWEI</span>] <strong id="EN-US_TASK_0000001130622464__b1151437057214035">sysname DeviceB</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001130622464__b1516489814214035">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001130622464__b1959422141214035">ipv6 enable</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001130622464__b1928396344214035">ipv6 address 2001:db8:100::2 64</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001130622464__b311402138214035">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001130622464__step823131801214035"><span id="EN-US_TASK_0000001130622464__cmd286525433214035">Configure IPv4 addresses for the interfaces connected to the IPv4 network.</span><p><p id="EN-US_TASK_0000001130622464__p1384855145214035"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen2038214292214035">[DeviceA] <strong id="EN-US_TASK_0000001130622464__b1294589901214035">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001130622464__b1334530808214035">ip address 10.1.1.2 255.255.255.0</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001130622464__b1426996530214035">quit</strong></pre>
+<p id="EN-US_TASK_0000001130622464__p1773436149214035"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen1496074261214035">[DeviceB] <strong id="EN-US_TASK_0000001130622464__b2139801280214035">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001130622464__b302987935214035">ip address 10.1.2.2 255.255.255.0</strong>
+[DeviceB-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001130622464__b1166858936214035">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001130622464__step1326171179214035"><span id="EN-US_TASK_0000001130622464__cmd226233240214035">Configure loopback interfaces.</span><p><p id="EN-US_TASK_0000001130622464__p797724385214035"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen899371412214035">[DeviceA] <strong id="EN-US_TASK_0000001130622464__b1242795726214035">interface LoopBack 1</strong>
+[DeviceA-LoopBack1] <strong id="EN-US_TASK_0000001130622464__b2067325935214035">ipv6 enable</strong>
+[DeviceA-LoopBack1] <strong id="EN-US_TASK_0000001130622464__b434497555214035">ipv6 address 2001:db8:200::1 64</strong>
+[DeviceA-LoopBack1] <strong id="EN-US_TASK_0000001130622464__b1063802751214035">quit</strong></pre>
+<p id="EN-US_TASK_0000001130622464__p1905151779214035"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen1659025824214035">[DeviceB] <strong id="EN-US_TASK_0000001130622464__b102923885214035">interface LoopBack 1</strong>
+[DeviceB-LoopBack1] <strong id="EN-US_TASK_0000001130622464__b1436943382214035">ipv6 enable</strong>
+[DeviceB-LoopBack1] <strong id="EN-US_TASK_0000001130622464__b1993156305214035">ipv6 address 2001:db8:300::2 64</strong>
+[DeviceB-LoopBack1] <strong id="EN-US_TASK_0000001130622464__b160989670214035">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001130622464__step824231209214035"><span id="EN-US_TASK_0000001130622464__cmd1584406513214035">Create tunnel interfaces, configure IP addresses for the tunnel interfaces, and configure the source interface and destination address of the tunnel.</span><p><p id="EN-US_TASK_0000001130622464__p446294922214035"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen1829796748214035">[DeviceA] <strong id="EN-US_TASK_0000001130622464__b982970214214035">interface tunnel 1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b1004810384214035">tunnel-protocol ipv4-ipv6</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b1897538950214035">ip address 192.168.1.1 255.255.255.0</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b1406148623214035">source LoopBack 1</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b664781778214035">destination 2001:db8:300::2</strong>
+[DeviceA-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b1315105491214035">quit</strong></pre>
+<p id="EN-US_TASK_0000001130622464__p713594042214035"># Configure <span class="keyword" id="EN-US_TASK_0000001130622464__keyword1968859551214035">Device</span>B.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen1080371989214035">[DeviceB] <strong id="EN-US_TASK_0000001130622464__b2055185817214035">interface tunnel 1</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b21947532214035">tunnel-protocol ipv4-ipv6</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b472006497214035">ip address 192.168.1.2 255.255.255.0</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b1078270860214035">source LoopBack 1</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b1683549654214035">destination 2001:db8:200::1</strong>
+[DeviceB-Tunnel1] <strong id="EN-US_TASK_0000001130622464__b752609067214035">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001130622464__step1572397900214035"><span id="EN-US_TASK_0000001130622464__cmd357745318214035">Configure routes for forwarding packets along the IPv4 over IPv6 tunnel.</span><p><p id="EN-US_TASK_0000001130622464__p635003005214035"># Configure DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen32291126214035">[DeviceA] <strong id="EN-US_TASK_0000001130622464__b2130192689214035">ipv6 route-static 2001:db8:300::2 64 <span>10ge</span> <span>0/0/1</span> 2001:db8:100::2</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001130622464__b439052654214035">ospf 1</strong>
+[DeviceA-ospf-1] <strong id="EN-US_TASK_0000001130622464__b1300047015214035">area 0</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001130622464__b1892927996214035">network 192.168.1.0 0.0.0.255</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001130622464__b200738887214035">network 10.1.1.0 0.0.0.255</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001130622464__b1928951627214035">quit</strong></pre>
+<p id="EN-US_TASK_0000001130622464__p967960713214035"># Configure DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen1533659878214035">[DeviceB] <strong id="EN-US_TASK_0000001130622464__b712845348214035">ipv6 route-static 2001:db8:200::1 64 <span>10ge</span> <span>0/0/1</span> 2001:db8:100::1</strong>
+[DeviceB] <strong id="EN-US_TASK_0000001130622464__b1403748298214035">ospf 1</strong>
+[DeviceB-ospf-1] <strong id="EN-US_TASK_0000001130622464__b2021100159214035">area 0</strong>
+[DeviceB-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001130622464__b668279489214035">network 192.168.1.0 0.0.0.255</strong>
+[DeviceB-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001130622464__b180427072214035">network 10.1.2.0 0.0.0.255</strong>
+[DeviceB-ospf-1-area-0.0.0.0] <strong id="EN-US_TASK_0000001130622464__b766530234214035">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001130622464__example422897894214035"><a name="EN-US_TASK_0000001130622464__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001130622464__p11730537171919"># Check the status of Tunnel 1 on DeviceA.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen185226515216">[DeviceA] <strong id="EN-US_TASK_0000001130622464__b814278261181334">display tunnel-interface</strong>
+2020-03-21 20:03:45.826                                                         
+Tunnel1 current state : UP                                     
+Line protocol current state : UP                                              
+Description: 2001:db8:300::2                                                    
+Route Port,The Maximum Transmit Unit is 64000                                   
+Internet Address is 192.168.1.1/24                                             
+Encapsulation is TUNNEL, loopback not set                                       
+Tunnel protocol/transport IPv4 over IPv6                                        
+Tunnel Source 2001:DB8:200::1  (LoopBack1)                                     
+Tunnel Destination ::                                                           
+Tunnel Encapsulation limit 4                                                    
+Tunnel Traffic class not set                                                    
+Tunnel Flow label not set                                                       
+Tunnel Hop limit 64                                                             </pre>
+<p id="EN-US_TASK_0000001130622464__p37961718192513">The command output shows that the protocol status of the tunnel interface is up.</p>
+<p id="EN-US_TASK_0000001130622464__p1534255157214035"># On DeviceA, ping the IPv4 address of Tunnel 1 on DeviceB.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen1710248484214035">[DeviceA] <strong id="EN-US_TASK_0000001130622464__b234141200214035">ping</strong><strong id="EN-US_TASK_0000001130622464__b1205139295214035"> 192.168.1.2</strong>
+  PING 192.168.1.2: 56  data bytes, press CTRL_C to break
+     Reply from 192.168.1.2: bytes=56 Sequence=1 ttl=255 time=108 ms
+     Reply from 192.168.1.2: bytes=56 Sequence=2 ttl=255 time=2 ms
+     Reply from 192.168.1.2: bytes=56 Sequence=3 ttl=255 time=3 ms
+     Reply from 192.168.1.2: bytes=56 Sequence=4 ttl=255 time=3 ms
+     Reply from 192.168.1.2: bytes=56 Sequence=5 ttl=255 time=2 ms
+
+    --- 192.168.1.2 ping statistics ---
+     5 packet(s) transmitted
+     5 packet(s) received
+     0.00% packet loss
+     round-trip min/avg/max = 2/23/108 ms</pre>
+<p id="EN-US_TASK_0000001130622464__p7424308294">The command output shows that the IPv4 address of Tunnel 1 on DeviceB is reachable.</p>
+<p id="EN-US_TASK_0000001130622464__p1344257508214035"># Ping the IP address (10.1.2.1) of PC2 from PC1.</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen638156119214035">[DeviceA] <strong id="EN-US_TASK_0000001130622464__b358858266214035">ping 10.1.2.1</strong>
+Pinging 10.1.2.1 with 32 bytes of data:
+Reply from 10.1.2.1: time&lt;1ms
+Reply from 10.1.2.1: time&lt;1ms
+Reply from 10.1.2.1: time&lt;1ms
+Reply from 10.1.2.1: time&lt;1ms
+Ping statistics for 10.1.2.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms</pre>
+<p id="EN-US_TASK_0000001130622464__p158652713108">The command output shows that PC2 is reachable.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001130622464__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000001130622464__ul969526609214035"><li id="EN-US_TASK_0000001130622464__li1489933546214035"><p id="EN-US_TASK_0000001130622464__p1653783602214035"><a name="EN-US_TASK_0000001130622464__li1489933546214035"></a><a name="li1489933546214035"></a>DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen923573869214035">#
+sysname DeviceA
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:100::1/64
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.1.2 255.255.255.0
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:200::1/64
+#
+interface Tunnel1
+ ip address 192.168.1.1 255.255.255.0
+ tunnel-protocol ipv4-ipv6
+ source LoopBack1
+ destination 2001:DB8:300::2
+#                                                                              
+ospf 1
+ area 0.0.0.0
+  network 192.168.1.0 0.0.0.255
+  network 10.1.1.0 0.0.0.255
+#
+ipv6 route-static 2001:DB8:300:: 64 <span>10GE</span><span>0/0/1</span> 2001:DB8:100::2
+#
+return</pre>
+</li><li id="EN-US_TASK_0000001130622464__li632590482214035"><p id="EN-US_TASK_0000001130622464__p1904178324214035"><a name="EN-US_TASK_0000001130622464__li632590482214035"></a><a name="li632590482214035"></a>DeviceB</p>
+<pre class="screen" id="EN-US_TASK_0000001130622464__screen49002080214035">#
+sysname DeviceB
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:100::2/64
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.2 255.255.255.0
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:300::2/64
+#
+interface Tunnel1
+ ip address 192.168.1.2 255.255.255.0
+ tunnel-protocol ipv4-ipv6
+ source LoopBack1
+ destination 2001:DB8:200::1
+#
+ospf 1
+ area 0.0.0.0
+  network 192.168.1.0 0.0.0.255
+  network 10.1.2.0 0.0.0.255
+#
+ipv6 route-static 2001:DB8:200:: 64 <span>10GE</span><span>0/0/1</span> 2001:DB8:100::1
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_4o6_cfg_0009.html">Configuration Examples for IPv4 over IPv6 Tunnel
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

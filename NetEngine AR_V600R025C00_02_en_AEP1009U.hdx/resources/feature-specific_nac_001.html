@@ -1,0 +1,180 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring MAC Address Authentication (AAA Using RADIUS Authentication)">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_230.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_nac_002.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001806438142">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring MAC Address Authentication (AAA Using RADIUS Authentication)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001806438142"></a><a name="EN-US_TASK_0000001806438142"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring MAC Address Authentication (AAA Using RADIUS Authentication)</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001806438142__1.4.1"></a><a name="1.4.1"></a>
+<div class="p" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_context2115132345180155"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p61978906180155">In <a href="#EN-US_TASK_0000001806438142__en-us_task_0000001513160210_fig_01">Figure 1</a>, dumb terminals are connected to the company intranet through DeviceA. To ensure intranet security, the administrator requires that DeviceA control the network access rights of users.</p>
+<p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p1776538482180155">Because dumb terminals cannot have the authentication client installed, MAC address authentication needs to be configured on DeviceA. As a result, MAC addresses of the dumb terminals are used as user information and sent to the RADIUS server for authentication.</p>
+<div class="fignone" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_fig_01"><a name="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_fig_01"></a><a name="en-us_task_0000001513160210_fig_01"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring MAC address authentication</span><div class="note" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_note4431204417521"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p74311544145216">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_image163113771180155" src="figure/en-us_image_0000001512840898.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001806438142__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_steps342633599180155"><li id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_vlan-01"><span id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_cmd371742549180144">Configure network connectivity.</span><p><p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p84582529382"># Create VLANs, configure the allowed VLANs on interfaces, and configure IP addresses for interfaces.</p>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen301526699180144">&lt;HUAWEI&gt; <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b928229808180144">system-view</strong>
+[HUAWEI] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b133851142144816">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b680095247180144">vlan batch 10 20</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b7792145114597">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b175579513484">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1207589107180144">port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1134790390180144">port trunk allow-pass vlan 10</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1964778305180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1465044327180144">interface vlanif 10</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1679677264180144">ip address 192.168.1.10 24</strong>
+[DeviceA-Vlanif10] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1471693815180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1978555855180144">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b187010224495">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b75631228180144">port link-type access</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1122878415180144">port default vlan 20</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1086189616180144">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b47469953180144">interface vlanif 20</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1545963845180144">ip address 192.168.2.10 24</strong>
+[DeviceA-Vlanif20] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1803338608180144">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_nac-aaa"><span id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_cmd2077129537180155">Configure AAA.</span><p><p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p358937154180155"># Create and configure the RADIUS server template <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b2056112620397">rd1</strong>.</p>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen686256393180155">[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b73717601180155">radius-server template rd1</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1406708956180155">radius-server authentication 192.168.2.30 1812</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1292288258180155">radius-server accounting 192.168.2.30 1813</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b2003642657180155">radius-server shared-key cipher Huawei@123456789</strong>
+[DeviceA-radius-rd1] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b872302376180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p281467549180155"># Create the authentication scheme <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b10891318103912">abc</strong> and set the authentication mode to RADIUS authentication.</p>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen1781419855180155">[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1032982426180155">aaa</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1759942452180155">authentication-scheme abc</strong>
+[DeviceA-aaa-authen-abc] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1048351695180155">authentication-mode radius</strong>
+[DeviceA-aaa-authen-abc] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b588806095180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p2043209574180155"># Create the accounting scheme <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b112179324281">scheme2</strong> and set the accounting mode to RADIUS accounting.</p>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen165143530180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1422395712180155">accounting-scheme scheme2</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b546735786180155">accounting-mode radius</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1580729935180155">accounting realtime 15</strong>
+[DeviceA-aaa-accounting-scheme2] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1801757958180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p819297258180155"># Create the authentication domain <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b920112773215">example.com</strong>, and bind the authentication scheme <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b192017278325">abc</strong>, accounting scheme <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b7201122733217">scheme2</strong>, and RADIUS server template <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b202015274320">rd1</strong> to the domain.</p>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen320149039180155">[DeviceA-aaa] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1001200399180155">domain example.com</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b146438677180155">authentication-scheme abc</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b080613416577">accounting-scheme scheme2</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1538456000180155">radius-server rd1</strong>
+[DeviceA-aaa-domain-example.com] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1208779973180155">quit</strong>
+[DeviceA-aaa] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b2064952769180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p1834738088180155"># Check whether a user can pass RADIUS authentication. (The test user <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b244213818404">test1</strong> and password <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b24481138154018">test1@123</strong> have been configured on the RADIUS server.)</p>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen1970406229180155">[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b228013602180155">test-aaa test1 test1@123 radius-template rd1</strong>
+Info: Account test succeeded.</pre>
+</p></li><li id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_step1782277988180155"><span id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_cmd1644235960180155">Configure MAC address authentication.</span><p><p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p1270875679180155"># Configure the MAC access profile <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b18986185144115">m1</strong>.</p>
+<div class="note" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_note1762234846180155"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p1934080945180155">In a MAC access profile, the user name and password for MAC address authentication are MAC addresses without hyphens (-) by default. Ensure that the user name and password used for MAC address authentication configured on the RADIUS server are the same as those configured on the access device.</p>
+</div></div>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen1278063642180155">[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1234544250180155">mac-access-profile name m1</strong>
+[DeviceA-mac-access-profile-m1] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1686366615180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p1150145837180155"># Configure the authentication profile <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b5673131518429">p1</strong>, bind the MAC access profile <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b821151984215">m1</strong> to the authentication profile, specify the domain <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b552316331424">example.com</strong> as the forcible authentication domain in the authentication profile, set the user access mode to <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b155664215432">multi-authen</strong>, and set the maximum number of access users to 100.</p>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen947148980180155">[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1871008013180155">authentication-profile name p1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1057321985180155">mac-access-profile m1</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b300254912180155">access-domain example.com force</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1121848353180155">authentication mode multi-authen max-user 100</strong>
+[DeviceA-authen-profile-p1] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b477884627180155">quit</strong></pre>
+<p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p1767812881180155"># Bind the authentication profile <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b162581012164320">p1</strong> to <span>10GE</span> <span>0/0/1</span> and enable MAC address authentication on <span>10GE</span> <span>0/0/1</span>.</p>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen1128867798180155">[DeviceA] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b547536571180155">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b608485242180155">authentication-profile p1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b1135762309180155">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_example20551416994"><a name="EN-US_TASK_0000001806438142__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_ol131179613180155"><li id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_li308156465180155">After a user starts a terminal, the device automatically obtains the terminal's MAC address as the user name and password for authentication.</li><li id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_li48978690180155">The user can access the network after being successfully authenticated.</li><li id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_li1799893344180155">After users go online, you can run the <strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b780324773180155">display access-user access-type mac-authen</strong> command on the device to check information about online MAC address authentication users.</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001806438142__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><p id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_p755783864318">DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_screen1199955094318">#
+sysname DeviceA
+#
+authentication-profile name p1
+ mac-access-profile m1
+ access-domain example.com force
+ authentication mode multi-authen max-user 100
+#
+vlan batch 10 20
+#
+aaa
+ authentication-scheme abc    
+  authentication-mode radius    
+ accounting-scheme scheme2
+  accounting-mode radius
+  accounting realtime 15
+ domain example.com            
+  authentication-scheme abc     
+  accounting-scheme scheme2
+  radius-server rd1      
+#  
+radius-server template rd1 
+ radius-server shared-key cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!SKvr${[Fs.3t@/5k|BENhEu&gt;W(3\<font style="font-size:8pt" Face="Courier New" >~</font>XG!!D;!!!!!2jp5!!!!!!A!!!!3"pK8qv!}9M#(4$jGWvQF/R[CNe/+:W^jk8HUe&amp;W%+%#
+ radius-server authentication 192.168.2.30 1812 weight 80
+ radius-server accounting 192.168.2.30 1813 weight 80
+#
+mac-access-profile name m1
+#
+interface Vlanif10
+ ip address 192.168.1.10 255.255.255.0
+#
+interface Vlanif20
+ ip address 192.168.2.10 255.255.255.0
+#
+interface <span>10GE</span> <span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 10
+ authentication-profile p1
+#
+interface <span>10GE</span> <span>0/0/2</span>
+ portswitch
+<strong id="EN-US_TASK_0000001806438142__en-us_task_0000001513160210_b591521031417"> </strong>port link-type access
+ port default vlan 20
+#
+return </pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_230.html">NAC
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_nac_002.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

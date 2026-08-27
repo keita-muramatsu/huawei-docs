@@ -1,0 +1,142 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a Voice VLAN (Identifying Voice Packets Based on MAC Addresses and Receiving Untagged Voice Packets from IP Phones)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_vlan_cfg_0167.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_vlan_cfg_0156.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_vlan_cfg_0165.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="VLAN">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="QinQ">
+<meta name="featurename" content="VLAN">
+<meta name="featurename" content="VLAN Mapping">
+<meta name="featurename" content="VLAN Pool">
+<meta name="featurename" content="Voice VLAN">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="featuretype" content="Ethernet Switching">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002009939413">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a Voice VLAN (Identifying Voice Packets Based on MAC Addresses and Receiving Untagged Voice Packets from IP Phones)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002009939413"></a><a name="EN-US_TASK_0000002009939413"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a Voice VLAN (Identifying Voice Packets Based on MAC Addresses and Receiving Untagged Voice Packets from IP Phones)</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002009939413__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_context1677625172748"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_p1160248115515">In <a href="#EN-US_TASK_0000002009939413__en-us_task_0000001130622852_fig396991319530">Figure 1</a>, IP phones A and B are connected to DeviceA. IP phone A has a downstream device Host1 and IP phone B has no downstream device. IP phones send untagged voice packets, which DeviceA transmits in VLAN 2. Host1 sends data packets, which DeviceA transmits in VLAN 3. Users want to increase the transmission priority of voice packets to ensure the quality of voice services.</p>
+<div class="fignone" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_fig396991319530"><a name="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_fig396991319530"></a><a name="en-us_task_0000001130622852_fig396991319530"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring a voice VLAN to identify voice packets based on MAC addresses</span><div class="note" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_note82441212145212"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_p18451948914">In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_image7970181375318" src="figure/en-us_image_0000001176742355.png"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002009939413__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_steps10132325172748"><li id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_step5253145172748"><span id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_cmd7907968172748">Create VLANs on DeviceA and add interfaces to them.</span><p><p id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_p838641119018"># Create VLANs.</p>
+<pre class="screen" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_screen52374281001">&lt;<span class="keyword" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_keyword1683504216148">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b1981612313146">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_keyword164794921413">HUAWEI</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b676618161412">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b39911813141415">vlan batch 2 3</strong></pre>
+<p id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_p39815351006"># Add interfaces to VLANs.</p>
+<pre class="screen" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_screen18112122481019">[DeviceA] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b134881737121816">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b7531642101812">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b14621184610186">port link-type hybrid</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b16495221810">port hybrid pvid vlan 3</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b5548155741812">port hybrid untagged vlan 2 to 3</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b16956529192">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b12509138181916">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b162441310198">portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b143761920196">port link-type hybrid</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b172062591920">port hybrid untagged vlan 2</strong><strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b165218112419"> to 3</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b361212299192">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_step26369353570"><span id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_cmd863633518576">Configure the OUI for a voice VLAN.</span><p><pre class="screen" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_screen1022373310102">[DeviceA] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b8641129134620">voice-vlan mac-address 00e0-fc12-3456 mask ffff-ff00-0000</strong></pre>
+</p></li><li id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_step02064965816"><span id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_cmd820516915585">Enable the voice VLAN function on interfaces and configure them to increase the priority of voice packets based on MAC addresses.</span><p><pre class="screen" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_screen6735134218107">[DeviceA] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b23931314115015">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b6523152085010">voice-vlan 2 enable include-untagged</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b1129132616500">voice-vlan remark-mode mac-address</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b143701731135010">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b204441345195018">interface <span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b104441845115016">voice-vlan 2 enable include-untagged</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b13444164535013">voice-vlan remark-mode mac-address</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b174441945135018">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_example121226172748"><a name="EN-US_TASK_0000002009939413__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_p13625114255519">Run the <b><span class="display voice-vlan status" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_cmdname15740147195619">display voice-vlan</span></b> <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b13748518575">2</strong> <strong><span id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_cmdparmname8503415135810">status</span></strong> command to check whether the voice VLAN configuration is correct.</p>
+<pre class="screen" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_screen18698103765511">[DeviceA] <strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b83711043175714">display voice-vlan 2 status</strong>
+Voice VLAN Configuration:
+--------------------------------------------------------------------------
+Voice VLAN ID            : 2
+Voice VLAN status        : Enable
+Voice VLAN 8021p remark  : 5
+Voice VLAN dscp remark   : 46
+--------------------------------------------------------------------------
+Port Information:
+------------------------------------------------------------------------------
+Port          Add-Mode         Security-Mode         PribyVLAN         Untag
+------------------------------------------------------------------------------
+<span>10GE</span><span>0/0/1</span>      Manual              Normal              Disable             Enable
+<span>10GE</span><span>0/0/2</span>      Manual              Normal              Disable             Enable</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002009939413__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen" id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_screen77084127132">#
+sysname DeviceA
+#
+voice-vlan mac-address 00e0-fc12-3456 mask ffff-ff00-0000
+#
+vlan batch 2 to 3
+#
+interface <span>10GE</span><span>0/0/1</span>
+<strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b655183122015"> </strong>portswitch
+ port link-type hybrid
+ port hybrid pvid vlan 3
+ port hybrid untagged vlan 2 to 3
+ voice-vlan 2 enable include-untagged
+ voice-vlan remark-mode mac-address
+#
+interface <span>10GE</span><span>0/0/2</span>
+<strong id="EN-US_TASK_0000002009939413__en-us_task_0000001130622852_b54171945142013"> </strong>portswitch
+ port link-type hybrid
+ port hybrid untagged vlan 2 to 3
+ voice-vlan 2 enable include-untagged
+ voice-vlan remark-mode mac-address
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_vlan_cfg_0167.html">Configuration Examples for VLAN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_vlan_cfg_0156.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_vlan_cfg_0165.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

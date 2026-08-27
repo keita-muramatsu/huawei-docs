@@ -1,0 +1,91 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring an SRv6 Path MTU Value">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0222.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0223.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001500579005">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring an SRv6 Path MTU Value</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001500579005"></a><a name="EN-US_TASK_0000001500579005"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring an SRv6 Path MTU Value</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001500579005__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>For packets forwarded over an SRv6 path, they will be discarded if the packet length is greater than the outbound interface MTU, and the forwarding efficiency will be reduced if fragments are too small. In this case, you can configure an SRv6 path MTU value on the ingress of the SRv6 path to ensure successful packet forwarding.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001500579005__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure a path MTU value for SRv6 BE.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable SRv6 and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a global path MTU value for SRv6 BE.</span><p><pre class="screen"><b><span class="cmdqueryname">path-mtu</span></b><strong> </strong><em>mtu-value</em></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure a reserved value for the global path MTU value.</span><p><pre class="screen"><b><span class="cmdqueryname">path-mtu reserved</span></b> <i><span class="varname">reserved-value</span></i></pre>
+<p>The global path MTU value minus the reserved value is the active path MTU value, which must be greater than or equal to 1280 bytes. The ingress sends packets using the smaller value of either the active path MTU value or the IPv6 MTU value of the involved physical interface.</p>
+</p></li></ol>
+</li><li><span>Configure a path MTU value for an SRv6 TE Policy.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable SRv6 and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure a global path MTU value for an SRv6 TE Policy.</span><p><pre class="screen"><b><span class="cmdqueryname">path-mtu</span></b><strong> </strong><em>mtu-value</em></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure a reserved value for the global path MTU value.</span><p><pre class="screen"><b><span class="cmdqueryname">path-mtu reserved</span></b> <i><span class="varname">reserved-value</span></i></pre>
+</p><p><p>The global path MTU value minus the reserved value is the active path MTU value, which must be greater than or equal to 1280 bytes. The headend sends packets using the smaller value of either the active path MTU value or the IPv6 MTU value of the involved physical interface.</p>
+</p></li><li class="substepexpand"><span>(Optional) Configure a path MTU value for a segment list.</span><p><p>A path MTU value configured for a segment list overrides the global path MTU value.</p>
+<ol type="a"><li>Create an SRv6 TE Policy and enter its view.<pre class="screen"><b><span class="cmdqueryname">srv6-te policy</span></b> <i><span class="varname">name-value</span></i> <strong><span>endpoint</span></strong> <i><span class="varname">endpoint-ip</span></i> <strong><span>color</span></strong> <i><span class="varname">color-value</span></i></pre>
+</li><li>Enter the candidate path view of the SRv6 TE Policy.<pre class="screen"><b><span class="cmdqueryname">candidate-path preference</span></b> <em>pref-value</em></pre>
+</li><li>Configure a path MTU value for a segment list.<pre class="screen"><span><b><span class="cmdqueryname">segment-list</span></b> <i><span class="varname">list-name</span></i> <strong><span>path-mtu</span></strong> <i><span class="varname">mtu-value</span></i></span></pre>
+</li></ol>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0222.html">Configuring an SRv6 Path MTU
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0223.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

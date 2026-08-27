@@ -1,0 +1,106 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring the DHCPv6 PD Client Function">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001512691238.html">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_dhcpv6client_cfg_0100_a.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DHCPv6">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DHCPv6">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featurename" content="DHCPv6">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563890369">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring the DHCPv6 PD Client Function</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563890369"></a><a name="EN-US_TASK_0000001563890369"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring the DHCPv6 PD Client Function</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563890369__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>When a device's upstream interface functions as a DHCPv6 PD client, it uses DHCPv6 to dynamically obtain an IPv6 address prefix from the DHCPv6 PD server. The obtained IPv6 address prefix is bound to a downstream interface, so that an IPv6 address can be automatically generated for a user connected to the downstream interface in route advertisement mode.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563890369__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Configure the IPv6 function on an upstream interface.</span><p><ol type="a"><li>Enter the interface view.<pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type interface-number</span></i></pre>
+</li><li>Switch the interface working mode to Layer 3.<pre class="screen" id="EN-US_TASK_0000001563890369__en-us_task_0228023023_screen939422415414"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563890369__en-us_task_0228023023_cmdname639432475414">undo portswitch</span></b></pre>
+<p id="EN-US_TASK_0000001563890369__en-us_task_0228023023_p159462012152">Determine whether to perform this step based on the current interface working mode.</p>
+</li><li>Enable the IPv6 function on the interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 enable</span></b></pre>
+<p>By default, the IPv6 function is disabled on an interface.</p>
+</li><li>Configure the global unicast IPv6 address function on the interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 address</span></b> { <em>ipv6-address</em><em> prefix-length</em> | <em>ipv6-address/prefix-length</em> }</pre>
+</li></ol>
+</p></li><li><span>Configure the DHCPv6 PD client function on the upstream interface to obtain network configuration parameters.</span><p><ol type="a"><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>(Optional) Configure a DUID for the DHCPv6 device.<pre class="screen"><b><span class="cmdqueryname">dhcpv6 duid</span></b> { <strong>ll</strong> | <strong>llt</strong> | <em>duid</em> }</pre>
+<p>By default, a device generates a DUID based on a link-layer (LL) address.</p>
+</li><li>Enter the interface view.<pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type interface-number</span></i></pre>
+</li><li>Configure the DHCPv6 PD client function. Run either of the following commands as required. If a client is specified to use a message to obtain both an IPv6 address and a prefix, the <strong>union-mode</strong> parameter needs to be configured.<pre class="screen"><b><span class="cmdqueryname">dhcpv6 client</span></b> <strong>dhcp</strong> [ <strong>hint<em> </em></strong><em>ipv6-address</em><strong> </strong>] <strong>pd</strong> <i><span class="varname">iprefix-name</span></i> [ <strong>hint<em> </em></strong><em>ipv6-prefix</em><strong> </strong>] [<strong> rapid-commit </strong>] [<strong> unicast-option </strong>] <strong>union-mode</strong> 
+<b><span class="cmdqueryname">dhcpv6 client</span></b> [ <strong>dhcp</strong> [ <strong>hint<em> </em></strong><em>ipv6-address</em><strong> </strong>] ] <strong>pd</strong> <i><span class="varname">iprefix-name</span></i> [ <strong>hint<em> </em></strong><em>ipv6-prefix</em><strong> </strong>] [<strong> rapid-commit </strong>] [<strong> unicast-option </strong>]  </pre>
+<p>By default, the DHCPv6 PD client function is disabled on a device.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You can specify the <strong>rapid-commit</strong> parameter to configure a DHCPv6 PD client to request an IPv6 address prefix using the two-message exchange. The server assigns an IPv6 address prefix to a client using two-message exchange only when two-message exchange is enabled on both them. Otherwise, the server assigns an IPv6 address prefix to the client using four-message exchange.</p>
+</div></div>
+</li></ol>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001563890369__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>Bind the obtained IPv6 address prefix to the device's downstream interface and enable the downstream interface to send RA messages, so that an IPv6 address can be automatically generated for a user in route advertisement mode.</p>
+<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the interface view.<pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type interface-number</span></i></pre>
+</li><li>Switch the interface working mode to Layer 2.<pre class="screen" id="EN-US_TASK_0000001563890369__en-us_task_0228023023_screen196643613491"><b><span class="cmdqueryname" id="EN-US_TASK_0000001563890369__en-us_task_0228023023_cmdname136653604910">portswitch</span></b></pre>
+<p id="EN-US_TASK_0000001563890369__en-us_task_0228023023_p12798174415146">Determine whether to perform this step based on the current interface working mode.</p>
+</li><li>Enable the IPv6 function on the interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 enable</span></b></pre>
+<p>By default, the IPv6 function is disabled on an interface.</p>
+</li><li>Configure a link-local address for the interface.<ul><li>Manually configure a link-local address for the interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 address</span></b> <i><span class="varname">ipv6 address</span></i> <b><span class="cmdqueryname">link-local</span></b></pre>
+</li><li>Configure the interface to automatically generate a link-local address.<pre class="screen"><b><span class="cmdqueryname">ipv6 address auto link-local</span></b></pre>
+</li></ul>
+<p>By default, no link-local address is configured for an interface.</p>
+</li><li>Bind the IPv6 address prefix automatically obtained by the DHCPv6 PD client to the interface.<pre class="screen"><b><span class="cmdqueryname">ipv6 address</span></b> <em>dhcpv6-prefix</em> { <em>ipv6-address</em><em> prefix-length</em> | <em>ipv6-address/prefix-length</em> }</pre>
+<p>By default, an interface is not bound to the IPv6 address prefix automatically obtained by a DHCPv6 PD client. The value of <em>prefix-length</em> for the IPv6 address prefix bound to the interface must be greater than the length of the prefix obtained by the DHCPv6 PD client; otherwise, the interface cannot generate a global unicast IPv6 address based on the bound IPv6 address prefix. You can run the <strong>display dhcpv6 client prefix</strong> [ <strong>name</strong><em> prefix-name</em> ] command to check the length of the prefix obtained by the DHCPv6 PD client.</p>
+</li><li>Enable the interface to send RA messages.<pre class="screen"><b><span class="cmdqueryname">ipv6 nd ra halt disable</span></b></pre>
+<p>By default, an interface is disabled from sending RA messages.</p>
+</li></ol>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_task_0000001512691238.html">Configuring the Device as a DHCPv6 PD Client
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../galaxy_dhcpv6client_cfg_0100_a.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

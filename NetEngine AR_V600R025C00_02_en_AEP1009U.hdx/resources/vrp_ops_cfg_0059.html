@@ -1,0 +1,191 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring a Script Assistant for Setting an Interface Description Based on LLDP Neighbor Changes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ops_cfg_0050.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ops_cfg_0058.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ops_cfg_0060.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="OPS">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="OPS">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001880578778">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring a Script Assistant for Setting an Interface Description Based on LLDP Neighbor Changes</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001880578778"></a><a name="EN-US_TASK_0000001880578778"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring a Script Assistant for Setting an Interface Description Based on LLDP Neighbor Changes</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001880578778__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001880578778__fig6179230104716">Figure 1</a>, a user wants to use a script to automatically set an interface description based on the LLDP neighbor information when an LLDP neighbor is added to or deleted from DeviceA.</p>
+<div class="fignone" id="EN-US_TASK_0000001880578778__fig6179230104716"><a name="EN-US_TASK_0000001880578778__fig6179230104716"></a><a name="fig6179230104716"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring an interface description based on LLDP neighbor changes</span><br><span><img src="images/fig_dc_cfg_ops_003001.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001880578778__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li><p>Make the Python script <span><strong>port_description_lldp.py</strong></span> to set the interface description when the LLDP neighbor changes.</p>
+</li><li><p>The user remotely manages the device, uploads the Python script to DeviceA, and installs the <strong>port_description_lldp.py</strong> script.</p>
+</li><li><p>Configure a Python script assistant.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001880578778__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure IP addresses and routing protocols for interfaces on DeviceA, DeviceB, and DeviceC, as shown in <a href="#EN-US_TASK_0000001880578778__fig6179230104716">Figure 1</a>. For details, see Configuration Scripts.</span></li><li><span>Make a Python script.</span><p><p># Make a Python script named <strong>port_description_lldp.py</strong> to implement the following functions:</p>
+<ul><li><p>Subscribe to LLDP neighbor information addition and deletion events.</p>
+</li><li><p>Obtain the port whose LLDP neighbor changes through environment variables, and obtain the device name and port name of the LLDP neighbor of the port.</p>
+</li><li><p>Set the combination of the device name and port name of an LLDP neighbor to the description of the local port.</p>
+</li></ul>
+<p>The following is an example of the Python script:</p>
+<pre class="screen"># -*- coding: utf-8 -*-
+import ops         # Import the ops module.
+import sys         # Import the sys module.
+import os         # Import the os module.
+import re          # Import the re module. The regular expression is used.
+# Subscription processing function
+def ops_condition(_ops):
+    # Detect the event that a neighbor is added or deleted.
+    value1, err_str1 = _ops.event.subscribe("lldpChange", "lldp", "LLDP_INTERFACE_REM_CHANGE", [])
+    return 0
+
+# Work processing function
+def ops_execute(_ops):
+    # Obtain the environment variable, which indicates the parameter value when the event is triggered.
+    key, value = _ops.environment.get("_para_action")
+    inter, value = _ops.environment.get("_para_interfaceName")
+    _ops.set_model_type("YANG")
+    if key == "added":
+
+      # Open the command line channel.
+        handle, err_desp = _ops.cli.open() 
+        neighbor, n11, n21 = _ops.cli.execute(handle,"display lldp neighbor interface " + inter)
+
+        resultsys = re.search(r'System[\s]+name[\s:]*\S*', neighbor).group()
+        sysname = re.split(':', resultsys)        
+
+        resultport = re.search(r'Port\s+ID\s{2,}:*\S*', neighbor).group()
+        port = re.split(':', resultport)
+
+      # Enter the system view.
+        result, n11, n21 = _ops.cli.execute(handle,"system-view")
+
+        # Enter the interface view.
+        result, n11, n21 = _ops.cli.execute(handle,"interface " + inter)
+
+        # Set the interface description.
+        result, n11, n21 = _ops.cli.execute(handle,"description " + "To-" + sysname[1] + "-" + port[1])
+
+        # Close the command line channel.
+        result = _ops.cli.close(handle)
+
+    elif key == "deleted":
+        handle, err_desp = _ops.cli.open() 
+
+        # Enter the system view.
+        result, n11, n21 = _ops.cli.execute(handle,"system-view")
+
+        # Enter the interface view.
+        result, n11, n21 = _ops.cli.execute(handle,"interface " + inter)
+
+        # Set the interface description.
+        result, n11, n21 = _ops.cli.execute(handle,"undo description")
+
+        # Close the command line channel.
+        result = _ops.cli.close(handle)
+
+    else:
+        return 1
+    return 0</pre>
+</p></li><li><span>Upload the script file to the device and install it.</span><p><p># Configure DeviceA as the SFTP client to download the Python script from the SFTP server.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>sftp 10.2.1.1</strong>
+Trying 10.2.1.1 ... 
+Press CTRL+K to abort 
+Connected to 10.2.1.1 ... 
+Please input the username:  
+Enter password: 
+sftp-client&gt; <strong>get port_description_lldp.py</strong>
+Info: Transfer file in binary mode.
+Please wait for a while...
+/    2053 bytes transferred
+Info: Downloaded the file successfully.</pre>
+<p># Install the Python script on DeviceA.</p>
+<pre class="screen">[DeviceA] <strong>quit</strong>
+&lt;DeviceA&gt; <strong>ops install file port_description_lldp.py</strong></pre>
+</p></li><li><span>Configure a Python script assistant.</span><p><p># Configure a Python script assistant and register the CLI event in the script <strong>port_description_lldp.py</strong>. Wait for the event to be triggered.</p>
+<pre class="screen">&lt;DeviceA&gt; <strong>system-view</strong>
+[DeviceA] <strong>ops</strong>
+[DeviceA-ops] <strong>script-assistant python port_description_lldp.py</strong>
+[DeviceA-ops] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001880578778__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># After the preceding configurations are complete, for example, after neighbor information is added to the <span>10GE</span><span>0/0/1</span> interface of DeviceA, the description of the interface is set as follows:</p>
+<pre class="screen">[<span class="keyword"></span>DeviceA] <strong>interface</strong> <strong><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>display this</strong>
+#
+interface <strong><span>10ge</span> <span>0/0/1</span></strong>
+ description To-DeviceB-<span>10GE</span><span>0/0/1</span>
+#
+return</pre>
+<p># After the <b><span class="cmdqueryname">undo lldp enable</span></b> command is run to disable LLDP on the <span>10GE</span><span>0/0/1</span> interface of DeviceA, the description of the interface is deleted.</p>
+<pre class="screen">[<span class="keyword"></span>DeviceA] <strong>interface</strong> <strong><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>undo lldp enable</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>display this</strong>
+#
+interface <strong><span>10ge</span> <span>0/0/1</span></strong>
+ undo lldp enable   
+#
+return</pre>
+<h4 class="sectiontitle">Configuration Scripts</h4><div class="p">DeviceA<pre class="screen">#
+sysname DeviceA
+#
+ops
+ script-assistant python port_description_lldp.py
+#
+return</pre>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ops_cfg_0050.html">OPS Configuration Examples
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ops_cfg_0058.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_ops_cfg_0060.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

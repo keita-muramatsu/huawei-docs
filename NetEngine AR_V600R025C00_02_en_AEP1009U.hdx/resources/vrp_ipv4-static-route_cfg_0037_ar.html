@@ -1,0 +1,77 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding Association Between LDP and Static routes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ipv4-static-route_cfg_0036_ar.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ipv4-static-route_cfg_0038_ar.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 Static Route">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 Static Route">
+<meta name="featuretype" content="IP Routing">
+<meta name="featurename" content="IPv4 Static Route">
+<meta name="featuretype" content="IP Routing">
+<meta name="featuretype" content="IP Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001717964305">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding Association Between LDP and Static routes</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001717964305"></a><a name="EN-US_CONCEPT_0000001717964305"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding Association Between LDP and Static routes</h1>
+<div><p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p1144096724214010">On a network with a backup path between devices, packet loss may occur during a traffic switchover or switchback because the status of a static route is different from that of a Label Distribution Protocol (LDP) session. To resolve this problem, configure association between LDP and static routes.</p>
+<div class="section" id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_section138438014257"><h4 class="sectiontitle">Typical Networking</h4><p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p1648566839214010"><a href="#EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_fig_dc_vrp_bgp_feature_004001">Figure 1</a> shows the typical networking for association between LDP and static routes. DeviceA and DeviceD interwork through static routes. Primary and backup static routes are deployed on DeviceA, with DeviceB and DeviceC as next hops. Primary and secondary LSPs are established through the static routes. The primary LSP uses LinkA, and the secondary LSP uses LinkB. In normal cases, LinkA is preferred. The following part describes association between LDP and static routes in switchover and switchback scenarios.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_fig_dc_vrp_bgp_feature_004001"><a name="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_fig_dc_vrp_bgp_feature_004001"></a><a name="en-us_concept_0000001375733937_fig_dc_vrp_bgp_feature_004001"></a><span class="figcap"><b>Figure 1 </b>Using association between LDP and static routes to resolve the problems in LSP switching scenarios</span><br><span><img class="vsd" id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_image15223511288" src="figure/en-us_image_0000001427987024.png"></span></div>
+<p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p1368786031214010"><strong id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_b16173154631118">Switchover scenario</strong></p>
+<p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p2082663440214010">In the switchover scenario, traffic over the primary static route is not switched to the backup link when the LDP session on the primary link fails (not because of a link fault). As a result, LSP traffic over the primary link is interrupted.</p>
+<p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p739245086214010">When the LDP session is normal, LSP traffic travels along the primary link (LinkA: DeviceA -&gt; DeviceB -&gt; DeviceD). If the LDP session between DeviceA and DeviceB is interrupted, the LSP immediately switches to the backup link (LinkB: DeviceA -&gt; DeviceC -&gt; DeviceD). However, because the link between DeviceA and DeviceB is normal, traffic over the static route is not switched to the backup link. The asynchrony between LDP and the static route causes an LSP traffic interruption.</p>
+<p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p1091232453214010">If association between LDP and static routes is enabled, traffic is automatically switched to the backup link when the LDP session goes down, ensuring uninterrupted traffic forwarding.</p>
+<p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p467424756214010"><strong id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_b881073815013">Switchback scenario</strong></p>
+<p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p771622637214010">In the switchback scenario, after the primary link recovers from a fault, the traffic over the primary static route is switched back to the primary link earlier than the LDP LSP does. As a result, the secondary LSP cannot be used, and the primary LSP has not been set up yet, causing an LSP traffic interruption.</p>
+<p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p2044785115214010">If the link between DeviceA and DeviceB fails, traffic is immediately switched to the backup link (LinkB: DeviceA -&gt; DeviceC -&gt; DeviceD). After the link between DeviceA and DeviceB recovers, traffic over the static route is immediately switched to the primary link (LinkA: DeviceA -&gt; DeviceB -&gt; DeviceD). As a result, the secondary LSP cannot be used, and the primary LSP has not been restored yet, causing a traffic interruption.</p>
+<p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p547973018214010">If association between LDP and static routes is enabled, the static route on LinkA becomes active only after the LDP session goes up during the switchback. In this manner, the static route and LDP are synchronous, preventing traffic loss.</p>
+<div class="note" id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_note1626016608214035"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p1731722581214035">Only the static routes with outbound interfaces specified can be associated with LDP.</p>
+</div></div>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_section64731983521"><h4 class="sectiontitle">Application Scenario</h4><p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p324330174214010">Association between LDP and static routes applies to the scenario where a backup static route exists between devices.</p>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_section072115925215"><h4 class="sectiontitle">Benefits</h4><p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p1477391214010">Static routes are synchronized with LDP, preventing traffic loss and improving network reliability.</p>
+<p id="EN-US_CONCEPT_0000001717964305__en-us_concept_0000001375733937_p20202104115534"></p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ipv4-static-route_cfg_0036_ar.html">Configuring Association Between LDP and Static Routes
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ipv4-static-route_cfg_0038_ar.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

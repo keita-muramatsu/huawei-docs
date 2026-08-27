@@ -1,0 +1,180 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Security Policies Based on IP Addresses and Ports">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_secpolicy_cfg_0023.html">
+<meta name="DC.Relation" scheme="URI" content="security_secpolicy_cfg_0014_fw.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="AddWebNext" content="ys_sec@security_secpolicy_webcase_0000_22.0.xml">
+<meta name="featurename" content="Security Policy">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Security Policy">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featurename" content="Security Policy">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563752765">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Security Policies Based on IP Addresses and Ports</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563752765"></a><a name="EN-US_TASK_0000001563752765"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Security Policies Based on IP Addresses and Ports</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563752765__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>As shown in <a href="#EN-US_TASK_0000001563752765__fig01">Figure 1</a>, an enterprise has two service servers deployed. Server1 provides services through TCP port 8888, and Server2 provides services through UDP port 6666. DeviceA is required to implement access control. The two PCs at 10.1.1.2 and 10.2.1.2 are prohibited from accessing these two servers during working hours (08:00-17:00). Other PCs can access the two servers at any time.</p>
+<div class="fignone" id="EN-US_TASK_0000001563752765__fig01"><a name="EN-US_TASK_0000001563752765__fig01"></a><a name="fig01"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring security policies based on IP addresses and ports</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1, interface2, and interface3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001513152470.png"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563752765__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an IP address for each interface and assign interfaces to security zones.</span><p><p># Configure an IP address for <span>10GE</span><span>0/0/1</span> and assign the interface to the DMZ.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[<span><span>DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span><span>DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>undo portswitc</strong><strong>h</strong>
+[<span><span>DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.2.0.1 24</strong>
+[<span><span>DeviceA</span></span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span><span>DeviceA</span></span>] <strong>firewall zone dmz</strong>
+[<span><span>DeviceA</span></span>-zone-dmz] <strong>add interface <span>10ge</span> <span>0/0/1</span></strong>
+[<span><span>DeviceA</span></span>-zone-dmz] <strong>quit</strong></pre>
+<p># Configure an IP address for <span>10GE</span><span>0/0/2</span> and assign the interface to the Trust zone.</p>
+<pre class="screen">[<span><span>DeviceA</span></span>] <strong>interface <span>10ge</span> <span>0/0/2</span></strong>
+[<span><span>DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>undo portswitc</strong><strong>h</strong>
+[<span><span>DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.1.1.1 24</strong>
+[<span><span>DeviceA</span></span>-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[<span><span>DeviceA</span></span>] <strong>firewall zone trust</strong>
+[<span><span>DeviceA</span></span>-zone-trust] <strong>add interface </strong><strong><span>10ge</span> <span>0/0/2</span></strong>
+[<span><span>DeviceA</span></span>-zone-trust] <strong>quit</strong></pre>
+<p># Configure an IP address for <span>10GE</span><span>0/0/3</span> and assign the interface to the Trust zone.</p>
+</p><p><pre class="screen">[<span><span>DeviceA</span></span>] <strong>interface </strong><strong><span>10ge</span> <span>0/0/3</span></strong>
+[<span><span>DeviceA</span></span>-<span>10GE</span><span>0/0/3</span>] <strong>undo portswitc</strong><strong>h</strong>
+[<span><span>DeviceA</span></span>-<span>10GE</span><span>0/0/3</span>] <strong>ip address 10.2.1.1 24</strong>
+[<span><span>DeviceA</span></span>-<span>10GE</span><span>0/0/3</span>] <strong>quit</strong>
+[<span><span>DeviceA</span></span>] <strong>firewall zone trust</strong>
+[<span><span>DeviceA</span></span>-zone-trust] <strong>add interface </strong><strong><span>10ge</span> <span>0/0/3</span></strong>
+[<span><span>DeviceA</span></span>-zone-trust] <strong>quit</strong></pre>
+</p></li><li><span>Configure an address object named <strong>server_deny</strong> and add the IP addresses that are not allowed to access the servers to the address object.</span><p><pre class="screen">[<span><span>DeviceA</span></span>] <strong>ip address-set server_deny type object</strong>
+[<span><span>DeviceA</span></span>-object-address-set-server_deny] <strong>address 0 10.1.1.2 mask 32</strong>
+[<span><span>DeviceA</span></span>-object-address-set-server_deny] <strong>address 1 10.2.1.2 mask 32</strong>
+[<span><span>DeviceA</span></span>-object-address-set-server_deny] <strong>quit</strong></pre>
+</p></li><li><span>Configure a time range named <strong>time_deny</strong> and specify the time during which the specific PCs are not allowed to access the server.</span><p><pre class="screen">[<span><span>DeviceA</span></span>] <strong>time-range time_deny</strong><strong> 08:00 to 17:00 daily</strong></pre>
+</p></li><li><span>Configure a security policy rule.</span><p><p># Configure a security policy that restricts the access of specific PCs to Server1.</p>
+<pre class="screen">[<span><span>DeviceA</span></span>] <strong>security-policy</strong>
+[<span><span>DeviceA</span></span>-policy-security] <strong>rule name policy_sec_deny1</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny1] <strong>source-zone trust</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny1] <strong>destination-zone dmz</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny1] <strong>source-address address-set server_deny</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny1] <strong>destination-address 10.2.0.10 32</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny1] <strong>service protocol tcp source-port 0 to 65535 destination-port 8888</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny1] <strong>time-range time_deny</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny1] <strong>action deny</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny1] <strong>quit</strong></pre>
+<p># Configure a security policy that restricts the access of specific PCs to Server2.</p>
+<pre class="screen">[<span><span>DeviceA</span></span>-policy-security] <strong>rule name policy_sec_deny2</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny2] <strong>source-zone trust</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny2] <strong>destination-zone dmz</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny2] <strong>source-address address-set server_deny</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny2] <strong>destination-address 10.2.0.11 32</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny2] <strong>service protocol udp source-port 0 to 65535 destination-port 6666</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny2] <strong>time-range time_deny</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny2] <strong>action deny</strong>
+[<span><span>DeviceA</span></span>-policy-security-rule-policy_sec_deny2] <strong>quit</strong></pre>
+<p>Security policies are matched based on the configuration sequence. Configure specific policies before configuring general ones.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563752765__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Policy Configuration</h4><p>During 08:00-17:00, PCs at 10.1.1.2 and 10.2.1.2 cannot access the two servers. These two PCs can access the servers in other time ranges. Other PCs can access these two servers at any time.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001563752765__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen">#
+sysname <span><span class="eudemon">DeviceA</span></span>
+#                                                                            
+ip address-set server_deny type object                                          
+ address 0 10.1.1.2 mask 32                                                     
+ address 1 10.2.1.2 mask 32 
+#                                                                               
+time-range time_deny 08:00 to 17:00 daily
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.2.0.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.2.1.1 255.255.255.0
+#
+firewall zone trust
+ set priority 85
+ add interface <span>10GE</span><span>0/0/2</span> 
+ add interface <span>10GE</span><span>0/0/3</span>
+#
+firewall zone dmz
+ set priority 50
+ add interface <span>10GE</span><span>0/0/1</span>
+#                        
+security-policy
+ rule name policy_sec_deny1                                                              
+  source-zone trust                                                             
+  destination-zone dmz                                                          
+  source-address address-set server_deny
+  destination-address 10.2.0.10 mask 255.255.255.255                                              
+  service protocol tcp source-port 0 to 65535 destination-port 8888
+  time-range time_deny                                                          
+  action deny                                                                   
+ rule name policy_sec_deny2                                                              
+  source-zone trust                                                             
+  destination-zone dmz                                                      
+  source-address address-set server_deny
+  destination-address 10.2.0.11 mask 255.255.255.255
+  service protocol udp source-port 0 to 65535 destination-port 6666
+  time-range time_deny                                                          
+  action deny                                                                   
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_secpolicy_cfg_0023.html">Configuration Examples for Security Policies
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_secpolicy_cfg_0014_fw.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

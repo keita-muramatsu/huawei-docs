@@ -1,0 +1,83 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="LDAP Authentication and Authorization Process">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_aaa-ldap_cfg_0002.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_aaa-ldap_cfg_0004.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="LDAP">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="LDAP">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="LDAP">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="AAA">
+<meta name="featurename" content="AD">
+<meta name="featurename" content="HWTACACS">
+<meta name="featurename" content="LDAP">
+<meta name="featurename" content="RADIUS">
+<meta name="featurename" content="Local User">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563875625">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>LDAP Authentication and Authorization Process</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563875625"></a><a name="EN-US_CONCEPT_0000001563875625"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">LDAP Authentication and Authorization Process</h1>
+<div><p>LDAP defines multiple operations to implement a variety of functions. The bind and query operations are typically used for user authentication and authorization.</p>
+<ul><li>The bind operation has two functions: One is to set up a connection with the LDAP server and obtain the access permissions of the LDAP server. The other is to check the validity of user information.</li></ul>
+<ul><li>The query operation is a process of creating query conditions and obtaining the directory resource information of the LDAP server.</li></ul>
+<div class="p"><a href="#EN-US_CONCEPT_0000001563875625__fig_dc_fd_ldap_000301">Figure 1</a> shows the basic packet exchange process between a user, device, and LDAP server.<div class="fignone" id="EN-US_CONCEPT_0000001563875625__fig_dc_fd_ldap_000301"><a name="EN-US_CONCEPT_0000001563875625__fig_dc_fd_ldap_000301"></a><a name="fig_dc_fd_ldap_000301"></a><span class="figcap"><b>Figure 1 </b>LDAP packet exchange process</span><br><span><img class="vsd" src="figure/en-us_image_0000001513155742.png" width="NaN" height="NaN"></span><ol><li>When accessing an LDAP server, a user enters the user name (for example, User2) and password and sends an authentication request to the device.</li><li>The device obtains the user name and password, and sends a bind request packet carrying the administrator's DN and password to an LDAP server for obtaining the search right.</li><li><p>After receiving the administrator bind request packet, the LDAP server verifies the administrator's DN and password. If the administrator's DN and password are correct, the binding is successful. The LDAP server sends an administrator bind response packet to the device.</p>
+</li><li>After receiving the response packet, the device creates the filter criterion according to the user name and sends a DN search request packet to the LDAP server. For example, CN=User2 is a filter criterion.</li><li><p>After receiving the DN search request packet, the LDAP server searches for the DN based on the Base-DN, search range, and filter criterion. If a DN is found, the LDAP server sends a response packet to the device. One or more DNs may be found. In the directory structure shown in <a href="galaxy_aaa-ldap_cfg_0003.html">Overview of LDAP</a>, if the Base-DN is "dc=huawei,dc=com", two DNs are returned: "CN=User2, Departments=R&amp;D, OU=People, dc=huawei, dc=com" and "CN=User2, Departments=R&amp;D, OU=Equipment, dc=huawei, dc=com."</p>
+</li><li>The device sends a bind request packet carrying the user DN and password to the LDAP server.</li><li><p>After receiving the bind request packet, the LDAP server verifies the password.</p>
+<ul><li>If the password entered by the user is correct, the LDAP server sends a successful bind response packet to the device.</li><li>If the password entered by the user is incorrect, the LDAP server sends a failed bind response packet to the device. The device sends a new bind request packet carrying the next DN found to the LDAP server. This procedure repeats until a DN is successfully bound. If no DN is successfully bound, the device notifies the user that the authentication fails.</li></ul>
+</li><li>After the authentication is successful, the device notifies the user of the result and the user obtains access permission.</li></ol>
+<p>The LDAP authorization process is similar to the LDAP authentication process. You must bind the device to the LDAP server and then query user authorization information.</p>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The sequence in which the administrator bind request and response packets and user bind request and response packets are sent depends on the configured LDAP server type. When the server type is <strong><span>ad-ldap</span></strong>, the user bind request and response packets are sent before the administrator bind request and response packets.</p>
+<p>When the <b><span class="cmdqueryname">undo ldap-server authorization bind-user enable</span></b> command is used to cancel user binding during LDAP authorization, the administrator bind request and response packets are sent before the user bind request and response packets.</p>
+<p>During LDAP packet exchange in the AD authentication process, the administrator bind request and response packets are sent before the user bind request and response packets.</p>
+</div></div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_aaa-ldap_cfg_0002.html">Understanding LDAP-based AAA
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_aaa-ldap_cfg_0004.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

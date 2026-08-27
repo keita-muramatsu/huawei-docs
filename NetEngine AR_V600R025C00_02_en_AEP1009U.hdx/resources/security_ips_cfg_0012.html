@@ -1,0 +1,105 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Checking Threat Logs and Modifying Configurations">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ips_cfg_0001.html">
+<meta name="DC.Relation" scheme="URI" content="security_ips_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002313073753.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Intrusion Prevention">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="featuretype" content="Security">
+<meta name="featuretype" content="Security Protection">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001563754109">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Checking Threat Logs and Modifying Configurations</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_CONCEPT_0000001563754109"></a><a name="EN-US_CONCEPT_0000001563754109"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Checking Threat Logs and Modifying Configurations</h1>
+<div><p>The device detects traffic that matches a security policy. If an intrusion behavior is detected, the device processes the data flow based on the action specified in the IPS profile and generates a threat log. You need to analyze logs to learn about attacks on the network and modify configurations to achieve the optimal defense and reduce unnecessary logs on the device.</p>
+<p>You can obtain basic information such as the traffic address, protocol, as well as the attack signature and response action based on the following log information:</p>
+<pre class="screen">IPS/4/DETECT(l):An intrusion was detected. (SyslogId=2, VSys="public",Policy="policy1", SrcIp=192.168.1.2, DstIp=192.168.0.2, SrcPort=80, 
+DstPort=53319,SrcZone=untrust, DstZone=trust, User="unknown", Protocol=TCP, Application="HTTP",Profile="default", 
+SignName="Microsoft Internet Explorer CVE-2014-1815 Use After Free",SignId=263490, EventNum=1, Target=client, Severity=high, Os=windows, 
+Category=Code-execution<span>, Reference=CVE-2013-1234</span>, Action=Alert, Extend="" , UserGroup="unknown")</pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The DETECT threat log is used as an example. For details about other threat logs, see IPS logs in the <em>Log Reference</em>.</p>
+</div></div>
+<p>Some threats also have the corresponding Common Vulnerabilities and Exposures (CVE) number, or Bugtraq ID (BID). You can visit <a href="https://www.cve.org/" target="_blank" rel="noopener noreferrer">https://www.cve.org/</a> to query the CVE number, or BID to obtain detailed information about the threats.</p>
+<p>No matter whether the default IPS profile or a customized IPS profile is used, you need to continuously monitor logs, analyze the attack types, attack sources, and attack targets on the network, and take proper measures to handle threat events or modify configurations.</p>
+<ol><li><strong>Identify attack logs that are generated in large numbers within a short period of time and take measures to block the attack source in a timely manner.</strong><p>You can find the exception based on the IP addresses and attack types in the logs. For example, if the source IP address in a large number of threat logs is the same public IP address that is not used for normal services, you can configure a security policy to deny traffic from this IP address. If a large number of logs related to an intranet PC or server are generated, the intranet PC or server may be intruded. In this case, you are advised to disconnect the intranet PC or server from the network and remove viruses on the intranet PC or server.</p>
+</li><li><strong>Learn more about the attack details and analyze the impact of the attack.</strong><p>The log information contains the signature ID, protocol, application, and attack type. You can also access Huawei security center (<span><a href="https://isecurity.huawei.com" target="_blank" rel="noopener noreferrer">isecurity.huawei.com</a></span>) to view more information such as handling suggestions.</p>
+<p>In Huawei security center, choose <span class="menucascade"><b><span class="uicontrol">Knowledge Base Query</span></b> &gt; <b><span class="uicontrol">IPS Threat</span></b></span>. The signature information is displayed as follows, including the handling suggestions for the attack.</p>
+<p><span><img src="figure/en-us_image_0000001563994081.png" height="231.42000000000002" width="523.6875" title="Click to enlarge" class="imgResize"></span></p>
+<p>Based on the signature information, you can perform the following operations:</p>
+<ul><li>Check whether the attack is reported by mistake based on the attack type and the services running on the attack target. For example, many SQL injection attacks are detected, but no SQL database is running on the attacked server. In this case, the SQL injection attacks are incorrectly reported. Additionally, some normal services used by the enterprise, for example, security scanning software, may be incorrectly reported as attacks. Such attacks do not need to be detected.</li><li><p>Perform security hardening or upgrade based on the handling suggestions. Attacks usually exploit system vulnerabilities, including attacks on the operating system, software, and database. To defend against such attacks, you need to perform system security hardening operations such as patch installation or software upgrade.</p>
+</li><li><p>Determine whether attacks are high-risk attacks such as Trojan horses and information disclosure. If so, block such attacks immediately.</p>
+</li><li>If you cannot determine whether blocking some attacks will affect services, continuously monitor these attacks before taking further measures.</li></ul>
+</li><li><strong>Repeat the preceding steps to continuously monitor threat logs and modify configurations.</strong><p>By continuously monitoring logs, you can learn about the types of protocols, applications, and attacks to be defended against on the current network. Then you can manually create an IPS profile by referring to <a href="security_ips_cfg_0015.html">Manually Creating an IPS Profile</a> to defend against attacks corresponding to specific signatures.</p>
+<p>After the IPS profile is manually created, you need to continuously monitor logs and modify configurations as required.</p>
+<ul><li>For attacks that are reported by mistake, you can take the following measures:<p>If a large number of attacks on a certain type of operating system or service are incorrectly reported, for example, a large number of attacks on the Linux operating system but no server running the Linux operating system is deployed on the network, check whether the Linux operating system attack signature is configured as a filtering condition in a signature filter in the IPS profile. If so, you can cancel the filtering condition.</p>
+<p>If attacks corresponding to a signature are incorrectly reported, specify the signature as an exception signature in the IPS profile and set the action to <strong>allow</strong>. You can also disable the signature globally.</p>
+<pre class="screen">[Device] <strong>profile type ips name profile_ips</strong> 
+[Device-profile-ips-profile_profile_ips] <strong>exception ips-signature-id <em>id</em> action allow</strong></pre>
+<p>If an attack on a fixed IP address is incorrectly reported, for example, the device where the security scanning software is installed is detected as an attack source, configure the device not to detect the traffic from the IP address (that is, delete the corresponding IP address from the security policy that references the IPS profile).</p>
+</li><li>For attacks that exploit system vulnerabilities, enable antivirus software on the host and install patches or upgrade software.</li><li>For high-risk attacks, block them in a timely manner. In most cases, the default action for signatures of high-risk attacks is <strong>block</strong>. If the response action in a log is <strong>alert</strong>, configure the signature as an exception signature and set the action to <strong>block</strong> or <strong>blacklist</strong> when no services are affected.</li><li>For attacks that you are not clear about the attack sources or whether services will be affected if the attacks are blocked, you can retain the action as <strong>alert</strong>, monitor the attacks, and handle the attacks after confirming the attack sources.</li><li>If some normal services are affected, check threat logs for the types of affected services. Then modify the IPS profile.</li></ul>
+</li></ol>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ips_cfg_0001.html">Intrusion Prevention Configuration
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ips_cfg_0016.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="toctopics/en-us_topic_0000002313073753.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

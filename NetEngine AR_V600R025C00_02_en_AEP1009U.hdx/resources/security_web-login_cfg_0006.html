@@ -1,0 +1,105 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Web UI-based Login">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_web-login_cfg_0005.html">
+<meta name="DC.Relation" scheme="URI" content="security_web-login_cfg_0007.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Web UI-based Login">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Web UI-based Login">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featurename" content="Web UI-based Login">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512845806">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Web UI-based Login</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512845806"></a><a name="EN-US_TASK_0000001512845806"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Web UI-based Login</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512845806__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Using local authentication as an example, this section describes how to configure web UI-based login through HTTPS. For details about how to configure this function when server authentication is used, see "AAA Configuration" in Configuration Guide &gt; User Access and Authentication Configuration.</p>
+<p>For security purposes, change the password periodically.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512845806__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Create a local account. (This step is required upon first login, as there is no default account.)</span><ol type="a"><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the AAA view.</span><p><pre class="screen"><b><span class="cmdqueryname">aaa</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure the local user name and password.</span><p><pre class="screen"><b><span class="cmdqueryname">local-user</span></b><strong> </strong><i><span class="varname">user-name</span></i> <b><span class="cmdqueryname">password</span></b> <b><span class="cmdqueryname">irreversible-cipher</span></b> <i><span class="varname">ir-password</span></i></pre>
+</p></li><li class="substepexpand"><span>Set the service type of the local user to HTTP.</span><p><pre class="screen"><b><span class="cmdqueryname">local-user</span></b><strong> </strong><i><span class="varname">user-name</span></i><strong> </strong><b><span class="cmdqueryname">service-type http</span></b></pre>
+</p></li><li class="substepexpand"><span>Set the privilege level to 3 for the local user.</span><p><pre class="screen"><b><span class="cmdqueryname">local-user</span></b><em> </em><i><span class="varname">user-name</span></i><strong> </strong><strong><span>privilege level 3</span></strong></pre>
+<p>This step is mandatory. Otherwise, you cannot log in to the device through the web UI. By default, users at privilege level 3 can access all pages. </p>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Enable the HTTPS service.</span><p><pre class="screen"><b><span class="cmdqueryname">web-manager enable</span></b> [ <strong>port</strong> <em>port-number</em> ]</pre>
+</p></li><li><strong>Optional: </strong><span>Enable forcible redirection from HTTP to HTTPS.</span><p><pre class="screen"><b><span class="cmdqueryname">web-manager</span></b> <strong><span>http forward enable</span></strong></pre>
+<p>With this function enabled, a device will automatically display the web UI using HTTPS — a secure version of HTTP — if a user attempts to log in to the device's interface at http://<em>ip-address</em> using HTTP. If this function is disabled, you cannot use HTTP to access the web UI.</p>
+</p></li><li><strong>Optional: </strong><span>Configure the certificate sent by the device functioning as a server to the terminal functioning as a client.</span><p><pre class="screen"><b><span class="cmdqueryname">web-manager security server-certificate</span></b> <em>server-certificate-file</em></pre>
+<p>If no certificate is specified, the server sends the default certificate to the client for authentication when the client attempts to log in to the server through HTTPS. If a certificate is specified, the server sends the specified certificate to the client for authentication. You can obtain the CA certificate from the device's web UI or CA server and import it to the client's browser. The client then uses the imported CA certificate to verify the identity of the device.</p>
+<p>The specified certificate needs to be applied for from the CA server. After the CA server generates the requested certificate, download the certificate to the device's storage path and then import it to the memory for the certificate to take effect. For detailed configurations, see "PKI Configuration" in <i><cite>Configuration Guide &gt; Security Configuration</cite></i>.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The CA can be an internationally recognized organization or a PC running certificate services. The client can trust a certificate only after the client user has obtained the CA certificate of the CA server that issues the server's certificate and imports it to the browser. If the CA certificate is not imported to the browser, the client can still log in to the device through HTTPS. In this case, the client cannot verify the validity of the server's certificate and is vulnerable to attacks.</p>
+<p>If the local certificate is issued by a multi-level CA, you need to make the local certificate and CA certificates into a certificate chain file and import it to the device. If the local certificate and CA certificates are separately imported, the CA certificate downloaded on the login page cannot clear the security alarm generated during device access.</p>
+</div></div>
+</p></li><li><strong>Optional: </strong><span>Configure two-way authentication. Before enabling this function, import the client certificate to the browser and import the matching CA certificate to the server. When logging in to the server using HTTPS, the client sends its certificate to the server, which then uses the CA certificate to verify the client certificate.</span><ol type="a"><li class="substepexpand"><span>Enable two-way authentication between the server and client.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">web-manager security verify-ssl-peer</span></b></strong></pre>
+</p></li><li class="substepexpand"><span>Specify the CA certificate used by the server to verify the client certificate.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">web-manager security ca-certificate</span></b> </strong><em>ca-certificate</em></pre>
+</p></li></ol>
+</li><li><strong>Optional: </strong><span>Configure the device's IP address that can be used to access the web UI.</span><p><pre class="screen"><b><span class="cmdqueryname">web-manager</span></b> { <strong><span>ipv4</span></strong> | <strong><span>ipv6</span></strong> } <strong><span>server-source</span></strong> <strong><span>-a</span></strong> <i><span class="varname">ip-address</span></i> [ <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance</span></i> ]</pre>
+<p>By default, no IP address is configured for accessing the web UI.</p>
+</p></li><li><strong>Optional: </strong><span>Specify a specific interface or all interfaces that can be used to access the web UI.</span><p><ul><li>Configure an interface to be used to access the web UI.<pre class="screen"><b><span class="cmdqueryname">web-manager server-source -i</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-num</span></i></pre>
+</li><li>Configure all interfaces to be used to access the web UI.<pre class="screen"><b><span class="cmdqueryname">web-manager server-source all-interface</span></b></pre>
+</li></ul>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You only need to configure either an IP address or an interface for accessing the web UI.</p>
+</div></div>
+</p></li><li><strong>Optional: </strong><span>Configure an ACL to restrict the addresses of users who are allowed to access the web UI.</span><p><pre class="screen"><b><span class="cmdqueryname">web-manager acl</span></b><strong> </strong>{ <i><span class="varname">acl-number</span></i> | <i><span class="varname">acl-name</span></i> }
+<b><span class="cmdqueryname">web-manager ipv6 acl</span></b><strong> </strong>{ <i><span class="varname">acl6-number</span></i> | <i><span class="varname">acl6-name</span></i> }</pre>
+<p>In an ACL rule, the Permit action allows access to the web UI, and the Deny action forbids access to the web UI. With this function configured, the web UI cannot be accessed if traffic does not match the ACL rule.</p>
+</p></li><li><span>Connect the network port of your PC to the login interface of the device through an Ethernet cable or a Layer 2 switch.</span></li><li><span>Open a browser on the terminal and log in to the device by entering <strong>https://</strong><strong><em>device's interface IP address</em></strong><strong>:</strong><strong><em>port number</em></strong>. Use the account and password configured in Step 1 to log in to the web UI of the device. During the first login, the device prompts you to change the password.</span><p><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In the default configuration file of the device, the <strong>web-manager enable port 443</strong> command is configured to set the login port number of the device to 443.</p>
+</div></div>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001512845806__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <strong>display web-manager { configuration | users [ brief ] }</strong> command in any view to check information about the web server and web login users.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_web-login_cfg_0005.html">Configuring Web UI-based Login
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_web-login_cfg_0007.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

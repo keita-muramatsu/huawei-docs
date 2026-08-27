@@ -1,0 +1,74 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Route Establishment in IP Multicast over SD-WAN">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ip_multicast_over_sdwan_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ip_multicast_over_sdwan_cfg_0016.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IP Multicast over SD-WAN">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IP Multicast over SD-WAN">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="IP Multicast over SD-WAN">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002305204457">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Route Establishment in IP Multicast over SD-WAN</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002305204457"></a><a name="EN-US_CONCEPT_0000002305204457"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Route Establishment in IP Multicast over SD-WAN</h1>
+<div><div class="section"><h4 class="sectiontitle">MVPN Extended Community Attributes</h4><div class="p">MVPN extended community attributes are mainly used to control the advertisement and acceptance of BGP C-multicast routes. The attributes are classified into the following types:<ul><li>Virtual route import (VRI): The VRI value is the extended community attribute Site-ID in the RPF route. It is the same as the Site-ID in the import route target (IRT). After receiving a route carrying this attribute, the corresponding upstream site imports the route into the multicast routing table.</li><li>Tunnel encapsulation attribute (TEA): The TEA value is the Site-ID of the site from which a C-multicast route is sent. After receiving the C-multicast route, an upstream site uses the interface to the downstream site specified by the Site-ID as the outbound interface.</li><li><div class="p">VRF Route Import extended community: This attribute is carried in the BGP EVPN routes advertised by a leaf node to other leaf nodes. A receiver leaf node attaches this attribute to a C-multicast route that is sent to the sender leaf node. If there are multiple sender leaf nodes, each one that receives a C-multicast route uses this attribute to determine whether it should process the route and which VPN routing table it should install the route into.<p></p>
+</div>
+<p>The value of the VRF Route Import extended community is in the format of Administrator field:Local Administrator field. The value of the Administrator field is the Site-ID of the peer end, and that of the Local Administrator field is the VN ID of the local VPN instance.</p>
+</li></ul>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Multicast Member Join Process</h4><p>After BGP MVPN peer relationships are established between CPEs and RRs and between replication points and RRs, they can use BGP MVPN routes to transmit the join information of C-multicast members. The following example describes how a multicast member joins a multicast group in PIM (S, G) and PIM (*, G) modes.</p>
+<p><strong>(S, G) PIM Join</strong></p>
+<p><a href="#EN-US_CONCEPT_0000002305204457__fig_dc_vrp_mc-over-vxlan_feature_000603">Figure 1</a> describes how a multicast member joins a multicast group in the scenario where CPE2 initiates an (S, G) PIM Join request to CPE1.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002305204457__fig_dc_vrp_mc-over-vxlan_feature_000603"><a name="EN-US_CONCEPT_0000002305204457__fig_dc_vrp_mc-over-vxlan_feature_000603"></a><a name="fig_dc_vrp_mc-over-vxlan_feature_000603"></a><span class="figcap"><b>Figure 1 </b>Time sequence for a multicast member to join a multicast group</span><br><span><img class="vsd" src="figure/en-us_image_0000002305204473.png" width="NaN" height="NaN"></span></div>
+<p>Procedure for joining a multicast group</p>
+<ol><li>CPE1 advertises a BGP EVPN address family IP prefix route carrying the SD-WAN extended community attribute to the replication point and CPE2 through the RR.</li><li>After receiving the route, the replication point and CPE2 save the source unicast route, and the next hop of the route is the Site-ID of CPE1.</li><li>A static RPF route is configured on CPE2, and the next hop of the route is set to the Site-ID of the replication point.</li><li>After receiving an IGMP join request, CPE2 generates a PIM-SSM Join message.</li><li>After generating the PIM-SSM Join message, CPE2 subscribes to the RPF route. The next hop of this route is the Site-ID of the replication point because a static configuration takes precedence over the dynamic route configuration.</li><li>CPE2 generates a multicast entry, constructs a C-multicast route carrying the extended community attribute, and sends the C-multicast route to the replication point.</li><li>After receiving the C-multicast route, the replication point creates a multicast entry and subscribes to the RPF route (the next hop of the dynamically learned RPF route is CPE1).</li><li>The replication point then reconstructs a C-multicast route carrying the extended community attribute and sends this route to CPE1.</li><li>After receiving the C-multicast route, CPE1 creates a multicast entry or adds an outbound interface to an existing entry, searches for an RPF route, and sends a PIM-SSM Join message to the upstream device.</li></ol>
+<p><strong>(*, G) PIM Join</strong></p>
+<p><a href="#EN-US_CONCEPT_0000002305204457__fig370913875611">Figure 2</a> describes the (*, G) PIM Join implementation.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002305204457__fig370913875611"><a name="EN-US_CONCEPT_0000002305204457__fig370913875611"></a><a name="fig370913875611"></a><span class="figcap"><b>Figure 2 </b>Time sequence for a multicast member to join a multicast group in PIM (*, G) mode</span><br><span><img class="vsd" src="figure/en-us_image_0000002270857248.png" width="NaN" height="NaN"></span></div>
+<ol><li>CPE1 advertises a BGP EVPN address family IP prefix route carrying the SD-WAN extended community attribute to the replication point and CPE2 through the RR.</li><li>After receiving the route, the replication point and CPE2 save the source unicast route, and the next hop of the route is the Site-ID of CPE1.</li><li>A static RPF route with a specified priority is configured on CPE2, and the next hop of the route is replaced with the Site-ID of the replication point.</li><li>After receiving traffic, CE1 sends a PIM Register message to CPE1.</li><li>After receiving the PIM Register message, CPE1 generates an (S, G) entry.</li><li>CPE1 sends a Source Active A-D route to the replication point and CPE2.</li><li>After receiving the Source Active route, the replication point and CPE2 generate (S, G) entries and search for an RPF route. Currently, there is no matched outbound interface.</li><li>After receiving an IGMP join request, CE2 sends an (*, G) PIM Join message to CPE2.</li><li>After receiving the (*, G) PIM Join message, CPE2 generates an (*, G) entry. The (S, G) entry inherits the outbound interface of the (*, G) entry and search for an RPF route. The next hop of the RPF route is the Site-ID of the replication point because a static configuration takes precedence over the dynamic route configuration.</li><li>CPE2 constructs a C-multicast route carrying the extended community attribute and sends this route to the replication point.</li><li>After receiving the C-multicast route, the replication point adds the outbound interface to the (S, G) entry and finds that the next hop of the dynamically learned RPF route is CPE1.</li><li>The replication point then reconstructs a C-multicast route carrying the extended community attribute and sends this route to CPE1.</li><li>After receiving the C-multicast route, CPE1 creates a multicast entry or adds an outbound interface to an existing entry and searches for an RPF route.</li><li>CPE1 sends a PIM-SSM Join message to CE1.</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ip_multicast_over_sdwan_cfg_0003.html">Understanding IP Multicast over SD-WAN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ip_multicast_over_sdwan_cfg_0016.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

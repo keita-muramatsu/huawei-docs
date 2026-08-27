@@ -1,0 +1,88 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Managing Files Using TFTP">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0066.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0067.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001564131905">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Managing Files Using TFTP</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001564131905"></a><a name="EN-US_TASK_0000001564131905"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Managing Files Using TFTP</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001564131905__1.4.1"></a><a name="1.4.1"></a>
+<div class="p"><h4 class="sectiontitle">Overview</h4><p>TFTP transmits data in cleartext and does not provide authorization and authentication functions, posing security risks and leaving the device vulnerable to network viruses and attacks. To mitigate these risks, take the following measures:</p>
+<ul><li><p>Impose application limitations.</p>
+<p>TFTP does not support authentication and is an insecure file transfer protocol. Therefore, devices can function only as TFTP clients, and cannot function as TFTP servers.</p>
+<p>As managing TFTP clients requires level-3 management commands, only users with management rights can perform operations on device files through TFTP.</p>
+</li><li><p>Configure TFTP server ACL rules.</p>
+<p>You can configure TFTP server ACL rules in the system view to limit the IP addresses of TFTP servers that can access the corresponding device.</p>
+</li><li><p>Configure source interfaces.</p>
+<p>You can configure the source interfaces supported by the TFTP client to limit the access range and improve device security.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001564131905__1.4.2"></a><a name="1.4.2"></a>
+<div class="p"><h4 class="sectiontitle">Impact on the System</h4><p>None</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001564131905__1.4.3"></a><a name="1.4.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure TFTP access control.</span><ol><li class="substepexpand"><span>In the ACL view, configure ACL rules to control the TFTP servers that can access the local device.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">acl</span></b> <span>{ </span>[ <strong><span>number</span></strong> ] <i><span class="varname">acl-number</span></i><span> | <strong><span>name</span></strong> <i><span class="varname">acl-name</span></i> }</span>
+<span><b><span class="cmdqueryname">rule</span></b><span> [ <i><span class="varname">rule-id</span></i> ] [ <strong><span>name</span></strong> <i><span class="varname">rule-name</span></i> ] { <span><span><strong><span>permit</span></strong> </span></span>| <strong><span>deny</span></strong> } [ <strong><span>fragment-type</span></strong> <strong><span>fragment</span></strong> | <strong><span>source</span></strong> { <i><span class="varname">source-ip-address</span></i> <span>{ </span><i><span class="varname">source-wildcard</span></i> | <strong><span>0</span></strong><span> | <i><span class="varname">src-netmask</span></i> }</span> | <strong><span>any</span></strong> } | <strong><span>time-range</span></strong> <i><span class="varname">time-name</span></i> | <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i><span> | <strong><span>logging</span></strong></span> ] <sup>*</sup></span></span>
+<b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Apply the preceding ACL rules.</span><p><pre class="screen"><b><span class="cmdqueryname">tftp server</span></b> [ <strong><span>ipv6</span></strong> ] <strong><span>acl</span></strong> <i><span class="varname">acl-number</span></i></pre>
+</p></li></ol>
+</li><li><span>Configure source interfaces.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b>
+<b><span class="cmdqueryname">tftp client source</span></b> { <strong><span>-a</span></strong> <i><span class="varname">ip-address</span></i> | <strong><span>-i</span></strong> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> }</pre>
+</p></li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001564131905__1.4.4"></a><a name="1.4.4"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><p>Run the <b><span class="cmdqueryname">display tftp client</span></b> command to check the configuration of the device that functions as the TFTP client.</p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0066.html">File System Management Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0067.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

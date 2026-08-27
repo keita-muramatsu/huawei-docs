@@ -1,0 +1,894 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="usmUserTable">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../../v6r25c00/MIB/dc_AR_SNMP-USER-BASED-SM-MIB_mibtablecatalog.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="SNMP">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Reference">
+<meta name="featurename" content="SNMP">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="SNMP">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="SNMP">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Creator" content="SNMP-USER-BASED-SM-MIB">
+<meta name="Omsys Path" content="YUNSHAN-V100R025C00">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000002169025180">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../../public_sys-resources/browseVersion.js"></script>
+<title>usmUserTable</title>
+</head>
+<body><a name="EN-US_TOPIC_0000002169025180"></a><a name="EN-US_TOPIC_0000002169025180"></a>
+
+<div class="articleBoxWithoutHead">
+
+    <h1 class="topicTitle-h1">usmUserTable</h1>
+
+    
+	
+    <div> <p>The table of users configured in the SNMP engine's Local Configuration Datastore (LCD).</p>
+<p>To create a new user (i.e., to instantiate a new conceptual row in this table), it is recommended to follow this procedure:</p>
+<p>1)  GET(usmUserSpinLock.0) and save in sValue.</p>
+<p>2)  SET(usmUserSpinLock.0=sValue,</p>
+<p>usmUserCloneFrom=templateUser,</p>
+<p>usmUserStatus=createAndWait)</p>
+<p>You should use a template user to clone from which has the proper auth/priv protocol defined.</p>
+<p>If the new user is to use privacy:</p>
+<p>3)  generate the keyChange value based on the secret privKey of the clone-from user and the secret key to be used for the new user. Let us call this pkcValue.</p>
+<p>4)  GET(usmUserSpinLock.0) and save in sValue.</p>
+<p>5)  SET(usmUserSpinLock.0=sValue,</p>
+<p>usmUserPrivKeyChange=pkcValue</p>
+<p>usmUserPublic=randomValue1)</p>
+<p>6)  GET(usmUserPulic) and check it has randomValue1.</p>
+<p>If not, repeat steps 4-6.</p>
+<p>If the new user will never use privacy:</p>
+<p>7)  SET(usmUserPrivProtocol=usmNoPrivProtocol)</p>
+<p>If the new user is to use authentication:</p>
+<p>8)  generate the keyChange value based on the secret authKey of the clone-from user and the secret key to be used for the new user. Let us call this akcValue.</p>
+<p>9)  GET(usmUserSpinLock.0) and save in sValue.</p>
+<p>10) SET(usmUserSpinLock.0=sValue,</p>
+<p>usmUserAuthKeyChange=akcValue</p>
+<p>usmUserPublic=randomValue2)</p>
+<p>11) GET(usmUserPulic) and check it has randomValue2.</p>
+<p>If not, repeat steps 9-11.</p>
+<p>If the new user will never use authentication:</p>
+<p>12) SET(usmUserAuthProtocol=usmNoAuthProtocol)</p>
+<p>Finally, activate the new user:</p>
+<p>13) SET(usmUserStatus=active)</p>
+<p>The new user should now be available and ready to be used for SNMPv3 communication. Note however that access to MIB data must be provided via configuration of the SNMP-VIEW-BASED-ACM-MIB.</p>
+<p>The use of usmUserSpinlock is to avoid conflicts with another SNMP command generator application which may also be acting on the usmUserTable.</p>
+ <p>The indexes of the table are usmUserEngineID,usmUserName.</p>
+
+		
+		
+        
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all">
+                
+                
+                
+                
+                
+                
+                <thead align="left">
+                    <tr>
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.33.1.7.1.1" liSelected="liSelected">
+                            <p>
+                                <strong>OID</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.33.1.7.1.2" liSelected="liSelected">
+                            <p>
+                                <strong>Object</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.33.1.7.1.3" liSelected="liSelected">
+                            <p>
+                                <strong>Syntax</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.33.1.7.1.4" liSelected="liSelected">
+                            <p>
+                                <strong>Max Access</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.33.1.7.1.5" liSelected="liSelected">
+                            <p>
+                                <strong>Description</strong>
+                            </p>
+
+                        </th>
+
+                        <th align="left" class="cellrowborder" valign="top" width="16.666666666666664%" id="mcps1.3.33.1.7.1.6" liSelected="liSelected">
+                            <p>
+                                <strong>Implemented Specifications</strong>
+                            </p>
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.1</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserEngineID</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OCTET STRING{(5,32)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>not-accessible</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>An SNMP engine's administratively-unique identifier.</p>
+<p>                 In a simple agent, this value is always that agent's</p>
+<p>                 own snmpEngineID value.</p>
+<p>                 The value can also take the value of the snmpEngineID</p>
+<p>                 of a remote SNMP engine with which this user can</p>
+<p>                 communicate.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.2</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserName</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OCTET STRING{(1,32)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>not-accessible</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>A human readable string representing the name of</p>
+<p>                 the user.</p>
+<p>                 This is the (User-based Security) Model dependent</p>
+<p>                 security ID.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.3</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserSecurityName</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OCTET STRING{(0,255)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-only</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>A human readable string representing the user in</p>
+<p>                 Security Model independent format.</p>
+<p>                 The default transformation of the User-based Security</p>
+<p>                 Model dependent security ID to the securityName and</p>
+<p>                 vice versa is the identity function so that the</p>
+<p>                 securityName is the same as the userName.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                        <p></p>
+ <p><p>The actually supported value range is 1..32</p>
+</p>
+ <p></p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.4</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserCloneFrom</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OBJECT IDENTIFIER</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>A pointer to another conceptual row in this</p>
+<p>                 usmUserTable.  The user in this other conceptual</p>
+<p>                 row is called the clone-from user.</p>
+<p>                 When a new user is created (i.e., a new conceptual</p>
+<p>                 row is instantiated in this table), the privacy and</p>
+<p>                 authentication parameters of the new user must be</p>
+<p>                 cloned from its clone-from user. These parameters are:</p>
+<p>                   - authentication protocol (usmUserAuthProtocol)</p>
+<p>                   - privacy protocol (usmUserPrivProtocol)</p>
+<p>                 They will be copied regardless of what the current</p>
+<p>                 value is.</p>
+<p>                 Cloning also causes the initial values of the secret</p>
+<p>                 authentication key (authKey) and the secret encryption</p>
+<p>                 key (privKey) of the new user to be set to the same</p>
+<p>                 values as the corresponding secrets of the clone-from</p>
+<p>                 user to allow the KeyChange process to occur as</p>
+<p>                 required during user creation.</p>
+<p>                 The first time an instance of this object is set by</p>
+<p>                 a management operation (either at or after its</p>
+<p>                 instantiation), the cloning process is invoked.</p>
+<p>                 Subsequent writes are successful but invoke no</p>
+<p>                 action to be taken by the receiver.</p>
+<p>                 The cloning process fails with an 'inconsistentName'</p>
+<p>                 error if the conceptual row representing the</p>
+<p>                 clone-from user does not exist or is not in an active</p>
+<p>                 state when the cloning process is invoked.</p>
+<p>                 When this object is read, the ZeroDotZero OID</p>
+<p>                 is returned.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.5</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserAuthProtocol</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OBJECT IDENTIFIER</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>An indication of whether messages sent on behalf of</p>
+<p>                 this user to/from the SNMP engine identified by</p>
+<p>                 usmUserEngineID, can be authenticated, and if so,</p>
+<p>                 the type of authentication protocol which is used.</p>
+<p>                 An instance of this object is created concurrently</p>
+<p>                 with the creation of any other object instance for</p>
+<p>                 the same user (i.e., as part of the processing of</p>
+<p>                 the set operation which creates the first object</p>
+<p>                 instance in the same conceptual row).</p>
+<p>                 If an initial set operation (i.e. at row creation time)</p>
+<p>                 tries to set a value for an unknown or unsupported</p>
+<p>                 protocol, then a 'wrongValue' error must be returned.</p>
+<p>                 The value will be overwritten/set when a set operation</p>
+<p>                 is performed on the corresponding instance of</p>
+<p>                 usmUserCloneFrom.</p>
+<p>                 Once instantiated, the value of such an instance of</p>
+<p>                 this object can only be changed via a set operation to</p>
+<p>                 the value of the usmNoAuthProtocol.</p>
+<p>                 If a set operation tries to change the value of an</p>
+<p>                 existing instance of this object to any value other</p>
+<p>                 than usmNoAuthProtocol, then an 'inconsistentValue'</p>
+<p>                 error must be returned.</p>
+<p>                 If a set operation tries to set the value to the</p>
+<p>                 usmNoAuthProtocol while the usmUserPrivProtocol value</p>
+<p>                 in the same row is not equal to usmNoPrivProtocol,</p>
+<p>                 then an 'inconsistentValue' error must be returned.</p>
+<p>                 That means that an SNMP command generator application</p>
+<p>                 must first ensure that the usmUserPrivProtocol is set</p>
+<p>                 to the usmNoPrivProtocol value before it can set</p>
+<p>                 the usmUserAuthProtocol value to usmNoAuthProtocol.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.6</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserAuthKeyChange</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OCTET STRING</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>An object, which when modified, causes the secret</p>
+<p>                 authentication key used for messages sent on behalf</p>
+<p>                 of this user to/from the SNMP engine identified by</p>
+<p>                 usmUserEngineID, to be modified via a one-way</p>
+<p>                 function.</p>
+<p>                 The associated protocol is the usmUserAuthProtocol.</p>
+<p>                 The associated secret key is the user's secret</p>
+<p>                 authentication key (authKey). The associated hash</p>
+<p>                 algorithm is the algorithm used by the user's</p>
+<p>                 usmUserAuthProtocol.</p>
+<p>                 When creating a new user, it is an 'inconsistentName'</p>
+<p>                 error for a set operation to refer to this object</p>
+<p>                 unless it is previously or concurrently initialized</p>
+<p>                 through a set operation on the corresponding instance</p>
+<p>                 of usmUserCloneFrom.</p>
+<p>                 When the value of the corresponding usmUserAuthProtocol</p>
+<p>                 is usmNoAuthProtocol, then a set is successful, but</p>
+<p>                 effectively is a no-op.</p>
+<p>                 When this object is read, the zero-length (empty)</p>
+<p>                 string is returned.</p>
+<p>                 The recommended way to do a key change is as follows:</p>
+<p>                   1) GET(usmUserSpinLock.0) and save in sValue.</p>
+<p>                   2) generate the keyChange value based on the old</p>
+<p>                      (existing) secret key and the new secret key,</p>
+<p>                      let us call this kcValue.</p>
+<p>                 If you do the key change on behalf of another user:</p>
+<p>                   3) SET(usmUserSpinLock.0=sValue,</p>
+<p>                          usmUserAuthKeyChange=kcValue</p>
+<p>                          usmUserPublic=randomValue)</p>
+<p>                 If you do the key change for yourself:</p>
+<p>                   4) SET(usmUserSpinLock.0=sValue,</p>
+<p>                          usmUserOwnAuthKeyChange=kcValue</p>
+<p>                          usmUserPublic=randomValue)</p>
+<p>                 If you get a response with error-status of noError,</p>
+<p>                 then the SET succeeded and the new key is active.</p>
+<p>                 If you do not get a response, then you can issue a</p>
+<p>                 GET(usmUserPublic) and check if the value is equal</p>
+<p>                 to the randomValue you did send in the SET. If so, then</p>
+<p>                 the key change succeeded and the new key is active</p>
+<p>                 (probably the response got lost). If not, then the SET</p>
+<p>                 request probably never reached the target and so you</p>
+<p>                 can start over with the procedure above.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.7</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserOwnAuthKeyChange</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OCTET STRING</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>Behaves exactly as usmUserAuthKeyChange, with one</p>
+<p>                 notable difference: in order for the set operation</p>
+<p>                 to succeed, the usmUserName of the operation</p>
+<p>                 requester must match the usmUserName that</p>
+<p>                 indexes the row which is targeted by this</p>
+<p>                 operation.</p>
+<p>                 In addition, the USM security model must be</p>
+<p>                 used for this operation.</p>
+<p>                 The idea here is that access to this column can be</p>
+<p>                 public, since it will only allow a user to change</p>
+<p>                 his own secret authentication key (authKey).</p>
+<p>                 Note that this can only be done once the row is active.</p>
+<p>                 When a set is received and the usmUserName of the</p>
+<p>                 requester is not the same as the umsUserName that</p>
+<p>                 indexes the row which is targeted by this operation,</p>
+<p>                 then a 'noAccess' error must be returned.</p>
+<p>                 When a set is received and the security model in use</p>
+<p>                 is not USM, then a 'noAccess' error must be returned.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.8</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserPrivProtocol</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OBJECT IDENTIFIER</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>An indication of whether messages sent on behalf of</p>
+<p>                 this user to/from the SNMP engine identified by</p>
+<p>                 usmUserEngineID, can be protected from disclosure,</p>
+<p>                 and if so, the type of privacy protocol which is used.</p>
+<p>                 An instance of this object is created concurrently</p>
+<p>                 with the creation of any other object instance for</p>
+<p>                 the same user (i.e., as part of the processing of</p>
+<p>                 the set operation which creates the first object</p>
+<p>                 instance in the same conceptual row).</p>
+<p>                 If an initial set operation (i.e. at row creation time)</p>
+<p>                 tries to set a value for an unknown or unsupported</p>
+<p>                 protocol, then a 'wrongValue' error must be returned.</p>
+<p>                 The value will be overwritten/set when a set operation</p>
+<p>                 is performed on the corresponding instance of</p>
+<p>                 usmUserCloneFrom.</p>
+<p>                 Once instantiated, the value of such an instance of</p>
+<p>                 this object can only be changed via a set operation to</p>
+<p>                 the value of the usmNoPrivProtocol.</p>
+<p>                 If a set operation tries to change the value of an</p>
+<p>                 existing instance of this object to any value other</p>
+<p>                 than usmNoPrivProtocol, then an 'inconsistentValue'</p>
+<p>                 error must be returned.</p>
+<p>                 Note that if any privacy protocol is used, then you</p>
+<p>                 must also use an authentication protocol. In other</p>
+<p>                 words, if usmUserPrivProtocol is set to anything else</p>
+<p>                 than usmNoPrivProtocol, then the corresponding instance</p>
+<p>                 of usmUserAuthProtocol cannot have a value of</p>
+<p>                 usmNoAuthProtocol. If it does, then an</p>
+<p>                 'inconsistentValue' error must be returned.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.9</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserPrivKeyChange</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OCTET STRING</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>An object, which when modified, causes the secret</p>
+<p>                 encryption key used for messages sent on behalf</p>
+<p>                 of this user to/from the SNMP engine identified by</p>
+<p>                 usmUserEngineID, to be modified via a one-way</p>
+<p>                 function.</p>
+<p>                 The associated protocol is the usmUserPrivProtocol.</p>
+<p>                 The associated secret key is the user's secret</p>
+<p>                 privacy key (privKey). The associated hash</p>
+<p>                 algorithm is the algorithm used by the user's</p>
+<p>                 usmUserAuthProtocol.</p>
+<p>                 When creating a new user, it is an 'inconsistentName'</p>
+<p>                 error for a set operation to refer to this object</p>
+<p>                 unless it is previously or concurrently initialized</p>
+<p>                 through a set operation on the corresponding instance</p>
+<p>                 of usmUserCloneFrom.</p>
+<p>                 When the value of the corresponding usmUserPrivProtocol</p>
+<p>                 is usmNoPrivProtocol, then a set is successful, but</p>
+<p>                 effectively is a no-op.</p>
+<p>                 When this object is read, the zero-length (empty)</p>
+<p>                 string is returned.</p>
+<p>                 See the description clause of usmUserAuthKeyChange for</p>
+<p>                 a recommended procedure to do a key change.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.10</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserOwnPrivKeyChange</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OCTET STRING</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>Behaves exactly as usmUserPrivKeyChange, with one</p>
+<p>                 notable difference: in order for the Set operation</p>
+<p>                 to succeed, the usmUserName of the operation</p>
+<p>                 requester must match the usmUserName that indexes</p>
+<p>                 the row which is targeted by this operation.</p>
+<p>                 In addition, the USM security model must be</p>
+<p>                 used for this operation.</p>
+<p>                 The idea here is that access to this column can be</p>
+<p>                 public, since it will only allow a user to change</p>
+<p>                 his own secret privacy key (privKey).</p>
+<p>                 Note that this can only be done once the row is active.</p>
+<p>                 When a set is received and the usmUserName of the</p>
+<p>                 requester is not the same as the umsUserName that</p>
+<p>                 indexes the row which is targeted by this operation,</p>
+<p>                 then a 'noAccess' error must be returned.</p>
+<p>                 When a set is received and the security model in use</p>
+<p>                 is not USM, then a 'noAccess' error must be returned.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.11</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserPublic</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>OCTET STRING{(0,32)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>A publicly-readable value which can be written as part</p>
+<p>                 of the procedure for changing a user's secret</p>
+<p>                 authentication and/or privacy key, and later read to</p>
+<p>                 determine whether the change of the secret was</p>
+<p>                 effected.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.12</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserStorageType</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>INTEGER{other(1),volatile(2),nonVolatile(3),permanent(4),readOnly(5)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>The storage type for this conceptual row.</p>
+<p>                 Conceptual rows having the value 'permanent' must</p>
+<p>                 allow write-access at a minimum to:</p>
+<p>                 - usmUserAuthKeyChange, usmUserOwnAuthKeyChange</p>
+<p>                   and usmUserPublic for a user who employs</p>
+<p>                   authentication, and</p>
+<p>                 - usmUserPrivKeyChange, usmUserOwnPrivKeyChange</p>
+<p>                   and usmUserPublic for a user who employs</p>
+<p>                   privacy.</p>
+<p>                 Note that any user who employs authentication or</p>
+<p>                 privacy must allow its secret(s) to be updated and</p>
+<p>                 thus cannot be 'readOnly'.</p>
+<p>                 If an initial set operation tries to set the value to</p>
+<p>                 'readOnly' for a user who employs authentication or</p>
+<p>                 privacy, then an 'inconsistentValue' error must be</p>
+<p>                 returned.  Note that if the value has been previously</p>
+<p>                 set (implicit or explicit) to any value, then the rules</p>
+<p>                 as defined in the StorageType Textual Convention apply.</p>
+<p>                 It is an implementation issue to decide if a SET for</p>
+<p>                 a readOnly or permanent row is accepted at all. In some</p>
+<p>                 contexts this may make sense, in others it may not. If</p>
+<p>                 a SET for a readOnly or permanent row is not accepted</p>
+<p>                 at all, then a 'wrongValue' error must be returned.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                        <tr>
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.1 ">
+                                <p>1.3.6.1.6.3.15.1.2.2.1.13</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.2 ">
+                                <p>usmUserStatus</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.3 ">
+                                <p>INTEGER{active(1),notInService(2),notReady(3),createAndGo(4),createAndWait(5),destroy(6)}</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.4 ">
+                                <p>read-create</p>
+
+                            </td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.5 ">
+							    <p>The status of this conceptual row.</p>
+<p>                 Until instances of all corresponding columns are</p>
+<p>                 appropriately configured, the value of the</p>
+<p>                 corresponding instance of the usmUserStatus column</p>
+<p>                 is 'notReady'.</p>
+<p>                 In particular, a newly created row for a user who</p>
+<p>                 employs authentication, cannot be made active until the</p>
+<p>                 corresponding usmUserCloneFrom and usmUserAuthKeyChange</p>
+<p>                 have been set.</p>
+<p>                 Further, a newly created row for a user who also</p>
+<p>                 employs privacy, cannot be made active until the</p>
+<p>                 usmUserPrivKeyChange has been set.</p>
+<p>                 The RowStatus TC [RFC2579] requires that this</p>
+<p>                 DESCRIPTION clause states under which circumstances</p>
+<p>                 other objects in this row can be modified:</p>
+<p>                 The value of this object has no effect on whether</p>
+<p>                 other objects in this conceptual row can be modified,</p>
+<p>                 except for usmUserOwnAuthKeyChange and</p>
+<p>                 usmUserOwnPrivKeyChange. For these 2 objects, the</p>
+<p>                 value of usmUserStatus MUST be active.</p>
+
+                                
+								
+							</td>
+
+                            <td class="cellrowborder" valign="top" width="16.666666666666664%" headers="mcps1.3.33.1.7.1.6 ">
+                                    <p>This object is implemented as defined in the corresponding MIB files.</p>
+
+									
+                                </td>
+
+                            </tr>
+
+                    </tbody>
+
+                </table>
+</div>
+
+            <div class="section"><h4 class="sectiontitle">Creation Restriction</h4>
+                
+ <p>None.</p>
+ 
+                </div>
+
+                <div class="section"><h4 class="sectiontitle">Modification Restriction</h4>
+                    
+ <p>None.</p>
+ 
+                    </div>
+
+                    <div class="section"><h4 class="sectiontitle">Deletion Restriction</h4>
+                        
+ <p>None.</p>
+ 
+                        </div>
+
+                        <div class="section"><h4 class="sectiontitle">Access Restriction</h4>
+                            
+ <p>None.</p>
+ 
+                            </div>
+
+                        </div>
+
+                    
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../../v6r25c00/MIB/dc_AR_SNMP-USER-BASED-SM-MIB_mibtablecatalog.html">Description of MIB Tables
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+</div>
+</div>
+</body>
+</html>

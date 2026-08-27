@@ -1,0 +1,526 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring EVPN L3VPNv4 over SRv6 BE">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0330.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0019.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001176742035">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring EVPN L3VPNv4 over SRv6 BE</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001176742035"></a><a name="EN-US_TASK_0000001176742035"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring EVPN L3VPNv4 over SRv6 BE</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001176742035__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000001176742035__fig_dc_vrp_evpn_cfg_015101">Figure 1</a>, PE1, the P, and PE2 are in the same AS. IS-IS must be configured on these devices to achieve IPv6 network connectivity, and a bidirectional SRv6 BE path must be deployed between PE1 and PE2 to carry EVPN L3VPNv4 services.</p>
+<div class="fignone" id="EN-US_TASK_0000001176742035__fig_dc_vrp_evpn_cfg_015101"><a name="EN-US_TASK_0000001176742035__fig_dc_vrp_evpn_cfg_015101"></a><a name="fig_dc_vrp_evpn_cfg_015101"></a><span class="figcap"><b>Figure 1 </b>Network diagram of EVPN L3VPNv4 over SRv6 BE</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface1 and interface2 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001176662133.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001176742035__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Enable IPv6 forwarding and configure an IPv6 address for each interface on PE1, the P, and PE2.</p>
+</li><li><p>Enable IS-IS, configure an IS-IS level, and specify a network entity title (NET) on PE1, the P, and PE2.</p>
+</li><li><p>Configure an IPv4 L3VPN instance on each PE and bind the IPv4 L3VPN instance to an access-side interface.</p>
+</li><li><p>Establish an EBGP peer relationship between each PE and its connected CE.</p>
+</li><li><p>Establish a BGP EVPN peer relationship between the PEs.</p>
+</li><li><p>Configure SRv6 BE on the PEs, and enable IS-IS SRv6.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001176742035__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enable IPv6 forwarding and configure an IPv6 address for each interface. The following example uses the configuration of PE1. The configurations of other devices are similar to the configuration of PE1.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname PE1</strong>
+[PE1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 enable</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>ipv6 address 2001:DB8:10::1 64</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[PE1] <strong>interface LoopBack 1</strong>
+[PE1-LoopBack1] <strong>ipv6 enable</strong>
+[PE1-LoopBack1] <strong>ipv6 address 2001:DB8:1::1 128</strong>
+[PE1-LoopBack1] <strong>quit</strong></pre>
+</p></li><li><span>Configure IS-IS.</span><p><p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>isis 1</strong>
+[PE1-isis-1] <strong>is-level level-1</strong>
+[PE1-isis-1] <strong>cost-style wide</strong>
+[PE1-isis-1] <strong>network-entity 10.0000.0000.0001.00</strong>
+[PE1-isis-1] <strong>ipv6 enable topology ipv6</strong>
+[PE1-isis-1] <strong>quit</strong>
+[PE1] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>isis ipv6 enable 1</strong>
+[PE1-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[PE1] <strong>interface loopback1</strong>
+[PE1-LoopBack1] <strong>isis ipv6 enable 1</strong>
+[PE1-LoopBack1] <strong>quit</strong></pre>
+<p># Configure the P.</p>
+<pre class="screen">[P] <strong>isis 1</strong> 
+[P-isis-1] <strong>is-level level-1</strong>
+[P-isis-1] <strong>cost-style wide</strong>
+[P-isis-1] <strong>network-entity 10.0000.0000.0002.00</strong>
+[P-isis-1] <strong>ipv6 enable topology ipv6</strong>
+[P-isis-1] <strong>quit</strong>
+[P] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[P-<span>10GE</span><span>0/0/1</span>] <strong>isis ipv6 enable 1</strong>
+[P-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[P] <strong>interface <span>10ge</span> <span><span><span>0/0/2</span></span></span></strong>
+[P-<span>10GE</span><span>0/0/2</span>] <strong>isis ipv6 enable 1</strong>
+[P-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[P] <strong>interface loopback1</strong>
+[P-LoopBack1] <strong>isis ipv6 enable 1</strong>
+[P-LoopBack1] <strong>quit</strong></pre>
+<p># Configure PE2.</p>
+<pre class="screen">[PE2] <strong>isis 1</strong>
+[PE2-isis-1] <strong>is-level level-1</strong>
+[PE2-isis-1] <strong>cost-style wide</strong>
+[PE2-isis-1] <strong>network-entity 10.0000.0000.0003.00</strong>
+[PE2-isis-1] <strong>ipv6 enable topology ipv6</strong>
+[PE2-isis-1] <strong>quit</strong>
+[PE2] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong>isis ipv6 enable 1</strong>
+[PE2-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[PE2] <strong>interface loopback1</strong>
+[PE2-LoopBack1] <strong>isis ipv6 enable 1</strong>
+[PE2-LoopBack1] <strong>quit</strong></pre>
+</p><p><p>After the configuration is complete, perform the following operations to verify the IS-IS configuration.</p>
+<p># Display IS-IS neighbor information. The following example uses the command output on PE1.</p>
+<pre class="screen">[PE1] <strong>display isis peer</strong></pre>
+<pre class="screen">                          Peer information for ISIS(1)
+                         
+  System Id     Interface         Circuit Id        State HoldTime Type     PRI
+--------------------------------------------------------------------------------
+0000.0000.0002* <span>10GE</span><span>0/0/1</span>         0000.0000.0002.01  Up   8s       L1       64 
+
+Total Peer(s): 1</pre>
+</p></li><li><span>Configure an IPv4 L3VPN instance on each PE and bind the IPv4 L3VPN instance to an access-side interface.</span><p><p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>ip vpn-instance vpn1</strong>
+[PE1-vpn-instance-vpn1] <strong>ipv4-family</strong>
+[PE1-vpn-instance-vpn1-af-ipv4] <strong>route-distinguisher 100:1</strong>
+[PE1-vpn-instance-vpn1-af-ipv4] <strong>vpn-target 1:1 evpn</strong>
+[PE1-vpn-instance-vpn1-af-ipv4] <strong>quit</strong>
+[PE1-vpn-instance-vpn1] <strong>quit</strong>
+[PE1] <strong>interface <span>10ge</span> <span><span><span>0/0/2</span></span></span></strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong>ip binding vpn-instance vpn1</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.1.1.1 24</strong>
+[PE1-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[PE1] <strong>bgp 100</strong>
+[PE1-bgp] <strong>ipv4-family vpn-instance vpn1</strong>
+[PE1-bgp-vpn1] <strong>import-route direct</strong>
+[PE1-bgp-vpn1] <strong>advertise l2vpn evpn</strong>
+[PE1-bgp-vpn1] <strong>quit</strong>
+[PE1-bgp] <strong>quit</strong></pre>
+<p># Configure PE2.</p>
+<pre class="screen">[PE2] <strong>ip vpn-instance vpn1</strong>
+[PE2-vpn-instance-vpn1] <strong>ipv4-family</strong>
+[PE2-vpn-instance-vpn1-af-ipv4] <strong>route-distinguisher 200:1</strong>
+[PE2-vpn-instance-vpn1-af-ipv4] <strong>vpn-target 1:1 evpn</strong>
+[PE2-vpn-instance-vpn1-af-ipv4] <strong>quit</strong>
+[PE2-vpn-instance-vpn1] <strong>quit</strong>
+[PE2] <strong>interface <span>10ge</span> <span><span><span>0/0/2</span></span></span></strong>
+[PE2-<span>10GE</span><span>0/0/2</span>] <strong>ip binding vpn-instance vpn1</strong>
+[PE2-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.2.1.1 24</strong>
+[PE2-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[PE2] <strong>bgp 100</strong>
+[PE2-bgp] <strong>ipv4-family vpn-instance vpn1</strong>
+[PE2-bgp-vpn1] <strong>import-route direct</strong>
+[PE2-bgp-vpn1] <strong>advertise l2vpn evpn</strong>
+[PE2-bgp-vpn1] <strong>quit</strong>
+[PE2-bgp] <strong>quit</strong></pre>
+</p></li><li><span>Establish an EBGP peer relationship between each PE and its connected CE.</span><p><p># Configure CE1.</p>
+<pre class="screen">[CE1] <strong>interface loopback 1</strong>
+[CE1-LoopBack1] <strong>ip address 11.11.11.11 32</strong>
+[CE1-LoopBack1] <strong>quit</strong>
+[CE1] <strong>bgp 65410</strong>
+[CE1-bgp] <strong>peer 10.1.1.1 as-number 100</strong>
+[CE1-bgp] <strong>network 11.11.11.11 32</strong>
+[CE1-bgp] <strong>quit</strong></pre>
+<p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>bgp 100</strong>
+[PE1-bgp] <strong>router-id 1.1.1.1</strong>
+[PE1-bgp] <strong>ipv4-family vpn-instance vpn1</strong>
+[PE1-bgp-vpn1] <strong>peer 10.1.1.2 as-number 65410</strong>
+[PE1-bgp-vpn1] <strong>import-route direct</strong>
+[PE1-bgp-vpn1] <strong>quit</strong>
+[PE1-bgp] <strong>quit</strong></pre>
+<p># Configure CE2.</p>
+<pre class="screen">[CE2] <strong>interface loopback 1</strong>
+[CE2-LoopBack1] <strong>ip address 22.22.22.22 32</strong>
+[CE2-LoopBack1] <strong>quit</strong>
+[CE2] <strong>bgp 65420</strong>
+[CE2-bgp] <strong>peer 10.2.1.1 as-number 100</strong>
+[CE2-bgp] <strong>network 22.22.22.22 32</strong>
+[CE2-bgp] <strong>quit</strong></pre>
+<p># Configure PE2.</p>
+<pre class="screen">[PE2] <strong>bgp 100</strong>
+[PE2-bgp] <strong>router-id 3.3.3.3</strong>
+[PE2-bgp] <strong>ipv4-family vpn-instance vpn1</strong>
+[PE2-bgp-vpn1] <strong>peer 10.2.1.2 as-number 65420</strong>
+[PE2-bgp-vpn1] <strong>import-route direct</strong>
+[PE2-bgp-vpn1] <strong>quit</strong>
+[PE2-bgp] <strong>quit</strong></pre>
+<p>After the configuration is complete, run the <strong>display bgp vpnv4 vpn-instance peer</strong> command on each PE to check whether a BGP peer relationship has been established between the PE and its connected CE. If the <strong>Established</strong> state is displayed in the command output, the BGP peer relationship has been established successfully.</p>
+<p>The following example uses the command output on PE1 to show that a BGP peer relationship has been established between PE1 and CE1.</p>
+<pre class="screen">[PE1] <strong>display bgp vpnv4 vpn-instance vpn1 peer</strong>
+
+ BGP local router ID : 1.1.1.1                          
+ Local AS number : 100                                  
+
+ VPN-Instance vpn1, Router ID 1.1.1.1:                  
+ Total number of peers : 1                 Peers in established state : 1       
+
+  Peer            V          AS  MsgRcvd  MsgSent  OutQ  Up/Down       State  PrefRcv                                               
+  10.1.1.2        4       65410       43       47     0 00:35:32 <strong>Established</strong>        1 </pre>
+</p></li><li><span>Establish a BGP EVPN peer relationship between the PEs.</span><p><p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>bgp 100</strong>
+[PE1-bgp] <strong>peer 2001:DB8:3::3 as-number 100</strong>
+[PE1-bgp] <strong>peer 2001:DB8:3::3 connect-interface loopback 1</strong>
+[PE1-bgp] <strong>l2vpn-family evpn</strong>
+[PE1-bgp-af-evpn] <strong>peer 2001:DB8:3::3 enable</strong>
+[PE1-bgp-af-evpn] <strong>quit</strong>
+[PE1-bgp] <strong>quit</strong></pre>
+<p># Configure PE2.</p>
+<pre class="screen">[PE2] <strong>bgp 100</strong>
+[PE2-bgp] <strong>peer 2001:DB8:1::1 as-number 100</strong>
+[PE2-bgp] <strong>peer 2001:DB8:1::1 connect-interface loopback 1</strong>
+[PE2-bgp] <strong>l2vpn-family evpn</strong>
+[PE2-bgp-af-evpn] <strong>peer 2001:DB8:1::1 enable</strong>
+[PE2-bgp-af-evpn] <strong>quit</strong>
+[PE2-bgp] <strong>quit</strong></pre>
+<p>After the configuration is complete, run the <strong>display bgp evpn peer</strong> command on a PE to check whether a BGP EVPN peer relationship has been established between the PEs. If the <strong>Established</strong> state is displayed in the command output, the BGP EVPN peer relationship has been established successfully.</p>
+</p></li><li><span>Configure SRv6 BE on the PEs.</span><p><p># Configure PE1.</p>
+<pre class="screen">[PE1] <strong>segment-routing ipv6</strong>
+[PE1-segment-routing-ipv6] <strong>encapsulation source-address 2001:DB8:1::1</strong>
+[PE1-segment-routing-ipv6] <strong>locator PE1 ipv6-prefix 2001:DB8:100:: 64 static 32</strong>
+[PE1-segment-routing-ipv6-locator] <strong>opcode ::100 end-dt4 vpn-instance vpn1 evpn</strong>
+[PE1-segment-routing-ipv6-locator] <strong>quit</strong>
+[PE1-segment-routing-ipv6] <strong>quit</strong>
+[PE1] <strong>isis 1</strong>
+[PE1-isis-1] <strong>segment-routing ipv6 locator PE1</strong><strong> auto-sid-disable</strong>
+[PE1-isis-1] <strong>quit</strong>
+[PE1] <strong>bgp 100</strong>
+[PE1-bgp] <strong>l2vpn-family evpn</strong>
+[PE1-bgp-af-evpn] <strong>peer 2001:DB8:3::3 advertise encap-type srv6</strong>
+[PE1-bgp-af-evpn] <strong>quit</strong>
+[PE1-bgp] <strong>ipv4-family vpn-instance vpn1</strong>
+[PE1-bgp-vpn1] <strong>segment-routing ipv6 locator PE1 evpn</strong>
+[PE1-bgp-vpn1] <strong>segment-routing ipv6 best-effort evpn</strong>
+[PE1-bgp-vpn1] <strong>quit</strong>
+[PE1-bgp] <strong>quit</strong></pre>
+<p># Configure PE2.</p>
+<pre class="screen">[PE2] <strong>segment-routing ipv6</strong>
+[PE2-segment-routing-ipv6] <strong>encapsulation source-address 2001:DB8:3::3</strong>
+[PE2-segment-routing-ipv6] <strong>locator PE2 ipv6-prefix 2001:DB8:130:: 64 static 32</strong>
+[PE2-segment-routing-ipv6-locator] <strong>opcode ::200 end-dt4 vpn-instance vpn1 evpn</strong>
+[PE2-segment-routing-ipv6-locator] <strong>quit</strong>
+[PE2-segment-routing-ipv6] <strong>quit</strong>
+[PE2] <strong>isis 1</strong>
+[PE2-isis-1] <strong>segment-routing ipv6 locator PE2 auto-sid-disable</strong>
+[PE2-isis-1] <strong>quit</strong>
+[PE2] <strong>bgp 100</strong>
+[PE2-bgp] <strong>l2vpn-family evpn</strong>
+[PE2-bgp-af-evpn] <strong>peer 2001:DB8:1::1 advertise encap-type srv6</strong>
+[PE2-bgp-af-evpn] <strong>quit</strong>
+[PE2-bgp] <strong>ipv4-family vpn-instance vpn1</strong>
+[PE2-bgp-vpn1] <strong>segment-routing ipv6 locator PE2 evpn</strong>
+[PE2-bgp-vpn1] <strong>segment-routing ipv6 best-effort evpn</strong>
+[PE2-bgp-vpn1] <strong>quit</strong>
+[PE2-bgp] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001176742035__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <strong>display bgp evpn all routing-table prefix-route</strong> command on each PE. The command output shows the IP prefix route sent from the peer end. The following example uses the command output on PE1.</p>
+<pre class="screen">[PE1] <strong>display bgp evpn all routing-table prefix-route</strong>
+
+ Local AS number : 100                                  
+
+ BGP Local router ID is 1.1.1.1                         
+ Status codes: * - valid, &gt; - best, d - damped, x - best external, a - add path,
+               h - history,  i - internal, s - suppressed, S - Stale
+               Origin : i - IGP, e - EGP, ? - incomplete
+
+
+ EVPN address family:                                   
+ Number of Ip Prefix Routes: 4                          
+ Route Distinguisher: 100:1                             
+       Network(EthTagId/IpPrefix/IpPrefixLen)                 NextHop           
+ *&gt;    0:10.1.1.0:24                                          0.0.0.0           
+ *&gt;    0:11.11.11.11:32                                       10.1.1.2          
+ Route Distinguisher: 200:1                             
+       Network(EthTagId/IpPrefix/IpPrefixLen)                 NextHop           
+ *&gt;i   0:10.2.1.0:24                                          2001:DB8:3::3     
+ *&gt;i   0:22.22.22.22:32                                       2001:DB8:3::3 </pre>
+<p>Run the <strong>display ip routing-table vpn-instance vpn1</strong> command on each PE. The command output shows the VPN route information sent from the peer end. The following example uses the command output on PE1.</p>
+<pre class="screen">[PE1] <strong>display ip routing-table vpn-instance vpn1</strong>
+Route Flags: R - relay, D - download to fib, T - to vpn-instance, B - black hole route                                              
+------------------------------------------------------------------------------  
+Routing Table : vpn1                                    
+         Destinations : 8        Routes : 8             
+
+Destination/Mask    Proto   Pre  Cost        Flags NextHop           Interface    
+
+       10.1.1.0/24  Direct  0    0             D   10.1.1.1          <span>10GE</span><span>0/0/2</span>
+       10.1.1.1/32  Direct  0    0             D   127.0.0.1         <span>10GE</span><span>0/0/2</span>
+     10.1.1.255/32  Direct  0    0             D   127.0.0.1         <span>10GE</span><span>0/0/2</span>
+       10.2.1.0/24  IBGP    255  0             RD  2001:DB8:130::200 <span>10GE</span><span>0/0/1</span>   
+    11.11.11.11/32  EBGP    255  0             RD  10.1.1.2          <span>10GE</span><span>0/0/2</span>
+    22.22.22.22/32  IBGP    255  0             RD  2001:DB8:130::200 <span>10GE</span><span>0/0/1</span>         
+      127.0.0.0/8   Direct  0    0             D   127.0.0.1         InLoopBack0  
+255.255.255.255/32  Direct  0    0             D   127.0.0.1         InLoopBack0 </pre>
+<p>Run the <b><span class="cmdqueryname">display segment-routing ipv6 local-sid</span></b> <strong><span>end-dt4</span></strong> <strong><span>forwarding</span></strong> command to check information about the SRv6 local SID table. The following example uses the command output on PE1.</p>
+<pre class="screen">[PE1] <strong>display segment-routing ipv6 local-sid end-dt4 forwarding</strong>
+
+                    My Local-SID End.DT4 Forwarding Table  
+                    -------------------------------------                       
+
+SID        : 2001:DB8:100::100/128                        FuncType : End.DT4    
+VPN Name   : vpn1                                         VPN ID   : 4          
+LocatorName: PE1                                          LocatorID: 7   
+UpdateTime : 2022-12-27 08:06:30.228 
+
+Total SID(s): 1  </pre>
+<p>Check that CEs belonging to the same VPN instance can ping each other. For example:</p>
+<pre class="screen">[CE1] <strong>ping -a 11.11.11.11 22.22.22.22</strong>
+  PING 22.22.22.22: 56  data bytes, press CTRL_C to break         
+    Reply from 22.22.22.22: bytes=56 Sequence=1 ttl=253 time=127 ms             
+    Reply from 22.22.22.22: bytes=56 Sequence=2 ttl=253 time=19 ms              
+    Reply from 22.22.22.22: bytes=56 Sequence=3 ttl=253 time=26 ms              
+    Reply from 22.22.22.22: bytes=56 Sequence=4 ttl=253 time=17 ms              
+    Reply from 22.22.22.22: bytes=56 Sequence=5 ttl=253 time=16 ms              
+
+  --- 22.22.22.22 ping statistics ---                   
+    5 packet(s) transmitted                             
+    5 packet(s) received                                
+    0.00% packet loss                                   
+    round-trip min/avg/max = 16/41/127 ms </pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001176742035__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>PE1</p>
+<pre class="screen">#
+sysname PE1
+#
+ip vpn-instance vpn1
+ ipv4-family
+  route-distinguisher 100:1
+  vpn-target 1:1 export-extcommunity evpn
+  vpn-target 1:1 import-extcommunity evpn
+#
+segment-routing ipv6
+ encapsulation source-address 2001:DB8:1::1
+ locator PE1 ipv6-prefix 2001:DB8:100:: 64 static 32
+ opcode ::100 end-dt4 vpn-instance vpn1 evpn
+#
+isis 1
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0001.00
+ #
+ ipv6 enable topology ipv6
+ segment-routing ipv6 locator PE1 auto-sid-disable
+ #
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:10::1/64
+ isis ipv6 enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpn1
+ ip address 10.1.1.1 255.255.255.0
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:1::1/128
+ isis ipv6 enable 1
+#
+bgp 100
+ router-id 1.1.1.1
+ peer 2001:DB8:3::3 as-number 100
+ peer 2001:DB8:3::3 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  undo synchronization
+ #
+ ipv4-family vpn-instance vpn1
+  import-route direct
+  advertise l2vpn evpn
+  segment-routing ipv6 locator PE1 evpn
+  segment-routing ipv6 best-effort evpn
+  peer 10.1.1.2 as-number 65410
+ #
+ l2vpn-family evpn
+  undo policy vpn-target
+  peer 2001:DB8:3::3 enable
+  peer 2001:DB8:3::3 advertise encap-type srv6
+#
+return</pre>
+</li><li><p>P</p>
+<pre class="screen">#
+sysname P
+#
+isis 1
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0002.00
+ #
+ ipv6 enable topology ipv6
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:10::2/64
+ isis ipv6 enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:20::1/64
+ isis ipv6 enable 1
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:2::2/128
+ isis ipv6 enable 1
+#
+return</pre>
+</li><li><p>PE2</p>
+<pre class="screen">#
+sysname PE2
+#
+ip vpn-instance vpn1
+ ipv4-family
+  route-distinguisher 200:1
+  vpn-target 1:1 export-extcommunity evpn
+  vpn-target 1:1 import-extcommunity evpn
+#
+segment-routing ipv6
+ encapsulation source-address 2001:DB8:3::3
+ locator PE2 ipv6-prefix 2001:DB8:130:: 64 static 32
+ opcode ::200 end-dt4 vpn-instance vpn1 evpn
+#
+isis 1
+ is-level level-1
+ cost-style wide
+ network-entity 10.0000.0000.0003.00
+ #
+ ipv6 enable topology ipv6
+ segment-routing ipv6 locator PE2 auto-sid-disable
+ #
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ipv6 enable
+ ipv6 address 2001:DB8:20::2/64
+ isis ipv6 enable 1
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip binding vpn-instance vpn1
+ ip address 10.2.1.1 255.255.255.0
+#
+interface LoopBack1
+ ipv6 enable
+ ipv6 address 2001:DB8:3::3/128
+ isis ipv6 enable 1
+#
+bgp 100
+ router-id 3.3.3.3
+ peer 2001:DB8:1::1 as-number 100
+ peer 2001:DB8:1::1 connect-interface LoopBack1
+ #
+ ipv4-family unicast
+  undo synchronization
+ #
+ ipv4-family vpn-instance vpn1
+  import-route direct
+  advertise l2vpn evpn
+  segment-routing ipv6 locator PE2 evpn
+  segment-routing ipv6 best-effort evpn
+  peer 10.2.1.2 as-number 65420
+ #
+ l2vpn-family evpn
+  undo policy vpn-target
+  peer 2001:DB8:1::1 enable
+  peer 2001:DB8:1::1 advertise encap-type srv6
+#
+return</pre>
+</li><li><p>CE1</p>
+<pre class="screen">#
+sysname CE1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.1.1.2 255.255.255.0
+#               
+interface LoopBack1
+ ip address 11.11.11.11 255.255.255.255
+#               
+bgp 65410       
+ peer 10.1.1.1 as-number 100
+ #              
+ ipv4-family unicast
+  undo synchronization
+  network 11.11.11.11 255.255.255.255
+  peer 10.1.1.1 enable
+#               
+return </pre>
+</li><li><p>CE2</p>
+<pre class="screen">#
+sysname CE2
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 10.2.1.2 255.255.255.0
+#
+interface LoopBack1
+ ip address 22.22.22.22 255.255.255.255
+#
+bgp 65420
+ peer 10.2.1.1 as-number 100
+ #
+ ipv4-family unicast
+  undo synchronization
+  network 22.22.22.22 255.255.255.255
+  peer 10.2.1.1 enable
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0330.html">Configuration Examples for Segment Routing IPv6
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0019.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

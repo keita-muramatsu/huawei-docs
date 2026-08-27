@@ -1,0 +1,128 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Packet Filtering Based on Application Identification">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002242417813.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_qos_filtering_cfg_0006.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Packet Filtering">
+<meta name="featuretype" content="QoS">
+<meta name="featuretype" content="QoS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002007995657">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Packet Filtering Based on Application Identification</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002007995657"></a><a name="EN-US_TASK_0000002007995657"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Packet Filtering Based on Application Identification</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002007995657__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000002007995657__fig_dc_ar_cfg_qos_04490501">Figure 1</a>, the lab of a school uses DeviceA as the gateway to connect to the Internet. The use of instant messaging software (such as QQ and MSN) is prohibited to prevent students from engaging in affairs irrelevant to learning in the lab.</p>
+<div class="fignone" id="EN-US_TASK_0000002007995657__fig_dc_ar_cfg_qos_04490501"><a name="EN-US_TASK_0000002007995657__fig_dc_ar_cfg_qos_04490501"></a><a name="fig_dc_ar_cfg_qos_04490501"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring packet filtering based on application identification</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 represents <span>10GE</span> <span>0/0/1</span>.</p>
+</div></div>
+<br><span><img src="images/fig_dc_ar_cfg_qos_04490501.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002007995657__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Create an application group named <strong>Instant_Messaging</strong> and add instant messaging software QQ and MSN to the application group.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[<span class="keyword">DeviceA</span>] <strong>application-group name Instant_Messaging</strong> 
+[<span class="keyword">DeviceA</span>-application-group-Instant_Messaging] <strong>add application QQ_IM</strong>
+[<span class="keyword">DeviceA</span>-application-group-Instant_Messaging] <strong>add application MSN_IM</strong>
+[<span class="keyword">DeviceA</span>-application-group-Instant_Messaging] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic classifier to match the application group <strong>Instant_Messaging</strong>.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>] <strong>traffic classifier im</strong>
+[<span class="keyword">DeviceA</span>-classifier-im] <strong>if-match app-group Instant_Messaging</strong>
+[<span class="keyword">DeviceA</span>-classifier-im] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic behavior to filter identified instant messaging software packets.</span><p><pre class="screen">[<span class="keyword">DeviceA</span>] <strong>traffic behavior im</strong>
+[<span class="keyword">DeviceA</span>-behavior-im] <strong>deny</strong>
+[<span class="keyword">DeviceA</span>-behavior-im] <strong>quit</strong></pre>
+</p></li><li><span>Configure a traffic policy and apply it to <span>the inbound direction</span> of an interface.</span><p><p># On <span class="keyword">DeviceA</span>, create a traffic policy <strong>p1</strong> and bind a traffic classifier to a traffic behavior in the traffic policy.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>] <strong>traffic policy im</strong>
+[<span class="keyword">DeviceA</span>-trafficpolicy-im] <strong>classifier im behavior im</strong>
+[<span class="keyword">DeviceA</span>-trafficpolicy-im] <strong>quit</strong></pre>
+<p># Apply the traffic policy <strong>p1</strong> to <span>the inbound direction</span> of interface 1 and enable application identification on the interface.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>] <strong>interface <span>10GE</span><span>0/0/1</span></strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>traffic-policy im inbound</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>sa enable</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002007995657__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># Check the traffic classifier configuration.</p>
+<pre class="screen">&lt;<span class="keyword">DeviceA</span>&gt; <strong>display traffic classifier im</strong>
+  Traffic Classifier Information:
+    Classifier: im
+      Type: OR
+      Rule(s):
+        if-match app-group Instant_Messaging</pre>
+<p># Check the traffic policy configuration.</p>
+<pre class="screen">&lt;<span class="keyword">DeviceA</span>&gt; <strong>display traffic policy im</strong>
+  Traffic Policy Information:
+    Policy: im
+      Classifier: im
+        Type: OR
+      Behavior: im
+        Deny</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002007995657__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><p><span class="keyword">DeviceA</span></p>
+<pre class="screen">#
+sysname <span class="keyword">DeviceA</span>
+#
+application-group name Instant_Messaging
+ add application QQ_IM
+ add application MSN_IM
+#
+traffic classifier im type or
+ if-match app-group Instant_Messaging  
+#
+traffic behavior im
+ deny
+#
+traffic policy im 
+ classifier im behavior im precedence 5
+#
+interface <span>10GE</span><span>0/0/1</span>
+ traffic-policy im inbound 
+ sa enable
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002242417813.html">Configuration Examples for Packet Filtering
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_qos_filtering_cfg_0006.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,458 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Establishing IPsec Tunnels Between the Headquarters and Different Branches Through Certificate Authentication and PSK Authentication">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="toctopics/en-us_topic_0000002220702844.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0152.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0160.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002376410641">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Establishing IPsec Tunnels Between the Headquarters and Different Branches Through Certificate Authentication and PSK Authentication</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002376410641"></a><a name="EN-US_TASK_0000002376410641"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Establishing IPsec Tunnels Between the Headquarters and Different Branches Through Certificate Authentication and PSK Authentication</h1>
+<div class="taskbody" id="taskbody0000002376410641"><div class="context"><a name="EN-US_TASK_0000002376410641__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000002376410641__context1677625172748"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000002376410641__p1747105727180217">To secure branch connectivity, a large enterprise deploys IPsec tunnels with mixed authentication. Some branches use PSK authentication while others use certificate authentication.</p>
+<p id="EN-US_TASK_0000002376410641__p2108481989180217"><a href="#EN-US_TASK_0000002376410641__fig11322226111716">Figure 1</a> shows the enterprise's network. DeviceA at the headquarters establishes an IPsec tunnel with DeviceB using PSK authentication, and with DeviceC using certificate authentication.</p>
+<div class="fignone" id="EN-US_TASK_0000002376410641__fig11322226111716"><a name="EN-US_TASK_0000002376410641__fig11322226111716"></a><a name="fig11322226111716"></a><span class="figcap"><b>Figure 1 </b>Networking diagram for the headquarters to establish IPsec tunnels with different branches through certificate authentication and PSK authentication</span><div class="note" id="EN-US_TASK_0000002376410641__note121061134113619"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002376410641__p1010615347360">In this example, interface1 and interface3 represent <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img id="EN-US_TASK_0000002376410641__image33221426181718" src="figure/en-us_image_0000002376530617.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002376410641__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000002376410641__context414540017180217"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000002376410641__p231970220180217">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000002376410641__ol1404204477180217"><li id="EN-US_TASK_0000002376410641__li11406476180217">Configure IP addresses for interfaces.</li><li id="EN-US_TASK_0000002376410641__li1511465328180217">Configure static routes to ensure that there are reachable routes on the network.</li><li id="EN-US_TASK_0000002376410641__li322254782180217">Configure PKI on DeviceA and DeviceC, apply for local and CA certificates in offline mode, and import the certificates to the devices.</li><li id="EN-US_TASK_0000002376410641__li307244575180217">Configure IPsec policies on DeviceA and DeviceC to establish an IPsec tunnel through certificate authentication, and configure IPsec policies on DeviceA and DeviceB to use PSK authentication.</li></ol>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000002376410641__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul id="EN-US_TASK_0000002376410641__steps-unordered268511355401"><li id="EN-US_TASK_0000002376410641__step196851935154012"><span id="EN-US_TASK_0000002376410641__cmd17685335164015">Configure DeviceA.</span><ol id="EN-US_TASK_0000002376410641__substeps1582527184115"><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep1226903753180217"><span id="EN-US_TASK_0000002376410641__cmd433398177180217">Configure IP addresses for interfaces.</span><p><pre class="screen" id="EN-US_TASK_0000002376410641__screen121187709180217">&lt;sysname&gt; <strong id="EN-US_TASK_0000002376410641__b2001969890180217">system-view</strong>
+[sysname] <strong id="EN-US_TASK_0000002376410641__b1455230051180217">sysname DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002376410641__b543489611180217">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b48001189180217">ip address 1.1.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b1510719075180217">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002376410641__b201042434180217">interface <span>10ge</span><span>0/0/3</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000002376410641__b340100550180217">ip address 10.1.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000002376410641__b1031745251180217">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep1282542242180217"><span id="EN-US_TASK_0000002376410641__cmd1394096355180217">Configure a static route to ensure reachable routes between networks. In this example, the next-hop address is 1.1.1.2.</span><p><pre class="screen" id="EN-US_TASK_0000002376410641__screen289372971180217">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b696279621180217">ip route-static 0.0.0.0 0.0.0.0 1.1.1.2</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep530814469317"><span id="EN-US_TASK_0000002376410641__cmd15307346032">Apply for local and CA certificates in offline mode and import them to the device.</span><p><ol type="a" id="EN-US_TASK_0000002376410641__ol1914133212718"><li id="EN-US_TASK_0000002376410641__li11141132174">Create a 3072-bit RSA key pair and allow it to be exported from the device.<pre class="screen" id="EN-US_TASK_0000002376410641__screen1332551162614">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b764712822715">pki rsa local-key-pair create rsakey_a exportable</strong>
+ Info: The name of the new key-pair will be: rsakey_a
+ The size of the public key ranges from 2048 to 4096.
+ Input the bits in the <span>modulus</span>:<strong id="EN-US_TASK_0000002376410641__b6327163182912">3072</strong>
+ Generating key-pairs...
+ Generating key-pairs finished</pre>
+</li><li id="EN-US_TASK_0000002376410641__li14936183018224">Configure a PKI entity to identify a certificate applicant.<pre class="screen" id="EN-US_TASK_0000002376410641__screen675939021180217">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b330405731180217">pki entity user_a</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b1138205674180217">common-name devicea</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b1167879096180217">country cn</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b1304256087180217">email testa@user.com</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b749462846180217">fqdn testa.abc.com</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b13920030180217">ip-address 1.1.1.1</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b1992423555180217">state beijing</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b327025679180217">organization huawei</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b1210469621180217">organization-unit dev</strong>
+[DeviceA-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b2043385445180217">quit</strong></pre>
+</li><li id="EN-US_TASK_0000002376410641__li249311272248">Apply for a local certificate for the PKI entity in offline mode.<p id="EN-US_TASK_0000002376410641__p5187155684313"><a name="EN-US_TASK_0000002376410641__li249311272248"></a><a name="li249311272248"></a># Create a PKI realm.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen872788024180204">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b749056518180204">pki realm a</strong>
+[DeviceA-pki-realm-a] <strong id="EN-US_TASK_0000002376410641__b1633029903180204">entity user_a</strong>
+[DeviceA-pki-realm-a] <strong id="EN-US_TASK_0000002376410641__b70378780180204">rsa local-key-pair rsakey_a</strong>
+[DeviceA-pki-realm-a] <strong id="EN-US_TASK_0000002376410641__b414547724180204">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p4135165944316"># Save certificate application information to a certificate request file in PKCS#10 format.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen155954812445">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b1483873405180204">pki enroll-certificate realm a pkcs10 filename cer_req</strong>
+ Info: Creating certificate request file...                                     
+ Info: Create certificate request file successfully.  </pre>
+</li><li id="EN-US_TASK_0000002376410641__li198381438162419">Download the certificate request file using a file transfer protocol, and send the file to the CA server in out-of-band mode, such as through the web system, using a disk, or by email, to apply for a local certificate from the CA server. After a local certificate is successfully requested, download the local certificate <strong id="EN-US_TASK_0000002376410641__b19122196338">a_local.cer</strong> and CA certificate <strong id="EN-US_TASK_0000002376410641__b491291933316">a_ca.cer</strong> in out-of-band mode, and then transfer the certificates to the device storage using a file transfer protocol.</li><li id="EN-US_TASK_0000002376410641__li174333569243">Import the CA certificate into the device memory.<p id="EN-US_TASK_0000002376410641__p1493130161619"><a name="EN-US_TASK_0000002376410641__li174333569243"></a><a name="li174333569243"></a>After the certificate is imported, the <strong id="EN-US_TASK_0000002376410641__b1575143813316">a_ca.cer</strong> file is deleted from the storage medium by default. To keep it, select <strong id="EN-US_TASK_0000002376410641__b1575163812334">N</strong> as prompted.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen72701838105318">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b958314284180217">pki import-certificate ca filename a_ca.cer</strong>
+ The CA's Subject is /CN=ca_root 
+ The CA's fingerprint is:
+   MD5  fingerprint:1135 25D8 96D3 5936 C382 35EA 2CEE 80EB 
+   SHA1 fingerprint:6330 974F B2FE 3C52 D16B DAC4 0140 918B 4BCD 3EC7
+ Is the fingerprint correct?(Y/N):<strong id="EN-US_TASK_0000002376410641__b1415838029180217">y</strong>
+ Info: Succeeded in importing the certificate.  
+ Warning: The file in the flash will be deleted. Please select 'N' if you want to keep it. Please select [Y/N]:<strong id="EN-US_TASK_0000002376410641__b171165515472">y</strong> 
+ Info: Delete Success.</pre>
+</li><li id="EN-US_TASK_0000002376410641__li1379991618258">Import the local certificate to the device memory.<p id="EN-US_TASK_0000002376410641__p114812781712"><a name="EN-US_TASK_0000002376410641__li1379991618258"></a><a name="li1379991618258"></a>After the certificate is imported, the <strong id="EN-US_TASK_0000002376410641__b1827515516338">a_local.cer</strong> file is deleted from the storage medium by default. To keep it, select <strong id="EN-US_TASK_0000002376410641__b82751251133318">N</strong> as prompted.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1824634935512">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b1452117411569">pki import-certificate local filename a_local.cer</strong> 
+ Info: Succeeded in importing file.
+ Warning: The file in the flash will be deleted. Please select 'N' if you want to keep it. Please select [Y/N]:<strong id="EN-US_TASK_0000002376410641__b375083781515">y</strong> 
+ Info: Delete Success</pre>
+</li></ol>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep968569779180217"><span id="EN-US_TASK_0000002376410641__cmd826231393180217">Configure an IPsec policy and apply it to an interface.</span><p><p id="EN-US_TASK_0000002376410641__p856298955180217"># Configure an IPsec proposal.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1138176305180217">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b945739026180217">ipsec proposal tran1</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002376410641__b418535284180217">esp authentication-algorithm sha2-256</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002376410641__b34784231180217">esp encryption-algorithm aes-256-gcm-128</strong>
+[DeviceA-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002376410641__b1407410824180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p1713071394180217"># Configure an IKE proposal.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen210647672180217">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b1185770622180217">ike proposal 10</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000002376410641__b1046789974180217">authentication-method rsa-signature</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000002376410641__b1285776726180217">encryption-algorithm aes-gcm-256</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000002376410641__b515146222180217">dh group14</strong>
+[DeviceA-ike-proposal-10] <strong id="EN-US_TASK_0000002376410641__b1198845697180217">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002376410641__b159249840180217">ike proposal 11</strong>
+[DeviceA-ike-proposal-11] <strong id="EN-US_TASK_0000002376410641__b676736441180217">authentication-method pre-share</strong>
+[DeviceA-ike-proposal-11] <strong id="EN-US_TASK_0000002376410641__b274262542180217">encryption-algorithm </strong><strong id="EN-US_TASK_0000002376410641__b12112193892318">aes-gcm-192</strong> 
+[DeviceA-ike-proposal-11] <strong id="EN-US_TASK_0000002376410641__b1775923948180217">dh group14</strong>
+[DeviceA-ike-proposal-11] <strong id="EN-US_TASK_0000002376410641__b1353071175180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p1202107692180217"># Configure an IKE peer.</p>
+<div class="note" id="EN-US_TASK_0000002376410641__note1966164166180217"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002376410641__p3457124361219">Because the headquarters uses a policy template, only one IKE peer can be configured, and it must not reference any IKE proposals. As the responder, the headquarters matches IKE proposals received from branches with its local proposals in descending order of priority until a match is found. A smaller IKE proposal number indicates a higher priority.</p>
+<p id="EN-US_TASK_0000002376410641__p39989783180217">When IKEv2 is used, IKE proposals sent by branches do not include authentication mode information. If proposals from different branches use the same algorithms, the headquarters cannot distinguish the authentication mode and may mismatch proposals, resulting in IKE negotiation failures. To avoid this, configure different algorithms in IKE proposals for each branch when using IKEv2.</p>
+</div></div>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1297391918180217">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b745427866180217">ike peer b</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000002376410641__b1689062884180217">pre-shared-key YsHsjx_202206</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000002376410641__b1125520318180217">pki realm abc</strong>
+[DeviceA-ike-peer-b] <strong id="EN-US_TASK_0000002376410641__b1013883290180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p18490500180217"># Configure an IPsec policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1012884747180217">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b1792718392180217">ipsec policy-template use1 10</strong>
+[DeviceA-ipsec-policy-templet-use1-10] <strong id="EN-US_TASK_0000002376410641__b351814185180217">proposal tran1</strong>
+[DeviceA-ipsec-policy-templet-use1-10] <strong id="EN-US_TASK_0000002376410641__b912388113180217">ike-peer b</strong>
+[DeviceA-ipsec-policy-templet-use1-10] <strong id="EN-US_TASK_0000002376410641__b881997472180217">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000002376410641__b1206793628180217">ipsec policy map1 10 isakmp template use1</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p1229191664180217"># Apply the IPsec policy to an interface.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1474414992180217">[DeviceA] <strong id="EN-US_TASK_0000002376410641__b1268543126180217">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b206569645180217">ipsec policy map1</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b8252264180217">quit</strong></pre>
+</p></li></ol>
+</li><li id="EN-US_TASK_0000002376410641__step4463198184911"><span id="EN-US_TASK_0000002376410641__cmd1046398164917">Configure DeviceB.</span><ol id="EN-US_TASK_0000002376410641__substeps07151316194911"><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep2072309306180217"><span id="EN-US_TASK_0000002376410641__cmd1412718896180217">Configure IP addresses for interfaces.</span><p><pre class="screen" id="EN-US_TASK_0000002376410641__screen45418492180217">&lt;sysname&gt; <strong id="EN-US_TASK_0000002376410641__b1095789412180217">system-view</strong>
+[sysname] <strong id="EN-US_TASK_0000002376410641__b1753947201180217">sysname DeviceB</strong>
+[DeviceB] <strong id="EN-US_TASK_0000002376410641__b2000417860180217">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b414705211180217">ip address 2.1.1.1 24</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b2070969917180217">quit</strong>
+[DeviceB] <strong id="EN-US_TASK_0000002376410641__b953051923180217">interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000002376410641__b1871636080180217">ip address 10.1.2.1 24</strong>
+[DeviceB-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000002376410641__b2115221572180217">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep1158018472180217"><span id="EN-US_TASK_0000002376410641__cmd172166143180217">Configure a static route to ensure reachable routes between networks. In this example, the next-hop address is 2.1.1.2.</span><p><pre class="screen" id="EN-US_TASK_0000002376410641__screen428855566180217">[DeviceB] <strong id="EN-US_TASK_0000002376410641__b1979991761180217">ip route-static 0.0.0.0 0.0.0.0 2.1.1.2</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep335948659180217"><span id="EN-US_TASK_0000002376410641__cmd554603850180217">Configure an IPsec policy and apply it to an interface.</span><p><p id="EN-US_TASK_0000002376410641__p2078233484180217"># Define the data flows to be protected.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1568578471180217">[DeviceB] <strong id="EN-US_TASK_0000002376410641__b1409677784180217">acl 3000</strong>
+[DeviceB-acl-adv-3000] <strong id="EN-US_TASK_0000002376410641__b1337857834180217">rule 5 permit ip source 10.1.2.0 0.0.0.255 destination 10.1.1.0 0.0.0.255</strong>
+[DeviceB-acl-adv-3000] <strong id="EN-US_TASK_0000002376410641__b580697786180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p751777520180217"># Configure an IPsec proposal.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen336199136180217">[DeviceB] <strong id="EN-US_TASK_0000002376410641__b169543122180217">ipsec proposal tran1</strong>
+[DeviceB-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002376410641__b1568037520180217">esp authentication-algorithm sha2-256</strong>
+[DeviceB-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002376410641__b1479678601180217">esp encryption-algorithm </strong><strong id="EN-US_TASK_0000002376410641__b883975145011">aes-256-gcm-128</strong>
+[DeviceB-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002376410641__b1100957770180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p1943113527180217"># Configure an IKE proposal.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen972051038180217">[DeviceB] <strong id="EN-US_TASK_0000002376410641__b1750254612180217">ike proposal 10</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000002376410641__b865754002180217">authentication-method pre-share</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000002376410641__b1984424411180217">encryption-algorithm </strong><strong id="EN-US_TASK_0000002376410641__b9455649145116">aes-gcm-256</strong> 
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000002376410641__b647984013180217">dh group14</strong>
+[DeviceB-ike-proposal-10] <strong id="EN-US_TASK_0000002376410641__b1059270246180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p439606199180217"># Configure an IKE peer.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen151364482180217">[DeviceB] <strong id="EN-US_TASK_0000002376410641__b1369717823180217">ike peer a</strong> 
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000002376410641__b1292003361180217">ike-proposal 10</strong> 
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000002376410641__b788572263180217">remote-address 1.1.1.1</strong> 
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000002376410641__b125354088180217">pre-shared-key YsHsjx_202206</strong>
+[DeviceB-ike-peer-a] <strong id="EN-US_TASK_0000002376410641__b348068343180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p2063467474180217"># Configure an IPsec policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen934856317180217">[DeviceB] <strong id="EN-US_TASK_0000002376410641__b260962055180217">ipsec policy map1 10 isakmp</strong> 
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002376410641__b239986799180217">security acl 3000</strong> 
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002376410641__b1972720429180217">proposal tran1</strong> 
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002376410641__b311125959180217">ike-peer a</strong> 
+[DeviceB-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002376410641__b1425159971180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p720521449180217"># Apply the IPsec policy group <strong id="EN-US_TASK_0000002376410641__b1992007196102940">map1</strong> to an interface.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1527224142180217">[DeviceB] <strong id="EN-US_TASK_0000002376410641__b440183998180217">interface <span>10ge</span> <span>0/0/1</span></strong> 
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b1811713438180217">ipsec policy map1</strong>
+[DeviceB-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b621257771180217">quit</strong></pre>
+</p></li></ol>
+</li><li id="EN-US_TASK_0000002376410641__step81954600180217"><span id="EN-US_TASK_0000002376410641__cmd873944473180217">Configure DeviceC.</span><ol id="EN-US_TASK_0000002376410641__substeps1142126536180217"><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep698053158180217"><span id="EN-US_TASK_0000002376410641__cmd476262945180217">Configure IP addresses for interfaces.</span><p><pre class="screen" id="EN-US_TASK_0000002376410641__screen1190780696180217">&lt;sysname&gt; <strong id="EN-US_TASK_0000002376410641__b1657127453180217">system-view</strong>
+[sysname] <strong id="EN-US_TASK_0000002376410641__b375110185180217">sysname DeviceC</strong>
+[DeviceC] <strong id="EN-US_TASK_0000002376410641__b1484920282180217">interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b993649526180217">ip address 3.1.1.1 24</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b1111997361180217">quit</strong>
+[DeviceC] <strong id="EN-US_TASK_0000002376410641__b63549716180217">interface <span>10ge</span> <span>0/0/3</span></strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000002376410641__b1828785636180217">ip address 10.1.3.1 24</strong>
+[DeviceC-<span>10GE</span><span>0/0/3</span>] <strong id="EN-US_TASK_0000002376410641__b1480934610180217">quit</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep54261431180217"><span id="EN-US_TASK_0000002376410641__cmd1438804489180217">Configure a static route to ensure reachable routes between networks. In this example, the next-hop address is 3.1.1.2.</span><p><pre class="screen" id="EN-US_TASK_0000002376410641__screen1485846166180217">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b115644848180217">ip route-static 0.0.0.0 0.0.0.0 3.1.1.2</strong></pre>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep75220593420"><span id="EN-US_TASK_0000002376410641__cmd65221659745">Apply for local and CA certificates in offline mode and import them to the device.</span><p><ol type="a" id="EN-US_TASK_0000002376410641__ol1952217593411"><li id="EN-US_TASK_0000002376410641__li752255910410">Create a 3072-bit RSA key pair and allow it to be exported from the device.<pre class="screen" id="EN-US_TASK_0000002376410641__screen15522859947">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b1152214593418">pki rsa local-key-pair create rsakey_a exportable</strong>
+ Info: The name of the new key-pair will be: rsakey_a
+ The size of the public key ranges from 2048 to 4096.
+ Input the bits in the <span>modulus</span>:<strong id="EN-US_TASK_0000002376410641__b652219599418">3072</strong>
+ Generating key-pairs...
+ Generating key-pairs finished</pre>
+</li><li id="EN-US_TASK_0000002376410641__li9522165917416">Configure a PKI entity to identify a certificate applicant.<pre class="screen" id="EN-US_TASK_0000002376410641__screen352216591342">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b16522115911414">pki entity user_a</strong>
+[DeviceC-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b95225591241">common-name devicea</strong>
+[DeviceC-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b552218599413">country cn</strong>
+[DeviceC-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b1552215591547">email testa@user.com</strong>
+[DeviceC-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b1052217591443">fqdn testa.abc.com</strong>
+[DeviceC-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b15522145916411">ip-address 1.1.1.1</strong>
+[DeviceC-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b05222591849">state beijing</strong>
+[DeviceC-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b25228597418">organization huawei</strong>
+[DeviceC-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b145221059244">organization-unit dev</strong>
+[DeviceC-pki-entity-user_a] <strong id="EN-US_TASK_0000002376410641__b552210591047">quit</strong></pre>
+</li><li id="EN-US_TASK_0000002376410641__li155221759841">Apply for a local certificate for the PKI entity in offline mode.<p id="EN-US_TASK_0000002376410641__p1852285920419"><a name="EN-US_TASK_0000002376410641__li155221759841"></a><a name="li155221759841"></a># Create a PKI realm.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen185221592410">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b13522135915416">pki realm a</strong>
+[DeviceC-pki-realm-a] <strong id="EN-US_TASK_0000002376410641__b75225596414">entity user_a</strong>
+[DeviceC-pki-realm-a] <strong id="EN-US_TASK_0000002376410641__b1752215591042">rsa local-key-pair rsakey_a</strong>
+[DeviceC-pki-realm-a] <strong id="EN-US_TASK_0000002376410641__b16522175915418">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p12522105913419"># Save certificate application information to a certificate request file in PKCS#10 format.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen652225910413">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b14522135919416">pki enroll-certificate realm a pkcs10 filename cer_req</strong>
+ Info: Creating certificate request file...                                     
+ Info: Create certificate request file successfully.  </pre>
+</li><li id="EN-US_TASK_0000002376410641__li155227591642">Download the certificate request file using a file transfer protocol, and send the file to the CA server in out-of-band mode, such as through the web system, using a disk, or by email, to apply for a local certificate from the CA server. After a local certificate is successfully requested, download the local certificate <strong id="EN-US_TASK_0000002376410641__b1191141163619">a_local.cer</strong> and CA certificate <strong id="EN-US_TASK_0000002376410641__b7913419363">a_ca.cer</strong> in out-of-band mode, and then transfer the certificates to the device storage using a file transfer protocol.</li><li id="EN-US_TASK_0000002376410641__li115229598416">Import the CA certificate into the device memory.<p id="EN-US_TASK_0000002376410641__p1752314590410"><a name="EN-US_TASK_0000002376410641__li115229598416"></a><a name="li115229598416"></a>After the certificate is imported, the <strong id="EN-US_TASK_0000002376410641__b16506474338">a_ca.cer</strong> file is deleted from the storage medium by default. To keep it, select <strong id="EN-US_TASK_0000002376410641__b46501247113319">N</strong> as prompted.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen6523185910412">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b125231859946">pki import-certificate ca filename a_ca.cer</strong>
+ The CA's Subject is /CN=ca_root 
+ The CA's fingerprint is:
+   MD5  fingerprint:1135 25D8 96D3 5936 C382 35EA 2CEE 80EB 
+   SHA1 fingerprint:6330 974F B2FE 3C52 D16B DAC4 0140 918B 4BCD 3EC7
+ Is the fingerprint correct?(Y/N):<strong id="EN-US_TASK_0000002376410641__b452313598416">y</strong>
+ Info: Succeeded in importing the certificate.  
+ Warning: The file in the flash will be deleted. Please select 'N' if you want to keep it. Please select [Y/N]:<strong id="EN-US_TASK_0000002376410641__b252320591846">y</strong> 
+ Info: Delete Success.</pre>
+</li><li id="EN-US_TASK_0000002376410641__li55231759444">Import the local certificate to the device memory.<p id="EN-US_TASK_0000002376410641__p19523155915412"><a name="EN-US_TASK_0000002376410641__li55231759444"></a><a name="li55231759444"></a>After the certificate is imported, the <strong id="EN-US_TASK_0000002376410641__b3216195533320">a_local.cer</strong> file is deleted from the storage medium by default. To keep it, select <strong id="EN-US_TASK_0000002376410641__b421635593319">N</strong> as prompted.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1852395919412">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b185236591241">pki import-certificate local filename a_local.cer</strong> 
+ Info: Succeeded in importing file.
+ Warning: The file in the flash will be deleted. Please select 'N' if you want to keep it. Please select [Y/N]:<strong id="EN-US_TASK_0000002376410641__b55233591541">y</strong> 
+ Info: Delete Success</pre>
+</li></ol>
+</p></li><li class="substepexpand" id="EN-US_TASK_0000002376410641__substep1430117660180217"><span id="EN-US_TASK_0000002376410641__cmd1350534396180217">Configure an IPsec policy and apply it to an interface.</span><p><p id="EN-US_TASK_0000002376410641__p1916749202180217"># Define the data flows to be protected.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen979808648180217">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b1427940229180217">acl 3000</strong>
+[DeviceC-acl-adv-3000] <strong id="EN-US_TASK_0000002376410641__b2134663780180217">rule 5 permit ip source 10.1.3.0 0.0.0.255 destination 10.1.1.0 0.0.0.255</strong>
+[DeviceC-acl-adv-3000] <strong id="EN-US_TASK_0000002376410641__b1877799572180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p594990934180217"># Configure an IPsec proposal.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen909666789180217">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b1677679738180217">ipsec proposal tran1</strong>
+[DeviceC-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002376410641__b594062387180217">esp authentication-algorithm sha2-256</strong>
+[DeviceC-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002376410641__b1658864438180217">esp encryption-algorithm aes-256-gcm-128</strong>
+[DeviceC-ipsec-proposal-tran1] <strong id="EN-US_TASK_0000002376410641__b1878083259180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p1798666192180217"># Configure an IKE proposal.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1081411724180217">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b1881549429180217">ike proposal 11</strong>
+[DeviceC-ike-proposal-11] <strong id="EN-US_TASK_0000002376410641__b736102493180217">authentication-method rsa-signature</strong>
+[DeviceC-ike-proposal-11] <strong id="EN-US_TASK_0000002376410641__b1391184213180217">encryption-algorithm aes-gcm-192</strong>
+[DeviceC-ike-proposal-11] <strong id="EN-US_TASK_0000002376410641__b1914337347180217">dh group14</strong>
+[DeviceC-ike-proposal-11] <strong id="EN-US_TASK_0000002376410641__b1795578017180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p1706546313180217"># Configure an IKE peer.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen807229368180217">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b269901312180217">ike peer a</strong> 
+[DeviceC-ike-peer-a] <strong id="EN-US_TASK_0000002376410641__b2000400022180217">ike-proposal 11</strong> 
+[DeviceC-ike-peer-a] <strong id="EN-US_TASK_0000002376410641__b945284789180217">remote-address 1.1.1.1</strong> 
+[DeviceC-ike-peer-a] <strong id="EN-US_TASK_0000002376410641__b1295523815180217">pki realm a</strong>
+[DeviceC-ike-peer-a] <strong id="EN-US_TASK_0000002376410641__b1974018929180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p1446119620180217"># Configure an IPsec policy.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen440741108180217">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b704991415180217">ipsec policy map1 10 isakmp</strong> 
+[DeviceC-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002376410641__b1221587734180217">security acl 3000</strong> 
+[DeviceC-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002376410641__b643755086180217">proposal tran1</strong> 
+[DeviceC-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002376410641__b1585387134180217">ike-peer a</strong> 
+[DeviceC-ipsec-policy-isakmp-map1-10] <strong id="EN-US_TASK_0000002376410641__b1309914639180217">quit</strong></pre>
+<p id="EN-US_TASK_0000002376410641__p580709833180217"># Apply the IPsec policy group <strong id="EN-US_TASK_0000002376410641__b918577657102940">map1</strong> to an interface.</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen2117005375180217">[DeviceC] <strong id="EN-US_TASK_0000002376410641__b1130438032180217">interface <span>10ge</span> <span>0/0/1</span></strong> 
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b222953228180217">ipsec policy map1</strong>
+[DeviceC-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000002376410641__b259996498180217">quit</strong></pre>
+</p></li></ol>
+</li></ul></div>
+<div class="example" id="EN-US_TASK_0000002376410641__example121226172748"><a name="EN-US_TASK_0000002376410641__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ol id="EN-US_TASK_0000002376410641__ol1396065369180217"><li id="EN-US_TASK_0000002376410641__li1592430431180217"><p id="EN-US_TASK_0000002376410641__p2037044903180217"><a name="EN-US_TASK_0000002376410641__li1592430431180217"></a><a name="li1592430431180217"></a>Verify that PC2 and PC3 can ping PC1.</p>
+</li><li id="EN-US_TASK_0000002376410641__li19355115242714"><div class="p" id="EN-US_TASK_0000002376410641__p1035505252713"><a name="EN-US_TASK_0000002376410641__li19355115242714"></a><a name="li19355115242714"></a>Run the <strong id="EN-US_TASK_0000002376410641__b119231486325">display ike sa</strong> and <strong id="EN-US_TASK_0000002376410641__b179231883220">display ipsec sa brief</strong> commands on DeviceA. The command output shows that DeviceA has established IKE and IPsec SAs with branches.<pre class="screen" id="EN-US_TASK_0000002376410641__screen516747376180217">&lt;DeviceA&gt; <strong id="EN-US_TASK_0000002376410641__b2117710424180217">display ike sa</strong>
+Total number of IKE SA in all CPU : 4 
+Total number of phase 1 SA in all CPU : 2                                                                                           Total number of phase 2 SA in all CPU : 2 
+Flag Description:                                                             
+  RD--READY   ST--STAYALIVE   RL--REPLACED   FD--FADING   TO--TIMEOUT          
+  HRT--HEARTBEAT   LKG--LAST KNOWN GOOD SEQ NO.   BCK--BACKED UP                   
+  M--ACTIVE   S--STANDBY   A--ALONE  NEG--NEGOTIATING  
+
+Slot 0, cpu 0 IKE SA information :  
+  Number of IKE SA : 4,  number of IKE SA1: 2,  number of IKE SA2: 2
+ -----------------------------------------------------------------------------
+    Conn-ID     Peer            VPN   Flag(s)  Phase  RemoteType  RemoteID
+  -----------------------------------------------------------------------------
+    16777223    2.1.1.1:500           RD|A     v1:2   IP          2.1.1.1
+    16777221    2.1.1.1:500           RD|A     v1:1   IP          2.1.1.1
+    16777239    3.1.1.1:500           RD|A     v1:2   IP          3.1.1.1
+    16777232    3.1.1.1:500           RD|A     v1:1   IP          3.1.1.1</pre>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen11509183115278">&lt;DeviceB&gt; <strong id="EN-US_TASK_0000002376410641__b190441015312">display ipsec sa brief</strong>
+Slot 0, cpu 0 IPSec SA information:                                                          
+  Src address   Dst address     SPI      VPN           Protocol        Algorithm       
+------------------------------------------------------------------------------- 
+  1.1.1.1       2.1.1.1         16423687               ESP             E:AES-256-GCM-128
+  2.1.1.1       1.1.1.1         274624861              ESP             E:AES-256-GCM-128
+  1.1.1.1       3.1.1.1         16423687               ESP             E:AES-256-GCM-128
+  3.1.1.1       1.1.1.1         274624861              ESP             E:AES-256-GCM-128
+Number of IPSec SA : 4
+-------------------------------------------------------------------------------
+Total number of IPSec SA in all CPU : 4</pre>
+</div>
+</li></ol>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002376410641__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul id="EN-US_TASK_0000002376410641__ul1988696798180217"><li id="EN-US_TASK_0000002376410641__li206839336180217"><p id="EN-US_TASK_0000002376410641__p1720179306180217"><a name="EN-US_TASK_0000002376410641__li206839336180217"></a><a name="li206839336180217"></a>DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen2111181319180217">#
+ sysname DeviceA
+#
+pki entity user_a
+ common-name devicea
+ country cn
+ email testa@user.com
+ fqdn testa.abc.com
+ ip-address 1.1.1.1
+ state beijing
+ organization huawei
+ organization-unit dev
+#
+pki realm a
+ entity user_a
+ rsa local-key-pair rsakey_a
+#
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128
+#
+ike proposal 10
+ encryption-algorithm aes-gcm-256                                                   
+ dh group14                                                                      
+ authentication-method rsa-signature
+ike proposal 11
+ encryption-algorithm aes-gcm-192                                                  
+ dh group14                                                                      
+ authentication-method pre-share
+#
+ike peer b
+ pre-shared-key %^%#5)V/1&lt;&lt;'H)e.h%DJ^:s=zcmlE8fGu4;^lS3Rr|U(%^%#
+ pki realm abc
+#
+ipsec policy-template use1 10
+ ike-peer b
+ proposal tran1
+#
+ipsec policy map1 10 isakmp template use1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 1.1.1.1 255.255.255.0
+ ipsec policy map1
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.1.1.1 255.255.255.0
+#
+ip route-static 0.0.0.0 0.0.0.0 1.1.1.2
+#
+return</pre>
+</li><li id="EN-US_TASK_0000002376410641__li74838525180217"><p id="EN-US_TASK_0000002376410641__p1533156180180217"><a name="EN-US_TASK_0000002376410641__li74838525180217"></a><a name="li74838525180217"></a>DeviceB</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen1081835333180217">#
+ sysname DeviceB
+#
+acl number 3000
+ rule 5 permit ip source 10.1.2.0 0.0.0.255 destination 10.1.1.0 0.0.0.255
+#                                                                               
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256
+#
+ike proposal 10
+  encryption-algorithm aes-gcm-256                                                   
+  dh group14                                                                      
+  authentication-method pre-share
+#
+ike peer a
+ ike-proposal 10
+ pre-shared-key %^%#5)V/1&lt;&lt;'H)e.h%DJ^:s=zcmlE8fGu4;^lS3Rr|U(%^%#
+ remote-address 1.1.1.1 
+#
+ipsec policy map1 10 isakmp
+ security acl 3000
+ ike-peer a
+ proposal tran1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 2.1.1.1 255.255.255.0
+ ipsec policy map1
+#
+interface <span>10GE</span><span>0/0/3</span> 
+ ip address 10.1.2.1 255.255.255.0
+#
+ip route-static 0.0.0.0 0.0.0.0 2.1.1.2
+#
+return</pre>
+</li><li id="EN-US_TASK_0000002376410641__li318695337180217"><p id="EN-US_TASK_0000002376410641__p488313341180217"><a name="EN-US_TASK_0000002376410641__li318695337180217"></a><a name="li318695337180217"></a>DeviceC</p>
+<pre class="screen" id="EN-US_TASK_0000002376410641__screen731965004180217">#
+ sysname DeviceC
+#
+pki entity user_a
+ common-name devicec
+ country cn
+ email testa@user.com
+ fqdn testa.abc.com
+ ip-address 1.1.1.1
+ state beijing
+ organization huawei
+ organization-unit dev
+#
+pki realm a
+ entity user_a
+ rsa local-key-pair rsakey_a
+#
+acl number 3000
+ rule 5 permit ip source 10.1.3.0 0.0.0.255 destination 10.1.1.0 0.0.0.255
+#                                                                               
+ipsec proposal tran1                                                            
+ esp authentication-algorithm sha2-256                                          
+ esp encryption-algorithm aes-256-gcm-128
+#
+ike proposal 11
+  encryption-algorithm aes-gcm-192<strong id="EN-US_TASK_0000002376410641__b53291413613"> </strong>                                                  
+  dh group14                                                                      
+  authentication-method rsa-signature
+#
+ike peer a
+ ike-proposal 10
+ remote-address 1.1.1.1 
+ pki realm a
+#
+ipsec policy map1 10 isakmp
+ security acl 3000
+ ike-peer a
+ proposal tran1
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 3.1.1.1 255.255.255.0
+ ipsec policy map1
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 10.1.3.1 255.255.255.0
+#
+ip route-static 0.0.0.0 0.0.0.0 3.1.1.2
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="toctopics/en-us_topic_0000002220702844.html">Communication Between LANs Through an IPsec Tunnel
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0152.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0160.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

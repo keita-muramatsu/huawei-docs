@@ -1,0 +1,178 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding the EDCA Parameters of WMM">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_QoS_cfg_fatap_004.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_wlan_QoS_cfg_fatap_006.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="WLAN QoS">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="WLAN QoS">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002195595481">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="public_sys-resources/imagePopup.js"></script>
+<title>Understanding the EDCA Parameters of WMM</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002195595481"></a><a name="EN-US_CONCEPT_0000002195595481"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding the EDCA Parameters of WMM</h1>
+<div><div class="section" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_section1195320527190946"><h4 class="sectiontitle">Context</h4><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1997528974190946">It is vital to understand the 802.11 link layer transport mechanism before learning about WMM.</p>
+<div class="p" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p2129977852190946">The 802.11 MAC layer uses the coordination function to determine the data transmitting and receiving methods used between STAs in a BSS. The 802.11 MAC layer consists of two sub-layers:<ul id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_ul957804123190946"><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1747676182190946">Distributed Coordination Function (DCF): uses the carrier sense multiple access with collision avoidance (CSMA/CA) mechanism. STAs contend for channels to obtain the authority to transmit data frames.</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1272803958190946">Point Coordination Function (PCF): uses the centralized control access algorithm to authorize STAs to transmit data frames in turn. This method prevents conflict.</li></ul>
+</div>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p149238017585">In the 802.11 protocol, DCF is mandatory, but PCF is optional.</p>
+<div class="p" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p2145020230190946"><a href="#EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000403">Figure 1</a> shows how CSMA/CA is implemented.<div class="fignone" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000403"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000403"></a><a name="en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000403"></a><span class="figcap"><b>Figure 1 </b>CSMA/CA working mechanism</span><br><span><img class="imgResize" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_image1472794086190946" src="figure/en-us_image_0000001513150478.png" width="465.5" title="Click to enlarge"></span><br></div>
+<ol id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_ol993804242190946"><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1803834541190946">Before sending data to STA B, STA A detects the channel status. When detecting an idle channel, STA A sends a data frame after Distributed Inter-Frame Space (DIFS) times out and waits for a response from STA B. The data frame contains NAV information. After receiving the data frame, STA B updates the NAV information, indicating that the channel is busy and that data transmission will be delayed.<div class="note" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_note1501914674190946"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1157139080190946">According to the 802.11 protocol, the receiver must return an ACK frame each time it receives a data frame.</p>
+</div></div>
+</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li789982631190946">STA B receives the data frame, waits until Short Interframe Space (SIFS) times out, and sends an ACK frame to STA A. After the ACK frame is transmitted, the channel becomes idle. After the DIFS times out, the STAs use the exponential backoff algorithm to contend for channels. The STA of which the backoff counter is first reduced to 0 starts to send data frame.</li></ol>
+</div>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p913185303190946"><strong id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_b113526324472">Related concepts</strong></p>
+<ul id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_ul208486394190946"><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li267801273190946"><div class="p" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1957754846190946"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li267801273190946"></a><a name="en-us_concept_0000001563990685_li267801273190946"></a>Interframe Space (IFS): According to the 802.11 protocol, after sending a data frame, the STA must wait until the IFS times out to send the next data frame. The IFS length depends on the data frame type. High-priority data frames are sent earlier than low-priority data frames. There are three IFS types:<ul id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_ul363794580190946"><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li841109522190946">Short IFS (SIFS): The time interval between a data frame and its ACK frame. SIFS is used for high priority transmissions, such as ACK and CTS frame transmissions.</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li799122449190946">PCF IFS (PIFS): PCF-enabled APs wait for PIFS duration rather than DIFS to occupy the wireless medium. The PIFS length is SIFS plus the slot time. If a STA accesses a channel when the slot time starts, the other STAs in the BSS detect that the channel is busy.</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1180963552190946">DCF IFS (DIFS): Data frames and management frames are transmitted at the DIFS interval. The DIFS length is PIFS plus the slot time.</li></ul>
+</div>
+</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1979089280190946"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p179320577190946"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1979089280190946"></a><a name="en-us_concept_0000001563990685_li1979089280190946"></a>Contention window: backoff time. When multiple STAs need to transmit data and detect that all channels are busy, the STAs use the backoff algorithm. That is, the STAs wait for a random number of slot times, and then transmit data. Backoff time is a multiple of slot time, and its length depends on the PHY technology. A STA detects channel status during the slot time interval. When detecting an idle channel, the STA starts the backoff timer. If all channels become busy, the STA freezes the remaining time in the backoff timer. When a channel becomes idle, the STA waits until DIFS times out, and continues the backoff timer. When the backoff timer is reduced to 0, the STA starts to send data frames. <a href="#EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000401">Figure 2</a> shows the data frame transmission process.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000401"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000401"></a><a name="en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000401"></a><span class="figcap"><b>Figure 2 </b>Backoff algorithm diagram</span><br><span><img id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_image963463090190946" src="figure/en-us_image_0000001738308080.png" width="465.50003325" title="Click to enlarge" class="imgResize"></span></div>
+<ol id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_ol1752733869190946"><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li712694189190946">STA C is occupying a channel to send data frames. STA D, STA E, and STA F also need to send data frames. They detect that the channel is busy and wait.</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li656857063190946">After STA C finishes data frame transmission, the other STAs wait until DIFS times out. When DIFS times out, the STAs generate a random backoff time and start their backoff timers. For example, the backoff time of STA D is t1, the backoff time of STA E is t1+t3, and the backoff time of STA F is t1+t2.</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1555203875190946">When t1 times out, the backoff timer of STA D is reduced to 0. STA D starts to send data frames.</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li103807600190946">STA E and STA F detect that the channel is busy, so they freeze their backoff timers and wait. After STA D completes data transmission, STA E and STA F wait until DIFS times out, and continue their backoff timers.</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li95118775190946">When t2 times out, the backoff timer of STA F is reduced to 0. STA F starts to send data frames.</li></ol>
+</li></ul>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_section2110503348190946"><h4 class="sectiontitle">Implementation</h4><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p556705790190946">Channel contention is based on DCF. To all STAs, the DIFS is fixed and the backoff time is random. Therefore, all the STAs fairly contend for channel resources. WMM enhances the 802.11 protocol, changing the channel competition mode.</p>
+<ul id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_ul564990054190946"><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li55937772190946"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1695780265190946"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li55937772190946"></a><a name="en-us_concept_0000001563990685_li55937772190946"></a><strong id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_b15684294539">EDCA parameters</strong></p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1089426674190946">WMM defines a set of EDCA parameters, which distinguishes high-priority packets and enables these packets to preempt channels.</p>
+<div class="p" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p90465401190946">WMM classifies packets into four ACs. <a href="#EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_tab_dc_fd_wlan_qos_000401">Table 1</a> lists the mappings between ACs and user priorities (UPs) in 802.11 packets.
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_tab_dc_fd_wlan_qos_000401"></a><a name="en-us_concept_0000001563990685_tab_dc_fd_wlan_qos_000401"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_tab_dc_fd_wlan_qos_000401" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Mappings between ACs and UPs</caption><thead align="left"><tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row542064871190946"><th align="center" class="cellrowborder" valign="top" width="14.469999999999999%" id="mcps1.3.2.3.1.3.2.2.4.1.1" liSelected="liSelected"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p141201431509">Priority</p>
+</th>
+<th align="center" class="cellrowborder" valign="top" width="38.72%" id="mcps1.3.2.3.1.3.2.2.4.1.2" liSelected="liSelected"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry346712821190946p0">UP</p>
+</th>
+<th align="center" class="cellrowborder" valign="top" width="46.81%" id="mcps1.3.2.3.1.3.2.2.4.1.3" liSelected="liSelected"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry1762770289190946p0">AC</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row1546840619190946"><td class="cellrowborder" rowspan="8" align="center" valign="middle" width="14.469999999999999%" headers="mcps1.3.2.3.1.3.2.2.4.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p8165153318213">Highest</p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1798118430416">|</p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p148011048643">|</p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p115131501346">|</p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p14933951842">|</p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p12142021551">|</p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p38087225516">|</p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p14233925351">▼</p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1449217361622">Lowest</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="38.72%" headers="mcps1.3.2.3.1.3.2.2.4.1.2 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry1359928660190946p0">7</p>
+</td>
+<td class="cellrowborder" rowspan="2" align="center" valign="top" width="46.81%" headers="mcps1.3.2.3.1.3.2.2.4.1.3 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry647594729190946p0">AC_VO (voice)</p>
+</td>
+</tr>
+<tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row1908641353190946"><td class="cellrowborder" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry2001884630190946p0">6</p>
+</td>
+</tr>
+<tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row1385181637190946"><td class="cellrowborder" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry1519366597190946p0">5</p>
+</td>
+<td class="cellrowborder" rowspan="2" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.2 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry125748492190946p0">AC_VI (video)</p>
+</td>
+</tr>
+<tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row955576122190946"><td class="cellrowborder" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry1052920635190946p0">4</p>
+</td>
+</tr>
+<tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row317123194190946"><td class="cellrowborder" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry1090183405190946p0">3</p>
+</td>
+<td class="cellrowborder" rowspan="2" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.2 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry2118929411190946p0">AC_BE (best effort)</p>
+</td>
+</tr>
+<tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row1914753747190946"><td class="cellrowborder" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry1544512619190946p0">0</p>
+</td>
+</tr>
+<tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row991669650190946"><td class="cellrowborder" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry708042146190946p0">2</p>
+</td>
+<td class="cellrowborder" rowspan="2" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.2 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry1838230447190946p0">AC_BK (background)</p>
+</td>
+</tr>
+<tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row47783987190946"><td class="cellrowborder" align="center" valign="top" headers="mcps1.3.2.3.1.3.2.2.4.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry2058667610190946p0">1</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1730000872190946">Each AC queue defines a set of EDCA parameters, which determine the capability of occupying channels. These parameters ensure that a higher-priority AC queue has a higher probability to preempt channels than a lower-priority AC queue.</p>
+<div class="p" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_dc_fd_wlan_qos_000401"><a href="#EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_tab_dc_fd_wlan_qos_000402">Table 2</a> describes the EDCA parameters.
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_tab_dc_fd_wlan_qos_000402"></a><a name="en-us_concept_0000001563990685_tab_dc_fd_wlan_qos_000402"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_tab_dc_fd_wlan_qos_000402" frame="border" border="1" rules="all"><caption><b>Table 2 </b>EDCA parameter description</caption><thead align="left"><tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row1494416851190946"><th align="left" class="cellrowborder" valign="top" width="39.89%" id="mcps1.3.2.3.1.5.2.2.3.1.1" liSelected="liSelected"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p415628201190946">Parameter</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="60.11%" id="mcps1.3.2.3.1.5.2.2.3.1.2" liSelected="liSelected"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p471922195190946">Description</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row1174400574190946"><td class="cellrowborder" valign="top" width="39.89%" headers="mcps1.3.2.3.1.5.2.2.3.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p221839274190946">Arbitration Interframe Spacing Number (AIFSN)</p>
+</td>
+<td class="cellrowborder" valign="top" width="60.11%" headers="mcps1.3.2.3.1.5.2.2.3.1.2 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry228239410190946p0">The DIFS has a fixed value. WMM provides different DIFS values for different ACs. A large AIFSN value means that the STA must wait for a long time and has a low priority.</p>
+</td>
+</tr>
+<tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row1087980135190946"><td class="cellrowborder" valign="top" width="39.89%" headers="mcps1.3.2.3.1.5.2.2.3.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p963083595190946">Exponent form of CWmin (ECWmin) and exponent form of CWmax (ECWmax)</p>
+</td>
+<td class="cellrowborder" valign="top" width="60.11%" headers="mcps1.3.2.3.1.5.2.2.3.1.2 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_entry216307205190946p0">Together, they determine the average backoff time. Large ECWmin and ECWmax values mean a long average backoff time for the STA and a low STA priority.</p>
+</td>
+</tr>
+<tr id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_row234596674190946"><td class="cellrowborder" valign="top" width="39.89%" headers="mcps1.3.2.3.1.5.2.2.3.1.1 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p952737937190946">Transmission Opportunity Limit (TXOPLimit)</p>
+</td>
+<td class="cellrowborder" valign="top" width="60.11%" headers="mcps1.3.2.3.1.5.2.2.3.1.2 "><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1059836686190946">After preempting a channel, the STA can occupy the channel within the period of TXOPLimit. A large TXOPLimit value means that the STA can occupy the channel for a long time. If the TXOPLimit value is 0, the STA can only send one data frame every time it preempts a channel.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p874497826190946">As shown in <a href="#EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000402">Figure 3</a>, the AIFSN (AIFSN[6]) and the backoff time of voice packets are shorter than those of best effort packets. When both voice packets and best effort packets need to be sent, voice packets preempt the channel.</p>
+<div class="p" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1891864050190946"><div class="fignone" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000402"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000402"></a><a name="en-us_concept_0000001563990685_fig_dc_fd_wlan_qos_000402"></a><span class="figcap"><b>Figure 3 </b>WMM working mechanism</span><br><span><img class="imgResize" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_image67357189190946" src="images/fig_dc_fd_wlan_qos_000402.png" width="465.50003325" title="Click to enlarge"></span></div>
+</div>
+</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1066218647190946"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1333249561190946"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1066218647190946"></a><a name="en-us_concept_0000001563990685_li1066218647190946"></a><strong id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_b1080998929190946">ACK policy</strong></p>
+<p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p227185745190946">WMM defines two ACK policies: normal ACK and no ACK.</p>
+<ul id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_ul848164535190946"><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1965757373190946"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p1595742563190946"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1965757373190946"></a><a name="en-us_concept_0000001563990685_li1965757373190946"></a>Normal ACK: The receiver must return an ACK frame each time it receives a unicast packet.</p>
+</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li979130368190946"><p id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_p76908015190946"><a name="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li979130368190946"></a><a name="en-us_concept_0000001563990685_li979130368190946"></a>No ACK: The receiver does not need to return ACK frames after receiving packets. This mode is applicable to environments with high communication quality and little interference.</p>
+</li></ul>
+<div class="note" id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_note394238165190946"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_ul973788160190946"><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1474040660190946">The ACK policy is only valid to APs.</li><li id="EN-US_CONCEPT_0000002195595481__en-us_concept_0000001563990685_li1777857531190946">If communication quality is poor, the no ACK policy may cause more packets to be lost.</li></ul>
+</div></div>
+</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_wlan_QoS_cfg_fatap_004.html">Configuring WMM EDCA Parameters
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_wlan_QoS_cfg_fatap_006.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

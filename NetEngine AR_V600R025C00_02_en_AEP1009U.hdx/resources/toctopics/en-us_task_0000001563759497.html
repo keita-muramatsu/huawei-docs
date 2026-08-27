@@ -1,0 +1,122 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Unidirectional PAP Authentication">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_concept_0000002204723240.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001563879153.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001513039194.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563759497">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Unidirectional PAP Authentication</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563759497"></a><a name="EN-US_TASK_0000001563759497"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Unidirectional PAP Authentication</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563759497__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000001563759497__fig9558204471619">Figure 1</a>, serial<span>1/0/0</span>:0 on DeviceA is connected to serial<span>1/0/0</span>:0 on DeviceB.</p>
+<p>DeviceA performs simple authentication on DeviceB, while DeviceB does not need to authenticate DeviceA.</p>
+<div class="fignone" id="EN-US_TASK_0000001563759497__fig9558204471619"><a name="EN-US_TASK_0000001563759497__fig9558204471619"></a><a name="fig9558204471619"></a><span class="figcap"><b>Figure 1 </b>Network diagram of PAP authentication</span><br><span><img src="../images/en-us_image_0000001512839630.png"></span></div>
+<h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure PAP authentication because the customer requires simple authentication and does not have high security requirements.</li><li>Configure DeviceA as the authenticator and DeviceB as the peer so that unidirectional PAP authentication is implemented.</li></ol>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In PAP authentication, passwords are transmitted in plain text on the network, presenting potential security risks.</p>
+</div></div>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563759497__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure DeviceA.</span><p><p># Configure the access type for the user on DeviceB on DeviceA.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong> 
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong> 
+[DeviceA] <strong>aaa</strong>
+[DeviceA-aaa] <strong>local-access-user sys-admin</strong>
+[DeviceA-aaa-access-user-sys-admin]<strong> service-type ppp</strong>
+[DeviceA-aaa-access-user-sys-admin]<strong> password cipher YsHsjx_202206</strong>
+[DeviceA-aaa-access-user-sys-admin]<strong> quit</strong> 
+[DeviceA-aaa]<strong> quit</strong></pre>
+</p><p><p># Configure an IP address for serial<span>1/0/0</span>:0 and configure PPP as the link layer protocol of serial<span>1/0/0</span>:0.</p>
+<pre class="screen">[DeviceA] <strong>interface serial <span>1/0/0</span></strong><strong>:0</strong>
+[DeviceA-Serial<span>1/0/0</span>:0] <strong>link-protocol ppp</strong>
+[DeviceA-Serial<span>1/0/0</span>:0] <strong>ip address </strong><strong>10.10.10.9 30</strong></pre>
+</p><p><p># Configure DeviceA to authenticate DeviceB in PAP mode.</p>
+</p><p><pre class="screen">[DeviceA-Serial<span>1/0/0</span>:0] <strong>ppp authentication-mode pa</strong><strong>p</strong>
+[DeviceB-Serial<span>1/0/0</span>:0] <strong>shutdown</strong> 
+[DeviceA-Serial<span>1/0/0</span>:0] <strong>undo shutdown</strong></pre>
+</p></li><li><span>Configure DeviceB.</span><p><p># Configure an IP address for serial<span>1/0/0</span>:0 and configure PPP as the link layer protocol of serial<span>1/0/0</span>:0.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong> 
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceB</strong> 
+[DeviceB] <strong>interface </strong><strong>serial <span>1/0/0</span></strong><strong>:0</strong>
+[DeviceB-Serial<span>1/0/0</span>:0] <strong>link-protocol ppp </strong> 
+[DeviceB-Serial<span>1/0/0</span>:0] <strong>ip address 10.10.10.10 30</strong></pre>
+</p><p><p># Configure the user name and password sent from DeviceB to DeviceA in PAP authentication and restart the interface.</p>
+<pre class="screen">[DeviceB-Serial<span>1/0/0</span>:0] <strong>ppp pap local-user sys-admin password cipher YsHsjx_202206 </strong>
+[DeviceB-Serial<span>1/0/0</span>:0] <strong>shutdown</strong> 
+[DeviceB-Serial<span>1/0/0</span>:0] <strong>undo shutdown</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563759497__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p># After completing configuration, run the <strong>display interface serial <span>1/0/0</span>:0</strong> command on both DeviceA and DeviceB to check the interface configuration. The command output shows that both the physical layer status and link layer status of the interface are up and that both LCP and IPCP are in Opened state. This indicates that PPP negotiation succeeds and DeviceA and DeviceB can communicate with each other.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001563759497__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li>DeviceA<pre class="screen">#
+sysname DeviceA
+#
+interface serial <span>1/0/0</span>:0
+ link-protocol ppp
+ ip address 10.10.10.9 30
+ ppp authentication-mode pap
+#
+aaa
+ local-access-user sys-admin 
+  service-type ppp
+  password cipher @%@%j]v<font style="font-size:8pt" Face="Courier New" >~</font>7%f[#S'W&gt;j9zzM)3,*!u@%@%        
+#</pre>
+</li><li>DeviceB<pre class="screen">#
+sysname DeviceB
+#
+interface serial <span>1/0/0</span>:0
+ link-protocol ppp
+ ip address 10.10.10.10 30
+ ppp pap local-user sys-admin password cipher @%@%j]v<font style="font-size:8pt" Face="Courier New" >~</font>7%f[#S'W&gt;j9zzM)3,*!u@%@%
+#</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_concept_0000002204723240.html">Configuration Examples for PPP and MP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_task_0000001563879153.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_task_0000001513039194.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

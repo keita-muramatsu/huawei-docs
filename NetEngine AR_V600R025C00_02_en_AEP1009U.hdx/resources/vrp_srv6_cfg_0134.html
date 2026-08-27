@@ -1,0 +1,101 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring Headend-based Fault Detection for SRv6 TE Policies">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0132.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0133.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0101.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001188016981">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring Headend-based Fault Detection for SRv6 TE Policies</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001188016981"></a><a name="EN-US_TASK_0000001188016981"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring Headend-based Fault Detection for SRv6 TE Policies</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001188016981__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring headend-based fault detection for SRv6 TE Policies, you have completed the following tasks:</p>
+<ul><li><p>Configure an SRv6 TE Policy.</p>
+</li><li><p>Run the <b><span class="cmdqueryname">segment-routing ipv6</span></b> <strong><span>locator</span></strong> <i><span class="varname">locator-name</span></i> command in the IS-IS view to enable IS-IS SRv6.</p>
+</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001188016981__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>An SRv6 TE Policy selects a forwarding path from the candidate paths that are either delivered by a controller or manually configured. In scenarios where BFD cannot be used, if the segment list of a candidate path in an SRv6 TE Policy fails, the headend cannot quickly detect the fault. As such, the SRv6 TE Policy can be updated only after the controller detects a topology change and re-converges the topology.</p>
+<p>If the controller or the connection between it and the headend fails, a fault-triggered switchover cannot be performed for the SRv6 TE Policy, meaning that traffic loss may occur. To speed up the traffic switchover when a fault occurs, headend-based fault detection is introduced. With this function, the headend sets a faulty segment list to down, triggering a path or service switchover in the SRv6 TE Policy.</p>
+<p>To detect faults, the headend must be able to collect network topology information and determine the validity of a segment list based on whether the SRv6 SIDs in the segment list exist in the topology and whether routes are reachable.</p>
+<p>If the SRv6 SIDs exist and the routes are reachable, the headend sets the state of the segment list to up. Otherwise, it sets the state of the segment list to down and deletes the segment list entry.</p>
+<p>When a segment list fails, the headend performs operations according to the following rules:</p>
+<ol><li>If the preferred candidate path of an SRv6 TE Policy has multiple segment lists for load balancing and one of them fails, the segment list is deleted and removed from the load balancing list.</li><li>If all segment lists in the preferred candidate path of an SRv6 TE Policy fail and there is a backup candidate path in the SRv6 TE Policy, traffic is switched to the backup path.</li><li>If both the primary and backup candidate paths of an SRv6 TE Policy fail, the headend is notified that the SRv6 TE Policy is in the down state, triggering a service switchover.</li></ol>
+<p>Because detecting the SRv6 SID status and route status is performed on the headend, the headend must learn all SRv6 SIDs and routes in an IGP domain. If a segment list contains binding SIDs, path verification fails because these binding SIDs are not flooded in the IGP topology. For this reason, headend-based fault detection cannot be configured when binding SIDs are used.</p>
+<p>To address the preceding issue, the headend-based fault detection function is optimized so that only segment lists' SIDs advertised in the intra-area IGP topology are identified and verified. The other SIDs, including binding SIDs, are not verified.</p>
+<p>Specifically, for the segment list of a controller-delivered SRv6 TE Policy, the controller identifies the SIDs advertised in the intra-area IGP topology and adds a verification flag (V-Flag) to the SIDs during delivery. For the segment list of a manually configured SRv6 TE Policy, if the SIDs in the segment list need to be advertised in the intra-area IGP topology, you can specify the <strong>verification</strong> keyword during SID configuration so that the SIDs can be verified in the configuration process.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001188016981__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the Segment Routing IPv6 view.</span><p><pre class="screen"><b><span class="cmdqueryname">segment-routing ipv6</span></b></pre>
+</p></li><li><span>Enable headend-based fault detection for all SRv6 TE Policies.</span><p><pre class="screen"><b><span class="cmdqueryname">srv6-te-policy path verification</span></b> [ <strong><span>specified-sid</span></strong> ] <strong><span>enable</span></strong></pre>
+<p>After the <strong><span>specified-sid</span></strong> parameter is configured, only SIDs with the verification flag in a segment list are verified.</p>
+</p></li><li><span>(Optional) Disable flapping suppression for all SRv6 TE Policies.</span><p><pre class="screen"><b><span class="cmdqueryname">srv6-te-policy suppress-flapping disable</span></b></pre>
+<p>Enabling this function suppresses frequent SID status changes. If the SID status becomes unreachable, the associated segment list goes down immediately. However, if the SID status becomes reachable, the device needs to determine whether flapping suppression is required. If it is required, the device updates the SID status to reachable after a delay and then updates the segment list status.</p>
+<p>If flapping suppression is not required, run the <b><span class="cmdqueryname">srv6-te-policy suppress-flapping disable</span></b> command to disable this function for all SRv6 TE Policies.</p>
+</p></li><li><span>Enter the SRv6 TE Policy view.</span><p><pre class="screen"><b><span class="cmdqueryname">srv6-te policy</span></b> <i><span class="varname">name-value</span></i></pre>
+</p></li><li><span>Configure headend-based fault detection for a single SRv6 TE Policy.</span><p><pre class="screen"><b><span class="cmdqueryname">path verification</span></b> { [ <strong><span>specified-sid</span></strong> ] <strong><span>enable</span></strong> | <strong><span>disable</span></strong> } </pre>
+<p>If an SRv6 TE Policy has both the global configuration and the single-policy configuration, only the single-policy configuration takes effect.</p>
+</p><p><p>After the <strong><span>specified-sid</span></strong> parameter is configured, only SIDs with the verification flag in a segment list are verified.</p>
+</p></li></ol></div>
+<div class="postreq"><a name="EN-US_TASK_0000001188016981__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>After configuring headend-based fault detection for SRv6 TE Policies, verify the configuration.</p>
+<ul><li>Run the <b><span class="cmdqueryname">display srv6-te policy</span></b> [ <strong><span>endpoint</span></strong> <i><span class="varname">endpoint-ip</span></i> <strong><span>color</span></strong> <i><span class="varname">color-value</span></i> | <strong><span>policy-name</span></strong> <i><span class="varname">name-value</span></i> | <strong><span>binding-sid</span></strong> <i><span class="varname">binding-sid</span></i> ] command to check detailed SRv6 TE Policy information.</li><li>Run the <b><span class="cmdqueryname">display srv6-te policy source-sid</span></b> [ <i><span class="varname">sid-value</span></i> | <strong><span>end</span></strong> | <strong><span>end-x</span></strong> ] command to check details about the End and End.X SIDs collected from the IS-IS LSDB, including the IS-IS process and level information about the SIDs.</li><li>Run the <b><span class="cmdqueryname">display srv6-te policy sid statistics</span></b> [ <strong><span>isis</span></strong> <strong><span>process</span></strong> <i><span class="varname">process-id</span></i> { <strong><span>level-1</span></strong> | <strong><span>level-2</span></strong> | <strong><span>level-1-2</span></strong> } ] command to check the numbers of End and End.X SIDs collected from the IS-IS LSDB.</li><li>Run the <b><span class="cmdqueryname">display srv6-te policy last-down-reason </span></b>{ <strong><span>endpoint</span></strong> <i><span class="varname">endpoint-ip</span></i> <strong><span>color</span></strong> <i><span class="varname">color-value</span></i> | <strong><span>policy-name</span></strong> <i><span class="varname">name-value</span></i> | <strong><span>binding-sid</span></strong> <i><span class="varname">binding-sid</span></i> } command to check records about events where SRv6 TE Policies or segment lists in SRv6 TE Policies go down.</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0132.html">Configuring SRv6 TE Policy Failover
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0133.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_srv6_cfg_0101.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

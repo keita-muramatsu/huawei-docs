@@ -1,0 +1,170 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Telnet Login for IPv4 Users (Local AAA Authentication)">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_login_cfg_0042.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_login_cfg_0007.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_login_cfg_0033.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Telnet">
+<meta name="featurename" content="CLI-based Device Login">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Console">
+<meta name="featurename" content="Stelnet">
+<meta name="featurename" content="Telnet">
+<meta name="featurename" content="CLI-based Device Login">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="featuretype" content="Basic Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563893025">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Telnet Login for IPv4 Users (Local AAA Authentication)</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563893025"></a><a name="EN-US_TASK_0000001563893025"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Telnet Login for IPv4 Users (Local AAA Authentication)</h1>
+<div class="taskbody" id="taskbody1582700477101"><div class="context"><a name="EN-US_TASK_0000001563893025__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001563893025__context1103361495175336"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001563893025__p1990864536175336">Users want to easily configure and manage the server shown in <a href="#EN-US_TASK_0000001563893025__fig_dc_cfg_login_001501">Figure 1</a>. AAA authentication needs to be configured for Telnet users on the server, and an ACL needs to be configured to ensure that only the users matching the ACL can log in to the device.</p>
+<div class="fignone" id="EN-US_TASK_0000001563893025__fig_dc_cfg_login_001501"><a name="EN-US_TASK_0000001563893025__fig_dc_cfg_login_001501"></a><a name="fig_dc_cfg_login_001501"></a><span class="figcap"><b>Figure 1 </b>Network diagram of Telnet login</span><br><span><img class="vsd" id="EN-US_TASK_0000001563893025__image1195901645175336" src="figure/en-us_image_0000001512693928.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563893025__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001563893025__context1683187476175336"><h4 class="sectiontitle">Configuration Precautions</h4><ul id="EN-US_TASK_0000001563893025__ul18687163014914"><li id="EN-US_TASK_0000001563893025__li116873309496">In insecure network environments, you are advised to use a secure password authentication mode, encryption authentication algorithm, and protocol. For details about the configuration example of secure authentication, see <a href="vrp_login_cfg_0016.html">Example for Configuring STelnet Login for IPv4 Users (RSA Authentication)</a>.</li><li id="EN-US_TASK_0000001563893025__li6772154265910">Ensure that there are reachable routes between devices before the configuration.</li><li id="EN-US_TASK_0000001563893025__li870814510537">When logging in to the device for the first time, the local administrator must change the password. You can run the <strong id="EN-US_TASK_0000001563893025__b934035921915">local-user</strong><em id="EN-US_TASK_0000001563893025__i03401759111918"> user-name</em> <strong id="EN-US_TASK_0000001563893025__b11340135961920">password-force-change disable</strong> command to configure a local administrator with a specified user name not to change the password upon the first login. Running this command may bring security risks. Exercise caution when running this command.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563893025__1.3.3"></a><a name="1.3.3"></a>
+<div class="p" id="EN-US_TASK_0000001563893025__context477493417295"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001563893025__p1168864316229">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001563893025__ol136881436225"><li id="EN-US_TASK_0000001563893025__li1568884302219">Configure an IP address for the management interface on the Telnet server.</li><li id="EN-US_TASK_0000001563893025__li18688104362215">Configure Telnet login by enabling the Telnet server function and configuring the server port number to remotely maintain network devices.</li><li id="EN-US_TASK_0000001563893025__li268920430224">Set VTY user interface parameters, including configuring an ACL policy to ensure that only users matching the ACL can log in to the device.</li><li id="EN-US_TASK_0000001563893025__li1689184322219">Configure the user name and password for the administrator, and configure an AAA authentication policy to ensure that only users passing the authentication can log in to the device.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563893025__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001563893025__steps1726422313175336"><li id="EN-US_TASK_0000001563893025__step122169942211"><span id="EN-US_TASK_0000001563893025__cmd32161695228">Log in to the device. If you log in to the device for the first time, perform operations in <span><a href="vrp_first_cfg_0004.html">First Login Through the Console Port</a></span> and then perform the following steps to set up the Telnet login environment.</span></li><li id="EN-US_TASK_0000001563893025__step825125782613"><span id="EN-US_TASK_0000001563893025__cmd425215711261">Run the <strong id="EN-US_TASK_0000001563893025__b868035191014">install feature-software WEAKEA</strong> command in the user view to install the weak security algorithm/protocol feature package (WEAKEA).</span></li><li id="EN-US_TASK_0000001563893025__step443299293175336"><span id="EN-US_TASK_0000001563893025__cmd910446008175336">Set the IP address of the management interface for the Telnet server.</span><p><pre class="screen" id="EN-US_TASK_0000001563893025__screen1084015397175336">&lt;<span class="keyword" id="EN-US_TASK_0000001563893025__keyword1493134816292">HUAWEI</span>&gt;<strong id="EN-US_TASK_0000001563893025__b955224887175336"> system-view</strong>    
+[<span class="keyword" id="EN-US_TASK_0000001563893025__keyword26471340123819">HUAWEI</span>]<strong id="EN-US_TASK_0000001563893025__b43511458131314"> sysname Telnet Server</strong>
+[Telnet Server] <strong id="EN-US_TASK_0000001563893025__b450411644315">interface </strong><strong id="EN-US_TASK_0000001563893025__b8871032121613"><span>meth</span> <span>0/0/0</span></strong>
+[Telnet Server-<span>MEth</span><span>0/0/0</span>] <strong id="EN-US_TASK_0000001563893025__b350410169438">ip address 10.137.217.177 255.255.255.0</strong>
+[Telnet Server-<span>MEth</span><span>0/0/0</span>] <strong id="EN-US_TASK_0000001563893025__b1450414165438">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001563893025__step972872453175336"><span id="EN-US_TASK_0000001563893025__cmd126829313175336">Set the server port number and enable the server function.</span><p><pre class="screen" id="EN-US_TASK_0000001563893025__screen47484385175336">
+[<span class="keyword" id="EN-US_TASK_0000001563893025__keyword186251183817"></span>Telnet Server]<strong id="EN-US_TASK_0000001563893025__b2062591817819"> telnet server enable</strong>
+[Telnet Server]<strong id="EN-US_TASK_0000001563893025__b1410563463117"> telnet server port 1025</strong>
+[Telnet Server] <strong id="EN-US_TASK_0000001563893025__b12196174910385">telnet server-source </strong><strong id="EN-US_TASK_0000001563893025__b107610914308">all-interface</strong></pre>
+</p></li><li id="EN-US_TASK_0000001563893025__step1641964497175336"><span id="EN-US_TASK_0000001563893025__cmd1332437129175336">Set parameters for the VTY user interface.</span><p><p id="EN-US_TASK_0000001563893025__p2137931674175336"># Set the maximum number of VTY user interfaces.</p>
+<pre class="screen" id="EN-US_TASK_0000001563893025__screen1286722285175336">[Telnet Server] <strong id="EN-US_TASK_0000001563893025__b1640875315175336">user-interface maximum-vty 8</strong></pre>
+<p id="EN-US_TASK_0000001563893025__p287094238175336"># Configure an ACL rule that allows hosts with specified addresses to log in to the device. The IP address of PC1 is 10.137.217.10, and the IP address of PC2 is 10.137.217.20. </p>
+<pre class="screen" id="EN-US_TASK_0000001563893025__screen1270813163712">[Telnet Server] <strong id="EN-US_TASK_0000001563893025__b10312113153718">acl 2001</strong>
+[Telnet Server-acl4-basic-2001] <strong id="EN-US_TASK_0000001563893025__b15312113183712">rule permit source 10.137.217.10 0</strong>
+[Telnet Server-acl4-basic-2001] <strong id="EN-US_TASK_0000001563893025__b1731271316375">rule deny source 10.137.217.20 0</strong>
+[Telnet Server-acl4-basic-2001] <strong id="EN-US_TASK_0000001563893025__b431271363718">quit</strong>
+[Telnet Server] <strong id="EN-US_TASK_0000001563893025__b931311311378">user-interface vty 0 7</strong>
+[Telnet Server-ui-vty0-7] <strong id="EN-US_TASK_0000001563893025__b7313191383715">acl 2001 inbound</strong></pre>
+<div class="note" id="EN-US_TASK_0000001563893025__note5216112717197"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul id="EN-US_TASK_0000001563893025__ul924989142312"><li id="EN-US_TASK_0000001563893025__li17249198238">You can determine whether to configure ACL rules as required.</li><li id="EN-US_TASK_0000001563893025__li1324913913239">If the management interface is bound to the VPN instance <strong id="EN-US_TASK_0000001563893025__b18691153171916">_management_vpn_</strong> by default, the commands for creating ACL rules are as follows:<ul id="EN-US_TASK_0000001563893025__ul71277309478"><li id="EN-US_TASK_0000001563893025__li151273307470"><strong id="EN-US_TASK_0000001563893025__b102676358476">rule permit vpn-instance _management_vpn_ source 10.137.217.10 0</strong></li><li id="EN-US_TASK_0000001563893025__li1320512365479"><strong id="EN-US_TASK_0000001563893025__b19261154014715">rule deny vpn-instance _management_vpn_ source 10.137.217.20 0</strong></li></ul>
+</li></ul>
+</div></div>
+<p id="EN-US_TASK_0000001563893025__p1326760466175336"># Configure terminal attributes for the VTY user interface.</p>
+<pre class="screen" id="EN-US_TASK_0000001563893025__screen6169443113716">[Telnet Server-ui-vty0-7] <strong id="EN-US_TASK_0000001563893025__b9183194383716">shell</strong>
+[Telnet Server-ui-vty0-7] <strong id="EN-US_TASK_0000001563893025__b518314313379">idle-timeout 20</strong>
+[Telnet Server-ui-vty0-7] <strong id="EN-US_TASK_0000001563893025__b141831243173711">screen-length 30</strong>
+[Telnet Server-ui-vty0-7] <strong id="EN-US_TASK_0000001563893025__b19183164323710">history-command max-size 20</strong></pre>
+<p id="EN-US_TASK_0000001563893025__p1071674088175336"># Configure the authentication mode for the VTY user interface.</p>
+<pre class="screen" id="EN-US_TASK_0000001563893025__screen1872556173720">[Telnet Server-ui-vty0-7] <strong id="EN-US_TASK_0000001563893025__b48255683719">authentication-mode aaa</strong>
+[Telnet Server-ui-vty0-7] <strong id="EN-US_TASK_0000001563893025__b133991444185610">user privilege level 3</strong>
+[Telnet Server-ui-vty0-7] <strong id="EN-US_TASK_0000001563893025__b198831219317">protocol inbound telnet</strong>
+[Telnet Server-ui-vty0-7] <strong id="EN-US_TASK_0000001563893025__b182556193715">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001563893025__step1301126027175336"><span id="EN-US_TASK_0000001563893025__cmd199158388175336">Configure information about the administrator who logs in to the device.</span><p><p id="EN-US_TASK_0000001563893025__p1996862364175336"># Configure the authentication mode.</p>
+<pre class="screen" id="EN-US_TASK_0000001563893025__screen4598109387">[Telnet Server] <strong id="EN-US_TASK_0000001563893025__b11892105386">aaa</strong>
+[Telnet Server-aaa] <strong id="EN-US_TASK_0000001563893025__b289141011386">local-user admin1234 password</strong>
+Please configure the login password (8-128)
+It is recommended that the password consist of four types of characters, including lowercase letters, uppercase letters, numerals and special characters.
+Please enter password:
+Please confirm password:
+[Telnet Server-aaa] <strong id="EN-US_TASK_0000001563893025__b1489910123817">local-user admin1234 service-type telnet</strong>
+[Telnet Server-aaa] <strong id="EN-US_TASK_0000001563893025__b1389121063819">local-user admin1234 privilege level 3</strong>
+[Telnet Server-aaa]<strong id="EN-US_TASK_0000001563893025__b158951063819"> quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001563893025__example1480721272175336"><a name="EN-US_TASK_0000001563893025__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001563893025__p1338154615912"># Run the following command on the CLI of PC1 to telnet to the device:</p>
+<pre class="screen" id="EN-US_TASK_0000001563893025__screen3338154613595">C:\Documents and Settings\Administrator&gt; <strong id="EN-US_TASK_0000001563893025__b433874617593">telnet 10.137.217.177 1025</strong></pre>
+<div class="p" id="EN-US_TASK_0000001563893025__p11338134618591"># Press <strong id="EN-US_TASK_0000001563893025__b525910573564">Enter</strong>, and enter the user name and password configured for AAA authentication in the login window. If the authentication is successful, the command line prompt for the user view is displayed, indicating that you have successfully logged in to the device. (The actual command output varies depending on the device. The following command output is only an example.)<pre class="screen" id="EN-US_TASK_0000001563893025__screen233814468593">Warning: Telnet is not a secure protocol, and it is recommended to use Stelnet.
+Username:<strong id="EN-US_TASK_0000001563893025__b1733854665911">admin1234</strong>
+Password:
+Warning: The initial password poses security risks.The password needs to be changed, Continue? [Y/N]:<strong id="EN-US_TASK_0000001563893025__b1417315017171">y</strong>
+Please enter old password:
+Please enter new password:
+Please confirm new password:
+The password has been changed successfully.
+Info: The max number of VTY users is 21, the number of current VTY users online is 4, and total number of terminal users online is 4.
+      The current login time is 2020-12-15 14:23:00.
+&lt;Telnet Server&gt;</pre>
+</div>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001563893025__1.3.6"></a><a name="1.3.6"></a><h4 class="sectiontitle">Configuration Scripts</h4><pre class="screen" id="EN-US_TASK_0000001563893025__screen6610126115915">#
+sysname Telnet Server
+#
+telnet server enable
+telnet server-source all-interface
+telnet server port 1025
+#
+acl number 2001
+ rule 5 permit source 10.137.217.10 0
+ rule 10 deny source 10.137.217.20 0 
+#
+aaa
+ local-user admin1234 password irreversible-cipher <span>$1d$g8wLJ`LjL!$CyE(V{3qg5DdU:PM[6=6O$UF-.fQ,Q}&gt;^)OBzgoU$</span>
+ local-user admin1234 service-type telnet
+ local-user admin1234 privilege level 3
+#
+interface <span>MEth0/0/0</span>
+ ip address 10.137.217.177 255.255.255.0
+#
+user-interface maximum-vty 8
+#
+user-interface vty 0 7
+ acl 2001 inbound
+ authentication-mode aaa
+ user privilege level 3
+ protocol inbound telnet
+ history-command max-size 20
+ idle-timeout 20 0
+ screen-length 30
+#
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_login_cfg_0042.html">Configuration Examples for CLI-based Device Login
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_login_cfg_0007.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_login_cfg_0033.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

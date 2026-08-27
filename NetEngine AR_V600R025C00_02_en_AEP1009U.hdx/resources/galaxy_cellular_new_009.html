@@ -1,0 +1,88 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring a Cellular Profile">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_cellular_new_008.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_cellular_new_010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001771312025">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring a Cellular Profile</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001771312025"></a><a name="EN-US_TASK_0000001771312025"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring a Cellular Profile</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001771312025__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>You need to create a cellular profile and set basic cellular network parameters in the profile.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>For the SIC-NRGL-V2 subcard, AR5710-H2T4N2X-NRGL, AR5710-H2T4PN2X-NRGL, AR5710-S8T2XE-NRGL, AR5710-S8P2XE-NRGL, AR5710-S8T1XWE-NRGL, the device generates the following configurations by default:</p>
+<pre class="screen"><strong>ip vpn-instance _wanu_server_manage_</strong>
+<strong>ipv4-family</strong>
+<strong>interface cellular</strong> <em>interface-number</em>
+<strong>wan-unit enable</strong>
+<strong>ip binding vpn-instance _wanu_server_manage_</strong>
+<strong>ip address</strong><strong> </strong><em>ip-address</em> <em>mask-length</em>
+<strong>dhcp select interface</strong></pre>
+<p>You are advised not to modify the default configurations. Otherwise, the module may go offline.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001771312025__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create a cellular profile and enter its view.</span><p><pre class="screen"><b><span class="cmdqueryname">cellular-profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+<p>By default, no cellular profile is created.</p>
+</p></li><li><span>Configure the network connection mode of the cellular modem.</span><p><pre class="screen"><b><span class="cmdqueryname">mode</span></b> { <strong><span>auto</span></strong> | <strong><span>wcdma-only</span></strong> | <strong><span>lte-only</span></strong> | <strong><span>lte-wcdma</span></strong> | <strong><span>nr-only</span></strong> | <strong><span>nr-lte</span></strong> }</pre>
+<p>By default, the network connection mode of a cellular modem is <strong><span>auto</span></strong>. This means that the modem automatically identifies the currently connected network. For example, if both a 4G card and a 4G SIM card are installed on the device and the <strong><span>auto</span></strong> mode is used, the device preferentially connects to an available 4G network. When no 4G network is available, the device connects to a 3G network. You can select the following modes:</p>
+<ul><li><strong><span>auto</span></strong>: The device automatically connects to the 3G/4G/5G network.</li><li><strong><span>wcdma-only</span></strong>: The device connects to only the 3G network.</li><li><strong><span>lte-only</span></strong>: The device connects to only the 4G network.</li><li><strong><span>lte-wcdma</span></strong>: The device connects to only the 4G or 3G network.</li><li><strong><span>nr-only</span></strong>: The device connects to only the 5G network.</li><li><strong><span>nr-lte</span></strong>: The device connects to only the 5G or 4G network.</li></ul>
+<p>Only devices that support the 5G function support the <strong>nr</strong> parameter.</p>
+<p>Only devices that support the 4G function support <strong>lte</strong> parameters.</p>
+<p>Only devices that support the 3G function support <strong>wcdma</strong> parameters.</p>
+</p></li><li><span>(Optional) Configure the default APN for the cellular network.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">apn-profile default-bearer</span></b> </strong><em>apn-name</em> [ <strong><strong><span>user</span></strong> </strong><em>username</em><strong> <strong><span>password</span></strong></strong> <em>password</em> <strong>authentication-mode</strong> { <strong>pap</strong> | <strong>chap</strong> } ] <strong>sim-id</strong> <em>sim-id</em></pre>
+<p>By default, no default APN is configured. Some carriers need this to be configured for network access.</p>
+<p>After the default APN is configured, the interface uses the default APN to set up a dial-up connection.</p>
+</p></li><li><span>(Optional) Configure the international mobile subscriber identity (IMSI) of the SIM card for which dial-up is allowed.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">permit imsi</span></b> </strong><em>imsi</em></pre>
+<p>By default, dial-up is allowed for all SIM cards. If the IMSI of the current SIM card is the same as that configured using the preceding command, the SIM card can be used for dial-up. Otherwise, dial-up will not be triggered.</p>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_cellular_new_008.html">Configuring Basic Cellular Functions
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_cellular_new_010.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

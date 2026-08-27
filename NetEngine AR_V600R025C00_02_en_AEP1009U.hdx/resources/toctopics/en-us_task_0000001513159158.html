@@ -1,0 +1,124 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring CHAP Authentication">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001563879149.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001563999437.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_task_0000001563999425.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513159158">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring CHAP Authentication</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513159158"></a><a name="EN-US_TASK_0000001513159158"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring CHAP Authentication</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001513159158__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring CHAP authentication on an interface, you have completed the following task:</p>
+<ul><li>Configure PPP as the link layer protocol of the interface.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001513159158__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>PPP supports PAP and CHAP authentication. CHAP authentication is initiated by the authenticator. </p>
+<p>CHAP authentication involves two scenarios:</p>
+<ul><li>A CHAP user name is configured on the authenticator's interface: In this case, the authenticator sends the user name to the peer. The peer then queries the password corresponding to the received user name among the local access users.<p>After obtaining the password, the peer encrypts the user name and password and sends them to the authenticator.</p>
+<p>The authenticator compares the received user name and password with the local access user name and password configured on itself. The authentication succeeds only when they are the same.</p>
+</li><li>No user name is configured on the authenticator's interface: In this case, the authentication succeeds only when the local access user name and password configured on the peer's interface are the same as the authentication user name and password configured in the AAA view of the authenticator.</li></ul>
+<p>The user name and password of the peer can be added to the local user list of the authenticator in Authentication, Authorization and Accounting (AAA), Remote Authentication Dial-In User Service (RADIUS) authentication, or Huawei Terminal Access Controller Access Control System (HWTACACS) authentication mode. If the authenticator is not configured with a user name, the peer must be configured with a CHAP password. This section describes how to add the user name and password of the peer in AAA mode. For details about the configuration of RADIUS authentication and HWTACACS authentication, see "AAA Configuration" in Configuration Guide &gt; User Access and Authentication Configuration.</p>
+<p>CHAP supports unidirectional and bidirectional authentication.</p>
+<ul><li>In unidirectional authentication, the device on one end functions as the authenticator, and the device on the other end functions as the peer.</li><li>In bidirectional authentication, each device functions as both the authenticator and peer.</li></ul>
+<p>The device supports both CHAP authentication scenarios: a user name is configured on the authenticator or no user name is configured on the authenticator.</p>
+<p></p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513159158__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the interface view.</span><p><pre class="screen"><strong><b><span class="cmdqueryname">interface</span></b></strong> <em><i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></em></pre>
+</p></li><li><span>Configure CHAP authentication.</span><p><ul><li><strong>Scenario 1: The authenticator is configured with a user name.</strong><p>You can configure the authenticator with a user name to authenticate its peer in CHAP mode. In this case, the authenticator's user name will be confirmed.</p>
+<ul><li>Configure the device as the authenticator in CHAP authentication.<ol type="a"><li>Set the PPP authentication mode to CHAP.<pre class="screen"><strong><b><span class="cmdqueryname">ppp authentication-mode</span></b></strong> <strong><span>chap</span></strong> [ <strong><strong><span>pap</span></strong></strong> ]</pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You can run the <strong>ppp authentication-mode </strong><strong>chap</strong> [ <strong>pap</strong> ] command to enable CHAP negotiation to take precedence over PAP negotiation during LCP negotiation. If the peer does not support CHAP negotiation, PAP negotiation is performed. If the peer supports neither of the two modes, the negotiation fails. Only one authentication mode is negotiated during a PPP negotiation.</p>
+</div></div>
+</li><li>Configure a CHAP user name on the authenticator.<pre class="screen"><strong><b><span class="cmdqueryname">ppp chap user</span></b></strong> <i><span class="varname">user-name</span></i></pre>
+<p>The CHAP user name configured on the authenticator must be the same as the local access user name configured on the peer.</p>
+</li><li>Return to the system view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Enter the AAA view.<pre class="screen"><b><span class="cmdqueryname">aaa</span></b></pre>
+</li><li>Create a local access user and configure the local access user name.<pre class="screen"><b><span class="cmdqueryname">local-access-user</span></b> <i><span class="varname">user-name</span></i> </pre>
+</li><li>Configure the password for the local access user.<pre class="screen"><strong><b><span class="cmdqueryname">password</span></b> <strong><span>cipher</span></strong> </strong><em><i><span class="varname">password</span></i></em></pre>
+<p>The local access user name and password configured on the authenticator must be the same as those configured on the peer.</p>
+</li><li>Configure PPP as the access type of the local access user.<pre class="screen"><b><span class="cmdqueryname">service-type</span></b> <strong><span>ppp</span></strong></pre>
+</li></ol>
+</li></ul>
+<ul><li>Configure the device as the peer in CHAP authentication.<ol type="a"><li>Configure the CHAP user name to be authenticated by the authenticator.<pre class="screen"><strong><b><span class="cmdqueryname">ppp chap user</span></b></strong> <em><i><span class="varname">user-name</span></i></em></pre>
+<p>The CHAP user name configured on the peer must be the same as the CHAP user name configured on the authenticator.</p>
+</li><li>Return to the system view.<pre class="screen"><strong><b><span class="cmdqueryname">quit</span></b></strong></pre>
+</li><li>Enter the AAA view.<pre class="screen"><b><span class="cmdqueryname">aaa</span></b></pre>
+</li><li>Create a local access user and configure the local access user name.<pre class="screen"><b><span class="cmdqueryname">local-access-user</span></b> <i><span class="varname">user-name</span></i> </pre>
+</li><li>Configure the password for the local access user.<pre class="screen"><strong><b><span class="cmdqueryname">password</span></b> <strong><span>cipher</span></strong> </strong><em><i><span class="varname">password</span></i></em></pre>
+<p>The local access user name and password configured on the peer must be the same as those configured on the authenticator.</p>
+</li><li>Configure PPP as the access type of the local access user.<pre class="screen"><b><span class="cmdqueryname">service-type</span></b> <strong><span>ppp</span></strong></pre>
+</li></ol>
+</li></ul>
+</li></ul>
+</p><p><ul><li><strong>Scenario 2: The authenticator is not configured with a user name.</strong><div class="p">You can configure the authenticator without a user name to authenticate its peer in CHAP mode.<ul><li>Configure the device as the authenticator in CHAP authentication.<ol type="a"><li>Set the PPP authentication mode to CHAP.<pre class="screen"><strong><b><span class="cmdqueryname">ppp authentication-mode</span></b></strong> <strong><span>chap</span></strong> [ <strong><strong><span>pap</span></strong></strong> ]</pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>You can run the <strong>ppp authentication-mode </strong><strong>chap</strong> [ <strong>pap</strong> ] command to enable CHAP negotiation to take precedence over PAP negotiation during LCP negotiation. If the peer does not support CHAP negotiation, PAP negotiation is performed. If the peer supports neither of the two modes, the negotiation fails. Only one authentication mode is negotiated during a PPP negotiation.</p>
+</div></div>
+</li><li>Return to the system view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Enter the AAA view.<pre class="screen"><b><span class="cmdqueryname">aaa</span></b></pre>
+</li><li>Create a local access user.<pre class="screen"><b><span class="cmdqueryname">local-access-user</span></b> <i><span class="varname">user-name</span></i> </pre>
+</li><li>Configure the password for the local access user.<pre class="screen"><strong><b><span class="cmdqueryname">password</span></b> <strong><span>cipher</span></strong></strong> <i><span class="varname">password</span></i></pre>
+<p>The local access user name and password configured on the authenticator must be the same as the CHAP user name and password configured on the peer.</p>
+</li><li>Configure PPP as the access type of the local access user.<pre class="screen"><b><span class="cmdqueryname">service-type</span></b> <strong><span>ppp</span></strong></pre>
+</li></ol>
+</li><li>Configure the device as the peer in CHAP authentication.<ol type="a"><li>Configure a user name to be authenticated by the authenticator.<pre class="screen"><strong><b><span class="cmdqueryname">ppp chap user</span></b></strong> <em><i><span class="varname">user-name</span></i></em></pre>
+</li><li>Configure a password for CHAP authentication.<pre class="screen"><strong><b><span class="cmdqueryname">ppp chap password</span></b></strong> { <strong><strong><span>simple</span></strong></strong> <em><i><span class="varname">password</span></i></em> | <strong><strong><span>cipher</span></strong></strong> { <em><i><span class="varname">password1</span></i> </em>| <i><span class="varname">password2</span></i> } }<em>  </em> </pre>
+<p>The CHAP user name and password configured on the peer must be the same as the local access user name and password configured on the authenticator.</p>
+</li></ol>
+</li></ul>
+</div>
+</li></ul>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>If <strong>simple</strong> is specified, the password is saved in plain text in the configuration file. This presents potential security risks. You are advised to specify <strong>cipher</strong> so that the password is saved in cipher text in the configuration file.</li><li>After the configuration, run the <strong>shutdown</strong> command followed by the <strong>undo shutdown</strong> command in the interface view for the configuration to take effect.</li></ul>
+</div></div>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_task_0000001563879149.html">Configuring PPP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_task_0000001563999437.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_task_0000001563999425.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

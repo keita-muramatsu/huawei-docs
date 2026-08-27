@@ -1,0 +1,80 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Understanding the EoGRE Primary/Backup Solution">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_0021_ar.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_0019_ar.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_gre_cfg_0031_ar.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="GRE">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001640830202">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Understanding the EoGRE Primary/Backup Solution</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001640830202"></a><a name="EN-US_CONCEPT_0000001640830202"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Understanding the EoGRE Primary/Backup Solution</h1>
+<div><div class="section"><h4 class="sectiontitle">Fundamentals</h4><p>On the network shown in <a href="#EN-US_CONCEPT_0000001640830202__fig188492263914">Figure 1</a>, an enterprise deploys two DCs to ensure network security and reliability through remote disaster recovery. A STA is dual-homed to Gateway_1 and Gateway_2 through EoGRE tunnels on DeviceA, and then connects to the two DCs. The EoGRE primary/backup solution deployed on DeviceA can switch user services to the standby DC upon network interruption of the active DC. The EoGRE gateway changes upon a switchover between the active and standby DCs, interrupting user services. In this case, the STA needs to apply for the gateway address again.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001640830202__fig188492263914"><a name="EN-US_CONCEPT_0000001640830202__fig188492263914"></a><a name="fig188492263914"></a><span class="figcap"><b>Figure 1 </b>EoGRE primary/backup solution networking</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1, interface 2, and interface 3 represent Tunnel 1, Tunnel 2, and Virtual-Ethernet <span>0/0/1</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000001640830286.png" width="NaN" height="NaN"></span></div>
+<p>After you bind a VE interface to two tunnel interfaces on DeviceA and specify the corresponding priorities, the tunnel with a higher priority functions as the primary tunnel, and that with a lower priority functions as the backup tunnel. The gateway corresponding to the primary tunnel is the master gateway, and that corresponding to the backup tunnel is the backup gateway.</p>
+<p>If no fault occurs on the network, the EoGRE tunnel corresponding to a tunnel interface is up and ready to forward data only when the tunnel interface bound to the VE interface is up and the interface role is active.</p>
+<p>The role of a tunnel interface is determined by the interface status and the primary/backup tunnel status. When the interfaces of the primary and backup tunnels are both up, the roles of the interfaces are active and standby, respectively.</p>
+<p>The status of a VE interface changes with the status of tunnel interfaces bound to it. The VE interface is up as long as one tunnel interface is up.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">EoGRE Heartbeat Detection Mechanism</h4><p>EoGRE encapsulates Ethernet packets using GRE and transmits the encapsulated packets over a network running another network layer protocol, such as IPv4. In this manner, Ethernet packets can be transparently transmitted over GRE tunnels.</p>
+<p>GRE does not provide the link status detection function. To ensure that the peer device can detect the GRE tunnel status in a timely manner, DeviceA provides the heartbeat mechanism. Once detecting that the peer end of a GRE tunnel is unreachable, the device stops sending packets to the peer end to reduce resource and bandwidth consumption.</p>
+<p>DeviceA supports heartbeat detection based on Keepalive packets, and devices at both ends of a GRE tunnel must support the Keepalive protocol.</p>
+<p>After heartbeat detection is configured on DeviceA, DeviceA periodically sends heartbeat packets to the peer gateway to detect the link status. The detection process is as follows:</p>
+<ul><li>If the counter value on DeviceA reaches the preset value but DeviceA does not receive any reply packet from Gateway_1, DeviceA considers Gateway_1 unreachable. Then, Tunnel 1 goes down and switches its role to standby, the primary tunnel stops working, and Gateway_1 switches its role from master to backup.</li><li>If DeviceA receives a reply packet from Gateway_2 before the counter value on DeviceA reaches the preset value, DeviceA considers Gateway_2 reachable. Then, Tunnel 2 goes up and switches its role to active, the backup tunnel starts to work, and Gateway_2 switches its role from backup to master.</li></ul>
+</div>
+<div class="section"><h4 class="sectiontitle">EoGRE Primary/Backup Switchback Mechanism</h4><div class="fignone" id="EN-US_CONCEPT_0000001640830202__fig2468652173113"><a name="EN-US_CONCEPT_0000001640830202__fig2468652173113"></a><a name="fig2468652173113"></a><span class="figcap"><b>Figure 2 </b>Fault recovery in the EoGRE primary/backup solution</span><br><span><img class="vsd" src="figure/en-us_image_0000001689030905.png" width="NaN" height="NaN"></span></div>
+<p>On the network shown in <a href="#EN-US_CONCEPT_0000001640830202__fig2468652173113">Figure 2</a>, the primary and backup EoGRE tunnels are deployed, and the primary tunnel is in the standby state due to a fault. By default, a primary EoGRE tunnel does not proactively switch to the forwarding state after fault recovery. You can enable preemption for the primary and backup EoGRE tunnels. Then, after recovering from a fault, the primary EoGRE tunnel switches to the forwarding state after the configured preemption delay expires.</p>
+<p>If Gateway_1 or the link of the primary tunnel between Gateway_1 and DeviceA recovers, the primary tunnel switches back to the forwarding state depending on whether preemption for the primary and backup EoGRE tunnels is enabled.</p>
+<ul><li>If preemption for the primary and backup EoGRE tunnels is not enabled, the primary tunnel does not switch back to the forwarding state after fault recovery and data traffic still traverses along the backup tunnel.</li><li>If preemption for the primary and backup EoGRE tunnels is enabled, the preemption timer starts upon fault recovery. After the preemption delay expires, the primary tunnel switches to the forwarding state and the corresponding gateway resumes the master role. The backup tunnel stops working, and the corresponding gateway resumes the backup role.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_gre_cfg_0021_ar.html">Configuring EoGRE
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_gre_cfg_0019_ar.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_gre_cfg_0031_ar.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

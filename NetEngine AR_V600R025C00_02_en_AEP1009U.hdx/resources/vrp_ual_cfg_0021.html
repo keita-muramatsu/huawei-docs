@@ -1,0 +1,159 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="Accurate Loop Topology Blocking">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_ual_cfg_0002.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_ual_cfg_0006.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="UAL">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="UAL">
+<meta name="featuretype" content="System Management">
+<meta name="featurename" content="UAL">
+<meta name="featuretype" content="System Management">
+<meta name="featuretype" content="System Management">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000002191787686">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Accurate Loop Topology Blocking</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000002191787686"></a><a name="EN-US_CONCEPT_0000002191787686"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Accurate Loop Topology Blocking</h1>
+<div><p></p>
+<div class="section"><h4 class="sectiontitle">Definition</h4><p>Most campus networks use the tree topology, and the Spanning Tree Protocol (STP) is enabled by default to prevent loops. After a loop occurs on the network, the location of the blocked port is determined based on the STP calculation rules. However, this location is not fixed in the topology. The UAL protocol provides the accurate loop topology blocking function to orchestrate the STP priority and port cost of each NE in instance 0. This ensures that the blocked port calculated by STP is always on the east-west line instead of the north-south line, thus prompting the user if the current connection is correct.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Calculation Method for Accurate Loop Topology Blocking</h4><p>Accurate loop topology blocking is implemented based on bridge protocol data units (BPDUs) between devices. BPDUs carry information required for calculating the spanning tree topology. The Root Identifier, Root Path Cost, Bridge Identifier, and Port Identifier fields in a BPDU form the BPDU priority vector {root BID, root path cost, sender BID, port ID}. The location of the blocked port is determined by exchanging BPDUs and comparing the values of the fields in the BPDU priority vector. For details about the STP configuration and topology calculation method, see <strong>Configuration</strong> &gt; <strong><span>CLI Configuration Guide</span></strong> &gt; <strong>Ethernet Switching Configuration</strong> &gt; <strong>STP/RSTP/MSTP Configuration</strong>.</p>
+<p>The calculation method for accurate loop topology blocking involves the following two rules:</p>
+<ul><li>Device priority orchestration rule<p>After the STP configuration is delivered on WebMaster, the management gateway functions as the root bridge, and the bridge priority is 0. The bridge priority is incremented by 4096 layer by layer. In the UAL tree topology, NEs at the same layer have the same priority and root path cost. According to the STP calculation principle, when the root bridge IDs and root path costs are the same, a larger BID value (consisting of the bridge priority and bridge MAC address) indicates a lower NE priority. The blocked port is typically selected from the NE with a lower priority.</p>
+</li><li>Port priority orchestration rule<p>Port priority orchestration is to calculate the root path cost (RPC) to determine the blocked port. A larger root path cost indicates a lower port priority and a higher probability that the port is selected as the blocked port. The RPC is the accumulated path cost from a port to the root bridge. In the UAL network topology, the path cost is fixed at 1. The root path cost of an east-west port is greater than that of a north-south port. Therefore, an east-west port is selected as the blocked port.</p>
+</li></ul>
+<p>After NE discovery and topology collection, the tree topology of the entire network is established. The following uses an example to describe the calculation method for accurate loop topology blocking.</p>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Topology after calculation for accurate loop topology blocking</span><br><span><img src="figure/en-us_image_0000002193860898.png" width="NaN" height="NaN"></span></div>
+<ol><li>Final priority vector of devices, as shown in <a href="#EN-US_CONCEPT_0000002191787686__table81561824175817">Table 1</a>
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000002191787686__table81561824175817"></a><a name="table81561824175817"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000002191787686__table81561824175817" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Final priority vector of devices</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="13.46134613461346%" id="mcps1.4.2.7.1.2.2.4.1.1" liSelected="liSelected"><p>Device</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="15.841584158415841%" id="mcps1.4.2.7.1.2.2.4.1.2" liSelected="liSelected"><p>Port</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="70.6970697069707%" id="mcps1.4.2.7.1.2.2.4.1.3" liSelected="liSelected"><p>Configuration BPDU</p>
+<p>{root ID, root path cost, sender BID, sender PID}</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="13.46134613461346%" headers="mcps1.4.2.7.1.2.2.4.1.1 "><p>DeviceA</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.841584158415841%" headers="mcps1.4.2.7.1.2.2.4.1.2 "><p>Port A1</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.6970697069707%" headers="mcps1.4.2.7.1.2.2.4.1.3 "><p>{0, 0, 0, Port A1}</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="13.46134613461346%" headers="mcps1.4.2.7.1.2.2.4.1.1 "><p>DeviceB</p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="15.841584158415841%" headers="mcps1.4.2.7.1.2.2.4.1.2 "><p>Port B0</p>
+<p>Port B1</p>
+<p>Port B2</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.6970697069707%" headers="mcps1.4.2.7.1.2.2.4.1.3 "><p>{0, 1, 4096, Port B0}</p>
+<p>{0, 2, 4096, Port B1}</p>
+<p>{0, 2, 4096, Port B2}</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="13.46134613461346%" headers="mcps1.4.2.7.1.2.2.4.1.1 "><p>DeviceC</p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="15.841584158415841%" headers="mcps1.4.2.7.1.2.2.4.1.2 "><p>Port C1</p>
+<p>Port C2</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.6970697069707%" headers="mcps1.4.2.7.1.2.2.4.1.3 "><p>{0, 2, 8392, Port C1}</p>
+<p>{0, 3, 8392, Port C2}</p>
+<p>The BID of DeviceC is 8392, which is the sum of the bridge priority (8192) and the bridge MAC address (200).</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" align="left" valign="top" width="13.46134613461346%" headers="mcps1.4.2.7.1.2.2.4.1.1 "><p>DeviceD</p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="15.841584158415841%" headers="mcps1.4.2.7.1.2.2.4.1.2 "><p>Port D1</p>
+<p>Port D2</p>
+</td>
+<td class="cellrowborder" valign="top" width="70.6970697069707%" headers="mcps1.4.2.7.1.2.2.4.1.3 "><p>{0, 2, 8292, Port D1}</p>
+<p>{0, 3, 8292, Port D2}</p>
+<p>The BID of DeviceD is 8292, which is the sum of the bridge priority (8192) and the bridge MAC address (100).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Only physical main interfaces<span> and Eth-Trunk main interfaces</span> support this orchestration function.</p>
+</div></div>
+</li><li>Orchestration process of NEs in the network topology
+<div class="tableBorder"><a name="EN-US_CONCEPT_0000002191787686__table14257113310913"></a><a name="table14257113310913"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_CONCEPT_0000002191787686__table14257113310913" frame="border" border="1" rules="all"><caption><b>Table 2 </b>NE topology orchestration process</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="8.86%" id="mcps1.4.2.7.2.1.2.3.1.1" liSelected="liSelected"><p>Device</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="91.14%" id="mcps1.4.2.7.2.1.2.3.1.2" liSelected="liSelected"><p>Comparison</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="8.86%" headers="mcps1.4.2.7.2.1.2.3.1.1 "><p>DeviceA</p>
+</td>
+<td class="cellrowborder" valign="top" width="91.14%" headers="mcps1.4.2.7.2.1.2.3.1.2 "><p>The device is configured as the root bridge with the optimal configuration BPDU.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.86%" headers="mcps1.4.2.7.2.1.2.3.1.1 "><p>DeviceB</p>
+</td>
+<td class="cellrowborder" valign="top" width="91.14%" headers="mcps1.4.2.7.2.1.2.3.1.2 "><p>The root path cost of ports B1 and B2 on DeviceB is 1, smaller than the root path cost 2 of port C1 on DeviceC and port D1 on DeviceD (root path cost 1 in the received BPDU plus the link path cost 1). As such, DeviceB is not selected as the blocked device.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.86%" headers="mcps1.4.2.7.2.1.2.3.1.1 "><p>DeviceC</p>
+</td>
+<td class="cellrowborder" valign="top" width="91.14%" headers="mcps1.4.2.7.2.1.2.3.1.2 "><p>The root path cost of port C1 is 2 (root path cost 1 in the received configuration BPDU plus the link path cost 1), and the root path cost of port C2 is 3 (root path cost 1 in the received configuration BPDU plus the link path cost 2). DeviceC finds that port C1 has a smaller root path cost and therefore considers the configuration of port C1 superior to that of port C2. DeviceC then selects port C1 as the root port. DeviceC calculates the configuration BPDU {0, 3, 8392, Port C2} for the designated port and compares the calculated configuration BPDU with the configuration BPDU {0, 3, 8292, Port D2} of port C2. The calculated configuration BPDU is inferior to the configuration BPDU of port C2, so DeviceD selects port C2 as the designated port.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="8.86%" headers="mcps1.4.2.7.2.1.2.3.1.1 "><p>DeviceD</p>
+</td>
+<td class="cellrowborder" valign="top" width="91.14%" headers="mcps1.4.2.7.2.1.2.3.1.2 "><p>The root path cost of port D1 is 2 (root path cost 1 in the received configuration BPDU plus the link path cost 1), and the root path cost of port D2 is 3 (root path cost 1 in the received configuration BPDU plus the link path cost 2). DeviceD finds that port D1 has a smaller root path cost, and therefore considers the configuration of port D1 superior to that of port D2. DeviceD selects port D1 as the root port. DeviceD calculates the configuration BPDU {0, 3, 8292, Port D2} for the designated port and compares the calculated configuration BPDU with the configuration BPDU {0, 3, 8392, Port C2} of port D2. The calculated configuration BPDU is superior to the configuration BPDU of port D2, so DeviceD selects port D2 as the designated port.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>According to <a href="#EN-US_CONCEPT_0000002191787686__table14257113310913">Table 2</a>, DeviceC has the lowest priority and C2 is selected as the blocked port. Port C2 is located on the east-west line of the tree topology. The calculation for accurate loop topology blocking is complete.</p>
+</li></ol>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_ual_cfg_0002.html">Understanding UAL
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_ual_cfg_0006.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

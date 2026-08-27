@@ -1,0 +1,367 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="topic">
+<meta name="DC.Title" content="Example for Configuring GRE over IPsec for Enterprise Interconnection">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001538075105.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001961975540.html">
+<meta name="DC.Relation" scheme="URI" content="../toctopics/en-us_topic_0000001961815748.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TOPIC_0000001998495833">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring GRE over IPsec for Enterprise Interconnection</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TOPIC_0000001998495833"></a><a name="EN-US_TOPIC_0000001998495833"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring GRE over IPsec for Enterprise Interconnection</h1>
+<div><div class="section"><h4 class="sectiontitle">Applicable Products and Versions</h4><p>This example applies to AR routers running V600R022C10 and later versions.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Overview</h4><p>This document provides a typical configuration example for GRE over IPsec. It presents a detailed plan of network deployment, traffic scheduling, and Internet access security policy configuration on branch and HQ routers, provides a configuration example based on the plan, and offers references for networking planning and device configuration.</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Networking Requirements</h4><p>DeviceA and DeviceB function as the egress routers of the enterprise branch and HQ, respectively. They want to establish a GRE over IPsec tunnel between each other for communication.</p>
+<div class="fignone"><span class="figcap"><b>Figure 1 </b>Network diagram</span><br><span><img src="../images/en-us_image_0000001967519860.png" width="NaN" height="NaN"></span></div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Enable the DNS relay function globally and specify the DNS server address.</li><li>Deploy a DHCP server on the LAN to assign addresses to intranet PCs and laptops. Deliver the DNS server address to the terminals together with the addresses assigned through DHCP.</li><li>Perform basic interface configurations.</li><li>Configure static routes to ensure that there are reachable routes between DeviceA and DeviceB.</li><li>Configure a GRE tunnel interface and a forwarding route for the tunnel interface to direct the data flows to be protected by IPsec to the interface.</li><li>Configure an IPsec profile.</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Data Planning</h4>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Data</caption><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.5.2.2.4.1.1" liSelected="liSelected"><p>Device</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.5.2.2.4.1.2" liSelected="liSelected"><p>Interface</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.3.5.2.2.4.1.3" liSelected="liSelected"><p>IP Address</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" rowspan="4" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.1 "><p>DeviceA</p>
+<p></p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.2 "><p>interface1</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.3 "><p>1.1.3.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>interface2</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>10.1.1.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>GRE tunnel</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>Source IP address: 1.1.3.1</p>
+<p>Destination IP address: 1.1.5.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>IPsec policy</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>Authentication mode: PSK authentication</p>
+<p>PSK: YsHsjx_202206</p>
+<p>Local ID type: IP address</p>
+<p>Peer ID type: IP address</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="4" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.1 "><p>DeviceB</p>
+<p></p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.2 "><p>interface1</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.3.5.2.2.4.1.3 "><p>1.1.5.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>interface2</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>10.1.2.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>GRE tunnel</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>Source IP address: 1.1.5.1</p>
+<p>Destination IP address: 1.1.3.1</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.1 "><p>IPsec policy</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.3.5.2.2.4.1.2 "><p>Authentication mode: PSK authentication</p>
+<p>PSK: YsHsjx_202206</p>
+<p>Local ID type: IP address</p>
+<p>Peer ID type: IP address</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Precautions</h4><p>None</p>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li>Enable the DNS relay function globally and specify the DNS server address.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname Router</strong>
+[Router] <strong>dns relay enable</strong> 
+[Router] <strong>dns resolve</strong>
+[Router] <strong>dns server 10.10.1.2</strong></pre>
+</li><li>Deploy a DHCP server on the LAN to assign addresses to intranet PCs and laptops. Deliver the DNS server address to the terminals together with the addresses assigned through DHCP.<pre class="screen">[Router] <strong>dhcp enable</strong>
+[Router] <strong>ip pool ip-pool1</strong>                                                                
+[Router-ip-pool-pool1] <strong>gateway-list 10.10.1.1</strong>
+[Router-ip-pool-pool1] <strong>network 10.10.1.0 mask 255.255.255.128</strong>
+[Router-ip-pool-pool1] <strong>excluded-ip-address 10.10.1.2</strong>
+[Router-ip-pool-pool1] <strong>dns-list 10.10.1.2</strong>
+[Router-ip-pool-pool1] <strong>lease day 30 hour 0 minute 0</strong>
+[Router-ip-pool-pool1] <strong>domain-name huawei.com</strong>
+[Router-ip-pool-pool1]<strong> quit</strong></pre>
+</li><li>Perform basic interface configurations on DeviceA.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong> 
+[HUAWEI] <strong>sysname DeviceA</strong> 
+[DeviceA] <strong>interface 10ge 0/0/2</strong> 
+[DeviceA-10GE0/0/2] <strong>ip address 10.1.1.1 24 </strong>
+[DeviceA-10GE0/0/2] <strong>quit</strong> 
+[DeviceA] <strong>interface 10ge 0/0/1</strong>  
+[DeviceA-10GE0/0/1] <strong>ip address 1.1.3.1 24  </strong>
+[DeviceA-10GE0/0/1] <strong>quit</strong></pre>
+</li><li>Configure a GRE tunnel interface on DeviceA.<pre class="screen">[DeviceA] <strong>interface tunnel 1</strong> 
+[DeviceA-Tunnel1] <strong>tunnel-protocol gre</strong> 
+[DeviceA-Tunnel1] <strong>ip address 2.1.1.1 24</strong> 
+[DeviceA-Tunnel1] <strong>source 1.1.3.1</strong> 
+[DeviceA-Tunnel1] <strong>destination 1.1.5.1</strong> 
+[DeviceA-Tunnel1] <strong>quit</strong></pre>
+</li><li>Configure a static route from DeviceA to Network B.<pre class="screen">[DeviceA] <strong>ip route-static 1.1.5.0 255.255.255.0 10ge 0/0/1 1.1.3.2 </strong>
+[DeviceA] <strong>ip route-static 10.1.2.0 255.255.255.0 tunnel 1</strong></pre>
+</li><li>Configure an IPsec profile and apply it to the tunnel interface.<ol type="a"><li>Configure an IPsec proposal. You can use the default parameter settings.<pre class="screen">[DeviceA] <strong>ipsec proposal tran1 </strong>
+[DeviceA-ipsec-proposal-tran1] <strong>quit</strong></pre>
+</li><li>Configure an IKE proposal. You can use the default parameter settings.<pre class="screen">[DeviceA] <strong>ike proposal 10</strong> 
+[DeviceA-ike-proposal-10] <strong>authentication-method pre-share </strong> 
+[DeviceA-ike-proposal-10] <strong>quit</strong></pre>
+</li><li>Configure an IKE peer.<pre class="screen">[DeviceA] <strong>ike peer b</strong> 
+[DeviceA-ike-peer-b] <strong>ike-proposal 10</strong> 
+[DeviceA-ike-peer-b] <strong>pre-shared-key YsHsjx_202206 </strong>
+[DeviceA-ike-peer-b] <strong>quit</strong></pre>
+</li><li>Configure an IPsec profile.<pre class="screen">[DeviceA] <strong>ipsec profile pro1 </strong>
+[DeviceA-ipsec-profile-pro1] <strong>proposal tran1 </strong>
+[DeviceA-ipsec-profile-pro1] <strong>ike-peer b</strong> 
+[DeviceA-ipsec-profile-pro1] <strong>quit</strong></pre>
+</li><li>Apply the IPsec profile <strong>pro1</strong> to the tunnel interface.<pre class="screen">[DeviceA] <strong>interface tunnel 1</strong> 
+[DeviceA-Tunnel1] <strong>ipsec profile pro1 </strong>
+[DeviceA-Tunnel1] <strong>quit</strong> 
+[DeviceA] <strong>quit</strong></pre>
+</li></ol>
+</li><li>Perform basic interface configurations on DeviceB.<pre class="screen">&lt;HUAWEI&gt; <strong>system-view </strong>
+[HUAWEI] <strong>sysname DeviceB </strong>
+[DeviceB] <strong>interface 10ge 0/0/2</strong> 
+[DeviceB-10GE0/0/2] <strong>ip address 10.1.2.1 24 </strong>
+[DeviceB-10GE0/0/2] <strong>quit</strong> 
+[DeviceB] <strong>interface 10ge 0/0/1 </strong> 
+[DeviceB-10GE0/0/1] <strong>ip address 1.1.5.1 24</strong>  
+[DeviceB-10GE0/0/1] <strong>quit</strong></pre>
+</li><li>Configure a GRE tunnel interface on DeviceB.<pre class="screen">[DeviceB] <strong>interface tunnel 1</strong> 
+[DeviceB-Tunnel1] <strong>tunnel-protocol gre </strong>
+[DeviceB-Tunnel1] <strong>ip address 2.1.1.2 24 </strong>
+[DeviceB-Tunnel1] <strong>source 1.1.5.1 </strong>
+[DeviceB-Tunnel1] <strong>destination 1.1.3.1 </strong>
+[DeviceB-Tunnel1] <strong>quit</strong></pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The IP address of the tunnel interface can be any available IP address. When routes with the tunnel interface as the next hop need to be generated through a dynamic routing protocol, the IP addresses of the interfaces at both ends of the GRE tunnel must belong to the same network segment.</p>
+</div></div>
+</li><li>Configure a static route from DeviceB to Network A.<pre class="screen">[DeviceB] <strong>ip route-static 1.1.3.0 255.255.255.0 10ge 0/0/1 1.1.5.2 </strong>
+[DeviceB] <strong>ip route-static 10.1.1.0 255.255.255.0 Tunnel1</strong></pre>
+</li><li>Configure an IPsec profile and apply it to the tunnel interface.<ol type="a"><li>Configure an IPsec proposal. You can use the default parameter settings.<pre class="screen">[DeviceB] <strong>ipsec proposal tran1 </strong>
+[DeviceB-ipsec-proposal-tran1] <strong>quit</strong></pre>
+</li><li>Configure an IKE proposal. You can use the default parameter settings.<pre class="screen">[DeviceB] <strong>ike proposal 10 </strong>
+[DeviceB-ike-proposal-10] <strong>authentication-method pre-share </strong>
+[DeviceB-ike-proposal-10] <strong>quit</strong></pre>
+</li><li>Configure an IKE peer.<pre class="screen">[DeviceB] <strong>ike peer a </strong>
+[DeviceB-ike-peer-b] <strong>ike-proposal 10 </strong>
+[DeviceB-ike-peer-b] <strong>pre-shared-key YsHsjx_202206 </strong>
+[DeviceB-ike-peer-b] <strong>quit</strong></pre>
+</li><li>Configure an IPsec profile.<pre class="screen">[DeviceB] <strong>ipsec profile pro1 </strong>
+[DeviceB-ipsec-profile-pro1] <strong>proposal tran1</strong> 
+[DeviceB-ipsec-profile-pro1] <strong>ike-peer a </strong>
+[DeviceB-ipsec-profile-pro1] <strong>quit</strong></pre>
+</li><li>Apply the IPsec profile <strong>pro1</strong> to the tunnel interface.<pre class="screen">[DeviceB] <strong>interface tunnel 1 </strong>
+[DeviceB-Tunnel1] <strong>ipsec profile pro1 </strong>
+[DeviceB-Tunnel1] <strong>quit </strong>
+[DeviceB] <strong>quit</strong></pre>
+</li></ol>
+</li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Verifying the Configuration</h4><p>Verify that users on Network A can successfully access Network B. Run the <strong>display ike sa</strong> and <strong>display ipsec sa</strong> commands on DeviceA and DeviceB to check the establishment of IKE SAs and IPsec SAs. The following uses the command output on DeviceA as an example. If information similar to the following is displayed, IKE SAs and IPsec SAs are successfully established.</p>
+<pre class="screen">&lt;DeviceA&gt; display ike sa  
+Total number of IKE SA in all CPU : 2                                            
+Total number of phase 1 SA in all CPU : 1                                        
+Total number of phase 2 SA in all CPU : 1   
+
+Flag Description:                                                                 
+RD--READY   ST--STAYALIVE   RL--REPLACED   FD--FADING   TO--TIMEOUT              
+HRT--HEARTBEAT   LKG--LAST KNOWN GOOD SEQ NO.   BCK--BACKED UP                   
+M--ACTIVE   S--STANDBY   A--ALONE  NEG--NEGOTIATING                              
+
+Slot 0, cpu 1 IKE SA information :                                                 
+  Number of IKE SA : 2,  number of IKE SA1: 1,  number of IKE SA2: 1             
+---------------------------------------------------------------------------------------                             
+Conn-ID    Peer              VPN         Flag(s)        Phase  RemoteType  RemoteID                                     
+---------------------------------------------------------------------------------------                             
+33554442   1.1.5.1/500                    RD|A          v2:2   IP          1.1.5.1                                       
+33554440   1.1.5.1/500                    RD|ST|A       v2:1   IP          1.1.5.1                                      
+--------------------------------------------------------------------------------------- </pre>
+</div>
+<pre class="screen">&lt;DeviceA&gt; display ipsec sa 
+Slot 0, cpu 1 ipsec sa information:                                               
+===============================                                                  
+Interface: 10GE0/0/1                                                            
+===============================                                                     
+-----------------------------                                                    
+IPSec policy name: "map1"                                                        
+Sequence number  : 10                                                            
+Acl group        : 3000/IPv4                                                     
+Acl rule         : 5                                                             
+Mode             : ISAKMP                                                        
+---------------------------                                                        
+Connection ID     : 33554456                                                     
+Encapsulation mode: Tunnel                                                       
+Holding time      : 0d 13h 30m 13s                                               
+Tunnel local      : 1.1.3.1/500                                                  
+Tunnel remote     : 1.1.5.1/500                                                  
+Flow source       : 1.1.3.1/255.255.255.255 0/0-65535                            
+Flow destination  : 1.1.5.1/255.255.255.255 0/0-65535                             
+
+[Outbound ESP SAs]                                                                 
+SPI: 10914757 (0xa68bc5)                                                         
+Proposal: ESP-ENCRYPT-AES-GCM-256                                                
+SA remaining soft duration (kilobytes/sec): 0/512054                             
+SA remaining hard duration (kilobytes/sec): 0/602772                             
+Max sent sequence-number: 5                                                      
+UDP encapsulation used for NAT traversal: N                                      
+SA encrypted packets (number/bytes): 5/540                                      
+
+[Inbound ESP SAs]                                                                  
+SPI: 276363621 (0x1078f965)                                                      
+Proposal: ESP-ENCRYPT-AES-GCM-256                                                
+SA remaining soft duration (kilobytes/sec): 0/530198                             
+SA remaining hard duration (kilobytes/sec): 0/602772                             
+Max received sequence-number: 5                                                  
+UDP encapsulation used for NAT traversal: N                                      
+SA decrypted packets (number/bytes): 5/540                                       
+Anti-replay : Enable                                                             
+Anti-replay window size: 1024</pre>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>DeviceA</p>
+<pre class="screen">#  
+sysname DeviceA 
+# ipsec proposal tran1                                                             
+ esp authentication-algorithm sha2-256                                           
+ esp encryption-algorithm aes-256-gcm-128 
+# ike proposal 10  
+ encryption-algorithm aes-gcm-256                                                        
+ dh group14                                                                        
+ authentication-algorithm sha2-256                                                
+ authentication-method pre-share                                                  
+ integrity-algorithm hmac-sha2-256                                                
+ prf hmac-sha2-256  
+# ike peer b  
+ pre-shared-key %+%##!!!!!!!!!"!!!!"!!!!*!!!!0wh:W'|^cWVEaw==)"2Zwo_o2GIV8LeaRb&gt;!!!!!2jp5!!!!!!9!!!!NI4E((n_/HFtL35tXwpVh+h#IMXhhW!!!!!!!!!!%+%#  
+ ike-proposal 10 
+#                                                                               
+ ipsec profile pro1
+  ike-peer b
+  proposal tran1 
+# 
+interface 10GE0/0/2 
+ ip address 10.1.1.1 255.255.255.0 
+# 
+interface 10GE0/0/1 
+ ip address 1.1.3.1 255.255.255.0 
+# 
+interface Tunnel1 
+ ip address 2.1.1.1 255.255.255.0 
+ tunnel-protocol gre 
+ source 1.1.3.1 
+ destination 1.1.5.1 
+ ipsec profile pro1   
+# 
+ ip route-static 10.1.2.0 255.255.255.0 tunnel 1 
+ ip route-static 1.1.5.0 255.255.255.0 10GE 0/0/1 1.1.3.2 
+# 
+return</pre>
+</li><li><div class="p">DeviceB<pre class="screen"># 
+ sysname DeviceB 
+# 
+ipsec proposal tran1                                                             
+ esp authentication-algorithm sha2-256                                           
+ esp encryption-algorithm aes-256-gcm-128 
+# 
+ike proposal 10  
+ encryption-algorithm aes-gcm-256                                                     
+ dh group14                                                                        
+ authentication-algorithm sha2-256                                                
+ authentication-method pre-share                                                  
+ integrity-algorithm hmac-sha2-256                                                
+ prf hmac-sha2-256  
+# 
+ike peer a 
+ pre-shared-key %+%##!!!!!!!!!"!!!!"!!!!*!!!!0wh:W'|^cWVEaw==)"2Zwo_o2GIV8LeaRb&gt;!!!!!2jp5!!!!!!9!!!!NI4E((n_/HFtL35tXwpVh+h#IMXhhW!!!!!!!!!!%+%# 
+ ike-proposal 10 
+#                                                                                
+ipsec profile pro1   
+ ike-peer a   
+ proposal tran1 
+# 
+interface 10GE0/0/2 
+ ip address 10.1.2.1 255.255.255.0 
+# 
+interface 10GE0/0/1 
+ ip address 1.1.5.1 255.255.255.0 
+# 
+interface Tunnel1 
+ ip address 2.1.1.2 255.255.255.0 
+ tunnel-protocol gre 
+ source 1.1.5.1  destination 1.1.3.1 
+ ipsec profile pro1 
+# 
+ ip route-static 10.1.1.0 255.255.255.0 Tunnel 1 
+ ip route-static 1.1.3.0 255.255.255.0 10GE 0/0/1 1.1.5.2 
+# 
+return</pre>
+</div>
+</li></ul>
+<p></p>
+<p></p>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../toctopics/en-us_topic_0000001538075105.html">Comprehensive Scenario Cases
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../toctopics/en-us_topic_0000001961975540.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../toctopics/en-us_topic_0000001961815748.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

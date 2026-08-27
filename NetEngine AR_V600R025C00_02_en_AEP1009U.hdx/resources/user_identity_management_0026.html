@@ -1,0 +1,107 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring TSM SSO Parameters">
+<meta name="abstract" content="">
+<meta name="description" content="">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="User_Identity_Management_0023.html">
+<meta name="DC.Relation" scheme="URI" content="User_Identity_Management_0025.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Identity Management">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Identity Management">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="Identity Management">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001513032358">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring TSM SSO Parameters</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001513032358"></a><a name="EN-US_TASK_0000001513032358"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring TSM SSO Parameters</h1>
+<div class="taskbody"><p></p>
+<div class="context"><a name="EN-US_TASK_0000001513032358__1.4.1"></a><a name="1.4.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>After the device is connected to the TSM SSO server, enable TSM SSO and configure optional functions.</p>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001513032358__1.4.2"></a><a name="1.4.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enter the identity management view.</span><p><pre class="screen"><b><span class="cmdqueryname">identity-management</span></b></pre>
+</p></li><li><span>Enter the TSM SSO view.</span><p><pre class="screen"><b><span class="cmdqueryname">sso-tsm</span></b></pre>
+</p></li><li><span>Enable TSM SSO.</span><p><pre class="screen"><b><span class="cmdqueryname">tsm-sso enable</span></b></pre>
+</p></li><li><strong>Optional: </strong><span>Configure the aging time of online users.</span><p><pre class="screen"><b><span class="cmdqueryname">online-user aging-time</span></b> <i><span class="varname">aging-time</span></i></pre>
+<p>Each device parses TSM SSO messages, brings the user online, and creates an online user entry. Within the aging time, the device updates the online user table based on the actual situation to save space resources for the online user table.</p>
+<ul><li>If a device does not receive user service traffic or TSM SSO messages, the entry corresponding to the user is deleted.</li><li>If a device receives user service traffic, the device updates the aging time of the online user entry (default value: 1440 minutes).</li></ul>
+</p></li><li><strong>Optional: </strong><span>Configure IPv6 address prefix parsing.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv6prefix</span></b> <i><span class="varname">length</span></i></pre>
+<p>You can run this command when the device needs to parse the IPv6 address prefixes in the packets sent from the TSM SSO server to the device based on the configured IPv6 address prefix length. The parsed IPv6 address prefixes are used as users' IPv6 addresses so that users on an IPv6 address range can go online.</p>
+</p></li><li id="EN-US_TASK_0000001513032358__step119998561578"><span id="EN-US_TASK_0000001513032358__">Configure the TSM online user synchronization function.</span><p><ol type="a"><li>Enable online user information synchronization.<pre class="screen"><b><span class="cmdqueryname">server-sync enable</span></b></pre>
+<p>After this function is enabled, the device proactively sends online user synchronization requests to the TSM SSO server to synchronize online user information.</p>
+</li><li>Synchronize the IP address range of users.<pre class="screen"><b><span class="cmdqueryname">sync-address</span></b> <strong><span>address-set</span></strong> <i><span class="varname">address-set-name</span></i></pre>
+<p>Generally, the IP address range configured in the <strong>Terminal IP address</strong> list is used when the device is added to the TSM SSO server as the online behavior management device. A maximum of six address set objects can be configured. Address groups cannot be configured.</p>
+</li><li><strong>Optional: </strong>Configure the synchronization rate.<pre class="screen"><b><span class="cmdqueryname">sync-rate</span></b> <i><span class="varname">rate</span></i></pre>
+<p>However, if the rate is set to a small value, users go online slowly, and user experience is affected. Therefore, exercise caution when setting the rate. Generally, retain the default value.</p>
+</li><li><strong>Optional: </strong>Configure the query interval for the same IP address.<pre class="screen"><b><span class="cmdqueryname">ip-sync-interval</span></b> <i><span class="varname">interval</span></i></pre>
+<p>After configuring the IP address range for online user synchronization on the TSM SSO server, you can run this command to set the query interval for each IP address. This prevents the device from querying numerous invalid IP addresses (IP addresses that do not go online on the TSM SSO server) from the TSM SSO server, which deteriorates the TSM SSO performance of the server.</p>
+</li><li><strong>Optional: </strong>Set the maximum number of IP addresses contained in each query packet.<pre class="screen"><b><span class="cmdqueryname">ip-sync-num</span></b> <i><span class="varname">number</span></i>
+<b><span class="cmdqueryname">quit</span></b></pre>
+<p>You can run this command to effectively control the number of IP addresses in each query packet and adjust the rate at which the TSM SSO server receives online user synchronization query messages from the device, preventing slow query or message queue congestion on the server.</p>
+</li></ol>
+</p></li><li><strong>Optional: </strong><span>Configure the security group priority.</span><p><pre class="screen"><b><span class="cmdqueryname">security-group priority-type</span></b> { <strong><span>local-first</span></strong> | <strong><span>server-first</span></strong> }</pre>
+<p>The user login information received by the device contains the security group to which the user belongs on the server. If the information conflicts with the local security group to which the user belongs, you can run this command to control the device to obtain the priority of the security group to which the user belongs. By default, the device preferentially uses the information on the server.</p>
+<ul><li><strong>local-first</strong>: The device preferentially uses the local security group to which the user belongs. If no security group is found, the device uses the security group to which the user belongs on the server.</li><li><strong>server-first</strong>: The device preferentially searches for the security group to which the user belongs on the server. If not found, the device continues to search for the local security group to which the user belongs.</li></ul>
+<p>For example, in the <strong>server-first</strong> mode, user A on the device belongs to security group A, and user A on the server belongs to security group B. When a user passes authentication and goes online on the device, the user belongs to security group B. However, if the user does not belong to any security group on the server, the device still uses security group A as the security group to which the user belongs.</p>
+</p></li><li><strong>Optional: </strong><span>Configure the user escape function.</span><p><pre class="screen"><b><span class="cmdqueryname">temporary-access username</span></b> <i><span class="varname">user-name</span></i> <strong><span>ucl-group</span></strong> <i><span class="varname">group-name</span></i></pre>
+<p>If the communication between the device and TSM SSO server is abnormal and the device cannot obtain the mapping between users and IP addresses, you can enable the user escape function to temporarily use the permissions of the security group named <strong>ucl-group</strong>. When traffic of a user passes through the device and the device cannot find the user name corresponding to the user's IP address in the online user table, the device uses the configured temporary user name and security group to bring the user online.</p>
+<p>When the communication recovers and the device can properly obtain the mapping between users and IP addresses, the device updates the user names and security groups in the online user table. The device performs permission control based on the new user names and security groups.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this step, <i><span class="varname">group-name</span></i> must be specified as the name of an existing security group on the device, while <i><span class="varname">user-name</span></i> can be directly specified.</p>
+<p>If a local user (local-access-user) whose name is the same as the value of <i><span class="varname">user-name</span></i> exists on the device, the device uses the security group to which the user corresponding to the value of <i><span class="varname">user-name</span></i> belongs during the escape and does not query the security group to which the local user belongs.</p>
+</div></div>
+</p><p><p></p>
+</p></li><li><strong>Optional: </strong><span>Configure user login and logout logs.</span><p><pre class="screen"><b><span class="cmdqueryname">undo userlog login-out enable</span></b></pre>
+<p>When the TSM SSO function is enabled and there are too many users, you are advised to run this command to disable user login and logout logs to prevent device performance deterioration.</p>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="User_Identity_Management_0023.html">Configuring TSM SSO
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="User_Identity_Management_0025.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

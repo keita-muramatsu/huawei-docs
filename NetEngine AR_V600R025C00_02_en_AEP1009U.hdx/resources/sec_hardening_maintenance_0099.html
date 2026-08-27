@@ -1,0 +1,88 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Defense Against ARP Flood Attacks">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0032.html">
+<meta name="DC.Relation" scheme="URI" content="sec_hardening_maintenance_0098.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512692678">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Defense Against ARP Flood Attacks</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512692678"></a><a name="EN-US_TASK_0000001512692678"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Defense Against ARP Flood Attacks</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001512692678__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><div class="p"><h4 class="sectiontitle">Overview</h4><p>In an ARP flood attack, a large number of ARP messages are broadcast on the network, preventing the gateway from processing other services due to CPU overload. Processing these ARP messages consumes considerable amounts of bandwidth, leading to network congestion and affecting network communication.</p>
+<div class="p">To defend against this kind of attack, configure the following functions on a device:<ul><li><p>ARP entry limiting</p>
+<p>A device limits the number of ARP entries that an interface can learn. This prevents an ARP entry overflow, thereby improving ARP entry security.</p>
+</li><li><p>Rate limiting on ARP messages</p>
+<p>A device counts the number of received ARP messages in a specified period. If that number exceeds the limit, the device does not process excess ARP messages. This function prevents an ARP entry overflow.</p>
+</li><li>Rate limiting on ARP Miss messages<p>A device counts the number of received ARP Miss messages in a specified period. If that number exceeds the limit, the device does not process excess ARP Miss messages, relieving the burden on the CPU.</p>
+</li></ul>
+</div>
+<h4 class="sectiontitle">Impact on the System</h4><p>Setting an ARP entry or rate limit that is too small adversely affects ARP functions.</p>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001512692678__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure ARP entry limiting.</span><p><div class="p">Configure the maximum number of ARP entries that a specified interface can learn.<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>interface vlanif 10</strong>
+[<span class="keyword">HUAWEI</span>-Vlanif10] <strong>arp limit 20</strong>
+[<span class="keyword">HUAWEI</span>-Vlanif10] <strong>quit</strong></pre>
+</div>
+</p></li><li><span>Configure rate limiting on ARP messages.</span><p><div class="p">Configure the device to limit the rate of ARP messages (number of ARP messages that can be processed per second) globally.<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>arp anti-attack rate-limit</strong><strong> 1000</strong>  //This command can be run globally, in a VLAN, or on an interface as required.</pre>
+</div>
+</p></li><li><span>Configure rate limiting on ARP Miss messages.</span><p><div class="p">Configure the device to limit the rate of ARP Miss messages (number of ARP Miss messages that can be processed per second) on an interface.<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>interface <span>10GE</span> <span>0/0/0</span></strong>
+[<span class="keyword">HUAWEI</span>-<span>10GE</span><span>0/0/1</span>] <strong>arp miss anti-attack rate-limit 1000</strong>  //This command can be run globally based on source IP addresses, on an interface, or in a VLAN as required.
+[<span class="keyword">HUAWEI</span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</div>
+</p></li></ul></div>
+<div class="example"><a name="EN-US_TASK_0000001512692678__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Security Hardening Result</h4><ul><li>Run the <b><span class="cmdqueryname">display arp limit</span></b> [ <strong><span>interface</span></strong> { <i><span class="varname">interface-name</span></i> | <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> } ] [ <strong><span>vlan</span></strong> <i><span class="varname">vlan-id</span></i> ] command to check the configuration of ARP entry limiting.</li><li>Run the <b><span class="cmdqueryname">display arp anti-attack</span></b> <strong><span>rate-limit</span></strong> command to check the configuration of rate limiting on ARP messages.</li><li>Run the <b><span class="cmdqueryname">display arp anti-attack record</span></b> command to check detailed information about ARP messages discarded because the rate of ARP messages exceeds the limit.</li><li>Run the <b><span class="cmdqueryname">display arp miss anti-attack</span></b> <strong><span>rate-limit</span></strong> command to check the configuration of rate limiting on ARP Miss messages.</li><li>Run the <b><span class="cmdqueryname">display arp miss anti-attack record</span></b> command to check detailed information about ARP Miss messages discarded because the rate of ARP Miss messages exceeds the limit.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="sec_hardening_maintenance_0032.html">ARP Security
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="sec_hardening_maintenance_0098.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

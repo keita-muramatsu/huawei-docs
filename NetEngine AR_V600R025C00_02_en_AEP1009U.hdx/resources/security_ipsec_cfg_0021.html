@@ -1,0 +1,100 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Creating an Advanced ACL">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0020.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0022.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563754193">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Creating an Advanced ACL</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563754193"></a><a name="EN-US_TASK_0000001563754193"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Creating an Advanced ACL</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001563754193__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>IPsec can protect one or more data flows. ACL-based IPsec uses advanced ACLs to define data flows to be protected by IPsec. In real-world applications, you need to configure an advanced ACL to define the data flow to be protected and then reference the ACL in an IPsec policy to protect the data flow. During the configuration of a template IPsec policy, defining protected data flows on the responder is optional. If protected data flows are not defined on the responder, the responder accepts the range of protected data flows defined on the initiator. If protected data flows are defined on the responder, the ACLs configured on the responder to define protected data flows must mirror or include the ACLs configured on the initiator.</p>
+<div class="p">Only one ACL can be referenced in an IPsec policy. Note the following points when configuring ACLs:<ul><li><p>To protect data flows with different security requirements, create different ACLs and IPsec policies.</p>
+</li><li><p>To protect data flows with the same security requirements, configure multiple rules in an ACL to protect these data flows.</p>
+</li></ul>
+</div>
+<div class="p">In an ACL, a permit rule defines a data flow that needs to be protected by IPsec, whereas a deny rule defines a data flow that does not need to be protected by IPsec. An ACL can contain multiple rules. A data flow is processed according to the first matched rule.<ul><li>In the outbound direction of an SA, the packets that match the permit rule of an ACL will be encrypted by IPsec before being forwarded. If a packet matches a deny rule or does not match any permit rule, the packet will be directly forwarded without IPsec protection. If a data flow transmitted between two peers matches a permit rule, the data flow needs to be protected and a pair of SAs will be created.</li><li>In the inbound direction of an SA, IPsec-protected packets are decrypted before being forwarded, whereas non-IPsec-protected packets are forwarded without IPsec protection.</li></ul>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001563754193__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Create an advanced ACL with <i><span class="varname">acl-number</span></i> in the range from 3000 to 3999 and enter the advanced ACL view.</span><p><pre class="screen"><b><span class="cmdqueryname">acl</span></b> [ <strong><span>number</span></strong> ] <i><span class="varname">advance-acl-number</span></i> </pre>
+</p></li><li><span>Configure ACL rules based on service requirements.</span><p><p>For details, see "Configuring an Advanced ACL" in <span>CLI Configuration Guide</span> &gt; IP Addresses and Services Configuration &gt; ACL Configuration &gt; Configuring an ACL.</p>
+<div class="p">If ACL rules on both ends of an IPsec tunnel mirror each other, an SA can be successfully established when any end initiates negotiation. If ACL rules on both ends do not mirror each other, an SA can be successfully established only when the address range defined in the ACL rule of the initiator is included in that of the responder or when there are overlapping address ranges in the ACL rules on both ends. It is recommended that ACL rules on both ends mirror each other. That is, the source and destination addresses in an ACL rule on one end are the destination and source addresses in an ACL rule on the other end. To be specific,<ul><li><p>In IKEv1, an SA can be successfully established as long as the address range specified in the ACL rules configured on the initiator is included in that of the responder. The two ends use overlapping address ranges as the negotiation result. However, IKEv1 does not support the matching of the port number range in ACL rules. Only the start port number in the port number range is used for IPsec tunnel negotiation.</p>
+</li><li><p>In IKEv2, an SA can be successfully established as long as there are overlapping address ranges in the ACL rules on both ends. The two ends use overlapping address ranges as the negotiation result.</p>
+<div class="p">When ACL rules on both ends are defined by the ACL address pool (using the <b><span class="cmdqueryname">acl ip-pool</span></b> <i><span class="varname">pool-name</span></i> command), pay attention to the following points:<ul><li><p>If the IPsec tunnel is triggered by traffic, ensure that the address pools referenced by the ACL rules that match the traffic on the initiator and responder overlap. Otherwise, the IPsec tunnel fails to be established.</p>
+</li><li><p>If the IPsec tunnel is automatically triggered, ensure that the address pools referenced by each ACL rule of the initiator and responder overlap. Otherwise, the IPsec tunnel fails to be established.</p>
+</li></ul>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Only IKEv2 supports the configuration of an ACL address pool, and a maximum of 15 IP addresses can be configured in an ACL address pool.</p>
+</div></div>
+</li></ul>
+</div>
+</p></li><li><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li><strong>Optional: </strong><span>Enable flow check on the IKE negotiation initiator.</span><p><pre class="screen"><b><span class="cmdqueryname">undo ike initiator flow-check disable</span></b></pre>
+<p>By default, flow check is enabled on the IKE negotiation initiator.</p>
+<p>After flow check is enabled on the initiator, the initiator sends the ACL that defines the traffic flows to be protected to the remote end during IKE negotiation. Upon receiving the negotiation response, the initiator compares the protected traffic flow range returned by the remote end with its own configured ACL to verify that the negotiation result is correct.</p>
+<p>If flow check is disabled on the IKE negotiation initiator, the initiator does not check the negotiation result.</p>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001563754193__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display acl</span></b> { <i><span class="varname">acl-number</span></i> | <strong><span>all</span></strong> } command to check the ACL configuration.</p>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001563754193__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Follow-up Procedure</h4>
+<div class="p"><p>Reference the configured ACL in an IPsec policy. For details, see <a href="security_ipsec_cfg_0022.html">Configuring an IPsec Policy</a>.</p>
+</div></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0020.html">Configuring IPsec Using an IPsec Policy
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0022.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

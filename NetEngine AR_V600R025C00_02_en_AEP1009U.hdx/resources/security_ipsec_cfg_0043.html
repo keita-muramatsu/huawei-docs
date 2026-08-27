@@ -1,0 +1,111 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring IPsec Packet Fragmentation">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0038.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0041.html">
+<meta name="DC.Relation" scheme="URI" content="security_ipsec_cfg_0044.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPsec">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001563754201">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring IPsec Packet Fragmentation</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001563754201"></a><a name="EN-US_TASK_0000001563754201"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring IPsec Packet Fragmentation</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001563754201__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><div class="p">IPsec packet fragmentation takes effect for the following IPsec types:<ul><li>ACL-based IPsec (involving ISAKMP IPsec policies and template IPsec policies)</li><li>Route-based IPsec (involving IPsec profiles)</li></ul>
+</div>
+<p>Fragmentation before encryption is not supported when the IPsec encapsulation mode is transport. You need to run the <strong><b><span class="cmdqueryname">encapsulation-mode tunnel</span></b></strong> command to set the encapsulation mode to tunnel mode.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001563754201__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>After packets are encapsulated with IPsec headers, the packet length may exceed the MTU allowed by the outbound interface of the device. You need to fragment the packets to prevent packet loss. Two methods are available for packet fragmentation:</p>
+<ul><li><p><strong>Fragmentation after encryption</strong>: If the length of an IPsec-encapsulated packet exceeds the MTU of the outbound interface, an encryption device encrypts the packet and then fragments it based on the MTU of the outbound interface. In this case, the remote device needs to reassemble and decrypt the packet. Therefore, the remote device must support packet fragmentation and reassembly. If the remote device does not support packet fragmentation and reassembly, the packet will be discarded or incorrectly processed, affecting packet transmission.</p>
+</li><li><p><strong>Fragmentation before encryption</strong>: Before encapsulating a packet, an encryption device calculates the estimated length of the encapsulated packet. If the calculated length exceeds the MTU of the outbound interface, the encryption device fragments the packet and then encrypts the fragmented packet. In this case, the remote device can decapsulate the packet without reassembling the fragments, and the destination host reassembles the packet. This ensures that the decapsulated packet can be forwarded normally, reducing the CPU usage of the decryption device.</p>
+</li></ul>
+<p>The device supports the configuration of global IPsec packet fragmentation and the configuration of IPsec packet fragmentation for a single IPsec policy or IPsec profile. If both configurations are performed, the configuration of IPsec packet fragmentation for a single IPsec policy or IPsec profile takes precedence over the global configuration.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001563754201__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure global IPsec packet fragmentation before encryption.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Configure global IPsec packet fragmentation before encryption.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec fragmentation before-encryption</span></b> </pre>
+</p><p><p>By default, IPsec packets are encrypted before being fragmented.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Set the don't fragment (DF) bit for IPsec packets.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec df-bit</span></b> { <strong><span>clear</span></strong> | <strong><span>set</span></strong> | <strong><span>copy</span></strong> }</pre>
+<p>By default, the DF bit of IPsec packets is copied. That is, the DF bit of encapsulated IPsec packets is the same as that of original packets.</p>
+<p>If IPsec packets are fragmented after being encrypted, whether IPsec packets can be fragmented depends on the DF bit of encapsulated IPsec packets. If the DF bit of original IPsec packets is 1 (indicating that IPsec packets cannot be fragmented), you need to run the <b><span class="cmdqueryname">ipsec df-bit</span></b> <strong><span>clear</span></strong> command in the system view to set the DF bit of encapsulated IPsec packets to 0 so that encapsulated IPsec packets can be fragmented.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Configure the function of ignoring the DF bit in original packets.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec fragmentation ignore df-bit</span></b></pre>
+<p>By default, the function of ignoring the DF bit in original packets is disabled.</p>
+<p>After IPsec fragmentation before encryption is enabled, whether original packets can be fragmented depends on the DF bit in original packets. If the DF bit is 1, original packets cannot be fragmented. If the DF bit is set to 0, original packets can be fragmented. You can run this command to enable the function of ignoring the DF bit in original packets. Then the device fragments the packets before encrypting them, without checking the DF bit in the packets.</p>
+</p></li></ol>
+</li><li><span>Configure IPsec packet fragmentation before encryption in a specified IPsec policy or IPsec profile.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the IPsec policy view or IPsec profile view.</span><p><p># Enter the ISAKMP IPsec policy view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec policy</span></b> <i><span class="varname">policy-name</span></i> <i><span class="varname">seq-number</span></i> [ <strong><span>isakmp</span></strong> ]</pre>
+<p># Enter the template IPsec policy view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec policy-template</span></b> <i><span class="varname">template-name</span></i> <i><span class="varname">seq-number</span></i></pre>
+<p># Enter the IPsec profile view.</p>
+<pre class="screen"><b><span class="cmdqueryname">ipsec profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure IPsec packet fragmentation before encryption in an IPsec policy.</span><p><pre class="screen"><b><span class="cmdqueryname">fragmentation before-encryption</span></b></pre>
+<p>By default, IPsec packets are encrypted before being fragmented in an IPsec policy.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Return to the system view and configure the DF bit of IPsec packets.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b>
+<b><span class="cmdqueryname">ipsec df-bit</span></b> { <strong><span>clear</span></strong> | <strong><span>set</span></strong> | <strong><span>copy</span></strong> }</pre>
+<p>By default, the DF bit of IPsec packets is copied. That is, the DF bit of encapsulated IPsec packets is the same as that of original packets.</p>
+<p>If IPsec packets are fragmented after being encrypted, whether IPsec packets can be fragmented depends on the DF bit of encapsulated IPsec packets. If the DF bit of original IPsec packets is 1 (indicating that IPsec packets cannot be fragmented), you need to run the <b><span class="cmdqueryname">ipsec df-bit</span></b> <strong><span>clear</span></strong> command in the system view to set the DF bit of encapsulated IPsec packets to 0 so that encapsulated IPsec packets can be fragmented.</p>
+</p></li><li class="substepexpand"><strong>Optional: </strong><span>Configure the function of ignoring the DF bit in original packets.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec fragmentation ignore df-bit</span></b></pre>
+<p>By default, the function of ignoring the DF bit in original packets is disabled.</p>
+<p>After IPsec fragmentation before encryption is enabled, whether original packets can be fragmented depends on the DF bit in original packets. If the DF bit is 1, original packets cannot be fragmented. If the DF bit is set to 0, original packets can be fragmented. You can run this command to enable the function of ignoring the DF bit in original packets. Then the device fragments the packets before encrypting them, without checking the DF bit in the packets.</p>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="security_ipsec_cfg_0038.html">IPsec Reliability
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="security_ipsec_cfg_0041.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="security_ipsec_cfg_0044.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

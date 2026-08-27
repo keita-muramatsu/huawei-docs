@@ -1,0 +1,124 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring TE Attributes">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0111.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0113.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_srv6_cfg_0115.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featurename" content="Segment Routing IPv6">
+<meta name="featuretype" content="Segment Routing">
+<meta name="featuretype" content="Segment Routing">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001188016959">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring TE Attributes</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001188016959"></a><a name="EN-US_TASK_0000001188016959"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring TE Attributes</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001188016959__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>After receiving TE attributes configured for links, IS-IS advertises them to a controller through BGP-LS. This enables the controller to adjust links based on the TE attributes during SRv6 TE Policy computation.</p>
+<p>TE link attributes are as follows:</p>
+<ul><li><p>Link bandwidth</p>
+<p>This attribute is mandatory if you want to limit the bandwidth of a path of an SRv6 TE Policy.</p>
+</li><li><p>Link-specific TE metric</p>
+<p>The IGP metric or link-specific TE metric can be used for SRv6 TE Policy computation by a controller. This makes SRv6 TE Policy computation more independent of the IGP, facilitating path control.</p>
+</li><li><p>Link administrative group</p>
+<p>The affinity attribute of an SRv6 TE Policy determines the link attributes used by the policy. The administrative group and affinity attribute are used together to determine the links that can be used by the policy.</p>
+</li><li><p>SRLG</p>
+<p>A shared risk link group (SRLG) is a group of links that share a public physical resource, such as an optical fiber. Links in an SRLG are at the same risk of faults. If one of the links fails, other links in the SRLG also fail.</p>
+<p>An SRLG enhances SRv6 TE Policy reliability on a network with CR-LSP hot standby or TE FRR enabled. Links that share the same physical resource have the same risk. For example, if an interface goes down, its sub-interfaces also go down. As such, the interface and its sub-interfaces all share the same risk. Similarly, if the link of the primary path of an SRv6 TE Policy and the links of the backup paths of the SRv6 TE Policy are in an SRLG and the primary path goes down, the backup paths will most likely go down.</p>
+</li></ul>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001188016959__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Enable TE attributes.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enable TE attributes.</span><p><pre class="screen"><b><span class="cmdqueryname">te attribute enable</span></b></pre>
+</p></li></ol>
+</li><li><span>(Optional) Configure link bandwidth.</span><p><p>In real-world applications, link bandwidth attributes only need to be configured on the outbound interface of the link through which an SRv6 TE Policy passes.</p>
+</p><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the interface view of the TE link.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure the maximum reservable link bandwidth.</span><p><pre class="screen"><b><span class="cmdqueryname">te bandwidth max-reservable-bandwidth</span></b> <i><span class="varname">max-bw-value</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure link-specific BC0 bandwidth.</span><p><pre class="screen"><b><span class="cmdqueryname">te bandwidth</span></b> <strong><span>bc0</span></strong> <i><span class="varname">bc0Bw</span></i></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li><p>The maximum reservable link bandwidth cannot be higher than the physical link bandwidth. You are advised to set the maximum reservable link bandwidth to be less than or equal to 80% of the physical link bandwidth.</p>
+</li><li><p>The BC0 bandwidth cannot be higher than the maximum reservable link bandwidth.</p>
+</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span>(Optional) Configure a link-specific TE metric value.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the interface view of the TE link.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure a link-specific TE metric value.</span><p><pre class="screen"><b><span class="cmdqueryname">te metric</span></b> <i><span class="varname">metric-value</span></i></pre>
+<p>By default, an IGP metric value is used as the TE metric value of a link.</p>
+</p></li></ol>
+</li><li><span>(Optional) Configure the administrative group attribute<span> in hexadecimal format</span>.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the interface view of the TE link.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure a link administrative group.</span><p><pre class="screen"><b><span class="cmdqueryname">te link administrative group</span></b> <i><span class="varname">group-value</span></i></pre>
+</p></li></ol>
+</li><li><span>(Optional) Configure the administrative group attribute based on the affinity bit name and administrative group name.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Create an affinity bit name-value mapping template and enter the template view.</span><p><pre class="screen"><b><span class="cmdqueryname">path-constraint affinity-mapping</span></b></pre>
+<p>This template must be configured on each node involved in SRv6 TE Policy path computation. The global mappings between the names and values of affinity bits must be the same on all the involved nodes.</p>
+</p></li><li class="substepexpand"><span>Configure the mapping between the name and value of each affinity bit.</span><p><pre class="screen"><b><span class="cmdqueryname">attribute</span></b> <i><span class="varname">bit-name</span></i> <strong><span>bit-sequence</span></strong> <i><span class="varname">bit-number</span></i></pre>
+<p>This step configures only one bit of an affinity attribute, which has a total of 128 bits. Repeat this step as needed to configure some or all of the bits.</p>
+</p></li><li class="substepexpand"><span>Return to the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the interface view of the TE link.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Configure a link administrative group.</span><p><pre class="screen"><b><span class="cmdqueryname">te link administrative group name</span></b> <em>bit-name</em> &amp;&lt;1-32&gt;</pre>
+<p>The <i><span class="varname">name-string</span></i> value must be in the range specified for the affinity attribute in the template.</p>
+</p></li></ol>
+</li><li><span>(Optional) Configure an SRLG.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the interface view of the TE link.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Add the interface to an SRLG.</span><p><pre class="screen"><b><span class="cmdqueryname">te srlg</span></b> <i><span class="varname">srlg-number</span></i></pre>
+<p>In a hot-standby or TE FRR scenario, the SRLG attribute needs to be configured for the SRv6 TE Policy's outbound interface on the ingress and other member links in the SRLG to which the interface belongs. A link joins an SRLG only after SRLG attributes are configured for any outbound interface of the link.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>To delete the SRLG attribute configurations of all interfaces on the local node, run the <b><span class="cmdqueryname">undo te srlg all-config</span></b> command.</p>
+</div></div>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_srv6_cfg_0111.html">Configuring an SRv6 TE Policy (Controller-based Dynamic Delivery)
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_srv6_cfg_0113.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_srv6_cfg_0115.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

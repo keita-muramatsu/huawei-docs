@@ -1,0 +1,96 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring DSVPN over IPsec">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_vrp_dsvpn_cfg_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_fd_dsvpn_0008.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001897310101">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Configuring DSVPN over IPsec</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001897310101"></a><a name="EN-US_TASK_0000001897310101"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring DSVPN over IPsec</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001897310101__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>Before configuring DSVPN over IPsec, you have completed the following task:</p>
+<ul><li>Configure basic DSVPN functions. For details, see <a href="dc_cfg_dsvpn_0021.html">Configuring Basic DSVPN Functions</a>.</li></ul>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001897310101__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>Data transmitted between the hub and spokes, as well as between spokes, needs to be encrypted to increase data security. To meet this requirement, consider binding an IPsec profile to DSVPN during DSVPN deployment, so that mGRE and IPsec tunnels are dynamically established between spokes.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>For security purposes, you are advised not to use weak security algorithms in this feature.</p>
+<p>In a DSVPN over IPsec scenario, if a NAT device is deployed, you are advised to set the IPsec encapsulation mode to transport. If two spokes are situated behind different NAT devices or the hub is situated behind a NAT device, the IPsec encapsulation mode can only be transport.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001897310101__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure an IKE proposal. For details, see "Configuring an IKE Proposal" in <span>CLI Configuration Guide</span> &gt; VPN Configuration &gt; IPsec Configuration &gt; Configuring IKE Negotiation.</span></li><li><span>Configure an IKE peer. For details, see "Configuring an IKE Peer" in <span>CLI Configuration Guide</span> &gt; VPN Configuration &gt; IPsec Configuration &gt; Configuring IKE Negotiation.</span><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>There is no need to configure a peer ID or peer IP address in DSVPN.</p>
+</div></div>
+</p></li><li><span>Configure an IPsec proposal. For details, see "Configuring an IPsec Proposal" in <span>CLI Configuration Guide</span> &gt; VPN Configuration &gt; IPsec Configuration.</span></li><li><span>Configure an IPsec profile.</span><ol type="a"><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Create an IPsec profile and enter the IPsec profile view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec profile</span></b> <i><span class="varname">profile-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Reference an IPsec proposal.</span><p><pre class="screen"><b><span class="cmdqueryname">proposal</span></b> <i><span class="varname">proposal-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Reference an IKE peer.</span><p><pre class="screen"><b><span class="cmdqueryname">ike-peer</span></b> <i><span class="varname">peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>(Optional) Configure the perfect forward secrecy (PFS) feature to be used when the local end initiates negotiation.</span><p><pre class="screen"><b><span class="cmdqueryname">pfs</span></b> { <strong><span>dh-group1</span></strong> | <strong><span>dh-group2</span></strong> | <strong><span>dh-group5</span></strong> | <strong><span>dh-group14</span></strong><span> | <strong><span>dh-</span></strong><strong><span>group15</span></strong> | <strong><span>dh-group16</span></strong></span><span> |<span><strong><span> dh-group18</span></strong> <span>|</span></span> <strong><span>dh-group19</span></strong> | <strong><span>dh-group20</span></strong> | <strong><span>dh-group21</span></strong></span> <span>| <strong><span>dh-group24</span></strong></span> }</pre>
+</p><p><p>By default, PFS is not used when the local end initiates IPsec tunnel negotiation.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>If PFS is specified at the local end, you also need to specify PFS at the peer end. The Diffie-Hellman (DH) groups specified on the two ends must be the same. Otherwise, the negotiation fails.</p>
+</div></div>
+</p></li><li class="substepexpand"><span>Exit the IPsec profile view.</span><p><pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</p></li></ol>
+</li><li><span>Apply the IPsec profile.</span><ol type="a"><li class="substepexpand"><span>Enter the tunnel interface view.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <strong><span>tunnel</span></strong> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Apply the IPsec profile to the tunnel interface.</span><p><pre class="screen"><b><span class="cmdqueryname">ipsec profile</span></b> <i><span class="varname">profile-name </span></i>[ <strong><span>shared</span></strong> ]</pre>
+</p><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>A tunnel interface can have only one IPsec profile applied. Before applying another IPsec profile to the tunnel interface, run the <strong><b><span class="cmdqueryname">undo ipsec profile</span></b></strong> command to unbind the existing IPsec profile from the tunnel interface.</li><li>If the parameter <strong>shared</strong> is not specified, an IPsec profile can be applied to only one tunnel interface. Before applying the IPsec profile to another interface, unbind the IPsec profile from the tunnel interface.</li><li>If the parameter <strong>shared</strong> is specified, an IPsec profile can be applied to a maximum of 64 tunnel interfaces.<p>If multiple tunnel interfaces share the same outbound interface, you must apply the same IPsec profile to and specify the parameter <strong>shared</strong> for all these tunnel interfaces. Otherwise, the two ends cannot establish an IPsec tunnel.</p>
+</li></ul>
+</div></div>
+</p></li></ol>
+</li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/dc_vrp_dsvpn_cfg_0003.html">Configuring DSVPN over IPsec
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/dc_fd_dsvpn_0008.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

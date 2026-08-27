@@ -1,0 +1,106 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="concept">
+<meta name="DC.Title" content="DSVPN Fundamentals">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_fd_dsvpn_0003.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_fd_dsvpn_0004.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/dc_fd_dsvpn_0010.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="DSVPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_CONCEPT_0000001851072546">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>DSVPN Fundamentals</title>
+</head>
+<body><a name="EN-US_CONCEPT_0000001851072546"></a><a name="EN-US_CONCEPT_0000001851072546"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">DSVPN Fundamentals</h1>
+<div><p>DSVPN helps branches dynamically establish VPN tunnels in two scenarios: non-shortcut scenario for small and midsize networks and shortcut scenario for large networks.</p>
+<div class="p">Route deployment varies according to the scenario:<ul><li><p><a href="#EN-US_CONCEPT_0000001851072546__section_dc_fd_dsvpn_000501">Non-shortcut scenario</a>: Spokes learn routes from each other.</p>
+<p>By learning each other's routes, a spoke has an individual route for the remote network behind each destination spoke, with the destination spoke's tunnel address as the next hop. The non-shortcut scenario is suitable for small and midsize networks. It has low requirements on the performance of hub and spoke devices, because spokes only have to learn a small number of routes.</p>
+</li><li><p><a href="#EN-US_CONCEPT_0000001851072546__section_dc_fd_dsvpn_000502">Shortcut scenario</a>: Spokes save only summary routes to the hub.</p>
+<p>One disadvantage of the non-shortcut scenario is that each spoke must have all of individual routes in its routing table for all possible destination networks. Computing dynamic network-wide routes consumes lots of CPU and memory resources at spokes and puts a significant strain on their routing tables and performance. The shortcut scenario compensates for this shortcoming, and is ideal for large networks with many branches. On a DSVPN network deployed in shortcut mode, spokes save only summary routes to the hub. In this way, the hub's tunnel address is the next hop for any spoke to reach any network behind a spoke.</p>
+</li></ul>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001851072546__section_dc_fd_dsvpn_000501"><a name="EN-US_CONCEPT_0000001851072546__section_dc_fd_dsvpn_000501"></a><a name="section_dc_fd_dsvpn_000501"></a><h4 class="sectiontitle">DSVPN Fundamentals in a Non-Shortcut Scenario</h4><p><strong>Route Deployment</strong></p>
+<div class="p">In a non-shortcut scenario, spokes set up tunnels between each other for direct communication. The next-hop address of a route from a spoke to another spoke's subnet is the tunnel address of the destination spoke. Spokes can learn routes from each other in the following ways:<ul><li><p>Static route configuration</p>
+<p>Each spoke has static routes configured to reach subnets behind all other spokes, with the destination spoke's tunnel address as the next hop.</p>
+</li><li><p>Dynamic routing protocol</p>
+<p>DSVPN supports OSPF and BGP. They both can implement subnet route learning between spokes and between the hub and spokes. With a dynamic routing protocol configured at the hub and spokes, spokes can learn routes from each other through the routing protocol.</p>
+</li></ul>
+</div>
+<p>After route learning, each spoke has routes to subnets behind all other spokes.</p>
+<p><strong>Principles</strong></p>
+<p>Devices on a DSVPN network use NHRP to dynamically obtain a peer's dynamic public address. In a non-shortcut scenario, DSVPN works as follows.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001851072546__fig_dc_fd_dsvpn_000501"><a name="EN-US_CONCEPT_0000001851072546__fig_dc_fd_dsvpn_000501"></a><a name="fig_dc_fd_dsvpn_000501"></a><span class="figcap"><b>Figure 1 </b>How DSVPN works in a non-shortcut scenario</span><br><span><img class="imgResize" src="figure/en-us_image_0000001935403610.png" width="470.82000000000005" height="415.95750000000004" title="Click to enlarge"></span></div>
+<p></p>
+<div class="p">As shown in <a href="#EN-US_CONCEPT_0000001851072546__fig_dc_fd_dsvpn_000501">Figure 1</a>:<ol><li>The network administrator manually specifies the hub's public and tunnel addresses at each spoke. All spokes on the network send NHRP Registration Request messages to the hub.</li><li>The hub generates NHRP mapping entries for all spokes based on the received requests and sends NHRP Registration Reply messages to the spokes.</li><li>Spokes learn subnet routes from each other either through static route configuration or a dynamic routing protocol. The destination spoke's tunnel address is the next hop of such a route.</li><li>When a spoke needs to send a data packet to another spoke, it looks for the next hop's public address. The next hop here is the destination spoke's tunnel address.</li><li>If the source spoke does not know this public address, it sends an NHRP Resolution Request message to the hub.</li><li>The source spoke sends an NHRP Resolution Request message to the hub to request the public address mapping the destination spoke's tunnel address.</li><li>After the NHRP Resolution Request message arrives at the hub, the hub forwards the message to the destination spoke.</li><li>In response to the received NHRP Resolution Request message, the destination spoke sends an NHRP Resolution Reply message to the source spoke.</li><li>The two spokes can then directly communicate. That is, spoke-spoke traffic does not need to traverse the hub.</li></ol>
+</div>
+</div>
+<div class="section" id="EN-US_CONCEPT_0000001851072546__section_dc_fd_dsvpn_000502"><a name="EN-US_CONCEPT_0000001851072546__section_dc_fd_dsvpn_000502"></a><a name="section_dc_fd_dsvpn_000502"></a><h4 class="sectiontitle">DSVPN Fundamentals in a Shortcut Scenario</h4><p><strong>Route Deployment</strong></p>
+<div class="p">In a shortcut scenario, the hub's tunnel address is the next hop for any spoke to reach any network behind a spoke. Spokes store only summary routes to the hub, so that spoke-spoke traffic is sent there. Spokes can learn routes in the following ways:<ul><li><p>Static route configuration</p>
+<p>Static routes are configured on spokes, with the hub's tunnel address as the next hop for a spoke to reach the network behind another spoke.</p>
+</li><li><p>Dynamic routing protocol</p>
+<p>DSVPN supports OSPF and BGP. Route summarization is performed at the hub, and spokes save only the summary routes to the hub through a dynamic routing protocol. All spoke-spoke traffic is directed to the hub. When different routing protocols are used, relevant configurations need to be performed at the hub and spokes accordingly.</p>
+</li></ul>
+</div>
+<p>In a shortcut scenario, a spoke's egress traffic is sent to the hub by default. Spokes do not learn routes from each other, while the hub summarizes individual spoke routes and then advertises the summary routes to spokes. Additionally, the hub forwards NHRP Resolution Request messages between spokes. Upon receipt, the destination spokes parse and respond to the requests.</p>
+<p><strong>Principles</strong></p>
+<p>Devices on a DSVPN network use NHRP to dynamically obtain a peer's dynamic public address. In a shortcut scenario, DSVPN works as follows.</p>
+<div class="fignone" id="EN-US_CONCEPT_0000001851072546__fig_dc_fd_dsvpn_000502"><a name="EN-US_CONCEPT_0000001851072546__fig_dc_fd_dsvpn_000502"></a><a name="fig_dc_fd_dsvpn_000502"></a><span class="figcap"><b>Figure 2 </b>How DSVPN works in a shortcut scenario</span><br><span><img class="vsd" src="figure/en-us_image_0000002141262712.png" width="NaN" height="NaN"></span></div>
+<p></p>
+<div class="p">As shown in <a href="#EN-US_CONCEPT_0000001851072546__fig_dc_fd_dsvpn_000502">Figure 2</a>:<ol><li>The network administrator manually specifies the hub's public and tunnel addresses at each spoke. All spokes on the network send NHRP Registration Request messages to the hub.</li><li>The hub generates NHRP mapping entries for the spokes based on the received requests and sends NHRP Registration Reply messages to the spokes.</li><li>Spokes learn routes either through static route configuration or a dynamic routing protocol and save only summary routes to the hub.</li><li>When a spoke wants to send a data packet to another spoke, it searches for the public address of the next hop, encapsulates the data packet, and then sends the packet to the next hop. (The next hop here is the hub.)</li><li>Upon receipt, the hub sends the data packet to the destination spoke and sends an NHRP Redirect message to the source spoke.</li><li>On receiving the NHRP Redirect message, the source spoke sends an NHRP Resolution Request message to the destination spoke.</li><li>After the NHRP Resolution Request message arrives at the hub, the hub forwards the message to the destination spoke.</li><li>In response to the received NHRP Resolution Request message, the destination spoke sends an NHRP Resolution Reply message to the source spoke.</li><li>The two spokes can then directly communicate. That is, spoke-spoke traffic does not need to traverse the hub.</li></ol>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/dc_fd_dsvpn_0003.html">Understanding DSVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/dc_fd_dsvpn_0004.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../vrp/dc_fd_dsvpn_0010.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

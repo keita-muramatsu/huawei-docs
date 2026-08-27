@@ -1,0 +1,451 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring Queue Scheduling HQoS in Parent and Child Traffic Policy Mode">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_275.html">
+<meta name="DC.Relation" scheme="URI" content="feature-specific_326.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001817709597">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring Queue Scheduling HQoS in Parent and Child Traffic Policy Mode</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001817709597"></a><a name="EN-US_TASK_0000001817709597"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring Queue Scheduling HQoS in Parent and Child Traffic Policy Mode</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001817709597__1.3.1"></a><a name="1.3.1"></a>
+<div class="p" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_context1677625172748"><h4 class="sectiontitle">Networking Requirements</h4><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1578143216412">In <a href="#EN-US_TASK_0000001817709597__en-us_task_0000001563880541_fig934819104294">Figure 1</a>, there are three types of users on the network: user1 (VIP), user2, and user3. They are assigned different IP address segments. Each user type has three types of services in descending order of priority: voice, video, and data, whose DSCP values are 46, 40, and 15, respectively. A minimum assured bandwidth is configured for each user type, and the interface bandwidth needs to be shared to maximize its usage. Traffic from users of type user1 must be preferentially transmitted.</p>
+<p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p0677105473020"><a href="#EN-US_TASK_0000001817709597__en-us_task_0000001563880541_table775312215342">Table 1</a> and <a href="#EN-US_TASK_0000001817709597__en-us_task_0000001563880541_table964794110325">Table 2</a> list the configuration requirements for different user types and services.</p>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_table775312215342"></a><a name="en-us_task_0000001563880541_table775312215342"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_table775312215342" frame="border" border="1" rules="all"><caption><b>Table 1 </b>Configuration requirements for different user types</caption><thead align="left"><tr id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_row6753192111344"><th align="left" class="cellrowborder" valign="top" width="19.96%" id="mcps1.3.1.4.2.6.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1275332110342">User Type</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="20.32%" id="mcps1.3.1.4.2.6.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1875392117342">Scheduling Mode</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="19.96%" id="mcps1.3.1.4.2.6.1.3" liSelected="liSelected"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p12753921133417">Weight</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="19.78%" id="mcps1.3.1.4.2.6.1.4" liSelected="liSelected"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p3754821113411">Assured Bandwidth</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="19.98%" id="mcps1.3.1.4.2.6.1.5" liSelected="liSelected"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p15337172403815">Committed Burst Size</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_row1754182117348"><td class="cellrowborder" valign="top" width="19.96%" headers="mcps1.3.1.4.2.6.1.1 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p47541217342">user1</p>
+</td>
+<td class="cellrowborder" valign="top" width="20.32%" headers="mcps1.3.1.4.2.6.1.2 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p17541121153412">WDRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.96%" headers="mcps1.3.1.4.2.6.1.3 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p97546211346">30</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.78%" headers="mcps1.3.1.4.2.6.1.4 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p4467165119416">50000 kbit/s</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.98%" headers="mcps1.3.1.4.2.6.1.5 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p946619511347">1000000 bytes</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_row775422119343"><td class="cellrowborder" valign="top" width="19.96%" headers="mcps1.3.1.4.2.6.1.1 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p17754821133415">user2</p>
+</td>
+<td class="cellrowborder" valign="top" width="20.32%" headers="mcps1.3.1.4.2.6.1.2 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1775442112346">WDRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.96%" headers="mcps1.3.1.4.2.6.1.3 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p117543218343">10</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.78%" headers="mcps1.3.1.4.2.6.1.4 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p144652515413">30000 kbit/s</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.98%" headers="mcps1.3.1.4.2.6.1.5 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1046414518420">750000 bytes</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_row197547219342"><td class="cellrowborder" valign="top" width="19.96%" headers="mcps1.3.1.4.2.6.1.1 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p175442193418">user3</p>
+</td>
+<td class="cellrowborder" valign="top" width="20.32%" headers="mcps1.3.1.4.2.6.1.2 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p075442143417">WDRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.96%" headers="mcps1.3.1.4.2.6.1.3 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1754172118346">10</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.78%" headers="mcps1.3.1.4.2.6.1.4 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p204620512417">20000 kbit/s</p>
+</td>
+<td class="cellrowborder" valign="top" width="19.98%" headers="mcps1.3.1.4.2.6.1.5 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1645813511844">500000 bytes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="tableBorder"><a name="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_table964794110325"></a><a name="en-us_task_0000001563880541_table964794110325"></a><table cellpadding="4" cellspacing="0" summary="" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_table964794110325" frame="border" border="1" rules="all"><caption><b>Table 2 </b>Configuration requirements for voice, video, and data services</caption><thead align="left"><tr id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_row16648154113321"><th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.1.5.2.5.1.1" liSelected="liSelected"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p12648164112329">Service Type</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.1.5.2.5.1.2" liSelected="liSelected"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p9648124120327">Scheduling Mode</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.1.5.2.5.1.3" liSelected="liSelected"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1564814414326">Weight</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="25%" id="mcps1.3.1.5.2.5.1.4" liSelected="liSelected"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1964884163218">Shaping Percentage</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_row7648104153219"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.1 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p166481441133212">Voice</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.2 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p064818416328">PQ</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.3 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p206485410321">-</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.4 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p154838531841">15%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_row13648194173212"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.1 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1764811411321">Video</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.2 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p9648124115328">WDRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.3 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p116488416321">30</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.4 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p74823533411">30%</p>
+</td>
+</tr>
+<tr id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_row96481941113214"><td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.1 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p166481141163219">Data</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.2 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p106481541173219">WDRR</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.3 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p11648154112327">10</p>
+</td>
+<td class="cellrowborder" valign="top" width="25%" headers="mcps1.3.1.5.2.5.1.4 "><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1748116539420">45%</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="fignone" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_fig934819104294"><a name="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_fig934819104294"></a><a name="en-us_task_0000001563880541_fig934819104294"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring queue scheduling HQoS in parent and child traffic policy mode</span><div class="note" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_note163690483552"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p113691482557">In this example, interface 1 represents <span>10GE</span> <span>0/0/1</span>.</p>
+</div></div>
+<br><span><img id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_image934841092920" src="figure/en-us_image_0000002050903697.png"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001817709597__1.3.2"></a><a name="1.3.2"></a>
+<div class="p" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_context1696554961910"><h4 class="sectiontitle">Configuration Roadmap</h4><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p107141551151915">The configuration roadmap is as follows:</p>
+<ol id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_ol1568711176217"><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_li1765353712327">Assign an IP address to <span id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_ph133361113183516">10GE</span> <span id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_ph233616137353">0/0/1</span> (where HQoS will be applied) on DeviceA.</li><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_li89880178233">Configure an HQoS child traffic policy on DeviceA.<ol type="a" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_ol17267163982620"><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_li1826793952613">Configure an FQ profile and set scheduling and shaping parameters for different services.</li><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_li12582132610104">Configure an FQ traffic policy. Classify traffic based on DSCP values and reference the FQ profile in a traffic behavior.</li></ol>
+</li><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_li8545105661111">Configure an HQoS parent traffic policy on DeviceA.<ol type="a" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_ol1080112267126"><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_li080110266127">Configure an SQ profile and set scheduling and shaping parameters for different users.</li><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_li58131943121214">Configure an SQ traffic policy. Classify traffic based on ACL rules and reference the SQ profile and HQoS child traffic policy in a traffic behavior.</li></ol>
+</li><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_li5998831191512">Apply the HQoS parent traffic policy to the outbound direction of <span id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_ph07614134223">10GE</span> <span id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_ph1376141392217">0/0/1</span> on DeviceA.</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001817709597__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_steps10132325172748"><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_step183261436152315"><span id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_cmd1432663662319">Configure <span>10GE</span> <span>0/0/1</span> on DeviceA.</span><p><pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen12953522102417">&lt;<span class="keyword" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_keyword1517086799183309">HUAWEI</span>&gt; <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b182894533175348">system-view</strong>
+[<span class="keyword" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_keyword1943027164920">HUAWEI</span>] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b278176590175348">sysname </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b74691143202610">DeviceA</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b144277111279">interface </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1942781112713"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b17724525152710">undo portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>]<strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b143641324122819"> ip address</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b55511662918"> 192.168.3.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b16758145673110">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_step17998153824315"><span id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_cmd5998193810435">Configure an HQoS child traffic policy on DeviceA.</span><p><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p8937204374417"># Configure an FQ profile.</p>
+<pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen847917513457">[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b9774183819472">flow-queue fq1</strong>
+[DeviceA-flow-queue-fq1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b4244151187">queue voice pq shaping </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b138183221889">cir-shaping-percentage 15</strong>
+[DeviceA-flow-queue-fq1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1635113181217">queue video drr weight 30 shaping cir-shaping-percentage 30</strong>
+[DeviceA-flow-queue-fq1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1399121619320">queue data drr weight 10 shaping cir-shaping-percentage 45</strong>
+[DeviceA-flow-queue-fq1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b239984472414">quit</strong></pre>
+<p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p132961458243"># Configure an FQ traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen196441120243">[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b47011146163115">traffic classifier voice</strong>
+[DeviceA-classifier-voice]<strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b207012463311"> if-match</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b197011246103110">dscp 46</strong>
+[DeviceA-classifier-voice] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1970118460310">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b92527180255">traffic classifier video</strong>
+[DeviceA-classifier-video] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1720419394106">if-match</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b681481818395"> dscp 40</strong>
+[DeviceA-classifier-video] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b20204143931015">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b768134920109">traffic classifier data</strong>
+[DeviceA-classifier-data]<strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b4537022201111"> if-match</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b15147154910390">dscp 15</strong>
+[DeviceA-classifier-data] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b18731163451111">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b220618451928">traffic behavior</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b13893105615326">voice</strong>
+[DeviceA-behavior-voice] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b72095919819">flow-queue </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b142032455112">fq1</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1420949288"> queue </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b97171828143315">voice</strong>
+[DeviceA-behavior-voice] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b9505194231215">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b17579183512122">traffic behavior</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b13827124103315">video</strong>
+[DeviceA-behavior-video] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b145796358125">flow-queue </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b4579113521210">fq1</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b125791335151214"> queue </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b8540151617348">video</strong>
+[DeviceA-behavior-video] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1552145191416">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b45942029123415">traffic behavior</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b4423104116349">data</strong>
+[DeviceA-behavior-data] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b0594429123418">flow-queue </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b195945297340">fq1</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b75941429133411"> queue </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b621610438344">data</strong>
+[DeviceA-behavior-data] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b6594142933410">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b844513011155">traffic policy</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b99641315164">sub-</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b176021998162">policy</strong>
+[DeviceA-trafficpolicy-sub-policy] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b146596017197">classifier voice behavior voice</strong>
+[DeviceA-trafficpolicy-sub-policy] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1428104615362">classifier video behavior video</strong>
+[DeviceA-trafficpolicy-sub-policy] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b925033184210">classifier data behavior data</strong>
+[DeviceA-trafficpolicy-sub-policy] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b752123774217">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_step1632816773711"><span id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_cmd1432813773711">Configure an HQoS parent traffic policy on DeviceA.</span><p><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p1346684903714"># Configure an SQ profile.</p>
+<pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen11656959143712">[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b4775172493815">qos-user-profile uq1 </strong>
+[DeviceA-qos-user-profile-uq1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b111791026124110">user-queue user1 drr weight 30 cir 50000 </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b95047984211">cbs 1000000 </strong> 
+[DeviceA-qos-user-profile-uq1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b13738122812418">user-queue user2 drr weight 10 cir 30000 cbs 750000</strong> 
+[DeviceA-qos-user-profile-uq1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b19427193114112">user-queue user3 drr weight 10 cir 20000 cbs 500000</strong> 
+[DeviceA-qos-user-profile-uq1]<strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1745514190430"> quit</strong></pre>
+<p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p73297115436"># Configure an SQ traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen1742078114317">[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b2679192515012">acl 2001</strong>
+[DeviceA-acl4-basic-2001] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1155623715524">rule permit source 10.10.10.0 24</strong>
+[DeviceA-acl4-basic-2001] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1613016189559">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b186101537185517">acl 2002</strong>
+[DeviceA-acl4-basic-2002] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b116109378558">rule permit source 10.10.20.0 24</strong>
+[DeviceA-acl4-basic-2002] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b146101137175518">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b467265105617">acl 2003</strong>
+[DeviceA-acl4-basic-2003] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1867215535611">rule permit source 10.10.30.0 24</strong>
+[DeviceA-acl4-basic-2003] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b767219516566">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b9697165014418">traffic classifier user1 </strong>
+[DeviceA-classifier-user1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b2067115416452">if-match acl 2001 </strong>
+[DeviceA-classifier-user1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b10205136114515">quit </strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b06816134457">traffic classifier user2 </strong>
+[DeviceA-classifier-user2] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b48613810464">if-match acl 2002 </strong>
+[DeviceA-classifier-user2] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1212931044610">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b193531114174612">traffic classifier user3 </strong>
+[DeviceA-classifier-user3] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b17353201411465">if-match acl 2003</strong>
+[DeviceA-classifier-user3] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b123533148463">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b20872822462">traffic behavior</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1276119131774">user1</strong>
+[DeviceA-behavior-user1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b12520103420190">qos-user-profile</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b178726212465">uq1</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b2303941131920"> </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b6246145313197">user-queue</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b6835858864">user1</strong>
+[DeviceA-behavior-user1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b19948113216913">traffic-policy </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1458381014918">sub-</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b65835101498">policy</strong>
+[DeviceA-behavior-user1] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b18722020468">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b168728219464">traffic behavior</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b95199272714">user2</strong>
+[DeviceA-behavior-user2] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b2344113102017">qos-user-profile</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b23440392017">uq1</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b20344163152017"> </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b13344032206">user-queue</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b5344173112014">user2</strong>
+[DeviceA-behavior-user2] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b15790193241117">traffic-policy </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b187901232161111">sub-</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1934102555216">policy</strong>                       
+[DeviceA-behavior-user2] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b14872192144611">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b543218389474">traffic behavior</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1643253824714">user3</strong>
+[DeviceA-behavior-user3] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b818614151205">qos-user-profile</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b618611158207">uq1</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1718641582017"> </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b81864151207">user-queue</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1618681519203">user3</strong>
+[DeviceA-behavior-user3] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b143223874719">traffic-policy </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1743243819478">sub-</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b94322380472">policy</strong>                      
+[DeviceA-behavior-user3] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b19432133811476">quit</strong>
+[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b17664162413535">traffic policy</strong> <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b76649246535">parent-policy</strong>
+[DeviceA-trafficpolicy-parent-policy] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b774354310184">classifier user1 behavior </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b137591817141313">user1</strong>
+[DeviceA-trafficpolicy-parent-policy] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b06641224145312">classifier user2 behavior user2</strong>
+[DeviceA-trafficpolicy-parent-policy] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1865417514547">classifier user3 behavior user3</strong>
+[DeviceA-trafficpolicy-parent-policy] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b75509236549">quit</strong></pre>
+</p></li><li id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_step19595434917"><span id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_cmd18959134104911">Apply the HQoS parent traffic policy to the outbound direction of the interface on DeviceA.</span><p><pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen297364704911">[DeviceA]<strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1867313419561"> interface </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b12511113145116"><span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b04948156502">qos queue-scheduling enable</strong>   //Run this command if the queue capability is disabled on the device interface.
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b52771031165617">traffic-policy </strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b666352765611">parent-policy</strong><strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b162771331155616"> outbound</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b99914371622">quit</strong></pre>
+</p></li></ol></div>
+<div class="example" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_example121226172748"><a name="EN-US_TASK_0000001817709597__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p13719228145818"># Check the configured traffic classifiers.</p>
+<pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen666420172915">[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b145293703210">display traffic classifier </strong>                                             
+  Traffic Classifier Information:                                               
+    Classifier: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b4306164533214">data</strong>                                                            
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match dscp 15                                                        
+
+    Classifier: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b179451147193210">user1</strong>                                                          
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match acl 2001                                                        
+
+    Classifier: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b168621349113211">user2</strong>                                                          
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match acl 2002                                                        
+
+    Classifier: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b44246592328">user3 </strong>                                                         
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match acl 2003                                                        
+
+    Classifier: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b16382514334">video</strong>                                                           
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match dscp cs5                                                       
+
+    Classifier: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b191233419332">voice</strong>                                                           
+      Type: OR                                                                  
+      Rule(s):                                                                  
+        if-match dscp ef                                                        
+
+<strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1643820616332">Total classifier number is 6 </strong>   </pre>
+<p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p5512115243316"># Check the configured traffic behaviors. The command output shows the FQ profiles referenced by the traffic behaviors of different services, and the SQ profiles and child traffic policies referenced by the traffic behaviors of different users.</p>
+<pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen1469011171343">[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b16828164563418">display traffic behavior </strong>                                               
+  Traffic Behavior Information:                                                 
+    Behavior: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1271618103914">data</strong>                                                              
+      Flow queue:                                                               
+       Flow-queue fq1 queue data                                                
+
+    Behavior: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b100922103918">user1</strong>                                                           
+      User queue:                                                               
+       Qos-user-profile uq1 user-queue user1                                  
+      Traffic Policy:                                                           
+       Traffic-policy sub-policy                                                
+
+    Behavior: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1768442414391">user2 </strong>                                                           
+      User queue:                                                               
+       Qos-user-profile uq1 user-queue user2                                   
+      Traffic Policy:                                                           
+       Traffic-policy sub-policy                                                
+
+    Behavior: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b178175264398">user3</strong>                                                            
+      User queue:                                                               
+       Qos-user-profile uq1 user-queue user3                                  
+      Traffic Policy:                                                           
+       Traffic-policy sub-policy                                                
+
+    Behavior: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b680872911397">video </strong>                                                            
+      Flow queue:                                                               
+       Flow-queue fq1 queue video                                               
+
+    Behavior: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1354354053919">voice</strong>                                                             
+      Flow queue:                                                               
+       Flow-queue fq1 queue voice                                               
+
+<strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b109460174535">Total behavior number is 6 </strong></pre>
+<p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p2080065185116"># Check the configured traffic policy. The command output shows the parent traffic policy <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1736911467496">parent-policy</strong> (with the nested child traffic policy <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b2021410492490">sub-policy</strong>), and the child traffic policy <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b92281752114913">sub-policy</strong>.</p>
+<pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen16760142175210">[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b14889113412527">display traffic policy </strong>                                                 
+  Traffic Policy Information:                                                   
+    Policy: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b917544519521">parent-policy </strong>                                                      
+      Classifier: user1                                                        
+        Type: OR                                                                
+      Behavior: user1                                                         
+        User queue:                                                             
+         Qos-user-profile uq1 user-queue user1                                
+        Traffic Policy:                                                         
+         <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b46511833155717">Traffic-policy sub-policy </strong>                                             
+
+      Classifier: user2                                                        
+        Type: OR                                                                
+      Behavior: user2                                                        
+        User queue:                                                             
+         Qos-user-profile uq1 user-queue user2                               
+        Traffic Policy:                                                         
+         <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b939943711574">Traffic-policy sub-policy </strong>                                             
+
+      Classifier: user3                                                        
+        Type: OR                                                                
+      Behavior: user3                                                         
+        User queue:                                                             
+         Qos-user-profile uq1 user-queue user3                                
+        Traffic Policy:                                                         
+         <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1453116398575">Traffic-policy sub-policy </strong>                                             
+
+    Policy: <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b263947145317">sub-policy </strong>                                                         
+      Classifier: voice                                                         
+        Type: OR                                                                
+      Behavior: voice                                                           
+        Flow queue:                                                             
+         Flow-queue fq1 queue voice 
+                                            
+      Classifier: video                                                        
+        Type: OR                                                                
+      Behavior: video                                                           
+        Flow queue:                                                             
+         Flow-queue fq1 queue video
+
+      Classifier: data                                                          
+        Type: OR                                                                
+      Behavior: data                                                            
+        Flow queue:                                                             
+         Flow-queue fq1 queue data                                              
+
+<strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b9426102219531">Total policy number is 2  </strong></pre>
+<p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p135551685920"># Check the application records of the traffic policy.</p>
+<pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen1884184804">[DeviceA] <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b1517018231109">display traffic-policy applied-record </strong>                                  
+Total records : 1                                                               
+--------------------------------------------------------------------------------
+Policy Type/Name                 Apply Parameter                 Slot  State    
+--------------------------------------------------------------------------------
+parent-policy                    <span>10GE</span><span>0/0/1</span>(OUT)                  <span>0</span>     success  
+
+--------------------------------------------------------------------------------</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000001817709597__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><p id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_p3678121633">DeviceA</p>
+<pre class="screen" id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_screen654919151545"># 
+sysname DeviceA
+#                                                                               
+qos-user-profile uq1                                                            
+ user-queue user1 drr weight 30 cir 50000 cbs 1000000                          
+ user-queue user2 drr weight 10 cir 30000 cbs 750000                           
+ user-queue user3 drr weight 10 cir 20000 cbs 500000                           
+#                                                                               
+flow-queue fq1                                                                  
+ queue voice pq shaping cir-shaping-percentage 15                                   
+ queue video drr weight 30 shaping cir-shaping-percentage 30                        
+ queue data drr weight 10 shaping cir-shaping-percentage 45                         
+# 
+acl number 2001                                                                 
+ rule 5 permit source 10.10.10.0 0.0.0.255 
+#  
+acl number 2002                                                                 
+ rule 5 permit source 10.10.20.0 0.0.0.255 
+# 
+acl number 2003                                                                 
+ rule 5 permit source 10.10.30.0 0.0.0.255 
+# 
+traffic classifier data                                                
+ if-match dscp 15                                                               
+#                                                                               
+traffic classifier user1                                             
+ if-match acl 2001                                                               
+#                                                                               
+traffic classifier user2                                              
+ if-match acl 2002                                                               
+#                                                                               
+traffic classifier user3                                               
+ if-match acl 2003                                                              
+#                                                                               
+traffic classifier video                                                
+ if-match dscp 40                                                              
+#                                                                               
+traffic classifier voice                                                
+ if-match dscp 46         <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b10557183112146">                </strong>                                      
+#                                                                               
+traffic behavior data                                                           
+ flow-queue fq1 queue data    
+#                                                                               
+traffic behavior video                                                          
+ flow-queue fq1 queue video                                                     
+#                                                                               
+traffic behavior voice                                                          
+ flow-queue fq1 queue voice <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b3371836131714"> </strong>
+#                                                                               
+traffic policy sub-policy                                                       
+ classifier voice behavior voice precedence 5  
+ classifier video behavior video precedence 10                              
+ classifier data behavior data precedence 15 
+#                                                                               
+traffic behavior user1                                                         
+ qos-user-profile uq1 user-queue user1                                        
+ traffic-policy sub-policy                                                      
+#                                                                               
+traffic behavior user2                                                         
+ qos-user-profile uq1 user-queue user2                                         
+ traffic-policy sub-policy                                                      
+#                                                                               
+traffic behavior user3                                                         
+ qos-user-profile uq1 user-queue user3                                        
+ traffic-policy sub-policy                                                      <strong id="EN-US_TASK_0000001817709597__en-us_task_0000001563880541_b19764359169"> </strong>                                                  
+#                                                                               
+traffic policy parent-policy                                                    
+ classifier user1 behavior user1 precedence 5                                 
+ classifier user2 behavior user2 precedence 10                                
+ classifier user3 behavior user3 precedence 15                                
+                                  
+#   
+interface <span>10GE</span><span>0/0/1</span>
+ undo portswitch
+ qos queue-scheduling enable
+ ip address 192.168.3.1 255.255.255.0
+ traffic-policy parent-policy outbound                                          
+#  
+return</pre>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="feature-specific_275.html">HQoS
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="feature-specific_326.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

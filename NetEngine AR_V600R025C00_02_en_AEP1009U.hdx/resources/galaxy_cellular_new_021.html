@@ -1,0 +1,98 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Restarting a Cellular Modem to Recover a Link">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_cellular_new_020.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_cellular_new_022.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001723671556">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Restarting a Cellular Modem to Recover a Link</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001723671556"></a><a name="EN-US_TASK_0000001723671556"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Restarting a Cellular Modem to Recover a Link</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001723671556__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>A device's wireless link can work normally only when the cellular modem does. A cellular modem can automatically restart when it detects an exception. If the modem fails to automatically restart, you can manually restart it.</p>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Restarting the modem will interrupt services on the cellular channel interface.</p>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001723671556__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li><span>Enable the cellular modem to automatically restart when it is not attached to a Packet Switched (PS) domain and specify the restart interval.</span><p><pre class="screen"><b><span class="cmdqueryname">cellular-profile</span></b> <i><span class="varname">profile-name</span></i>
+<b><span class="cmdqueryname">modem-event packet-service-detached</span></b> <strong><span>interval</span></strong> <i><span class="varname">interval</span></i> <strong><span>action</span></strong> { <strong><span>none</span></strong> | <strong><span>modem-reboot retry-times</span></strong> <i><span class="varname">retry-times</span></i> }
+<b><span class="cmdqueryname">quit</span></b></pre>
+</p><p><p>By default, the interval for automatically restarting a modem is 3600s, and the maximum number of restarts is 3.</p>
+<p>The PS domain of a cellular network is also called the data domain. It is mainly used to transmit data, such as Internet data and emails. A cellular modem attached to a PS domain has registered with the PS domain and obtained network services.</p>
+</p></li><li><span>Configure the no-service state detection interval and number of detection times. Also, configure the self-recovery action when an exception occurs and the cellular modem enters the no-service state.</span><p><pre class="screen"><b><span class="cmdqueryname">cellular-profile</span></b> <i><span class="varname">profile-name</span></i>
+<b><span class="cmdqueryname">modem-event services-unavailable</span></b> <strong><span>interval</span></strong> <i><span class="varname">interval</span></i><strong><span> action</span></strong> { <strong><span>none</span></strong> | { <strong><span>modem-reboot</span></strong> | <strong><span>sim-switch</span></strong> } <strong><span>retry-times</span></strong> <i><span class="varname">retry-times</span></i> }
+<b><span class="cmdqueryname">quit</span></b></pre>
+</p><p><p>By default, the no-service state detection interval is 3600s, the number of detection times is 0 (unlimited), and the self-recovery action is to restart the cellular modem.</p>
+</p></li><li><span>Configure the function of sending ICMP packets to detect whether the DNS server is reachable when the traffic is abnormal and restarting the modem to recover the link if the DNS server is unreachable.</span><p><pre class="screen"><b><span class="cmdqueryname">cellular-profile</span></b> <i><span class="varname">profile-name</span></i>
+<b><span class="cmdqueryname">modem-event icmp-unreachable</span></b> <strong><span>action</span></strong> { <strong><span>none</span></strong> | <strong><span>modem-reboot retry-times</span></strong> <i><span class="varname">retry-times</span></i> }
+<b><span class="cmdqueryname">quit</span></b></pre>
+</p><p><p>By default, traffic exception detection is enabled, and the maximum number of restarts is 3. The device checks the uplink and downlink traffic on the cellular modem every minute. If only unidirectional traffic exists for 10 minutes, the traffic is considered abnormal.</p>
+</p></li><li><span>Configure the threshold at which consecutive dial-up failures trigger a cellular modem to restart and the maximum number of modem restarts.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <strong><span>cellular</span></strong> <i><span class="varname">interface-number</span></i>
+<b><span class="cmdqueryname">modem-event dial-failed</span></b> <strong><span>fail-times</span></strong> <i><span class="varname">fail-times</span></i><strong><span> action</span></strong> { <strong><span>none</span></strong> | <strong><span>modem-reboot retry-times </span></strong><i><span class="varname">retry-times</span></i> }
+<b><span class="cmdqueryname">quit</span></b></pre>
+</p><p><p>By default, the modem is restarted a maximum of three times after 30 consecutive dial-up failures.</p>
+</p></li><li><span>Configure the link monitoring function. If a wireless link is unstable due to weak signals or noises, it may fail to provide access to external networks even if the dial-up succeeds. In this case, you can configure an address to be detected. When the number of consecutive failures in detecting this address reaches the threshold, the self-recovery action (modem restart or re-dialup) is triggered to recover the link.</span><p><ol type="a"><li>Enter the cellular channel interface view.<pre class="screen"><b><span class="cmdqueryname">interface</span></b> <strong><span>cellular</span></strong> <i><span class="varname">interface-number</span></i></pre>
+</li><li>Configure the address to be detected and enable the detection function.<pre class="screen"><strong><b><span class="cmdqueryname">modem-event detect ipv4</span></b> </strong><em><i><span class="varname">ipv4-address</span></i></em></pre>
+<p>By default, address detection is disabled.</p>
+</li><li>Specify the detection interval.<pre class="screen"><strong><b><span class="cmdqueryname">modem-event detect interval</span></b> </strong><em><i><span class="varname">interval</span></i></em></pre>
+<p>By default, the detection interval is 60 seconds.</p>
+</li><li>Set the threshold for the number of consecutive detection failures.<pre class="screen"><strong><b><span class="cmdqueryname">modem-event detect fail-times</span></b> </strong><em><i><span class="varname">fail-times</span></i></em></pre>
+<p>By default, the threshold for the number of consecutive detection failures is 5.</p>
+</li><li>Configure the device's self-recovery action triggered when the number of consecutive detection failures reaches the threshold.<pre class="screen"><strong><b><span class="cmdqueryname">modem-event detect action</span></b> </strong>{ <strong><strong><span>redial</span></strong></strong> | <strong><strong><span>modem-reboot</span></strong></strong> | <strong><strong><span>apn-switch</span></strong></strong> }</pre>
+<p>By default, the self-recovery action is <strong>modem-reboot</strong>.</p>
+</li><li>Configure the maximum number of times that the self-recovery action is triggered.<pre class="screen"><strong><b><span class="cmdqueryname">modem-event detect retry-times</span></b> </strong><em><i><span class="varname">retry-times</span></i></em></pre>
+<p>By default, the self-recovery action is triggered a maximum of three times.</p>
+</li><li>Return to the system view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li></ol>
+</p></li><li><span>(Optional) Manually restart the cellular modem if it fails to automatically restart.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <strong><span>cellular</span></strong> <i><span class="varname">interface-number</span></i>
+<b><span class="cmdqueryname">modem reboot</span></b></pre>
+</p></li></ol></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_cellular_new_020.html">Maintaining Cellular Interfaces
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_cellular_new_022.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,532 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring 802.1X Authentication Bypass for Wireless Users When the Authentication Server Is Down">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_cfg_nac_0245.html">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_nac_cfg_2034.html">
+<meta name="DC.Relation" scheme="URI" content="../galaxy_nac_cfg_0066.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featurename" content="802.1X Authentication">
+<meta name="featurename" content="MAC Address Authentication">
+<meta name="featurename" content="NAC">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="featuretype" content="User Access and Authentication">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002357763617">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/imagePopup.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/customQuery.js"></script>
+<script language="javascript" type="text/javascript" src="../public_sys-resources/imagePopup.js"></script>
+<title>Example for Configuring 802.1X Authentication Bypass for Wireless Users When the Authentication Server Is Down</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002357763617"></a><a name="EN-US_TASK_0000002357763617"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring 802.1X Authentication Bypass for Wireless Users When the Authentication Server Is Down</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002357763617__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>In <a href="#EN-US_TASK_0000002357763617__fig_dc_cfg_nac_0067p01">Figure 1</a>, DeviceA functioning as a WAC in an enterprise is directly connected to an AP. The enterprise deploys the WLAN named <strong>wlan-net</strong> to provide wireless network access for employees. The WAC functions as a DHCP server to assign IP addresses on the network segment 10.23.101.0/24 to STAs.</p>
+<p>As the WLAN is open to users, there are potential security risks to enterprise information if no access control is available to the WLAN. To meet the enterprise's high security requirements, 802.1X authentication is used for authenticating wireless users through a RADIUS server. A backup SSID, which is automatically enabled when the authentication server goes down, can be configured in open-system authentication mode to allow users to access the bypass network.</p>
+<div class="fignone" id="EN-US_TASK_0000002357763617__fig_dc_cfg_nac_0067p01"><a name="EN-US_TASK_0000002357763617__fig_dc_cfg_nac_0067p01"></a><a name="fig_dc_cfg_nac_0067p01"></a><span class="figcap"><b>Figure 1 </b>Network diagram for configuring 802.1X authentication bypass for wireless users when the authentication server is down</span><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interface 1 and interface 2 represent <span>10GE</span> <span>0/0/1</span> and <span>10GE</span> <span>0/0/2</span>, respectively.</p>
+</div></div>
+<br><span><img class="imgResize" src="../images/en-us_image_0000002357604133.png" width="522.37828125" height="235.16004246000006" title="Click to enlarge"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002357763617__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><ol><li>Configure basic WLAN services on the WAC so that it can communicate with upstream and downstream devices and that the AP can go online.</li><li>Configure RADIUS authentication parameters.</li><li>Configure an 802.1X access profile and an authentication profile.</li><li>Configure a MAC access profile, an authentication profile, and bypass authorization for users.</li><li>Configure WLAN service parameters, and bind a security profile and an authentication profile to a VAP profile to control STA access to the WLAN.</li><li>Configure a backup VAP profile for users in bypass state.</li></ol>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002357763617__1.3.3"></a><a name="1.3.3"></a>
+<div class="p"><h4 class="sectiontitle">Data Plan</h4>
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="16%" id="mcps1.3.3.2.1.3.1.1" liSelected="liSelected"><p>Item</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="84%" id="mcps1.3.3.2.1.3.1.2" liSelected="liSelected"><p>Data</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>RADIUS authentication parameters</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><p>Authentication scheme name: <strong>scheme1</strong></p>
+<p>Accounting scheme name: <strong>scheme2</strong></p>
+<p>RADIUS server template name: <strong>radius_huawei</strong></p>
+<ul><li>IP address: 10.23.200.1</li><li>Authentication port number: 1812</li><li>Accounting port number: 1813</li><li>Shared key: <strong>YsHsjx_202206mc@1</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>Authentication domain</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><p>The authentication domain is named <strong>example.com</strong> and is bound to:</p>
+<ul><li>RADIUS server template <strong>radius_huawei</strong></li><li>Authentication scheme <strong>scheme1</strong></li><li>Accounting scheme <strong>scheme2</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>UCL group</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><p>UCL group name: <strong>u1</strong></p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>Service scheme</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><p>Service scheme name: <strong>s1</strong></p>
+<ul><li>Authorized UCL group <strong>u1</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>802.1X access profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><ul><li>Name: <strong>d1</strong></li><li>Authentication mode: EAP</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>MAC access profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><ul><li>Name: <strong>m1</strong></li><li>User name and password for MAC address authentication: MAC addresses without hyphens (-)</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="2" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>Authentication profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><ul><li>Name: <strong>p1</strong></li><li>Bound 802.1X access profile and authentication domain: 802.1X access profile <strong>d1</strong> and authentication domain <strong>example.com</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.3.2.1.3.1.1 "><ul><li>Name: <strong>p2</strong></li><li>Bound MAC access profile and authentication domain: MAC access profile <strong>m1</strong> and authentication domain <strong>example.com</strong></li><li>Bypass authorization: Service scheme authorization upon authentication server down</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>DHCP server</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><p>The WAC functions as a DHCP server to assign IP addresses to the AP and STAs.</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>IP address pool for the AP</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><p>10.23.100.2 to 10.23.100.254/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>IP address pool for STAs</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><p>10.23.101.2 to 10.23.101.254/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>IP address of the WAC's source interface</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><p>VLANIF 100: 10.23.100.1/24</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>AP group</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><ul><li>Name: <strong>ap-group1</strong></li><li>Bound profiles: VAP profiles <strong>wlan-vap</strong> and <strong>wlan-vap-backup</strong>, and regulatory domain profile <strong>domain1</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>Regulatory domain profile</p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><ul><li>Name: <strong>domain1</strong></li><li>Country code: <strong>CN</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="2" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>SSID profile</p>
+<p></p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><ul><li>Name: <strong>wlan-ssid</strong></li><li>SSID name: <strong>wlan-net</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.3.2.1.3.1.1 "><ul><li>Name: <strong>wlan-ssid-backup</strong></li><li>SSID name: <strong>wlan-net-backup</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="2" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>Security profile</p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><ul><li>Name: <strong>wlan-security</strong></li><li>Security policy: WPA2+802.1X+AES</li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.3.2.1.3.1.1 "><ul><li>Name: <strong>wlan-security-open</strong></li><li>Security policy: <strong>open</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" rowspan="2" valign="top" width="16%" headers="mcps1.3.3.2.1.3.1.1 "><p>VAP profile</p>
+<p></p>
+</td>
+<td class="cellrowborder" valign="top" width="84%" headers="mcps1.3.3.2.1.3.1.2 "><ul><li>Name: <strong>wlan-vap</strong></li><li>Service VLAN: VLAN 101</li><li>Bound profiles: SSID profile <strong>wlan-ssid</strong>, security profile <strong>wlan-security</strong>, and authentication profile <strong>p1</strong></li></ul>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" headers="mcps1.3.3.2.1.3.1.1 "><ul><li>Name: <strong>wlan-vap-backup</strong></li><li>Bound profiles: SSID profile <strong>wlan-ssid-backup</strong>, security profile <strong>wlan-security-open</strong>, and authentication profile <strong>p2</strong></li><li>VAP type: authentication-server-down backup service VAP</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002357763617__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Configure DeviceA as the WAC so that the AP and WAC can transmit CAPWAP packets.</span><p><p># Configure the WAC and add <span>10GE</span> <span>0/0/1</span> to VLAN 100 (management VLAN).</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In direct forwarding mode, you are advised to configure port isolation on the WAC's interface <span>10GE</span> <span>0/0/1</span> connected to the AP. If port isolation is not configured, unnecessary broadcast packets will be transmitted in VLANs or WLAN users on different APs will be able to communicate with each other at Layer 2.</p>
+</div></div>
+<pre class="screen">&lt;HUAWEI&gt; <strong>system-view</strong>
+[HUAWEI] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>vlan batch 100 101</strong>
+[DeviceA] <strong>interface <span>10ge</span> <span>0/0/1</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port trunk pvid vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>port trunk allow-pass vlan 100</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure the WAC to communicate with upstream network devices.</span><p><p># Add the WAC's uplink interface <span>10GE</span> <span>0/0/2</span> to VLAN 101 (service VLAN).</p>
+<pre class="screen">[DeviceA] <strong>interface </strong><strong><span>10ge</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>portswitch</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port link-type trunk</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>port trunk allow-pass vlan 101</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure the WAC as a DHCP server to assign IP addresses to the AP and STAs.</span><p><p># Configure the WAC as a DHCP server to assign an IP address to the AP from the IP address pool on VLANIF 100, and assign IP addresses to STAs from the IP address pool on VLANIF 101.</p>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><div class="p">Configure a DNS server address as required. The common methods are as follows:<ul><li>In the interface address pool scenario, run the <b><span class="cmdqueryname">dhcp server dns-list</span></b> <i><span class="varname">ip-address</span></i> &amp;&lt;1-8&gt; command in the VLANIF interface view.</li><li>In the global address pool scenario, run the <b><span class="cmdqueryname">dns-list</span></b> <i><span class="varname">ip-address</span></i> &amp;&lt;1-8&gt; command in the IP address pool view.</li></ul>
+</div>
+</div></div>
+<pre class="screen">[DeviceA] <strong>dhcp enable</strong>
+[DeviceA] <strong>interface vlanif 100</strong>
+[DeviceA-Vlanif100] <strong>ip address 10.23.100.1 24</strong>
+[DeviceA-Vlanif100] <strong>dhcp select interface</strong>
+[DeviceA-Vlanif100] <strong>quit</strong>
+[DeviceA] <strong>interface vlanif 101</strong>
+[DeviceA-Vlanif101] <strong>ip address 10.23.101.1 24</strong>
+[DeviceA-Vlanif101] <strong>dhcp select interface</strong>
+[DeviceA-Vlanif101] <strong>quit</strong></pre>
+</p></li><li><span>Configure a route from the WAC to the server. In this example, the IP address of the upstream device connected to <span>10GE</span> <span>0/0/2</span> of the WAC is 10.23.101.2.</span><p><pre class="screen">[DeviceA] <strong>ip route-static 10.23.200.0 255.255.255.0 10.23.101.2</strong></pre>
+</p></li><li><span>Configure AP onboarding.</span><p><p># Create an AP group to which the APs with the same configuration can be added.</p>
+<pre class="screen">[DeviceA] <strong>wlan</strong>
+[DeviceA-wlan] <strong>ap-group name ap-group1</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong>quit</strong></pre>
+<p># Create a regulatory domain profile, configure the WAC country code in the profile, and bind the profile to the created AP group.</p>
+<pre class="screen">[DeviceA-wlan] <strong>regulatory-domain-profile name domain1</strong>
+[DeviceA-wlan-regulate-domain-domain1] <strong>country-code cn</strong>
+Warning: Modifying the country code will clear the channel and power configurations of radios, and requires the APs to be restarted if they run V200R019C10 or earlier. Continue? [Y/N]:<strong>y</strong>
+[DeviceA-wlan-regulate-domain-domain1] <strong>quit</strong>
+[DeviceA-wlan] <strong>ap-group name ap-group1</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong>regulatory-domain-profile domain1</strong>
+Warning: This configuration change will clear the channel and power configurations of radios, and may restart APs. Continue?[Y/N]:<strong>y</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong>quit</strong>
+[DeviceA-wlan] <strong>quit</strong></pre>
+<p># Configure the WAC's source interface.</p>
+<pre class="screen">[DeviceA] <strong>capwap dtls no-auth enable</strong>
+Warning: This operation allows for device access in non-DTLS encryption mode even when DTLS is enabled and brings security risks. Af
+ter the device goes online for the first time, disable this function to prevent security risks. Continue? [Y/N]:<strong>y</strong>
+[DeviceA] <strong>capwap source interface vlanif 100</strong>
+Set the DTLS PSK(contains 8-32 plain-text characters, or 128 or 148 cipher-text characters that must be a combination of at least tw
+o of the following: lowercase letters a to z, uppercase letters A to Z, digits, and special characters):********
+Confirm PSK:********
+Set the user name for FIT APs(The value is a string of 4 to 31 characters, which can contain letters, underscores, and digits, and m
+ust start with a letter):********
+Set the password for FIT APs(plain-text password of 8-128 characters or cipher-text password of 128-268 characters that must be a co
+mbination of at least three of the following: lowercase letters a to z, uppercase letters A to Z, digits, and special characters):******
+Confirm password:********
+Set the PSK of the global offline management VAP(plain-text password of 8-63 characters or cipher-text password of 128-188 character
+s that must be a combination of at least two of the following: lowercase letters a to z, uppercase letters A to Z, digits, and speci
+al characters):********
+Confirm PSK:********
+</pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p id="EN-US_TASK_0000002357763617__en-us_task_0000001512834582_p5622114217102">After the peer device goes online, run the <b><span class="capwap dtls no-auth enable" id="EN-US_TASK_0000002357763617__en-us_task_0000001512834582_cmdname1836138131215">undo capwap dtls no-auth enable</span></b> command to disable the function of establishing CAPWAP DTLS sessions in none authentication mode, thereby preventing unauthorized devices from accessing the network.</p>
+</div></div>
+<div class="p"># Import the AP offline on the WAC, and add the AP to the AP group <span class="parmvalue"><b>ap-group1</b></span>. In this example, the AP's MAC address is 00e0-fc12-3456. Configure a name for the AP based on its position, so that it can be easily located by its name. For example, name the AP <strong>area_1</strong> if it is deployed in area 1.<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The default AP authentication mode is MAC address authentication. If the default settings have not been changed, you do not need to run the <b><span class="cmdqueryname">ap auth-mode mac-auth</span></b> command.</p>
+</div></div>
+</div>
+<pre class="screen">[DeviceA] <strong>wlan</strong>
+[DeviceA-wlan] <strong>ap auth-mode mac-auth</strong>
+[DeviceA-wlan] <strong>ap-id 0 ap-mac 00e0-fc12-3456</strong>
+[DeviceA-wlan-ap-0] <strong>ap-name area_1</strong>
+[DeviceA-wlan-ap-0] <strong>ap-group ap-group1</strong>
+Warning: This operation may cause AP reset. If the country code changes, it will clear channel, power and antenna gain configuration s of the radio, Whether to continue? [Y/N]:<strong>y</strong>
+[DeviceA-wlan-ap-0] <strong>quit</strong>
+[DeviceA-wlan] <strong>quit</strong></pre>
+<p># After the AP goes online, disable the function of establishing CAPWAP DTLS sessions in non-authentication mode.</p>
+<pre class="screen">[DeviceA] <strong>undo capwap dtls no-auth enable</strong></pre>
+</p></li><li><span>Configure a RADIUS server template, an authentication scheme, and an accounting scheme.</span><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>Ensure that the RADIUS server address, port number, and shared key are correctly configured and are the same as those on the RADIUS server.</p>
+</div></div>
+<p># Configure a RADIUS server template.</p>
+<pre class="screen">[DeviceA] <strong>radius-server template radius_huawei</strong>
+[DeviceA-radius-radius_huawei] <strong>radius-server authentication 10.23.200.1 1812</strong>
+[DeviceA-radius-radius_huawei] <strong>radius-server accounting 10.23.200.1 1813</strong>
+[DeviceA-radius-radius_huawei] <strong>radius-server shared-key cipher YsHsjx_202206mc@1</strong>
+[DeviceA-radius-radius_huawei] <strong>quit</strong></pre>
+<p># Configure an authentication scheme that uses RADIUS authentication.</p>
+<pre class="screen">[DeviceA] <strong>aaa</strong>
+[DeviceA-aaa] <strong>authentication-scheme scheme1</strong>
+[DeviceA-aaa-authen-scheme1] <strong>authentication-mode radius</strong>
+[DeviceA-aaa-authen-scheme1] <strong>quit</strong></pre>
+<p># Configure an accounting scheme that uses RADIUS accounting.</p>
+<pre class="screen">[DeviceA-aaa] <strong>accounting-scheme scheme2</strong>
+[DeviceA-aaa-accounting-scheme2] <strong>accounting-mode radius</strong>
+[DeviceA-aaa-accounting-scheme2] <strong>accounting realtime 15</strong>
+[DeviceA-aaa-accounting-scheme2] <strong>quit</strong></pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li><p>In this example, the device is connected to iMaster NCE-Campus. The accounting function is not provided for accounting purposes, and is only used to maintain terminal online information through accounting packets.</p>
+</li><li><p>The <strong>accounting realtime</strong> command is used to set the real-time accounting interval. A shorter real-time accounting interval requires higher performance of the device and RADIUS server. The real-time accounting interval needs to be set based on the user quantity.</p>
+</li></ul>
+</div></div>
+
+<div class="tableBorder"><table cellpadding="4" cellspacing="0" summary="" frame="border" border="1" rules="all"><thead align="left"><tr><th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.4.6.2.9.1.3.1.1" liSelected="liSelected"><p>User Quantity</p>
+</th>
+<th align="left" class="cellrowborder" valign="top" width="50%" id="mcps1.3.4.6.2.9.1.3.1.2" liSelected="liSelected"><p>Real-Time Accounting Interval</p>
+</th>
+</tr>
+</thead>
+<tbody><tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.6.2.9.1.3.1.1 "><p>1 to 99</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.6.2.9.1.3.1.2 "><p>3min</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.6.2.9.1.3.1.1 "><p>100 to 499</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.6.2.9.1.3.1.2 "><p>6min</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.6.2.9.1.3.1.1 "><p>500 to 999</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.6.2.9.1.3.1.2 "><p>12min</p>
+</td>
+</tr>
+<tr><td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.6.2.9.1.3.1.1 "><p>≥1000</p>
+</td>
+<td class="cellrowborder" valign="top" width="50%" headers="mcps1.3.4.6.2.9.1.3.1.2 "><p>≥15min</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p># Create the authentication domain <strong>example.com</strong> and bind an authentication scheme, an accounting scheme, and a RADIUS server template to the authentication domain.</p>
+<pre class="screen">[DeviceA-aaa] <strong>domain example.com</strong>
+[DeviceA-aaa-domain-example.com] <strong>authentication-scheme scheme1</strong>
+[DeviceA-aaa-domain-example.com]<strong> accounting-scheme scheme2</strong>
+[DeviceA-aaa-domain-example.com] <strong>radius-server radius_huawei</strong>
+[DeviceA-aaa-domain-example.com] <strong>quit</strong>
+[DeviceA-aaa] <strong>quit</strong></pre>
+</p></li><li><span>Configure the 802.1X access profile <strong>d1</strong>.</span><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>By default, an 802.1X access profile uses EAP authentication. Ensure that the RADIUS server supports the EAP protocol. Otherwise, the RADIUS server cannot process 802.1X authentication requests.</p>
+</div></div>
+<pre class="screen">[DeviceA] <strong>dot1x-access-profile name d1</strong>
+[DeviceA-dot1x-access-profile-d1] <strong>quit</strong></pre>
+</p></li><li><span>Configure the MAC access profile <strong>m1</strong>.</span><p><pre class="screen">[DeviceA] <strong>mac-access-profile name m1</strong>
+[DeviceA-mac-access-profile-m1] <strong>quit</strong></pre>
+</p></li><li><span>Configure a UCL group.</span><p><pre class="screen">[DeviceA] <strong>ucl-group name u1</strong></pre>
+</p></li><li><span>Configure a service scheme.</span><p><pre class="screen">[DeviceA]<strong> aaa</strong>
+[DeviceA-aaa] <strong>service-scheme s1</strong>
+[DeviceA-aaa-service-s1] <strong>ucl-group name u1</strong>
+[DeviceA-aaa-service-s1] <strong>quit</strong></pre>
+</p></li><li><span>Configure the authentication profile <strong>p1</strong>, bind an 802.1X access profile to the authentication profile, and specify a forcible authentication domain.</span><p><pre class="screen">[DeviceA] <strong>authentication-profile name p1</strong>
+[DeviceA-authentication-profile-p1] <strong>dot1x-access-profile d1</strong>
+[DeviceA-authentication-profile-p1] <strong>access-domain example.com force</strong>
+[DeviceA-authentication-profile-p1] <strong>quit</strong></pre>
+</p></li><li><span>Configure the authentication profile <strong>p2</strong>, bind a MAC access profile to the authentication profile, specify a forcible authentication domain, and configure bypass authorization upon authentication server down. The following uses service scheme-based authorization for bypass authorization as an example.</span><p><pre class="screen">[DeviceA] <strong>authentication-profile name p2</strong>
+[DeviceA-authentication-profile-p2] <strong>mac-access-profile m1</strong>
+[DeviceA-authentication-profile-p2] <strong>access-domain example.com force</strong>
+[DeviceA-authentication-profile-p2] <strong>authentication event authen-server-down action authorize service-scheme s1</strong>
+[DeviceA-authentication-profile-p2] <strong>quit</strong></pre>
+</p></li><li><span>Configure WLAN service parameters.</span><p><p># Create the security profile <span class="parmvalue"><b>wlan-security</b></span> and configure a security policy in the profile.</p>
+<pre class="screen">[DeviceA] <strong>wlan</strong>
+[DeviceA-wlan] <strong>security-profile name wlan-security</strong>
+[DeviceA-wlan-sec-prof-wlan-security] <strong>security wpa2 dot1x aes</strong>
+[DeviceA-wlan-sec-prof-wlan-security] <strong>quit</strong></pre>
+</p><p><p># Create the security profile <span class="parmvalue"><b>wlan-security-open</b></span> and configure a security policy in the profile.</p>
+<pre class="screen">[DeviceA-wlan] <strong>security-profile name wlan-security-open</strong>
+[DeviceA-wlan-sec-prof-wlan-security] <strong>security open</strong>
+[DeviceA-wlan-sec-prof-wlan-security] <strong>quit</strong></pre>
+<p># Create the SSID profile <span class="parmvalue"><b>wlan-ssid</b></span> and set the SSID name to <span class="parmvalue"><b>wlan-net</b></span>.</p>
+<pre class="screen">[DeviceA-wlan] <strong>ssid-profile name wlan-ssid</strong>
+[DeviceA-wlan-ssid-prof-wlan-ssid] <strong>ssid wlan-net</strong>
+[DeviceA-wlan-ssid-prof-wlan-ssid] <strong>quit</strong></pre>
+<p># Create the SSID profile <span class="parmvalue"><b>wlan-ssid-backup</b></span> and set the SSID name to <span class="parmvalue"><b>wlan-net-backup</b></span>.</p>
+<pre class="screen">[DeviceA-wlan] <strong>ssid-profile name wlan-ssid-backup</strong>
+[DeviceA-wlan-ssid-prof-wlan-ssid] <strong>ssid wlan-net-</strong><strong>backup</strong>
+[DeviceA-wlan-ssid-prof-wlan-ssid] <strong>quit</strong></pre>
+<p># Create the VAP profile <span class="parmvalue"><b>wlan-vap</b></span>, configure a service VLAN, and bind a security profile, SSID profile, and authentication profile to the VAP profile.</p>
+<pre class="screen">[DeviceA-wlan] <strong>vap-profile name wlan-vap</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>service-vlan vlan-id 101</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>security-profile wlan-security</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>ssid-profile wlan-ssid</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>authentication-profile p1</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>quit</strong></pre>
+<p># Create the VAP profile <span class="parmvalue"><b>wlan-vap-backup</b></span>, bind a security profile, SSID profile, and authentication profile to the VAP profile, and set the VAP type to authentication-server-down backup service.</p>
+<pre class="screen">[DeviceA-wlan] <strong>vap-profile name wlan-vap</strong><strong>-backup</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>security-profile wlan-security</strong><strong>-open</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>ssid-profile wlan-ssid-backup</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>type service-backup auth-server-down radius-server template radius_huawei </strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>authentication-profile p2</strong>
+[DeviceA-wlan-vap-prof-wlan-vap] <strong>quit</strong></pre>
+<div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The RADIUS server is specified as the RADIUS server bound to the authentication profile <strong>p1</strong>. When the authentication server is unavailable, the backup VAP is automatically enabled so that STAs can access the network through the VAP, enter the bypass state, and obtain authorization.</p>
+</div></div>
+<p># Bind an AP group to the VAP profiles <span class="parmvalue"><b>wlan-vap</b></span> and <span class="parmvalue"><b>wlan-vap-backup</b></span>, and apply the VAP profiles to radios 0 and 1 of the AP.</p>
+<pre class="screen">[DeviceA-wlan] <strong>ap-group name ap-group1</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong>vap-profile wlan-vap wlan 1 radio 0</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong>vap-profile wlan-vap wlan 1 radio 1</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong>vap-profile wlan-vap-backup wlan 2 radio 0</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong>vap-profile wlan-vap-backup wlan 2 radio 1</strong>
+[DeviceA-wlan-ap-group-ap-group1] <strong>quit</strong></pre>
+</p></li><li><span>Configure channels and power for the AP radios.</span><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>The automatic channel and power calibration functions are enabled by default. The manual channel and power configurations take effect only when the two functions are disabled. The channel and power configurations for the AP radios in this example are for reference only. In practice, configure the channel and power of AP radios based on the actual country codes of APs and network planning.</p>
+</div></div>
+<div class="p"># Disable the automatic channel and power calibration functions of AP radio 0, and configure its channel and power.<pre class="screen">[DeviceA-wlan] <strong>ap-id 0</strong>
+[DeviceA-wlan-ap-0] <strong>radio 0</strong>
+[DeviceA-wlan-ap-0-radio-0] <strong>calibrate auto-channel-select disable</strong>
+[DeviceA-wlan-ap-0-radio-0] <strong>calibrate auto-txpower-select disable</strong>
+[DeviceA-wlan-ap-0-radio-0] <strong>channel 20mhz 6</strong>
+Warning: This action may cause service interruption. Continue?[Y/N]<strong>y</strong> 
+[DeviceA-wlan-ap-0-radio-0] <strong>eirp 127</strong>
+[DeviceA-wlan-ap-0-radio-0] <strong>quit</strong></pre>
+</div>
+<div class="p"># Disable the automatic channel and power calibration functions of AP radio 1, and configure its channel and power.<pre class="screen">[DeviceA-wlan-ap-0] <strong>radio 1</strong>
+[DeviceA-wlan-ap-0-radio-1] <strong>calibrate auto-channel-select disable</strong>
+[DeviceA-wlan-ap-0-radio-1] <strong>calibrate auto-txpower-select disable</strong>
+[DeviceA-wlan-ap-0-radio-1] <strong>channel 80mhz 149</strong>
+Warning: This action may cause service interruption. Continue?[Y/N]<strong>y</strong> 
+[DeviceA-wlan-ap-0-radio-1] <strong>eirp 127</strong>
+[DeviceA-wlan-ap-0-radio-1] <strong>quit</strong>
+[DeviceA-wlan-ap-0] <strong>quit</strong>
+[DeviceA-wlan] <strong>quit</strong></pre>
+</div>
+</p></li><li><span>Verify the configuration.</span><p><ul><li>After the configuration is complete, the WLAN with the SSID <strong>wlan-net</strong> is available to STAs.</li><li>A user can use the 802.1X authentication client on a STA for authentication. After entering the correct user name and password, the user is successfully authenticated and can access resources on the Internet. You need to configure the 802.1X authentication client based on the configured authentication mode PEAP.</li></ul>
+<ul><li>If the authentication server is unreachable, the user can search for the WLAN with the SSID <strong>wlan-net</strong><strong>-backup</strong> on the STA.</li><li>After connecting to the network, the STA can obtain the service scheme authorization and access network resources.</li></ul>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002357763617__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><div class="p">DeviceA<pre class="screen">#
+sysname DeviceA
+#
+vlan batch 100 to 101
+#
+authentication-profile name p1
+ dot1x-access-profile d1
+ access-domain example.com force
+#
+authentication-profile name p2
+ mac-access-profile m1
+ access-domain example.com force
+ authentication event authen-server-down action authorize service-scheme s1
+#
+ucl-group name u1 index 1
+#
+dot1x-access-profile name d1
+#
+dhcp enable
+#
+radius-server template radius_huawei
+ radius-server shared-key cipher %+%##!!!!!!!!!"!!!!"!!!!*!!!!Cd/`W03KjAwAqn64E&lt;\TxGC_SOri&lt;2BP\A+!!!!!2jp5!!!!!!B!!!!Oe2HMc-&gt;XMa#TLDZUaJBFJtm#XVj*E:S*|(N7`J1B:3QY!!!!!!!!!!!!!!!%+%# 
+ radius-server authentication 10.23.200.1 1812 weight 80
+ radius-server accounting 10.23.200.1 1813 weight 80
+#
+aaa
+ authentication-scheme scheme1
+  authentication-mode radius
+ accounting-scheme scheme2
+  accounting-mode radius
+  accounting realtime 15
+ service-scheme s1
+  ucl-group name u1
+ domain example.com
+  authentication-scheme scheme1
+  accounting-scheme scheme2
+  radius-server radius_huawei
+#
+mac-access-profile name m1
+#
+interface Vlanif100
+ ip address 10.23.100.1 255.255.255.0
+ dhcp select interface
+#
+interface Vlanif101
+ ip address 10.23.101.1 255.255.255.0
+ dhcp select interface
+#
+interface <span>10GE</span><span>0/0/1</span>
+ portswitch
+ port link-type trunk
+ port trunk pvid vlan 100
+ port trunk allow-pass vlan 100
+#
+interface <span>10GE</span><span>0/0/2</span>
+ portswitch
+ port link-type trunk
+ port trunk allow-pass vlan 101
+#
+ip route-static 10.23.200.0 255.255.255.0 10.23.101.2 
+#  
+capwap source interface vlanif 100
+capwap dtls psk %+%##!!!!!!!!!"!!!!"!!!!*!!!!a4O4$.&amp;PxRTGtHR(VaB4*(KhWT"C@K+HZ%@!!!!!2jp5!!!!!!;!!!!..AjEF}u&lt;=!%e=F%Dz-Y[R--3yrC-*MVXf&lt;!!!!!%+%#
+#
+wlan
+ security-profile name wlan-security
+  security wpa2 dot1x aes
+ security-profile name wlan-security-open
+  security open
+ ssid-profile name wlan-ssid
+  ssid wlan-net
+ ssid-profile name wlan-ssid-backup
+  ssid wlan-net-backup
+ vap-profile name wlan-vap
+  service-vlan vlan-id 101
+  ssid-profile wlan-ssid
+  security-profile wlan-security
+  authentication-profile p1
+ vap-profile name wlan-vap-backup
+  ssid-profile wlan-ssid-backup
+  security-profile wlan-security-open
+  authentication-profile p2
+<strong>  </strong>type service-backup auth-server-down radius-server template radius_huawei 
+ regulatory-domain-profile name domain1
+ ap-group name ap-group1
+  regulatory-domain-profile domain1
+  radio 0
+   vap-profile wlan-vap wlan 1
+   vap-profile wlan-vap-backup wlan 2
+  radio 1
+   vap-profile wlan-vap wlan 1
+   vap-profile wlan-vap-backup wlan 2
+ ap-id 0 type-id 1 ap-mac 00e0-fc12-3456 ap-sn 210235554710CB000042
+  ap-name area_1
+  ap-group ap-group1
+  radio 0
+   channel 20mhz 6
+   eirp 127
+<span>   calibrate auto-channel-select disable  </span>
+<span>   calibrate auto-txpower-select disable</span>
+  radio 1
+   channel 80mhz 149
+   eirp 127
+<span>   calibrate auto-channel-select disable </span>
+<span>   calibrate auto-txpower-select disable</span>
+#
+return</pre>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../galaxy_cfg_nac_0245.html">Configuration Examples for NAC
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../galaxy_nac_cfg_2034.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="../galaxy_nac_cfg_0066.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+
+<script language="JavaScript">
+<!--
+initImageViewer('.imgResize');
+var msg_imageMax = "view original image";
+var msg_imageClose = "close";
+//--></script></body>
+</html>

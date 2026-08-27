@@ -1,0 +1,130 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Using a Basic ACL to Prevent Source Address Spoofing Attacks Through URPF">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_acl_cfg_0032.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featurename" content="ACL">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="featuretype" content="IP Addresses and Services">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_XTASK_0000001894264493">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Using a Basic ACL to Prevent Source Address Spoofing Attacks Through URPF</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_XTASK_0000001894264493"></a><a name="EN-US_XTASK_0000001894264493"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Using a Basic ACL to Prevent Source Address Spoofing Attacks Through URPF</h1>
+<div><div class="section"><h4 class="sectiontitle">Networking Requirements</h4>
+<div class="p"><p>As shown in <a href="#EN-US_XTASK_0000001894264493__fig586434102112">Figure 1</a>, Router's <span>10GE</span><span>0/0/1</span> is connected to PC1 and PC2, and <span>10GE</span><span>0/0/2</span> is connected to an upstream router. To prevent source address spoofing attacks, configure URPF strict check on <span>10GE</span><span>0/0/1</span> and <span>10GE</span><span>0/0/2</span>. In this example, Router is required to perform URPF check only on the packets from PC2 (with the IP address 10.0.0.3).</p>
+<div class="fignone" id="EN-US_XTASK_0000001894264493__fig586434102112"><a name="EN-US_XTASK_0000001894264493__fig586434102112"></a><a name="fig586434102112"></a><span class="figcap"><b>Figure 1 </b>Network diagram of using a basic ACL to prevent source address spoofing attacks through URPF</span><br><span><img src="figure/en-us_image_0000002264627264.png"></span></div>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Roadmap</h4>
+<div class="p"><p>The configuration roadmap on Router is as follows:</p>
+<ol><li>Configure ACL-based URPF on <span>10GE</span><span>0/0/1</span> to perform URPF check only on the packets from PC2.</li><li>Configure the URPF check mode on <span>10GE</span><span>0/0/2</span> to prevent source address spoofing attacks.</li></ol>
+</div>
+</div>
+<div class="section"><h4 class="sectiontitle">Procedure</h4><ol><li><span>Configure ACL-based URPF on <span>10GE</span><span>0/0/1</span> to perform URPF check only on the packets from PC2.</span><p><pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname <span class="keyword">Router</span></strong>
+[Router] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[Router-<span>10GE</span><span>0/0/1</span>] <strong>ip address 10.0.0.1 24</strong>
+[Router-<span>10GE</span><span>0/0/1</span>] <strong>urpf strict acl 2001</strong>
+[Router-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[Router]<strong> </strong><strong>acl number 2001</strong>
+[Router-acl-basic-2001] <strong>rule permit source 10.0.0.3 0.0.0.255</strong>
+[Router-acl-basic-2001] <strong>quit</strong></pre>
+</p></li><li><span>Configure the URPF check mode on <span>10GE</span><span>0/0/2</span>.</span><p><pre class="screen">[Router] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[Router-<span>10GE</span><span>0/0/2</span>] <strong>ip address 10.0.1.1 24</strong>
+[Router-<span>10GE</span><span>0/0/2</span>] <strong>urpf strict</strong>
+[Router-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</p></li><li><span>Verify the configuration.</span><p><div class="p"># Check the ACL rule configuration.<pre class="screen">[Router] <strong>display acl 2001 </strong>
+Basic ACL 2001, 1 rule                                                           
+ ACL's step is 5                                                                  
+ rule 5 permit source 10.0.0.0 0.0.0.255   </pre>
+</div>
+<div class="p"># Check the URPF configuration on <span>10GE</span><span>0/0/1</span>.<pre class="screen">[Router] interface<strong> <span>10GE</span> <span>0/0/1</span></strong>
+[Router-<span>10GE</span><span>0/0/1</span>] display this 
+#                                                                                
+interface <span>10GE</span><span>0/0/1</span>                                                           
+ ip address 10.0.0.1 255.255.255.0                                               
+ urpf strict acl 2001                                                            
+#                                                                                
+return </pre>
+</div>
+<div class="p"># Check the URPF configuration on <span>10GE</span><span>0/0/2</span>.<pre class="screen">[Router] interface<strong> <span>10GE</span><span>0/0/2</span></strong>
+[Router-<span>10GE</span><span>0/0/2</span>] display this 
+#                                                                                
+interface-<span>10GE</span><span>0/0/2</span>                                                           
+ ip address 10.0.0.1 255.255.255.0                                               
+ urpf strict                                                 
+#                                                                                
+return </pre>
+</div>
+</p></li></ol>
+</div>
+<div class="section"><h4 class="sectiontitle">Configuration Scripts</h4>
+<div class="p"><p>Router</p>
+<pre class="screen"># 
+ sysname Router 
+#                                                                                
+acl number 2001                                                                   
+ rule 5 permit source 10.0.0.0 0.0.0.255  
+#                                                                                
+interface <span>10GE</span><span>0/0/1</span>                                                             
+ ip address 10.0.0.1 255.255.255.0                                                
+ urpf strict acl 2001                                                            
+#                                                                                
+interface <span>10GE</span><span>0/0/2</span>                                                          
+ ip address 10.0.1.1 255.255.255.0                                                
+ urpf strict 
+# 
+return</pre>
+</div>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_acl_cfg_0016.html">Configuration Examples for ACLs
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_acl_cfg_0032.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>

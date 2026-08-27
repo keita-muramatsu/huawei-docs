@@ -1,0 +1,87 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Adjusting the LSR IDs of LDP Sessions">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_00133.html">
+<meta name="DC.Relation" scheme="URI" content="../vrp/vrp_mplsldp_cfg_0018.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="featurename" content="MPLS LDP">
+<meta name="featuretype" content="MPLS">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001387913581">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="../public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="../public_sys-resources/browseVersion.js"></script>
+<title>Adjusting the LSR IDs of LDP Sessions</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001387913581"></a><a name="EN-US_TASK_0000001387913581"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Adjusting the LSR IDs of LDP Sessions</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001387913581__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>By default, all LDP sessions of an LSR, including local and remote LDP sessions, use the LSR ID of the LDP instance. However, if all LDP sessions use the same LSR ID in L2VPN/L3VPN over LDP scenarios, VPN services fail to be isolated. To address this issue, configure an exclusive LSR ID for each LDP session. Perform the configuration after an LDP session is created to implement service isolation.</p>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001387913581__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure an LSR ID for a local session.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the interface view of an existing LDP session.</span><p><pre class="screen"><b><span class="cmdqueryname">interface</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Switch the interface working mode to Layer 3.</span><p><pre class="screen"><b><span class="cmdqueryname">undo portswitch</span></b></pre>
+<p>Determine whether to perform this step based on the current interface working mode.</p>
+</p></li><li class="substepexpand"><span>Specify the primary IP address of an interface as the LSR ID of the current LDP session.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp local-lsr-id</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+<p><i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i>: configures the device to use the primary IP address of the specified interface as the LSR ID.</p>
+</p><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>If multiple links directly connect an LSR pair, the LSR ID configured on the interface of each link must be the same. Otherwise, the LDP session uses the LSR ID of the link that first finds the adjacency, while other links with different LSR IDs cannot be bound to the LDP session. As a result, LDP LSPs fail to be established on these links.</li><li>If both local and remote LDP sessions are to be established between an LSR pair, LSR IDs configured for the two sessions must be the same. Otherwise, only the LDP session that first finds the adjacency can be established.</li><li>The specified interface must be configured with an IP address. Otherwise, LDP uses 0.0.0.0 as the LSR ID when the specified interface does not have a primary IP address.</li><li>Running this command in the interface view resets the adjacency of the corresponding link.</li><li>If you run this command multiple times, only the latest configuration takes effect.</li></ul>
+</div></div>
+</p></li></ol>
+</li><li><span>Configure an LSR ID for a remote session.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the remote MPLS-LDP peer view.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp remote-peer</span></b> <i><span class="varname">remote-peer-name</span></i></pre>
+</p></li><li class="substepexpand"><span>Specify the primary IP address of an interface as the LSR ID of the current LDP session.</span><p><pre class="screen"><b><span class="cmdqueryname">mpls ldp local-lsr-id</span></b> <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i></pre>
+<p><i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i>: configures the device to use the primary IP address of the specified interface as the LSR ID.</p>
+</p><p><div class="note"><img src="../public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>If both local and remote LDP sessions are to be established between an LSR pair, LSR IDs configured for the two sessions must be the same. Otherwise, only the LDP session that first finds the adjacency can be established.</li><li>The specified interface must be configured with an IP address. Otherwise, LDP uses 0.0.0.0 as the LSR ID when the specified interface does not have a primary IP address.</li></ul>
+<ul><li>After this command is run, the current remote LDP session will be reset, and a new LSR ID will be used during the session reset.</li><li>If you run this command multiple times, only the latest configuration takes effect.</li></ul>
+</div></div>
+</p></li></ol>
+</li></ul></div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="../vrp/vrp_mplsldp_cfg_00133.html">Adjusting LDP Sessions
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="../vrp/vrp_mplsldp_cfg_0018.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

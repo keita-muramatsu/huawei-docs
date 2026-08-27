@@ -1,0 +1,109 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring In-Service AP Upgrade">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0016.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0019.html">
+<meta name="DC.Relation" scheme="URI" content="galaxy_ap_management_cfg_0067.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featurename" content="AP Management">
+<meta name="featuretype" content="WLAN">
+<meta name="featuretype" content="WLAN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001512845962">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring In-Service AP Upgrade</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001512845962"></a><a name="EN-US_TASK_0000001512845962"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring In-Service AP Upgrade</h1>
+<div class="taskbody"><div class="prereq" style="margin-left:0"><a name="EN-US_TASK_0000001512845962__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Prerequisites</h4>
+<div class="p"><p>The AP upgrade file has been uploaded to the WAC, SFTP server, or FTP server.</p>
+<p>If the device has two main control boards, upload the upgrade file to the active main control board and run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_cmdname985954903190940">copy</span></b> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_varname2404115221419">source-filename</span></i> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_varname24042529144">destination-filename</span></i> command to manually copy the upgrade file to the standby main control board. This ensures that the upgrade file is saved to both the active and standby main control boards.</p>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000001512845962__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>To upgrade the functions or versions of an existing WLAN, you can perform an in-service upgrade for APs on the WLAN.</p>
+<p>An in-service upgrade can be carried out only for APs in normal or ver-mismatch state. If an AP finds its version different from the version in the AP upgrade file on the WAC, the AP starts the upgrade.</p>
+<div class="p">The following in-service upgrade modes are supported:<ul><li>Upgrade of a single AP: allows you to upgrade a single AP to check whether the upgrade version can function properly. If the upgrade is successful, upgrade other APs in batches.</li><li>AP type–based upgrade: allows you to upgrade APs of the same type.</li><li>AP group–based upgrade: allows you to upgrade APs in the same AP group.</li><li>Channel group-based AP upgrade: allows you to upgrade APs in the same channel-based partition. If in-service upgrade is required for all APs on the network, you can pre-load the software package of the target version to all APs. To prevent service interruption caused by the restart of a large number of APs, you can divide APs into channel-based partitions and restart the APs by partition in sequence. This upgrade mode is also called multi-batch, scattered upgrade. During the reset of APs in a channel-based partition, their surrounding APs automatically fill coverage holes to ensure service continuity. Therefore, do not deploy only one AP for coverage at a site.<div class="p">APs with the same channel are grouped into the same channel-based partition. The details are as follows:<ul><li>If 2.4 GHz and 5 GHz radios are both enabled on APs (including RUs), divide the APs based on the 5 GHz channel.</li><li>If the 2.4 GHz radio is disabled and the 5 GHz radio is enabled on APs (including RUs), divide the APs based on the 5 GHz channel.</li><li>If the 2.4 GHz radio is enabled and the 5 GHz radio is disabled on APs (including RUs), divide the APs based on the 2.4 GHz channel.</li><li>If the two 5 GHz radios are both enabled on APs (including RUs), divide the APs based on the 5 GHz channel with a smaller radio ID.</li><li>Add all central APs to the same channel-based partition.</li></ul>
+</div>
+</li></ul>
+</div>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><ul><li>During an in-service upgrade, if APs are reset before the upgrade file is loaded, the upgrade mode is switched to automatic.</li><li>If the space on an AP is found insufficient during the upgrade, the system automatically deletes redundant system software, patch files, and corefile folders from the AP. Run the <b><span class="cmdqueryname">display startup</span></b> command on the AP to check the system software and patch files for the current and next startups. The system software and patch files that are not listed in the command output are considered redundant files.</li><li>Some APs do not support AP reset by channel-based partition.</li></ul>
+</div></div>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000001512845962__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li id="EN-US_TASK_0000001512845962__step5271112410428"><span id="EN-US_TASK_0000001512845962__cmd152711224104219">Enter the WLAN view.</span><p><pre class="screen" id="EN-US_TASK_0000001512845962__screen220544818420"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__cmdname3591105918428">wlan</span></b></pre>
+</p></li><li><span>Configure in-service upgrade.</span><ul><li>Perform an in-service upgrade on a single AP.<ol type="a"><li>Upgrade the specified AP.<pre class="screen"><b><span class="cmdqueryname">ap update load</span></b> { <strong><span>ap-mac</span></strong> <i><span class="varname">ap-mac</span></i> | <strong><span>ap-id</span></strong> <i><span class="varname">ap-id</span></i> } <strong><span>update-filename</span></strong> <i><span class="varname">filename</span></i></pre>
+</li><li>Reset the specified AP.<pre class="screen"><b><span class="cmdqueryname">ap update reset</span></b> { <strong><span>ap-mac</span></strong> <i><span class="varname">ap-mac-value</span></i> | <strong><span>ap-id</span></strong> <i><span class="varname">ap-id-value</span></i> }</pre>
+</li></ol>
+</li><li>Configure batch upgrade for APs of an AP type.<ol type="a"><li id="EN-US_TASK_0000001512845962__li6864481029">Specify the upgrade file for APs of the specified type.<pre class="screen" id="EN-US_TASK_0000001512845962__screen687710919319"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__cmdname16895111310327">ap update update-filename</span></b> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname1654329103217">filename</span></i> <strong><span id="EN-US_TASK_0000001512845962__cmdparmname1838953615326">ap-type</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname32301244153216">type-id</span></i> [ <strong><span id="EN-US_TASK_0000001512845962__cmdparmname10909449183214">ap-group</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname1561185913324">ap-group-name</span></i> ]</pre>
+<p id="EN-US_TASK_0000001512845962__p14772322832">By default, no upgrade file is specified for APs of any type.</p>
+</li><li>Batch upgrade APs of the specified type.<pre class="screen" id="EN-US_TASK_0000001512845962__screen16721144717412"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__cmdname141941241765">ap update multi-load</span></b> <strong><span id="EN-US_TASK_0000001512845962__cmdparmname2057019422610">ap-type</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname672285117613">type-id</span></i> [ <strong><span id="EN-US_TASK_0000001512845962__cmdparmname167937114712">ap-group</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname91307201374">group-name</span></i> | { <strong><span id="EN-US_TASK_0000001512845962__cmdparmname93211038278">ap-id</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname1264916451576">ap-id</span></i> } &amp;&lt;1-10&gt; ]</pre>
+</li><li>Batch reset APs of the specified type.<pre class="screen"><b><span class="cmdqueryname">ap update multi-reset</span></b> <strong><span>ap-type</span></strong> <i><span class="varname">type-id</span></i> [ <strong><span>ap-group</span></strong> <i><span class="varname">group-name</span></i> | { <strong><span>ap-id</span></strong> <i><span class="varname">ap-id</span></i> } &amp;&lt;1-10&gt; ]</pre>
+</li></ol>
+</li><li>Configure batch upgrade for APs in the same AP group.<ol type="a"><li>Specify the upgrade file for APs in the specified AP group.<pre class="screen"><b><span class="cmdqueryname">ap update update-filename</span></b> <i><span class="varname">filename</span></i> <strong><span>ap-type</span></strong> <i><span class="varname">type-id</span></i> [ <strong><span>ap-group</span></strong> <i><span class="varname">ap-group-name</span></i> ]</pre>
+<p>By default, no upgrade file is specified for APs of any type.</p>
+</li><li>Batch upgrade APs in the specified AP group.<pre class="screen" id="EN-US_TASK_0000001512845962__screen072191212134"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__cmdname20282930143010">ap update multi-load</span></b> <strong><span id="EN-US_TASK_0000001512845962__cmdparmname756133933010">ap-group</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname12808947193015">group-name</span></i> [ { <strong><span id="EN-US_TASK_0000001512845962__cmdparmname1392112933117">ap-id</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname464219195312">ap-id</span></i> } &amp;&lt;1-10&gt; ]</pre>
+</li><li>Batch reset APs in the specified AP group.<pre class="screen"><b><span class="cmdqueryname">ap update multi-reset</span></b> <strong><span>ap-group</span></strong> <i><span class="varname">group-name</span></i> [ { <strong><span>ap-id</span></strong> <i><span class="varname">ap-id</span></i> } &amp;&lt;1-10&gt; ]</pre>
+</li></ol>
+</li><li>Upgrade APs by channel-based partition.<ol type="a"><li>Specify the upgrade file for APs of the specified type.<pre class="screen" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_screen687710919319"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdname16895111310327">ap update update-filename</span></b> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_varname1654329103217">filename</span></i> <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdparmname1838953615326">ap-type</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_varname32301244153216">type-id</span></i> [ <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdparmname10909449183214">ap-group</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_varname1561185913324">ap-group-name</span></i> ]</pre>
+<p id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_p14772322832">By default, no upgrade file is specified for APs of any type.</p>
+</li><li>Upgrade APs of the same type or in the same group in batches.<pre class="screen"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdname141941241765">ap update multi-load</span></b> <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdparmname2057019422610">ap-type</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_varname672285117613">type-id</span></i> [ <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdparmname167937114712">ap-group</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_varname91307201374">group-name</span></i> | { <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdparmname93211038278">ap-id</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_varname1264916451576">ap-id</span></i> } &amp;&lt;1-10&gt; ]</pre>
+<p>Or</p>
+<pre class="screen"><b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdname20282930143010">ap update multi-load</span></b> <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdparmname756133933010">ap-group</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_varname12808947193015">group-name</span></i> [ { <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_cmdparmname1392112933117">ap-id</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845962_varname464219195312">ap-id</span></i> } &amp;&lt;1-10&gt; ]</pre>
+</li><li>Reset APs by channel-based partition.<pre class="screen"><b><span class="cmdqueryname">ap update multi-reset</span></b> <strong><span>partition</span></strong> { <strong><span>all</span></strong> | <strong><span>partition-id</span></strong> <i><span class="varname">partition-id</span></i> }</pre>
+</li></ol>
+</li></ul>
+</li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000001512845962__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><ul><li>Run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_cmdname0742123731816">display ap update configuration</span></b> command to check the AP upgrade configuration.</li><li>Run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_cmdname136282411401">display ap-type</span></b> { <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_cmdparmname88671143414">all</span></strong> | <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_cmdparmname6651597412">id</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_varname16619181415416">type-id</span></i> | <strong><span id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_cmdparmname9458920194110">type</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__en-us_task_0000001512845950_varname1155412518419">ap-type</span></i> } command to check information about AP types.</li><li id="EN-US_TASK_0000001512845962__li19249456174217">Run the <b><span class="cmdqueryname" id="EN-US_TASK_0000001512845962__cmdname8182153219448">display ap update status</span></b> { <strong><span id="EN-US_TASK_0000001512845962__cmdparmname12533341134417">all</span></strong> | <strong><span id="EN-US_TASK_0000001512845962__cmdparmname2469201718457">downloading</span></strong> | <strong><span id="EN-US_TASK_0000001512845962__cmdparmname439652234510">failed</span></strong> | <strong><span id="EN-US_TASK_0000001512845962__cmdparmname141491228114519">succeed</span></strong> | <strong><span id="EN-US_TASK_0000001512845962__cmdparmname10236164634513">ap-id</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname127801454184510">ap-id</span></i> | <strong><span id="EN-US_TASK_0000001512845962__cmdparmname7989859134519">ap-type</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname23321584466">ap-type</span></i> | <strong><span id="EN-US_TASK_0000001512845962__cmdparmname1131713155461">ap-group</span></strong> <i><span class="varname" id="EN-US_TASK_0000001512845962__varname143661424144612">ap-group</span></i> | <strong><span id="EN-US_TASK_0000001512845962__cmdparmname1238810292461">waiting</span></strong> } command to check the AP upgrade progress.</li><li>Run the <b><span class="cmdqueryname">display ap update status partition</span></b> { <strong><span>all</span></strong> | <strong><span>partition-id</span></strong> <i><span class="varname">partition-id</span></i> } command to check information about channel-based partitions.</li></ul>
+</div>
+</div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="galaxy_ap_management_cfg_0016.html">Configuring AP Upgrade
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="galaxy_ap_management_cfg_0019.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="galaxy_ap_management_cfg_0067.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

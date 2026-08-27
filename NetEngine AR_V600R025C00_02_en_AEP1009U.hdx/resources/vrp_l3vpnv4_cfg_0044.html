@@ -1,0 +1,124 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Configuring HoVPN">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0036.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0043.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_L3VPNv4_cfg_0068.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featurename" content="IPv4 L3VPN">
+<meta name="featuretype" content="VPN">
+<meta name="featuretype" content="VPN">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000001386065225">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Configuring HoVPN</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000001386065225"></a><a name="EN-US_TASK_0000001386065225"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Configuring HoVPN</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000001386065225__1.3.1"></a><a name="1.3.1"></a><h4 class="sectiontitle">Context</h4>
+<div class="p"><p>On an HoVPN, a UPE only needs to obtain a default route from an SPE. This implementation mechanism reduces the route storage space required on a UPE.</p>
+<div class="p">This scenario requires the following configurations:<ul><li><div class="p">Create VPN instances on UPEs, SPEs, and NPEs. For configuration details, see <a href="vrp_L3VPNv4_cfg_0007.html">Configuring an IPv4 VPN Instance on a PE</a>.<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>According to related standards, the VPN instance status obtained through an NMS can be up only when at least one interface bound to the VPN instance is up. In an HoVPN scenario, an SPE does not require any interface to be bound to a VPN instance. Consequently, the VPN instance status obtained by an NMS is down according to the standards, which is opposite to the actual VPN instance status. To solve this problem, run the <b><span class="cmdqueryname">transit-vpn</span></b> command in the VPN instance view or VPN instance IPv4 address family view of an SPE. Then, the VPN instance status obtained from the NMS is always up, regardless of whether any interface is bound to the VPN instance.</p>
+</div></div>
+</div>
+</li><li><p>Configure MP-BGP peer relationships between SPEs and NPEs. This configuration is similar to configuring MP-IBGP peer relationships between PEs in an IPv4 VPN instance. For details, see <a href="vrp_L3VPNv4_cfg_0073.html">Establishing an MP-IBGP Peer Relationship Between PEs</a>.</p>
+</li><li><p>Configure routing protocols for NPEs/UPEs to exchange routes with CEs. This configuration is similar to configuring PEs and CEs to exchange routes in an IPv4 VPN instance. For details, see <a href="vrp_L3VPNv4_cfg_0006.html">Configuring an IPv4 VPN Instance</a>.</p>
+</li><li><div class="p">Configure MP-BGP peer relationships between UPEs and SPEs. An SPE needs to advertise only a default or summary route to a UPE. <span>You can configure an SPE to advertise a default route to a UPE in either of the following modes:</span><ul><li>Route filtering mode: Configure a default static route and a route-policy to enable the SPE to send the default route to the UPE.</li><li>Command control mode: Run the <b><span class="cmdqueryname">peer default-originate vpn-instance</span></b> command to enable the SPE to automatically generate a default route and send it to the UPE.</li></ul>
+</div>
+<p>The default route generated using the <b><span class="cmdqueryname">peer default-originate vpn-instance</span></b> command cannot be associated with an interface. When the primary link connecting the SPE to the UPE fails, the SPE may send the default route to the UPE over another interface, which affects network response to faults. Therefore, using the route filtering mode is recommended.</p>
+</li></ul>
+</div>
+</div></div>
+<div class="steps-unordered"><a name="EN-US_TASK_0000001386065225__1.3.2"></a><a name="1.3.2"></a><h4 class="sectiontitle">Procedure</h4>
+<ul><li><span>Configure a UPE to establish an MP-BGP peer relationship with an SPE.</span><ol><li class="substepexpand"><span>Enter the system view.</span><p><pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP view.</span><p><pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i>  </pre>
+</p></li><li class="substepexpand"><span>Specify the SPE as a BGP peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>as-number</span></strong> <i><span class="varname">as-number</span></i></pre>
+</p></li><li class="substepexpand"><span>Enter the BGP-VPNv4 address family view.</span><p><pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b> <strong><span>vpnv4</span></strong></pre>
+</p></li><li class="substepexpand"><span>Enable the function to exchange BGP-VPNv4 routes with the specified peer.</span><p><pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>enable</span></strong></pre>
+</p></li></ol>
+</li><li><span>Configure the SPE to send a default or summary route to the UPE.</span><p><ul><li>Configure the SPE to send a default route to the UPE.<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Create a default IPv4 static route for the VPN instance.<pre class="screen"><b><span class="cmdqueryname">ip route-static vpn-instance</span></b> <i><span class="varname">vpn-source-name</span></i> <strong>0.0.0.0</strong> { <strong>0.0.0.0</strong> | <strong>0</strong> }{ <i><span class="varname">interface-type</span></i> <i><span class="varname">interface-number</span></i> } [ <i><span class="varname">nexthop-address</span></i> ] [ <strong><span>preference</span></strong> <i><span class="varname">preference</span></i> | <strong><span>tag</span></strong> <i><span class="varname">tag</span></i> ] <span><sup>*</sup></span> [ <strong><span>description</span></strong> <i><span class="varname">text</span></i> ]</pre>
+</li><li>Enter the BGP view.<pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</li><li>Specify the UPE as a BGP peer.<pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>as-number</span></strong> <i><span class="varname">as-number</span></i></pre>
+</li><li>Enter the BGP-VPNv4 address family view.<pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b> <strong><span>vpnv4</span></strong></pre>
+</li><li>Specify the UPE as a BGP peer.<pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>upe</span></strong></pre>
+<div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>This step can be performed only if a VPNv4 peer relationship has been established between the SPE and UPE.</p>
+</div></div>
+</li><li>Return to the BGP view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Enter the BGP VPN instance IPv4 address family view.<pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i></pre>
+</li><li>Import the default route into the IPv4 VPN instance routing table.<pre class="screen"><b><span class="cmdqueryname">network</span></b> <strong>0.0.0.0</strong> [ <strong>0.0.0.0</strong> | <strong>0</strong> ] [ <strong><span>route-policy</span></strong> <i><span class="varname">route-policy-name</span></i> ]</pre>
+</li></ol>
+</li></ul>
+<ul><li>Configure the SPE to send a summary route to the UPE.<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the BGP view.<pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</li><li>Enter the BGP VPN instance IPv4 address family view.<pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b> <strong><span>vpn-instance</span></strong> <i><span class="varname">vpn-instance-name</span></i></pre>
+</li><li>Create a summary route.<pre class="screen"><b><span class="cmdqueryname">aggregate</span></b> <i><span class="varname">ipv4-address</span></i> { <i><span class="varname">mask</span></i> | <i><span class="varname">mask-length</span></i> } [ <strong><span>as-set</span></strong> | <strong><span>attribute-policy</span></strong> <i><span class="varname">route-policy-name1</span></i> | <strong><span>detail-suppressed</span></strong> | <strong><span>origin-policy</span></strong> <i><span class="varname">route-policy-name2</span></i> | <strong><span>suppress-policy</span></strong> <i><span class="varname">route-policy-name3</span></i> ]</pre>
+</li><li>Return to the BGP view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Return to the system view.<pre class="screen"><b><span class="cmdqueryname">quit</span></b></pre>
+</li><li>Configure an IPv4 prefix list.<pre class="screen"><b><span class="cmdqueryname">ip ip-prefix</span></b> <i><span class="varname">ip-prefix-name</span></i> [ <strong><span>index</span></strong> <i><span class="varname">index-number</span></i> ] { <strong><span>permit</span></strong> | <strong><span>deny</span></strong> } <i><span class="varname">ip-address</span></i> <i><span class="varname">mask-length</span></i> [ <strong><span>greater-equal</span></strong> <i><span class="varname">greater-equal-value</span></i> ] [ <strong><span>less-equal</span></strong> <i><span class="varname">less-equal-value</span></i> ]</pre>
+</li><li>Enter the BGP view.<pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</li><li>Specify the UPE as a BGP peer.<pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>as-number</span></strong> <i><span class="varname">as-number</span></i></pre>
+</li><li>Enter the BGP-VPNv4 address family view.<pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b> <strong><span>vpnv4</span></strong></pre>
+</li><li>Configure the device to advertise filtered routes to the UPE.<pre class="screen"><b><span class="cmdqueryname">peer</span></b> { <i><span class="varname">ipv4-address</span></i> | <i><span class="varname">group-name</span></i> } <strong><span>ip-prefix</span></strong> <i><span class="varname">ip-prefix-name</span></i> <strong><span>export</span></strong></pre>
+</li></ol>
+</li></ul>
+</p></li><li><span>(Optional) Configure one-label-per-next-hop label distribution on the SPE.</span><p><p>In an HoVPN scenario, if an SPE needs to send large numbers of VPNv4 routes but the MPLS labels are inadequate, configure one-label-per-next-hop label distribution on the SPE.</p>
+<ol><li>Enter the system view.<pre class="screen"><b><span class="cmdqueryname">system-view</span></b></pre>
+</li><li>Enter the BGP view.<pre class="screen"><b><span class="cmdqueryname">bgp</span></b> <i><span class="varname">as-number</span></i></pre>
+</li><li>Enter the BGP-VPNv4 address family view.<pre class="screen"><b><span class="cmdqueryname">ipv4-family</span></b> <strong><span>vpnv4</span></strong></pre>
+</li><li>Enable one-label-per-next-hop label distribution for VPNv4 routes.<pre class="screen"><b><span class="cmdqueryname">apply-label per-nexthop</span></b></pre>
+<div class="notice"><span class="noticetitle"><img src="public_sys-resources/notice_3.0-en-us.png"> </span><div class="noticebody"><p>After one-label-per-next-hop label distribution is enabled or disabled on an SPE, the labels assigned by the SPE to routes change. As a result, temporary packet loss may occur.</p>
+</div></div>
+</li></ol>
+</p></li></ul></div>
+<div class="postreq"><a name="EN-US_TASK_0000001386065225__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Verifying the Configuration</h4><p>Run the <b><span class="cmdqueryname">display ip routing-table</span></b> command to check the IP routing table.</p>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_L3VPNv4_cfg_0036.html">Configuring IPv4 L3VPN over MPLS HVPN
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_L3VPNv4_cfg_0043.html"><span class="font-st">&lt; </span>Previous topic</a>
+<a href="vrp_L3VPNv4_cfg_0068.html">Next topic<span class="font-st"> &gt;</span></a>
+</div>
+</div>
+</body>
+</html>

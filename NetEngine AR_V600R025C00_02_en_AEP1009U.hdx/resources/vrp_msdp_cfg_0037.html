@@ -1,0 +1,260 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-us" xml:lang="en-us">
+<head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="DC.Type" content="task">
+<meta name="DC.Title" content="Example for Configuring MSDP-based Static RPs">
+<meta name="product" content="">
+<meta name="DC.Relation" scheme="URI" content="vrp_msdp_cfg_0036.html">
+<meta name="DC.Relation" scheme="URI" content="vrp_msdp_cfg_0029.html">
+<meta name="prodname" content="">
+<meta name="version" content="">
+<meta name="brand" content="Product Documentation">
+<meta name="DC.Publisher" content="20230525">
+<meta name="featurename" content="MSDP">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Audience.Job" content="Configuration">
+<meta name="featurename" content="MSDP">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featurename" content="MSDP">
+<meta name="featuretype" content="IP Multicast">
+<meta name="featuretype" content="IP Multicast">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="EN-US_TASK_0000002347440824">
+<meta name="DC.Language" content="en-us">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/commonltr.css">
+<link rel="stylesheet" type="text/css" href="public_sys-resources/mediaQuery.css">
+<script language="javascript" type="text/javascript" src="public_sys-resources/browseVersion.js"></script>
+<title>Example for Configuring MSDP-based Static RPs</title>
+
+<style type="text/css">
+			<!--	pre.screen,pre.codeblock{
+					word-wrap:break-word;
+					word-break:break-all;
+					white-space:pre-wrap !important;
+				}-->
+		</style>
+</head>
+<body><a name="EN-US_TASK_0000002347440824"></a><a name="EN-US_TASK_0000002347440824"></a>
+
+<div class="articleBoxWithoutHead">
+<h1 class="topicTitle-h1">Example for Configuring MSDP-based Static RPs</h1>
+<div class="taskbody"><div class="context"><a name="EN-US_TASK_0000002347440824__1.3.1"></a><a name="1.3.1"></a>
+<div class="p"><h4 class="sectiontitle">Networking Requirements</h4><p>On the network shown in <a href="#EN-US_TASK_0000002347440824__fig_dc_vrp_multicast_cfg_007301">Figure 1</a>, an MSDP peer relationship is established between RPs in PIM-SM domains to share multicast sources. This allows hosts to receive data from multicast sources in another PIM-SM domain.</p>
+<div class="fignone" id="EN-US_TASK_0000002347440824__fig_dc_vrp_multicast_cfg_007301"><a name="EN-US_TASK_0000002347440824__fig_dc_vrp_multicast_cfg_007301"></a><a name="fig_dc_vrp_multicast_cfg_007301"></a><span class="figcap"><b>Figure 1 </b>Network diagram of configuring PIM-SM inter-domain multicast</span><div class="note"><img src="public_sys-resources/note_3.0-en-us.png"><span class="notetitle"> </span><div class="notebody"><p>In this example, interfaces 1 through 3 represent <span>10GE</span><span>0/0/1</span>, <span>10GE</span><span>0/0/2</span>, and <span>10GE</span><span>0/0/3</span>, respectively.</p>
+</div></div>
+<br><span><img class="vsd" src="figure/en-us_image_0000002381321033.png" width="NaN" height="NaN"></span></div>
+</div></div>
+<div class="context"><a name="EN-US_TASK_0000002347440824__1.3.2"></a><a name="1.3.2"></a>
+<div class="p"><h4 class="sectiontitle">Configuration Roadmap</h4><p>The configuration roadmap is as follows:</p>
+<ol><li><p>Enable the multicast function, configure interface IP addresses on devices, and configure OSPF in each PIM-SM domain for intra-domain interconnection.</p>
+</li><li><p>Enable PIM-SM on each involved interface and enable IGMP on interfaces connected to hosts.</p>
+</li><li><p>Configure static RPs on DeviceA and DeviceB.</p>
+</li><li><p>Configure MSDP peers on Loopback1 interfaces of <span class="keyword">Device</span>A and <span class="keyword">Device</span>B. According to the RPF rule, SA messages sent by the source RP are accepted.</p>
+</li></ol>
+</div></div>
+<div class="steps"><a name="EN-US_TASK_0000002347440824__1.3.3"></a><a name="1.3.3"></a><h4 class="sectiontitle">Procedure</h4>
+<ol><li><span>Enable the multicast function, configure interface IP addresses, masks, and loopback interfaces in each PIM-SM domain, and configure OSPF for interworking.</span><p><p># Configure DeviceA. The configuration of DeviceB is similar to the configuration of DeviceA. For detailed configurations, see Configuration Scripts.</p>
+<pre class="screen">&lt;<span class="keyword">HUAWEI</span>&gt; <strong>system-view</strong>
+[<span class="keyword">HUAWEI</span>] <strong>sysname DeviceA</strong>
+[DeviceA] <strong>multicast routing-enable</strong>
+[DeviceA] <strong>interface</strong><strong> <span>10GE</span><span>0/0/1</span> </strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>ip address 192.168.1.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[DeviceA] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>ip address 192.168.2.1 24</strong>
+[DeviceA-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong>
+[DeviceA] <strong>interface loopback 0</strong>
+[DeviceA-LoopBack0] <strong>ip address 1.1.1.1 255.255.255.255</strong>
+[DeviceA-LoopBack0] <strong>quit</strong>
+[DeviceA] <strong>interface loopback 1</strong>
+[<span class="keyword"></span>DeviceA-LoopBack1] <strong>ip address 3.3.3.3 255.255.255.255</strong>
+[DeviceA-LoopBack1] <strong>quit</strong>
+[DeviceA] <strong>ospf 1</strong>
+[DeviceA-ospf-1] <strong>area 0.0.0.0</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong>network 1.1.1.1 0.0.0.0</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong>network 3.3.3.3 0.0.0.0</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong>network 192.168.1.0 0.0.0.255</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong>network 192.168.2.0 0.0.0.255</strong>
+[DeviceA-ospf-1-area-0.0.0.0] <strong>quit</strong>
+[DeviceA-ospf-1] <strong>quit</strong></pre>
+</p></li><li><span>Configure PIM-SM.</span><p><p># Enable PIM-SM on all involved interfaces and enable IGMP on interfaces connected to hosts. The configurations of other devices are similar to the configuration of <span class="keyword">DeviceA</span>. For detailed configurations, see Configuration Scripts.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>] <strong>interface <span>10GE</span> <span>0/0/1</span></strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>pim sm</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>igmp enable</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/1</span>] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>] <strong>interface <span>10GE</span> <span>0/0/2</span></strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/2</span>] <strong>pim sm</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/2</span>] <strong>pim bsr-boundary</strong>
+[<span class="keyword">DeviceA</span>-<span>10GE</span><span>0/0/2</span>] <strong>quit</strong></pre>
+</p></li><li><span>Configure Loopback0 interfaces and static RPs.</span><p><p># Configure static RPs on <span class="keyword">DeviceA</span> and <span class="keyword">Device</span>B. The configuration of <span class="keyword">Device</span>B is similar to the configuration of <span class="keyword">DeviceA</span>. For detailed configurations, see Configuration Scripts.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>] <strong>interface loopback 0</strong>
+[<span class="keyword">DeviceA</span>-LoopBack1] <strong>pim sm</strong>
+[<span class="keyword">DeviceA</span>-LoopBack1] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>] <strong>pim</strong>
+[<span class="keyword">DeviceA</span>-pim] <strong>static-rp 1.1.1.1</strong>
+[<span class="keyword">DeviceA</span>-pim] <strong>quit</strong></pre>
+</p></li><li><span>Configure Loopback1 interfaces and MSDP peers.</span><p><p># Configure an MSDP peer on the Loopback1 interface of <span class="keyword">DeviceA</span>.</p>
+<pre class="screen">[<span class="keyword">DeviceA</span>] <strong>interface loopback 1</strong>
+[<span class="keyword">DeviceA</span>-LoopBack0] <strong>pim sm</strong>
+[<span class="keyword">DeviceA</span>-LoopBack0] <strong>quit</strong>
+[<span class="keyword">DeviceA</span>] <strong>msdp</strong>
+[<span class="keyword">DeviceA</span>-msdp] <strong>originating-rp loopback1</strong>
+[<span class="keyword">DeviceA</span>-msdp] <strong>peer 4.4.4.4 connect-interface loopback1</strong>
+[<span class="keyword">DeviceA</span>-msdp] <strong>quit</strong></pre>
+<p># Configure an MSDP peer on the Loopback1 interface of <span class="keyword">DeviceB</span>.</p>
+<pre class="screen">[<span class="keyword">DeviceB</span>] <strong>interface loopback 1</strong>
+[<span class="keyword">DeviceB</span>-LoopBack0] <strong>ip address 4.4.4.4 255.255.255.255</strong>
+[<span class="keyword">DeviceB</span>-LoopBack0] <strong>pim sm</strong>
+[<span class="keyword">DeviceB</span>-LoopBack0] <strong>quit</strong>
+[<span class="keyword">DeviceB</span>] <strong>msdp</strong>
+[<span class="keyword">DeviceB</span>-msdp] <strong>originating-rp loopback1</strong>
+[<span class="keyword">DeviceB</span>-msdp] <strong>peer 3.3.3.3 connect-interface loopback1</strong>
+[<span class="keyword">DeviceB</span>-msdp] <strong>quit</strong></pre>
+</p></li></ol></div>
+<div class="example"><a name="EN-US_TASK_0000002347440824__1.3.4"></a><a name="1.3.4"></a><h4 class="sectiontitle">Verifying the Configuration</h4><div class="p"># Run the <strong>display msdp brief</strong> command to check the MSDP peer relationship established between devices. The following example uses the command output on DeviceA.<pre class="screen">[<span class="keyword">DeviceA</span>] <strong>display msdp brief</strong>
+MSDP Peer Brief Information of VPN instance: public net  
+---------------------------------------------------------------------------------                                                   
+  Configured   Up           Listen       Connect      Shutdown     Down                                                             
+  1            1            0            0            0            0                                                             
+---------------------------------------------------------------------------------                                                   
+  Peer's Address     State     Up/Down time    AS          SA Count   Reset Count                                                   
+  4.4.4.4            Up        00:10:17        ?(unknown)  1          0</pre>
+</div>
+<p># Run the <strong>display pim routing-table</strong> command to check the PIM routing table on DeviceA and DeviceB. S1 (10.1.2.4/24) in the PIM-SM domain sends multicast data to multicast group G (225.0.0.1), and User1 joins G and receives the multicast data sent to G.</p>
+<pre class="screen">[DeviceA] <strong>display pim routing-table</strong>
+VPN-Instance: public net
+ Total 1 (*, G) entry; 1 (S, G) entry
+ 
+ (*, 225.1.1.1)
+     RP: 1.1.1.1 (local)
+     Protocol: pim-sm, Flag: WC
+     UpTime: 00:08:49
+     Upstream interface: Register, Refresh time: 00:28:49
+         Upstream neighbor: NULL
+         RPF prime neighbor: NULL
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/1</span>
+             Protocol: igmp, UpTime: 00:08:49, Expires: -
+ 
+ (10.1.2.4, 225.1.1.1)
+     RP: 1.1.1.1 (local)
+     Protocol: pim-sm, Flag: SPT MSDP ACT
+     UpTime: 00:07:26
+     Upstream interface: <span>10GE</span><span>0/0/2</span>, Refresh time: 00:28:49
+         Upstream neighbor: 192.168.2.2
+         RPF prime neighbor: 192.168.2.2
+     Downstream interface(s) information:
+     Total number of downstreams: 1
+         1: <span>10GE</span><span>0/0/1</span>
+             Protocol: pim-sm, UpTime: 00:07:26, Expires: -</pre>
+</div>
+<div class="postreq"><a name="EN-US_TASK_0000002347440824__1.3.5"></a><a name="1.3.5"></a><h4 class="sectiontitle">Configuration Scripts</h4><ul><li><p>DeviceA</p>
+<pre class="screen">#
+sysname DeviceA
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.1.1 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 192.168.2.1 255.255.255.0
+ pim bsr-boundary
+ pim sm
+#
+interface LoopBack0
+ ip address 1.1.1.1 255.255.255.255
+ pim sm
+#
+interface LoopBack1
+ ip address 3.3.3.3 255.255.255.255
+ pim sm
+#
+ospf 1
+ area 0.0.0.0
+  network 1.1.1.1 0.0.0.0
+  network 3.3.3.3 0.0.0.0
+  network 192.168.1.0 0.0.0.255
+  network 192.168.2.0 0.0.0.255
+#
+pim
+ static-rp 1.1.1.1
+#
+msdp
+ originating-rp LoopBack1
+ peer 4.4.4.4 connect-interface LoopBack1
+#
+return</pre>
+</li><li><p>DeviceB</p>
+<pre class="screen">#
+sysname DeviceB
+#
+multicast routing-enable
+#
+interface <span>10GE</span><span>0/0/1</span>
+ ip address 192.168.2.2 255.255.255.0
+ pim bsr-boundary
+ pim sm
+#
+interface <span>10GE</span><span>0/0/2</span>
+ ip address 10.1.2.5 255.255.255.0
+ pim sm
+#
+interface <span>10GE</span><span>0/0/3</span>
+ ip address 192.168.5.1 255.255.255.0
+ pim sm
+ igmp enable
+#
+interface LoopBack0
+ ip address 2.2.2.2 255.255.255.255
+ pim sm
+#
+interface LoopBack1
+ ip address 4.4.4.4 255.255.255.255
+ pim sm
+#
+ospf 1
+ area 0.0.0.0
+  network 2.2.2.2 0.0.0.0
+  network 4.4.4.4 0.0.0.0
+  network 192.168.2.0 0.0.0.255
+  network 10.1.2.0 0.0.0.255
+  network 192.168.5.0 0.0.0.255
+#
+pim
+ static-rp 2.2.2.2
+#
+msdp
+ originating-rp LoopBack1
+ peer 3.3.3.3 connect-interface LoopBack1
+#
+return</pre>
+</li></ul>
+</div></div>
+
+</div>
+<div class="footerNavBar clearfix">
+
+<div class="parentlink">
+Parent Topic:
+<a href="vrp_msdp_cfg_0036.html">Configuration Examples for MSDP
+</a>
+</div>
+<div class="copyrightBottomBar">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="copyrightBottomBar_responsive">
+Copyright &copy; Huawei Technologies Co., Ltd.</div>
+<div class="bottomNavBtn clearfix">
+<a href="vrp_msdp_cfg_0029.html"><span class="font-st">&lt; </span>Previous topic</a>
+</div>
+</div>
+</body>
+</html>
